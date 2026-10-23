@@ -99,7 +99,14 @@ Full report: [UI-SMOKE.md](UI-SMOKE.md).
 
 ## Repository state
 
-See [PRE-EXISTING-REPO-STATES.md](PRE-EXISTING-REPO-STATES.md). Integration repositories were inspected with read-only Git commands. Several were already dirty before this work; they were not fetched, cleaned, reset or modified. Mission Control changes were committed only in `C:\Projects\mission`; nothing was pushed.
+- Repository root: `C:\Projects\mission`
+- Branch: `main`
+- Implementation commit: `4ee569d`
+- Implementation working tree at commit time: clean
+- Acceptance documentation is committed separately after this report.
+- Nothing was pushed.
+- Integration repositories were inspected with read-only Git commands. Several were already dirty before this work; they were not fetched, cleaned, reset or modified.
+- External repositories changed concurrently during the session; Mission Control has no write path into them. Compare the committed initial snapshot with [PRE-EXISTING-REPO-STATES.md](PRE-EXISTING-REPO-STATES.md).
 
 ## Unavailable integrations and known limitations
 

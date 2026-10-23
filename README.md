@@ -359,4 +359,5 @@ Mission Control was built in `C:\Projects\mission`. Integration repositories wer
 - [Security](docs/SECURITY.md)
 - [Milestone evidence](docs/milestones/README.md)
 - [Acceptance report](docs/acceptance/REPORT.md)
+- [Final engineering report](docs/acceptance/FINAL-ENGINEERING-REPORT.md)
 - [UI smoke evidence](docs/acceptance/UI-SMOKE.md)
