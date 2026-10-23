@@ -1,0 +1,53 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mission-control"
+version = "0.1.0"
+description = "Local-first control centre for an ecosystem of applied-AI projects"
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "Proprietary" }
+authors = [{ name = "Ernan Hughes" }]
+dependencies = [
+  "fastapi>=0.115,<1",
+  "uvicorn[standard]>=0.30,<1",
+  "SQLAlchemy>=2.0,<3",
+  "pydantic>=2.9,<3",
+  "PyYAML>=6.0,<7",
+  "httpx>=0.27,<1",
+  "psutil>=6.0,<8",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.0,<10",
+  "pytest-timeout>=2.3,<3",
+  "ruff>=0.9,<1",
+]
+
+[project.scripts]
+mission-control = "mission_control.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["backend"]
+
+[tool.setuptools.package-data]
+mission_control = ["persistence/*.sql"]
+
+[tool.pytest.ini_options]
+testpaths = ["backend/tests"]
+addopts = "-ra"
+timeout = 60
+markers = [
+  "integration: exercises real local process execution",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F"]
+ignore = ["E501"]

@@ -1,0 +1,33 @@
+Mission Control — dashboard launch evidence
+Date: 2026-10-23
+Instance: isolated data directory on http://127.0.0.1:8791
+
+The application "Acceptance UI Process" was registered against the safe local
+fixture process. In the Applications page, the dashboard button labelled
+"Launch" was clicked through the browser.
+
+Observed UI state:
+  Running
+  PID 2808 is owned by Mission Control.
+  Last successful launch: just now
+  Toast: "launch requested"
+
+The "Logs" dialog showed:
+
+  Mission Control managed process proc-6a33b890e6d2449d
+  Application: Acceptance UI Process (acceptance-ui-process)
+  Command: C:\Users\ernan\AppData\Roaming\uv\python\cpython-3.13.3-windows-x86_64-none\python.exe managed_process.py ui-acceptance
+  Working directory: C:\Projects\mission\backend\tests\fixtures
+  Environment: allowlisted Windows variables plus explicitly named variables; values omitted.
+  ---
+  fixture-start pid=2808
+  fixture-cwd=C:\Projects\mission\backend\tests\fixtures
+  fixture-arg=ui-acceptance
+  fixture-tick
+  ...
+
+The fixture process naturally completed after its 30-second bound; the separate
+backend integration test verifies explicit stop and exit-state handling.
+
+This instance also served the production frontend build and showed no browser
+console errors during the interaction.

@@ -1,0 +1,94 @@
+# Initial priority work. These are defaults; user changes in Mission Control win.
+projects:
+  - id: language
+    name: Language
+    description: >-
+      The book Language: When Intelligence Enters the Channel, plus the runnable
+      implementation that supports its claims.
+    kind: book
+    status: active
+    priority: 1
+    pinned: true
+    display_order: 1
+    current_milestone: Author review of five editorial checkpoints, then a publication decision.
+    next_action: Read the five author-review checkpoints and record the publication decision.
+    notes: >-
+      Baseline observed in C:\Projects\language\planning\STATUS.md. The
+      implementation lives in project-language; the manuscript remains the product.
+    repositories:
+      - path: 'C:\Projects\language'
+        name: language
+        classification: book
+        confidence: 0.98
+        role: manuscript
+        evidence:
+          - README.md describes a 37-chapter Hugo book.
+          - planning/STATUS.md records the editorial baseline.
+      - path: 'C:\Projects\project-language'
+        name: project-language
+        classification: supporting_repository
+        confidence: 0.95
+        role: implementation
+        evidence:
+          - README.md says it holds runnable capabilities for the Language book.
+          - package.json defines the verification and example commands.
+
+  - id: inference
+    name: Inference
+    description: >-
+      Inference From First Principles: a 45-chapter experiment-led book and
+      companion Inference Lab.
+    kind: book
+    status: active
+    priority: 2
+    pinned: true
+    display_order: 2
+    current_milestone: Chapters 01-28 have starter manuscripts; 29-45 remain prompt-only.
+    next_action: Choose the next chapter to draft from the 29-45 research dossiers.
+    notes: >-
+      The repository is C:\books\inference, discovered outside C:\Projects.
+      The README records the chapter status; it is an external claim, not a
+      Mission Control verification.
+    repositories:
+      - path: 'C:\books\inference'
+        name: inference
+        classification: book
+        confidence: 0.98
+        role: manuscript
+        evidence:
+          - README.md identifies the book and its 45-chapter plan.
+          - content/ and prompts/ contain chapter and prompt material.
+
+  - id: math
+    name: Math
+    description: >-
+      Adversarial Mathematics From First Principles, an evidence-first
+      investigation programme and developing book.
+    kind: book
+    status: active
+    priority: 3
+    pinned: true
+    display_order: 3
+    current_milestone: MATH01-R1 recorded; physical-claim composition remains open.
+    next_action: Review the unresolved physical-claim composition and cross-prover equivalence obligations.
+    notes: >-
+      MATH01 records kernel and computational evidence in
+      artifacts/math01/report.json. A verification result is not a claim about
+      physical reality and is not automatically a book-completion signal.
+    repositories:
+      - path: 'C:\Projects\math'
+        name: math
+        classification: research_project
+        confidence: 0.98
+        role: manuscript
+        evidence:
+          - README.md describes the evidence-first mathematics framework.
+          - artifacts/math01/report.json is a structured qualification report.
+      - path: 'C:\Projects\math-r1'
+        name: math-r1
+        classification: experiment
+        confidence: 0.82
+        role: supporting_experiment
+        evidence:
+          - Shares the MATH01 README and pyproject shape with the primary repository.
+          - Treated as a supporting experiment rather than a duplicate application.

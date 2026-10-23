@@ -1,0 +1,306 @@
+# Shipped application defaults.
+#
+# These are inserted only when an application ID does not already exist.
+# Edits in Mission Control are stored in SQLite and always win over this file.
+# A launch definition marked enabled: false is deliberately not actionable
+# until a person verifies it.
+
+applications:
+  - id: next
+    name: Next
+    description: Research discovery, experiments, evidence and directions worth pursuing next.
+    category: research
+    icon: "N"
+    tags: [research, discovery, evidence]
+    enabled: true
+    pinned: true
+    display_order: 10
+    repository_path: 'C:\Projects\next'
+    documentation_paths:
+      - 'C:\Projects\next\docs'
+    integration:
+      adapter: next
+      enabled: true
+      config:
+        database_path: 'C:\Projects\next\data\next.db'
+        limit: 8
+    relationships:
+      projects: [language, inference, math]
+      outcomes: [books, ai-business]
+    control_policy:
+      allow_launch: true
+      confirmation_required: false
+    launch_definitions: []
+    source: default
+
+  - id: cocoder
+    name: CoCoder
+    description: Evidence-backed cold review of code changes.
+    category: quality
+    icon: "C"
+    tags: [code-review, verification, quality]
+    enabled: true
+    pinned: true
+    display_order: 20
+    repository_path: 'C:\Projects\cocoder'
+    documentation_paths:
+      - 'C:\Projects\cocoder\README.md'
+    integration:
+      adapter: cocoder
+      enabled: true
+      config:
+        review_json_path: ''
+    relationships:
+      projects: [language, math, inference]
+      outcomes: [books, ai-business]
+    control_policy:
+      allow_launch: true
+      confirmation_required: false
+    launch_definitions:
+      - id: cocoder-review-artifact
+        name: Review a repository (CLI)
+        launch_type: none
+        arguments: []
+        env_names: []
+        health_type: none
+        is_primary: true
+        enabled: false
+        verified: false
+        verification_note: >-
+          The CLI is verified (cocoder review --format json --output FILE), but
+          a repository, base and head must be chosen before a launch is meaningful.
+          Configure a bounded review command rather than a generic launcher.
+    source: default
+
+  - id: work
+    name: Work
+    description: Commercial opportunities, qualification, pursuit readiness and income outcomes.
+    category: commercial
+    icon: "W"
+    tags: [income, opportunities, clients, employment]
+    enabled: true
+    pinned: true
+    display_order: 30
+    repository_path: 'C:\Projects\work'
+    documentation_paths:
+      - 'C:\Projects\work\README.md'
+      - 'C:\Projects\work\docs\USAGE.md'
+    integration:
+      adapter: work
+      enabled: false
+      config: {}
+    relationships:
+      projects: [language, inference, math]
+      outcomes: [ai-business, programmer-ie]
+    control_policy:
+      allow_launch: true
+      confirmation_required: false
+    launch_definitions:
+      - id: work-dashboard
+        name: Work web dashboard
+        launch_type: server
+        executable: work
+        arguments: [web, --host, 127.0.0.1, --port, '8765']
+        working_directory: 'C:\Projects\work'
+        env_names: [WORK_DATABASE_URL]
+        browser_url: http://127.0.0.1:8765/
+        health_type: http
+        health_url: http://127.0.0.1:8765/
+        expected_port: 8765
+        is_primary: true
+        enabled: false
+        verified: false
+        verification_note: >-
+          Documented command, but not verified on this machine. Requires an
+          installed Work CLI, PostgreSQL and WORK_DATABASE_URL. No credentials
+          are stored by Mission Control.
+        shutdown_behavior: terminate
+    source: default
+
+  - id: writer
+    name: Writer
+    description: Context-engineering runtime and CLI for AI-assisted long-form writing.
+    category: writing
+    icon: "Wr"
+    tags: [books, writing, editorial]
+    enabled: true
+    pinned: true
+    display_order: 40
+    repository_path: 'C:\Projects\writer'
+    documentation_paths:
+      - 'C:\Projects\writer\README.md'
+      - 'C:\Projects\writer\docs\cli\INDEX.md'
+    integration:
+      adapter: null
+      enabled: false
+      config: {}
+    relationships:
+      projects: [language, inference]
+      outcomes: [books, programmer-ie]
+    control_policy:
+      allow_launch: true
+      confirmation_required: false
+    launch_definitions: []
+    source: default
+
+  - id: improve
+    name: Improve
+    description: Evidence-driven improvement of book manuscripts and published knowledge.
+    category: writing
+    icon: "I"
+    tags: [books, research, evidence]
+    enabled: true
+    pinned: false
+    display_order: 50
+    repository_path: 'C:\Projects\improve'
+    documentation_paths:
+      - 'C:\Projects\improve\README.md'
+    integration:
+      adapter: null
+      enabled: false
+      config: {}
+    relationships:
+      projects: [language, inference, math]
+      outcomes: [books]
+    control_policy:
+      allow_launch: true
+      confirmation_required: false
+    launch_definitions: []
+    source: default
+
+  - id: bookbuilder
+    name: BookBuilder
+    description: Reproducible EPUB and PDF artifacts from Markdown chapters via Pandoc.
+    category: publishing
+    icon: "B"
+    tags: [publishing, epub, pdf]
+    enabled: true
+    pinned: false
+    display_order: 60
+    repository_path: 'C:\Projects\bookbuilder'
+    documentation_paths:
+      - 'C:\Projects\bookbuilder\README.md'
+    integration:
+      adapter: null
+      enabled: false
+      config: {}
+    relationships:
+      projects: [language, inference, math]
+      outcomes: [books, programmer-ie]
+    control_policy:
+      allow_launch: true
+      confirmation_required: true
+    launch_definitions:
+      - id: bookbuilder-build
+        name: Build configured book
+        launch_type: command
+        executable: bookbuilder
+        arguments: [build]
+        working_directory: ''
+        env_names: []
+        health_type: none
+        is_primary: true
+        enabled: false
+        verified: false
+        verification_note: >-
+          Verified CLI shape (bookbuilder build --config PATH), but each book
+          needs its own working directory and config. Configure deliberately;
+          builds overwrite publishing artifacts.
+        shutdown_behavior: wait
+    source: default
+
+  - id: worker
+    name: Worker
+    description: Thin gateway to the OpenCode applied-AI runtime.
+    category: execution
+    icon: "Wk"
+    tags: [execution, gateway, opencode]
+    enabled: true
+    pinned: true
+    display_order: 70
+    repository_path: 'C:\Projects\worker'
+    documentation_paths:
+      - 'C:\Projects\worker\README.md'
+    integration:
+      adapter: worker
+      enabled: true
+      config:
+        base_url: http://127.0.0.1:7317
+        timeout_seconds: 2
+    relationships:
+      projects: [language, inference, math]
+      outcomes: [ai-business]
+    control_policy:
+      allow_launch: true
+      confirmation_required: true
+    launch_definitions:
+      - id: worker-serve
+        name: Worker server
+        launch_type: server
+        executable: bun
+        arguments: [src/cli/cli.ts, serve]
+        working_directory: 'C:\Projects\worker'
+        env_names: []
+        browser_url: http://127.0.0.1:7317/
+        health_type: http
+        health_url: http://127.0.0.1:7317/health
+        expected_port: 7317
+        is_primary: true
+        enabled: false
+        verified: false
+        verification_note: >-
+          Documented as `bun src/cli/cli.ts serve`. Not launched during
+          acceptance because it can execute model work and may incur cost.
+        shutdown_behavior: terminate
+    source: default
+
+  - id: stephanie
+    name: Stephanie
+    description: Research hypothesis generation, critique, ranking and evolution.
+    category: research
+    icon: "S"
+    tags: [research, hypotheses, local-ai]
+    enabled: true
+    pinned: false
+    display_order: 80
+    repository_path: 'C:\Projects\stephanie'
+    documentation_paths:
+      - 'C:\Projects\stephanie\README.md'
+    integration:
+      adapter: null
+      enabled: false
+      config: {}
+    relationships:
+      projects: [language, inference, math]
+      outcomes: [books, ai-business]
+    control_policy:
+      allow_launch: true
+      confirmation_required: true
+    launch_definitions: []
+    source: default
+
+  - id: workbench
+    name: Workbench
+    description: Human-owned context workbench for paragraph-level book editing.
+    category: writing
+    icon: "Wb"
+    tags: [books, editing, context]
+    enabled: true
+    pinned: false
+    display_order: 90
+    repository_path: 'C:\Projects\workbench'
+    documentation_paths:
+      - 'C:\Projects\workbench\README.md'
+      - 'C:\Projects\workbench\docs\contract.md'
+    integration:
+      adapter: null
+      enabled: false
+      config: {}
+    relationships:
+      projects: [language]
+      outcomes: [books]
+    control_policy:
+      allow_launch: true
+      confirmation_required: false
+    launch_definitions: []
+    source: default
