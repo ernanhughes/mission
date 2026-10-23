@@ -1,0 +1,274 @@
+{
+  "captured_at": "2026-10-23T19:42:02.446833+00:00",
+  "roots": [
+    "C:\\Projects",
+    "C:\\books"
+  ],
+  "last_scan": {
+    "status": "complete",
+    "started_at": "2026-10-23T18:38:28.187568+00:00",
+    "finished_at": "2026-10-23T18:38:31.502622+00:00",
+    "counts": {
+      "book": 41,
+      "supporting_repository": 12,
+      "research_project": 8,
+      "generated_artifact": 1,
+      "executable_application": 14,
+      "library": 14,
+      "unknown": 4,
+      "publishing_site": 1,
+      "background_service": 2,
+      "experiment": 1
+    },
+    "candidate_count": 98,
+    "excluded_count": 6,
+    "scanned_directories": 4,
+    "elapsed_seconds": 3.241,
+    "truncated": false,
+    "cancelled": false
+  },
+  "candidate_records": 98,
+  "unlinked_candidates": 84,
+  "linked_candidates": 14,
+  "exclusion_patterns": [
+    ".git",
+    ".hg",
+    ".svn",
+    "node_modules",
+    ".venv",
+    "venv",
+    "__pycache__",
+    ".pytest_cache",
+    ".ruff_cache",
+    ".mypy_cache",
+    ".next",
+    "dist",
+    "build",
+    "coverage",
+    ".coverage",
+    "*.egg-info",
+    "*-review-pack",
+    "*-review-pack-v3",
+    "*-bundles",
+    "p1-runs",
+    "worker-smoke",
+    "*.tmp",
+    "*.log"
+  ],
+  "samples": [
+    {
+      "name": "workbench",
+      "classification": "book",
+      "confidence": 0.8,
+      "path": "C:\\Projects\\workbench",
+      "candidate": false
+    },
+    {
+      "name": "stephanie",
+      "classification": "background_service",
+      "confidence": 0.82,
+      "path": "C:\\Projects\\stephanie",
+      "candidate": false
+    },
+    {
+      "name": "worker",
+      "classification": "executable_application",
+      "confidence": 0.72,
+      "path": "C:\\Projects\\worker",
+      "candidate": false
+    },
+    {
+      "name": "bookbuilder",
+      "classification": "book",
+      "confidence": 0.8,
+      "path": "C:\\Projects\\bookbuilder",
+      "candidate": false
+    },
+    {
+      "name": "improve",
+      "classification": "book",
+      "confidence": 0.8,
+      "path": "C:\\Projects\\improve",
+      "candidate": false
+    },
+    {
+      "name": "writer",
+      "classification": "library",
+      "confidence": 0.7,
+      "path": "C:\\Projects\\writer",
+      "candidate": false
+    },
+    {
+      "name": "work",
+      "classification": "executable_application",
+      "confidence": 0.85,
+      "path": "C:\\Projects\\work",
+      "candidate": false
+    },
+    {
+      "name": "cocoder",
+      "classification": "executable_application",
+      "confidence": 0.85,
+      "path": "C:\\Projects\\cocoder",
+      "candidate": false
+    },
+    {
+      "name": "next",
+      "classification": "executable_application",
+      "confidence": 0.85,
+      "path": "C:\\Projects\\next",
+      "candidate": false
+    },
+    {
+      "name": "math-r1",
+      "classification": "book",
+      "confidence": 0.94,
+      "path": "C:\\Projects\\math-r1",
+      "candidate": false
+    },
+    {
+      "name": "math",
+      "classification": "book",
+      "confidence": 0.94,
+      "path": "C:\\Projects\\math",
+      "candidate": false
+    },
+    {
+      "name": "inference",
+      "classification": "book",
+      "confidence": 0.94,
+      "path": "C:\\books\\inference",
+      "candidate": false
+    },
+    {
+      "name": "project-language",
+      "classification": "book",
+      "confidence": 0.8,
+      "path": "C:\\Projects\\project-language",
+      "candidate": false
+    },
+    {
+      "name": "language",
+      "classification": "book",
+      "confidence": 0.94,
+      "path": "C:\\Projects\\language",
+      "candidate": false
+    },
+    {
+      "name": "zeromodel-demos",
+      "classification": "research_project",
+      "confidence": 0.78,
+      "path": "C:\\Projects\\zeromodel-demos",
+      "candidate": true
+    },
+    {
+      "name": "zeromodel",
+      "classification": "research_project",
+      "confidence": 0.78,
+      "path": "C:\\Projects\\zeromodel",
+      "candidate": true
+    },
+    {
+      "name": "youtube-videos",
+      "classification": "book",
+      "confidence": 0.8,
+      "path": "C:\\Projects\\youtube-videos",
+      "candidate": true
+    },
+    {
+      "name": "video",
+      "classification": "executable_application",
+      "confidence": 0.85,
+      "path": "C:\\Projects\\video",
+      "candidate": true
+    },
+    {
+      "name": "verity",
+      "classification": "library",
+      "confidence": 0.7,
+      "path": "C:\\Projects\\verity",
+      "candidate": true
+    },
+    {
+      "name": "translator",
+      "classification": "book",
+      "confidence": 0.8,
+      "path": "C:\\Projects\\translator",
+      "candidate": true
+    },
+    {
+      "name": "tmy",
+      "classification": "executable_application",
+      "confidence": 0.85,
+      "path": "C:\\Projects\\tmy",
+      "candidate": true
+    },
+    {
+      "name": "thought",
+      "classification": "book",
+      "confidence": 0.94,
+      "path": "C:\\Projects\\thought",
+      "candidate": true
+    },
+    {
+      "name": "steward",
+      "classification": "executable_application",
+      "confidence": 0.85,
+      "path": "C:\\Projects\\steward",
+      "candidate": true
+    },
+    {
+      "name": "spec-gap-experiment",
+      "classification": "experiment",
+      "confidence": 0.72,
+      "path": "C:\\Projects\\spec-gap-experiment",
+      "candidate": true
+    },
+    {
+      "name": "smarter",
+      "classification": "research_project",
+      "confidence": 0.78,
+      "path": "C:\\Projects\\smarter",
+      "candidate": true
+    },
+    {
+      "name": "sidecar",
+      "classification": "executable_application",
+      "confidence": 0.85,
+      "path": "C:\\Projects\\sidecar",
+      "candidate": true
+    },
+    {
+      "name": "setanta-morrigan",
+      "classification": "library",
+      "confidence": 0.7,
+      "path": "C:\\Projects\\setanta-morrigan",
+      "candidate": true
+    },
+    {
+      "name": "relate",
+      "classification": "book",
+      "confidence": 0.8,
+      "path": "C:\\Projects\\relate",
+      "candidate": true
+    },
+    {
+      "name": "project-memory",
+      "classification": "book",
+      "confidence": 0.8,
+      "path": "C:\\Projects\\project-memory",
+      "candidate": true
+    },
+    {
+      "name": "project-context-pi",
+      "classification": "research_project",
+      "confidence": 0.78,
+      "path": "C:\\Projects\\project-context-pi",
+      "candidate": true
+    }
+  ],
+  "generated": [
+    "digital-life-demo"
+  ],
+  "note": "Classification is advisory. Data comes from the real local scan; no launch commands are created by discovery."
+}

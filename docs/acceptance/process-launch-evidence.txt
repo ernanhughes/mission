@@ -1,0 +1,26 @@
+Mission Control — real process launch evidence
+Python executable: C:\Users\ernan\AppData\Roaming\uv\python\cpython-3.13.3-windows-x86_64-none\python.exe
+Fixture: C:\Projects\mission\backend\tests\fixtures\managed_process.py
+
+POST /api/applications -> 201
+POST /api/applications/acceptance-process/launch -> 201
+process_id=proc-21757f6b38ac46f6 pid=50796 status=running
+
+--- captured log ---
+Mission Control managed process proc-21757f6b38ac46f6
+Application: Acceptance Process (acceptance-process)
+Command: C:\Users\ernan\AppData\Roaming\uv\python\cpython-3.13.3-windows-x86_64-none\python.exe managed_process.py acceptance
+Working directory: C:\Projects\mission\backend\tests\fixtures
+Started: 2026-10-23T19:42:13.547284+00:00
+Environment: allowlisted Windows variables plus explicitly named variables; values omitted.
+---
+fixture-start pid=50796
+fixture-cwd=C:\Projects\mission\backend\tests\fixtures
+fixture-arg=acceptance
+fixture-tick
+--- end log ---
+
+application status while running: running / managed
+POST /api/processes/proc-21757f6b38ac46f6/stop -> 200 status=stopped
+final process status: stopped
+dashboard health: {'status': 'ok', 'version': '0.1.0', 'database': 'ok', 'schema_version': 1, 'ai_enabled': False, 'monitor_enabled': False}

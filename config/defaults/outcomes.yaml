@@ -1,0 +1,25 @@
+outcomes:
+  - id: programmer-ie
+    name: programmer.ie
+    description: The author's publishing and professional presence.
+    status: active
+    url: https://programmer.ie
+    notes: >-
+      The outcome is the publishing destination, not a repository name or a
+      domain alias. Mission Control preserves this distinction.
+  - id: books
+    name: Books and publishing
+    description: Finished, reviewed and publishable books and their artifacts.
+    status: active
+    notes: Includes Language, Inference and Math.
+  - id: ai-business
+    name: AI business and showcase
+    description: Applied-AI capability demonstrations that can support paid work.
+    status: exploratory
+    notes: A showcase is not evidence of income.
+  - id: zeromodel
+    name: ZeroModel
+    description: Product and research direction associated with ZeroModel.
+    status: exploratory
+    url: https://zeromodel.org
+    notes: Branding is configured explicitly rather than inferred from a directory.

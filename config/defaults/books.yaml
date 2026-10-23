@@ -1,0 +1,43 @@
+books:
+  - id: book-language
+    project_id: language
+    title: 'Language: When Intelligence Enters the Channel'
+    status: editorial_review
+    current_milestone: Author review of five editorial checkpoints, then a publication decision.
+    next_action: Read the five author-review checkpoints and record the publication decision.
+    manuscript_paths:
+      - 'C:\Projects\language\content\books\language'
+      - 'C:\Projects\language\planning\STATUS.md'
+    implementation_paths:
+      - 'C:\Projects\project-language'
+    published_url: null
+    local_url: null
+    quality_review_state: pending
+  - id: book-inference
+    project_id: inference
+    title: 'Inference From First Principles'
+    status: drafting
+    current_milestone: Chapters 01-28 have starter manuscripts; 29-45 remain prompt-only.
+    next_action: Choose the next chapter to draft from the 29-45 research dossiers.
+    manuscript_paths:
+      - 'C:\books\inference'
+    implementation_paths: []
+    published_url: null
+    local_url: null
+    quality_review_state: not_reviewed
+  - id: book-math
+    project_id: math
+    title: 'Adversarial Mathematics From First Principles'
+    status: verification
+    current_milestone: MATH01-R1 recorded; physical-claim composition remains open.
+    next_action: Review the unresolved physical-claim composition and cross-prover equivalence obligations.
+    manuscript_paths:
+      - 'C:\Projects\math\book'
+      - 'C:\Projects\math\docs\research\MATH01-status.md'
+      - 'C:\Projects\math\artifacts\math01\report.json'
+    implementation_paths:
+      - 'C:\Projects\math\src\math_engine'
+      - 'C:\Projects\math-r1'
+    published_url: null
+    local_url: null
+    quality_review_state: pending
