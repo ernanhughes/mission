@@ -14,7 +14,6 @@ import json
 import os
 import re
 import subprocess
-import sys
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
@@ -33,17 +32,26 @@ from mission_control.models import (
     Decision,
     ExperimentWorkflow,
     IntegrationRecord,
+    LanguageObservation,
     Project,
     WorkflowEvent,
 )
 from mission_control.persistence.db import Database, now_iso
-from mission_control.schemas import ExperimentWorkflowRead, WorkflowEventRead
+from mission_control.schemas import (
+    ExperimentWorkflowRead,
+    LanguageObservationRead,
+    WorkflowEventRead,
+)
+from mission_control.workflows.sandbox import (
+    DockerSandboxRunner,
+    SandboxRunner,
+    SandboxUnavailable,
+)
+from mission_control.workflows.templates import TemplateSpec, get_template
 
-TEMPLATE = "trace_reduce_v1"
+TRACE_TEMPLATE = "trace_reduce_v1"
 EXPORT_SCHEMA = "next-research-export-v1"
 PATCH_SCHEMA = "mc10.patch.v1"
-SCOPE = ["tracelite/reduce.py"]
-SANDBOX_RELATIVE = Path("experiments") / "tracelite-spike"
 DEFAULT_WORKER_URL = "http://127.0.0.1:7317"
 DEFAULT_WORKER_MODEL = "qwen2.5-coder:latest"
 DEFAULT_WORKER_BACKEND = "direct"
@@ -98,61 +106,52 @@ class WorkflowService:
         integration_service: IntegrationService,
         *,
         worker_client: WorkerClient | None = None,
+        sandbox_runner: SandboxRunner | None = None,
     ) -> None:
         self.database = database
         self.settings = settings
         self.integration_service = integration_service
         self.worker_client = worker_client
+        self.sandbox = sandbox_runner or DockerSandboxRunner()
+        self._active_workflows: set[str] = set()
 
     # --------------------------------------------------------------- creation
     def create(
         self,
-        record_id: str,
-        template: str = TEMPLATE,
+        record_id: str | None,
+        template: str = TRACE_TEMPLATE,
         project_id: str | None = None,
         *,
         force_new: bool = False,
     ) -> ExperimentWorkflowRead:
-        if template != TEMPLATE:
-            raise ValidationProblem(f"Unsupported workflow template: {template}")
+        try:
+            spec = get_template(template)
+        except ValueError as exc:
+            raise ValidationProblem(str(exc)) from exc
         with self.database.session() as session:
-            record = session.get(IntegrationRecord, record_id)
-            if (
-                record is None
-                or record.application_id != "next"
-                or record.resource_type != "next_opportunity"
-            ):
-                raise NotFound("Next opportunity not found")
-            export_path = self._export_path()
-            export = self._load_export(export_path)
-            candidate = self._find_candidate(export, record.external_id)
-            if candidate is None:
-                raise ValidationProblem(
-                    "The Next research export does not contain this opportunity. "
-                    "Refresh the next-research-export-v1 file first."
-                )
-            repository = self._sandbox_path()
+            source = self._source_for_create(session, spec, record_id)
+            repository = self._sandbox_path(spec)
             self._require_repository(repository)
-            baseline_commit = self._prepare_baseline(repository, force_new=force_new)
-            baseline_hash = self._scope_hash(repository)
+            baseline_commit = self._prepare_baseline(
+                repository, spec, force_new=force_new
+            )
+            baseline_hash = self._scope_hash(repository, spec.scope)
             proposal = self._proposal(
-                candidate=candidate,
-                record=record,
+                spec=spec,
+                source=source,
                 repository=repository,
                 baseline_commit=baseline_commit,
                 baseline_hash=baseline_hash,
-                export_path=export_path,
-                export=export,
                 project_id=project_id,
             )
-            idempotency_key = self._idempotency_key(record.external_id, template)
+            idempotency_key = self._idempotency_key(source["source_id"], template)
             if force_new:
                 idempotency_key = f"{idempotency_key}#retry-{uuid.uuid4().hex[:12]}"
             else:
                 existing = session.scalar(
                     select(ExperimentWorkflow)
                     .where(
-                        ExperimentWorkflow.next_external_id == record.external_id,
+                        ExperimentWorkflow.next_external_id == source["source_id"],
                         ExperimentWorkflow.template == template,
                     )
                     .order_by(desc(ExperimentWorkflow.created_at))
@@ -162,19 +161,14 @@ class WorkflowService:
                     return self._read(session, existing)
             workflow = ExperimentWorkflow(
                 id=f"wf-{uuid.uuid4().hex[:16]}",
-                title=f"TraceLite proxy: {record.title[:220]}",
+                title=f"{spec.title}: {source['title'][:220]}",
                 template=template,
                 status="proposed",
-                next_record_id=record.id,
-                next_external_id=record.external_id,
-                next_title=record.title,
-                project_id=project_id or record.project_id,
-                next_evidence={
-                    "schema": export.get("schema"),
-                    "generated_at": export.get("generated_at"),
-                    "export_path": str(export_path),
-                    "opportunity": self._evidence_subset(candidate),
-                },
+                next_record_id=source["record_id"],
+                next_external_id=source["source_id"],
+                next_title=source["title"],
+                project_id=project_id or source["project_id"],
+                next_evidence=source["evidence"],
                 proposal=proposal,
                 language_intention=self._language_intention(proposal),
                 repository_path=str(repository),
@@ -197,14 +191,15 @@ class WorkflowService:
                 session,
                 workflow,
                 "research_imported",
-                "next",
-                f"Imported {record.external_id} from {EXPORT_SCHEMA}.",
+                source["source_kind"],
+                f"Imported {source['source_id']} from {spec.source_contract}.",
                 {
-                    "schema": export.get("schema"),
-                    "generated_at": export.get("generated_at"),
-                    "export_path": str(export_path),
+                    "schema": source["evidence"].get("schema"),
+                    "generated_at": source["evidence"].get("generated_at"),
+                    "export_path": source["evidence"].get("export_path"),
+                    "source_kind": source["source_kind"],
                 },
-                source_ref=str(export_path),
+                source_ref=source["evidence"].get("export_path"),
             )
             self._event(
                 session,
@@ -219,7 +214,7 @@ class WorkflowService:
                 workflow,
                 "baseline_observed",
                 "sandbox",
-                "Observed the baseline tests and reduction measurement.",
+                "Observed the baseline tests and measurement.",
                 proposal.get("baseline", {}),
             )
             return self._read(session, workflow)
@@ -269,6 +264,52 @@ class WorkflowService:
     async def execute(
         self, workflow_id: str, *, confirm: bool
     ) -> ExperimentWorkflowRead:
+        if workflow_id in self._active_workflows:
+            raise Conflict("This workflow is already executing or reviewing")
+        self._active_workflows.add(workflow_id)
+        try:
+            return await self._execute_impl(workflow_id, confirm=confirm)
+        finally:
+            self._active_workflows.discard(workflow_id)
+
+    def cancel(self, workflow_id: str, reason: str = "") -> ExperimentWorkflowRead:
+        with self.database.session() as session:
+            workflow = self._require(session, workflow_id)
+            if workflow.status == "cancelled":
+                return self._read(session, workflow)
+            if workflow.final_decision is not None:
+                raise Conflict("A decided workflow cannot be cancelled")
+            if workflow.status in {"proposed", "approved"}:
+                workflow.cancel_requested = True
+                workflow.cancelled_at = now_iso()
+                workflow.status = "cancelled"
+                workflow.updated_at = now_iso()
+                self._event(
+                    session,
+                    workflow,
+                    "cancelled",
+                    "user",
+                    "Workflow cancelled before execution.",
+                    {"reason": reason[:1000]},
+                )
+                return self._read(session, workflow)
+            if workflow.status in {"executing", "reviewing"}:
+                workflow.cancel_requested = True
+                workflow.updated_at = now_iso()
+                self._event(
+                    session,
+                    workflow,
+                    "cancellation_requested",
+                    "user",
+                    "Cancellation requested; it will be observed at the next safe boundary.",
+                    {"reason": reason[:1000]},
+                )
+                return self._read(session, workflow)
+            raise Conflict(f"Workflow cannot be cancelled from status {workflow.status}")
+
+    async def _execute_impl(
+        self, workflow_id: str, *, confirm: bool
+    ) -> ExperimentWorkflowRead:
         if not confirm:
             raise Conflict("Execution requires explicit confirmation")
         with self.database.session() as session:
@@ -281,6 +322,8 @@ class WorkflowService:
                 "decided",
             }:
                 return self._read(session, workflow)
+            if workflow.cancel_requested:
+                return self._mark_cancelled(session, workflow, "Cancelled before execution")
             if workflow.status != "approved":
                 raise Conflict(f"Workflow cannot execute from status {workflow.status}")
             self._assert_approval_current(workflow)
@@ -300,6 +343,7 @@ class WorkflowService:
             # Do not hold a SQLite write transaction while Worker is running.
             session.commit()
             repository = Path(workflow.repository_path)
+            spec = get_template(workflow.template)
             proposal = dict(workflow.proposal or {})
             prompt = str(proposal.get("prompt") or "")
             worker = dict(proposal.get("worker") or {})
@@ -359,6 +403,11 @@ class WorkflowService:
                 },
             )
             session.commit()
+            session.refresh(workflow)
+            if workflow.cancel_requested:
+                return self._mark_cancelled(
+                    session, workflow, "Cancelled after Worker response; patch was not applied"
+                )
             if workflow.worker_status in {"BLOCKED", "FAILED"}:
                 workflow.status = "failed"
                 workflow.failure = (
@@ -375,9 +424,9 @@ class WorkflowService:
                 )
                 return self._read(session, workflow)
             try:
-                patch = self._parse_patch(str(result.get("output") or ""))
-                self._validate_patch(patch)
-                self._apply_patch(repository, patch)
+                patch = self._parse_patch(str(result.get("output") or ""), spec)
+                self._validate_patch(patch, spec)
+                self._apply_patch(repository, patch, spec)
                 workflow.patch = {
                     "schema": patch["schema"],
                     "summary": patch.get("summary", ""),
@@ -413,7 +462,26 @@ class WorkflowService:
                     {"error": workflow.failure},
                 )
                 return self._read(session, workflow)
-            measurement = self._measure(repository, baseline=proposal.get("baseline", {}))
+            try:
+                measurement = self._measure(
+                    spec, repository, baseline=proposal.get("baseline", {}), workflow=workflow
+                )
+            except Exception as exc:
+                workflow.status = "failed"
+                workflow.failure = (
+                    f"Sandbox measurement failed: {exc.__class__.__name__}: "
+                    f"{str(exc)[:1500]}"
+                )
+                workflow.updated_at = now_iso()
+                self._event(
+                    session,
+                    workflow,
+                    "execution_failed",
+                    "sandbox",
+                    "Deterministic measurement could not be completed.",
+                    {"error": workflow.failure},
+                )
+                return self._read(session, workflow)
             workflow.measurement = measurement
             workflow.updated_at = now_iso()
             self._event(
@@ -422,15 +490,56 @@ class WorkflowService:
                 "measurement_recorded",
                 "sandbox",
                 (
-                    "Tests passed and the reduction target was met."
+                    "Tests passed and the measurement target was met."
                     if measurement.get("passed")
                     else "The experiment did not meet all deterministic criteria."
                 ),
                 measurement,
             )
+            observation = measurement.get("language_observation") or {}
+            if observation:
+                session.add(
+                    LanguageObservation(
+                        id=f"lobs-{uuid.uuid4().hex[:16]}",
+                        workflow_id=workflow.id,
+                        schema=str(observation.get("schema") or "language.observation.v1"),
+                        template=str(observation.get("template") or spec.id),
+                        intention_ref=str(observation.get("intention_ref") or ""),
+                        subject=str(observation.get("subject") or ""),
+                        properties=list(observation.get("properties") or []),
+                        measurement_method=observation.get("measurement_method"),
+                        evidence=list(observation.get("evidence") or []),
+                        provenance=dict(observation.get("provenance") or {}),
+                        uncertainty=list(observation.get("uncertainty") or []),
+                        constraint_result=str(
+                            observation.get("constraint_result") or "unknown"
+                        ),
+                        evaluation_version=str(
+                            observation.get("evaluation_version")
+                            or "language.observation.v1"
+                        ),
+                        created_at=now_iso(),
+                    )
+                )
+                self._event(
+                    session,
+                    workflow,
+                    "language_observation_recorded",
+                    "language",
+                    (
+                        "Recorded language.observation.v1 without changing the "
+                        "intention or controlling execution."
+                    ),
+                    observation,
+                )
             session.commit()
+            session.refresh(workflow)
+            if workflow.cancel_requested:
+                return self._mark_cancelled(
+                    session, workflow, "Cancelled after measurement; result was not committed"
+                )
             try:
-                commit = self._commit(repository, workflow)
+                commit = self._commit(repository, workflow, spec)
                 workflow.result_commit = commit
                 self._event(
                     session,
@@ -460,6 +569,10 @@ class WorkflowService:
     async def review(self, workflow_id: str) -> ExperimentWorkflowRead:
         with self.database.session() as session:
             workflow = self._require(session, workflow_id)
+            if workflow.cancel_requested:
+                return self._mark_cancelled(
+                    session, workflow, "Cancelled before CoCoder review"
+                )
             if workflow.review_execution_id and workflow.status in {
                 "reviewed",
                 "review_failed",
@@ -549,6 +662,10 @@ class WorkflowService:
                 return self._read(session, workflow)
         with self.database.session() as session:
             workflow = self._require(session, workflow_id)
+            if workflow.cancel_requested:
+                return self._mark_cancelled(
+                    session, workflow, "Cancelled during CoCoder review"
+                )
             execution = self.integration_service.get_execution(
                 workflow.review_execution_id or ""
             )
@@ -675,6 +792,47 @@ class WorkflowService:
             )
             return self._read(session, workflow)
 
+    def associate_project(
+        self, workflow_id: str, project_id: str | None
+    ) -> ExperimentWorkflowRead:
+        with self.database.session() as session:
+            workflow = self._require(session, workflow_id)
+            if project_id and session.get(Project, project_id) is None:
+                raise NotFound("Project not found")
+            workflow.project_id = project_id
+            workflow.updated_at = now_iso()
+            self._event(
+                session,
+                workflow,
+                "project_associated",
+                "user",
+                f"Associated with project {project_id or 'none'}.",
+                {"project_id": project_id},
+            )
+            return self._read(session, workflow)
+
+    def project_timeline(self, project_id: str) -> dict[str, Any]:
+        with self.database.session() as session:
+            project = session.get(Project, project_id)
+            if project is None:
+                raise NotFound("Project not found")
+            workflows = session.scalars(
+                select(ExperimentWorkflow)
+                .where(ExperimentWorkflow.project_id == project_id)
+                .order_by(desc(ExperimentWorkflow.created_at))
+            ).all()
+            reads = [self._read(session, workflow) for workflow in workflows]
+            observations = [
+                observation
+                for read in reads
+                for observation in read.language_observations
+            ]
+            return {
+                "project_id": project_id,
+                "workflows": reads,
+                "observations": observations,
+            }
+
     # ------------------------------------------------------------------ reads
     def list(self, limit: int = 50) -> list[ExperimentWorkflowRead]:
         with self.database.session() as session:
@@ -709,6 +867,11 @@ class WorkflowService:
             .where(WorkflowEvent.workflow_id == workflow.id)
             .order_by(WorkflowEvent.sequence)
         ).all()
+        observations = session.scalars(
+            select(LanguageObservation)
+            .where(LanguageObservation.workflow_id == workflow.id)
+            .order_by(LanguageObservation.created_at)
+        ).all()
         return ExperimentWorkflowRead(
             id=workflow.id,
             title=workflow.title,
@@ -741,6 +904,8 @@ class WorkflowService:
             final_decision=workflow.final_decision,
             final_reason=workflow.final_reason,
             override_adverse=workflow.override_adverse,
+            cancel_requested=workflow.cancel_requested,
+            cancelled_at=workflow.cancelled_at,
             failure=workflow.failure,
             created_at=workflow.created_at,
             updated_at=workflow.updated_at,
@@ -758,7 +923,49 @@ class WorkflowService:
                 )
                 for event in events
             ],
+            language_observations=[
+                LanguageObservationRead(
+                    id=obs.id,
+                    workflow_id=obs.workflow_id,
+                    schema_name=obs.schema,
+                    template=obs.template,
+                    intention_ref=obs.intention_ref,
+                    subject=obs.subject,
+                    properties=obs.properties,
+                    measurement_method=obs.measurement_method,
+                    evidence=obs.evidence,
+                    provenance=obs.provenance,
+                    uncertainty=obs.uncertainty,
+                    constraint_result=obs.constraint_result,
+                    evaluation_version=obs.evaluation_version,
+                    created_at=obs.created_at,
+                )
+                for obs in observations
+            ],
         )
+
+    def _mark_cancelled(
+        self, session: Session, workflow: ExperimentWorkflow, summary: str
+    ) -> ExperimentWorkflowRead:
+        repository = Path(workflow.repository_path)
+        try:
+            if self._git(repository, "status", "--porcelain").strip():
+                self._git(repository, "checkout", "--", ".")
+        except Exception:
+            pass
+        workflow.status = "cancelled"
+        workflow.cancel_requested = True
+        workflow.cancelled_at = now_iso()
+        workflow.updated_at = now_iso()
+        self._event(
+            session,
+            workflow,
+            "cancelled",
+            "user",
+            summary,
+            {"cancel_requested": True},
+        )
+        return self._read(session, workflow)
 
     def _event(
         self,
@@ -794,6 +1001,90 @@ class WorkflowService:
         )
         session.flush()
 
+    def _source_for_create(
+        self, session: Session, spec: TemplateSpec, record_id: str | None
+    ) -> dict[str, Any]:
+        if spec.source_kind == "next_export":
+            if not record_id:
+                raise ValidationProblem("record_id is required for a Next workflow template")
+            record = session.get(IntegrationRecord, record_id)
+            if (
+                record is None
+                or record.application_id != "next"
+                or record.resource_type != "next_opportunity"
+            ):
+                raise NotFound("Next opportunity not found")
+            export_path = self._export_path()
+            export = self._load_export(export_path)
+            candidate = self._find_candidate(export, record.external_id)
+            if candidate is None:
+                raise ValidationProblem(
+                    "The Next research export does not contain this opportunity. "
+                    "Refresh the next-research-export-v1 file first."
+                )
+            return {
+                "source_id": record.external_id,
+                "title": record.title,
+                "record_id": record.id,
+                "project_id": record.project_id,
+                "source_kind": "next",
+                "evidence": {
+                    "schema": export.get("schema"),
+                    "source_kind": "next",
+                    "generated_at": export.get("generated_at"),
+                    "export_path": str(export_path),
+                    "opportunity": self._evidence_subset(candidate),
+                },
+                "candidate": candidate,
+            }
+        repository = self._sandbox_path(spec)
+        evidence_path = repository / "evidence.json"
+        if not evidence_path.is_file():
+            raise ValidationProblem(
+                f"Fixture evidence manifest not found: {evidence_path}"
+            )
+        try:
+            fixture = json.loads(evidence_path.read_text(encoding="utf-8"))
+        except (OSError, ValueError) as exc:
+            raise ValidationProblem(f"Fixture evidence is unreadable: {exc}") from exc
+        if fixture.get("schema") != spec.source_contract:
+            raise ValidationProblem(
+                f"Fixture evidence schema must be {spec.source_contract}, "
+                f"got {fixture.get('schema')!r}"
+            )
+        expected = fixture.get("expected") or {}
+        opportunity = {
+            "id": fixture.get("id"),
+            "title": fixture.get("title"),
+            "status": "FIXTURE",
+            "queue_type": "fixture",
+            "score": None,
+            "what_discovered": fixture.get("intention"),
+            "evidence": json.dumps(expected, sort_keys=True),
+            "simplest_experiment": "Measure the defined fixture property without altering media.",
+            "falsification": "; ".join(fixture.get("uncertainty") or []),
+            "evaluation_basis": "local fixture",
+            "uncertainty": fixture.get("uncertainty"),
+            "items": [],
+            "evidence_gaps": None,
+        }
+        return {
+            "source_id": str(fixture.get("id")),
+            "title": str(fixture.get("title") or spec.title),
+            "record_id": None,
+            "project_id": None,
+            "source_kind": "fixture",
+            "evidence": {
+                "schema": fixture.get("schema"),
+                "source_kind": "fixture",
+                "generated_at": fixture.get("generated_at") or now_iso(),
+                "export_path": str(evidence_path),
+                "opportunity": opportunity,
+                "fixture_evidence": fixture,
+            },
+            "candidate": opportunity,
+        }
+
     def _export_path(self) -> Path:
         configured = os.environ.get("MC10_NEXT_EXPORT")
         return (
@@ -825,13 +1116,14 @@ class WorkflowService:
                 return opportunity
         return None
 
-    def _sandbox_path(self) -> Path:
-        configured = os.environ.get("MC10_SANDBOX")
-        return (
-            Path(configured).expanduser().resolve()
-            if configured
-            else (self.settings.data_dir / SANDBOX_RELATIVE).resolve()
-        )
+    def _sandbox_path(self, spec: TemplateSpec) -> Path:
+        env_name = f"MC11_SANDBOX_{spec.id.upper()}"
+        configured = os.environ.get(env_name)
+        if not configured and spec.id == TRACE_TEMPLATE:
+            configured = os.environ.get("MC10_SANDBOX")
+        if configured:
+            return Path(configured).expanduser().resolve()
+        return (self.settings.data_dir / spec.sandbox_relative).resolve()
 
     def _require_repository(self, repository: Path) -> None:
         if not repository.is_dir():
@@ -841,7 +1133,9 @@ class WorkflowService:
         if self._git(repository, "status", "--porcelain").strip():
             raise Conflict("Experiment repository must be clean before creating a workflow")
 
-    def _prepare_baseline(self, repository: Path, *, force_new: bool) -> str:
+    def _prepare_baseline(
+        self, repository: Path, spec: TemplateSpec, *, force_new: bool
+    ) -> str:
         """Keep every attempt anchored to the same clean baseline.
 
         Result commits are tagged by workflow id before a retry resets the
@@ -849,7 +1143,7 @@ class WorkflowService:
         starts from the original failing code.
         """
 
-        baseline_tag = "mc10-baseline"
+        baseline_tag = spec.baseline_tag
         try:
             baseline = self._git(
                 repository, "rev-parse", "--verify", f"refs/tags/{baseline_tag}"
@@ -864,7 +1158,7 @@ class WorkflowService:
                     repository,
                     "tag",
                     "-f",
-                    f"mc10-before-retry-{uuid.uuid4().hex[:10]}",
+                    f"mc11-before-retry-{uuid.uuid4().hex[:10]}",
                     current,
                 )
                 self._git(repository, "reset", "--hard", baseline)
@@ -874,57 +1168,41 @@ class WorkflowService:
     def _proposal(
         self,
         *,
-        candidate: dict[str, Any],
-        record: IntegrationRecord,
+        spec: TemplateSpec,
+        source: dict[str, Any],
         repository: Path,
         baseline_commit: str,
         baseline_hash: str,
-        export_path: Path,
-        export: dict[str, Any],
         project_id: str | None,
     ) -> dict[str, Any]:
-        current_file = (repository / SCOPE[0]).read_text(encoding="utf-8")
-        tests = (repository / "tests" / "test_reduce.py").read_text(encoding="utf-8")
-        baseline = {
-            "tests": self._run_tests(repository),
-            "measurement": self._run_measure(repository),
-            "scope_sha256": baseline_hash,
-        }
-        prompt = self._prompt(candidate, current_file, tests)
+        candidate = source["candidate"]
+        current_file = (repository / spec.scope[0]).read_text(encoding="utf-8")
+        tests = (repository / spec.tests_path).read_text(encoding="utf-8")
+        try:
+            baseline = {
+                "tests": self._run_tests(repository),
+                "measurement": self._run_measure(repository),
+                "scope_sha256": baseline_hash,
+            }
+        except SandboxUnavailable as exc:
+            raise ValidationProblem(str(exc)) from exc
+        prompt = self._prompt(spec, candidate, current_file, tests)
         return {
-            "schema": "mc10.experiment-proposal.v1",
-            "template": TEMPLATE,
-            "objective": (
-                "Implement a bounded trace-reduction proxy for the Next TraceLite "
-                "candidate, changing only tracelite/reduce.py."
-            ),
+            "schema": "mc11.experiment-proposal.v1",
+            "template": spec.id,
+            "template_version": spec.version,
+            "objective": f"Execute the bounded {spec.title} experiment, changing only {spec.scope[0]}.",
             "hypothesis": str(candidate.get("what_discovered") or candidate.get("description") or "")[:2000],
             "source_experiment": str(candidate.get("simplest_experiment") or ""),
             "falsification": str(candidate.get("falsification") or ""),
-            "scope": list(SCOPE),
+            "scope": list(spec.scope),
             "repository_path": str(repository),
             "baseline_commit": baseline_commit,
             "baseline_scope_sha256": baseline_hash,
             "project_id": project_id,
-            "expected_result": (
-                "All sandbox tests pass and the duplicate-heavy fixture is reduced "
-                "from 21 events to 3 events."
-            ),
-            "stop_conditions": [
-                "Worker is unavailable or blocked",
-                "The patch changes a path outside the approved scope",
-                "Generated Python is invalid or uses forbidden operations",
-                "Deterministic tests fail",
-                "The reduction target is not met",
-                "CoCoder reports a high or medium finding",
-                "The approved scope or baseline becomes stale",
-            ],
-            "evaluation_criteria": [
-                "pytest passes in the sandbox",
-                "measure.py exits 0 and reports 21 -> 3 events",
-                "git diff contains exactly the approved scope",
-                "CoCoder reviews the exact result commit",
-            ],
+            "expected_result": spec.expected_result,
+            "stop_conditions": list(spec.stop_conditions),
+            "evaluation_criteria": list(spec.evaluation_criteria),
             "worker": {
                 "backend": DEFAULT_WORKER_BACKEND,
                 "model": os.environ.get("MC10_WORKER_MODEL", DEFAULT_WORKER_MODEL),
@@ -932,36 +1210,46 @@ class WorkflowService:
                 "max_model_calls": 1,
                 "timeout_seconds": 180,
             },
+            "sandbox": self.sandbox.describe(),
             "prompt": prompt,
             "baseline": baseline,
-            "next_export": {
-                "path": str(export_path),
-                "schema": export.get("schema"),
-                "generated_at": export.get("generated_at"),
+            "source_contract": {
+                "kind": spec.source_kind,
+                "contract": spec.source_contract,
+                "path": source["evidence"].get("export_path"),
+                "schema": source["evidence"].get("schema"),
+                "generated_at": source["evidence"].get("generated_at"),
             },
             "provenance": {
-                "next_record_id": record.id,
-                "next_external_id": record.external_id,
-                "next_title": record.title,
-                "next_source_timestamp": record.source_timestamp,
-                "next_observed_at": record.observed_at,
+                "source_id": source["source_id"],
+                "source_title": source["title"],
+                "source_kind": source["source_kind"],
+                "next_record_id": source["record_id"],
             },
         }
 
     def _prompt(
-        self, candidate: dict[str, Any], current_file: str, tests: str
+        self,
+        spec: TemplateSpec,
+        candidate: dict[str, Any],
+        current_file: str,
+        tests: str,
     ) -> str:
-        return f"""You are executing a bounded research experiment derived from the Next candidate "{str(candidate.get('title') or 'TraceLite')[:300]}".
+        algorithm = "\n".join(f"- {item}." for item in spec.worker_algorithm)
+        return f"""You are executing a bounded experiment from the {spec.title} template.
+Source evidence: {str(candidate.get('title') or spec.title)[:300]}
 
-Return ONLY the complete Python file content for {SCOPE[0]}. Do not use markdown fences. Do not add commentary.
+Return ONLY the complete Python file content for {spec.scope[0]}. Do not use markdown fences. Do not add commentary.
 
 Rules:
-- Modify only {SCOPE[0]}.
+- Modify only {spec.scope[0]}.
 - The file must be complete and valid Python.
 - The function must satisfy every test below.
 - Never mutate the input list.
-- Use exactly this algorithm: start with an empty result list; iterate over every event in order; append the event only when the result is empty or the event differs from the last result item; return the result list. Do not append the last event a second time.
+- Use exactly this algorithm:
+{algorithm}
 - Do not add imports unless required.
+- Do not read or write files outside the fixture inputs required by the tests.
 
 Current file:
 {current_file}
@@ -1047,19 +1335,30 @@ Tests:
 
     def _assert_approval_inputs_current(self, workflow: ExperimentWorkflow) -> None:
         repository = Path(workflow.repository_path)
-        self._require_repository(repository)
+        if not repository.is_dir():
+            raise ValidationProblem(f"Experiment repository not found: {repository}")
+        if not (repository / ".git").is_dir():
+            raise ValidationProblem(
+                f"Experiment repository is not a Git repository: {repository}"
+            )
         head = self._git(repository, "rev-parse", "HEAD").strip()
         if head != workflow.baseline_commit:
             raise Conflict(
                 f"Approval is stale: repository HEAD {head[:12]} does not match baseline {workflow.baseline_commit[:12]}"
             )
         expected = str((workflow.proposal or {}).get("baseline_scope_sha256") or "")
-        if expected and self._scope_hash(repository) != expected:
+        spec = self._spec_for_workflow(workflow)
+        if expected and self._scope_hash(repository, spec.scope) != expected:
             raise Conflict("Approval is stale: the approved file changed after proposal creation")
+        if self._git(repository, "status", "--porcelain").strip():
+            raise Conflict("Experiment repository must be clean before execution")
 
-    def _scope_hash(self, repository: Path) -> str:
+    def _spec_for_workflow(self, workflow: ExperimentWorkflow) -> TemplateSpec:
+        return get_template(workflow.template)
+
+    def _scope_hash(self, repository: Path, scope: tuple[str, ...]) -> str:
         digest = hashlib.sha256()
-        for relative in SCOPE:
+        for relative in scope:
             digest.update(relative.encode("utf-8"))
             digest.update(b"\x00")
             digest.update((repository / relative).read_bytes())
@@ -1091,7 +1390,7 @@ Tests:
             "output_sha256": hashlib.sha256(text.encode("utf-8")).hexdigest(),
         }
 
-    def _parse_patch(self, raw: str) -> dict[str, Any]:
+    def _parse_patch(self, raw: str, spec: TemplateSpec) -> dict[str, Any]:
         text = raw.strip()
         fenced = re.search(r"```(?:python|json)?\s*(.*?)```", text, flags=re.I | re.S)
         if fenced:
@@ -1101,8 +1400,9 @@ Tests:
             text = re.sub(r"\s*```$", "", text).strip()
         if not text:
             raise ValueError("Worker output was empty")
-        if "def reduce_trace" in text and not text.lstrip().startswith(("def ", "{")):
-            text = text[text.find("def reduce_trace") :].strip()
+        entrypoint = f"def {spec.entrypoint}"
+        if entrypoint in text and not text.lstrip().startswith(("def ", "{")):
+            text = text[text.find(entrypoint) :].strip()
         if text.startswith("{") and PATCH_SCHEMA in text:
             start, end = text.find("{"), text.rfind("}")
             if start < 0 or end <= start:
@@ -1116,7 +1416,7 @@ Tests:
             item = files[0]
             if not isinstance(item, dict):
                 raise ValueError("Patch file entry must be an object")
-            if item.get("path") not in SCOPE:
+            if item.get("path") not in spec.scope:
                 raise ValueError(
                     f"Patch path is outside approved scope: {item.get('path')!r}"
                 )
@@ -1128,12 +1428,12 @@ Tests:
         # path is needed or trusted.
         return {
             "schema": PATCH_SCHEMA,
-            "files": [{"path": SCOPE[0], "content": text}],
+            "files": [{"path": spec.scope[0], "content": text}],
             "summary": "Worker generated code for the approved file scope.",
-            "expected_result": "Deterministic tests and reduction target pass.",
+            "expected_result": "Deterministic tests and measurement target pass.",
         }
 
-    def _validate_patch(self, patch: dict[str, Any]) -> None:
+    def _validate_patch(self, patch: dict[str, Any], spec: TemplateSpec) -> None:
         content = str(patch["files"][0]["content"])
         try:
             tree = ast.parse(content)
@@ -1146,18 +1446,30 @@ Tests:
                 raise ValueError("Generated Python must not access dunder attributes")
             if isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
                 if node.func.id in FORBIDDEN_CALLS:
-                    raise ValueError(
-                        f"Generated Python calls forbidden function: {node.func.id}"
-                    )
+                    if node.func.id == "open" and spec.allow_read_only_open:
+                        if len(node.args) != 2 or not isinstance(
+                            node.args[1], ast.Constant
+                        ) or node.args[1].value not in {"r", "rb"}:
+                            raise ValueError(
+                                "Generated Python may only open files in read-only mode"
+                            )
+                    else:
+                        raise ValueError(
+                            f"Generated Python calls forbidden function: {node.func.id}"
+                        )
         if not any(
-            isinstance(node, ast.FunctionDef) and node.name == "reduce_trace"
+            isinstance(node, ast.FunctionDef) and node.name == spec.entrypoint
             for node in tree.body
         ):
-            raise ValueError("Generated Python must define reduce_trace")
+            raise ValueError(
+                f"Generated Python must define {spec.entrypoint}"
+            )
 
-    def _apply_patch(self, repository: Path, patch: dict[str, Any]) -> None:
+    def _apply_patch(
+        self, repository: Path, patch: dict[str, Any], spec: TemplateSpec
+    ) -> None:
         relative = str(patch["files"][0]["path"])
-        if relative not in SCOPE:
+        if relative not in spec.scope:
             raise ValueError("Patch path is outside approved scope")
         target = (repository / relative).resolve()
         root = repository.resolve()
@@ -1165,30 +1477,32 @@ Tests:
             raise ValueError("Patch path escaped the repository")
         target.write_text(str(patch["files"][0]["content"]), encoding="utf-8")
         changed = self._git(repository, "diff", "--name-only").splitlines()
-        if sorted(path.strip() for path in changed if path.strip()) != sorted(SCOPE):
+        if sorted(path.strip() for path in changed if path.strip()) != sorted(spec.scope):
             self._git(repository, "checkout", "--", ".")
             raise ValueError(
                 f"Repository changed outside approved scope: {sorted(changed)}"
             )
 
     def _run_tests(self, repository: Path) -> dict[str, Any]:
-        result = self._run(
-            [sys.executable, "-m", "pytest", "-q"],
+        result = self.sandbox.run(
             repository,
-            timeout=90,
+            ["python", "-m", "pytest", "-q", "-p", "no:cacheprovider"],
+            timeout_seconds=90,
         )
         return {
-            "command": "python -m pytest -q",
-            "exit_code": result.returncode,
-            "passed": result.returncode == 0,
+            "command": "python -m pytest -q -p no:cacheprovider",
+            "exit_code": result.exit_code,
+            "passed": result.exit_code == 0 and not result.timed_out,
             "output_tail": (result.stdout + result.stderr)[-4000:],
+            "sandbox": result.limits,
+            "duration_seconds": result.duration_seconds,
         }
 
     def _run_measure(self, repository: Path) -> dict[str, Any]:
-        result = self._run(
-            [sys.executable, "scripts/measure.py"],
+        result = self.sandbox.run(
             repository,
-            timeout=60,
+            ["python", "scripts/measure.py"],
+            timeout_seconds=60,
         )
         measurement: dict[str, Any] = {}
         for line in (result.stdout or "").splitlines():
@@ -1200,14 +1514,21 @@ Tests:
                 continue
         return {
             "command": "python scripts/measure.py",
-            "exit_code": result.returncode,
-            "passed": result.returncode == 0,
+            "exit_code": result.exit_code,
+            "passed": result.exit_code == 0 and not result.timed_out,
             "metrics": measurement,
             "output_tail": (result.stdout + result.stderr)[-3000:],
+            "sandbox": result.limits,
+            "duration_seconds": result.duration_seconds,
         }
 
     def _measure(
-        self, repository: Path, *, baseline: dict[str, Any]
+        self,
+        spec: TemplateSpec,
+        repository: Path,
+        *,
+        baseline: dict[str, Any],
+        workflow: ExperimentWorkflow,
     ) -> dict[str, Any]:
         tests = self._run_tests(repository)
         after = self._run_measure(repository)
@@ -1216,51 +1537,127 @@ Tests:
         passed = bool(
             tests.get("passed")
             and after.get("passed")
-            and after_metrics.get("meets_reduction_target") is True
+            and after_metrics.get(spec.success_key) is True
         )
-        return {
-            "schema": "mc10.measurement.v1",
-            "passed": passed,
-            "tests": tests,
-            "after": after,
-            "baseline": baseline_measurement,
-            "comparison": {
+        if spec.id == "trace_reduce_v1":
+            comparison = {
                 "baseline_events": baseline_measurement.get("baseline_events"),
                 "baseline_reduced_events": baseline_measurement.get("reduced_events"),
                 "after_events": after_metrics.get("baseline_events"),
                 "after_reduced_events": after_metrics.get("reduced_events"),
                 "after_reduction_ratio": after_metrics.get("reduction_ratio"),
-            },
+            }
+        else:
+            comparison = {
+                "expected_means": after_metrics.get("expected_means"),
+                "observed_means": after_metrics.get("observed_means"),
+                "expected_max": after_metrics.get("expected_max"),
+                "observed_max": after_metrics.get("observed_max"),
+                "monotonic": after_metrics.get("monotonic"),
+                "within_tolerance": after_metrics.get("within_tolerance"),
+            }
+        measurement = {
+            "schema": "mc11.measurement.v1",
+            "template": spec.id,
+            "passed": passed,
+            "tests": tests,
+            "after": after,
+            "baseline": baseline_measurement,
+            "sandbox": self.sandbox.describe(),
+            "comparison": comparison,
         }
-
-    def _run(
-        self, args: list[str], cwd: Path, *, timeout: int
-    ) -> subprocess.CompletedProcess[str]:
-        environment = {
-            "SYSTEMROOT": os.environ.get("SYSTEMROOT", ""),
-            "WINDIR": os.environ.get("WINDIR", ""),
-            "PATH": os.environ.get("PATH", ""),
-            "PATHEXT": os.environ.get("PATHEXT", ""),
-            "TEMP": os.environ.get("TEMP", ""),
-            "TMP": os.environ.get("TMP", ""),
-            "USERPROFILE": os.environ.get("USERPROFILE", ""),
-            "PYTHONPATH": str(cwd),
-            "PYTHONIOENCODING": "utf-8",
-            "PYTHONUTF8": "1",
-        }
-        return subprocess.run(
-            args,
-            cwd=str(cwd),
-            env={key: value for key, value in environment.items() if value},
-            capture_output=True,
-            text=True,
-            encoding="utf-8",
-            errors="replace",
-            timeout=timeout,
-            shell=False,
-            check=False,
-            creationflags=0x08000000 if os.name == "nt" else 0,
+        measurement["language_observation"] = self._language_observation(
+            spec, workflow, measurement
         )
+        return measurement
+
+    def _language_observation(
+        self,
+        spec: TemplateSpec,
+        workflow: ExperimentWorkflow,
+        measurement: dict[str, Any],
+    ) -> dict[str, Any]:
+        metrics = measurement.get("after", {}).get("metrics") or {}
+        if spec.id == "trace_reduce_v1":
+            expected = [metrics.get("expected_reduced_events", 3)]
+            observed = [metrics.get("reduced_events")]
+            properties = [
+                {
+                    "id": "reduced_event_count",
+                    "expected": expected[0],
+                    "observed": observed[0],
+                    "difference": (
+                        observed[0] - expected[0]
+                        if isinstance(observed[0], (int, float))
+                        and isinstance(expected[0], (int, float))
+                        else None
+                    ),
+                    "within_constraint": observed[0] == expected[0],
+                }
+            ]
+            uncertainty = [
+                "Proxy trace fixture only; this does not establish general agent performance.",
+            ]
+        else:
+            expected = metrics.get("expected_means") or []
+            observed = metrics.get("observed_means") or []
+            properties = [
+                {
+                    "id": "mean_brightness",
+                    "expected": expected,
+                    "observed": observed,
+                    "difference": [
+                        round(float(o) - float(e), 4)
+                        for o, e in zip(observed, expected)
+                        if isinstance(o, (int, float)) and isinstance(e, (int, float))
+                    ],
+                    "within_constraint": bool(metrics.get("within_tolerance")),
+                },
+                {
+                    "id": "max_brightness",
+                    "expected": metrics.get("expected_max") or [],
+                    "observed": metrics.get("observed_max") or [],
+                    "difference": [],
+                    "within_constraint": metrics.get("expected_max")
+                    == metrics.get("observed_max"),
+                },
+                {
+                    "id": "monotonic_progression",
+                    "expected": True,
+                    "observed": bool(metrics.get("monotonic")),
+                    "difference": None,
+                    "within_constraint": bool(metrics.get("monotonic")),
+                },
+            ]
+            uncertainty = [
+                "Synthetic fixture only; not production media.",
+                "Mean brightness is not a perceptual quality measurement.",
+            ]
+        return {
+            "schema": "language.observation.v1",
+            "workflow_id": workflow.id,
+            "template": spec.id,
+            "intention_ref": f"workflow:{workflow.id}:language.intention.v0",
+            "subject": workflow.next_external_id,
+            "properties": properties,
+            "measurement_method": measurement.get("after", {}).get("command"),
+            "evidence": [
+                f"sandbox:{workflow.repository_path}",
+                f"measurement:{spec.measure_command[-1]}",
+            ],
+            "provenance": {
+                "source_kind": spec.source_kind,
+                "source_contract": spec.source_contract,
+                "source_id": workflow.next_external_id,
+            },
+            "uncertainty": uncertainty,
+            "constraint_result": "pass" if all(
+                item.get("within_constraint") for item in properties
+            ) else "fail",
+            "evaluation_version": "language.observation.v1",
+            "created_at": now_iso(),
+            "note": "Observation only; it does not control execution or rewrite the intention.",
+        }
 
     def _git(self, repository: Path, *args: str) -> str:
         result = subprocess.run(
@@ -1280,10 +1677,12 @@ Tests:
             )
         return result.stdout
 
-    def _commit(self, repository: Path, workflow: ExperimentWorkflow) -> str:
-        self._git(repository, "add", *SCOPE)
+    def _commit(
+        self, repository: Path, workflow: ExperimentWorkflow, spec: TemplateSpec
+    ) -> str:
+        self._git(repository, "add", *spec.scope)
         staged = self._git(repository, "diff", "--cached", "--name-only").splitlines()
-        if sorted(path.strip() for path in staged if path.strip()) != sorted(SCOPE):
+        if sorted(path.strip() for path in staged if path.strip()) != sorted(spec.scope):
             raise ValueError("Staged files do not exactly match the approved scope")
         self._git(
             repository,
@@ -1293,10 +1692,10 @@ Tests:
             "user.email=mission-control@localhost",
             "commit",
             "-m",
-            f"MC10 experiment {workflow.id}: {workflow.title[:120]}",
+            f"MC11 experiment {workflow.id}: {workflow.title[:120]}",
         )
         commit = self._git(repository, "rev-parse", "HEAD").strip()
-        self._git(repository, "tag", "-f", f"mc10-result-{workflow.id}", commit)
+        self._git(repository, "tag", "-f", f"mc11-result-{workflow.id}", commit)
         return commit
 
     def _review_summary(self, artifact_path: str | None) -> dict[str, Any]:

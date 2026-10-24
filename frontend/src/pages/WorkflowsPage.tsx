@@ -1,6 +1,9 @@
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { AlertTriangle, ArrowRight, CheckCircle2, GitBranch, Play, ShieldCheck } from "lucide-react";
+import { api, errorMessage } from "../api/client";
 import { useApi } from "../api/useApi";
+import { useToast } from "../components/Toast";
 import { EmptyState, ErrorState, LoadingBlock, PageHeader, SimpleStatusBadge, Tag } from "../components/ui";
 import { timeAgo, titleCase, truncate } from "../lib/format";
 import type { ExperimentWorkflow } from "../types/api";
@@ -14,6 +17,26 @@ function workflowState(status: string): string {
 
 export function WorkflowsPage() {
   const workflows = useApi<ExperimentWorkflow[]>("/api/workflows", { pollMs: 10000 });
+  const navigate = useNavigate();
+  const toast = useToast();
+  const [starting, setStarting] = useState(false);
+
+  async function startBrightnessFixture() {
+    setStarting(true);
+    try {
+      const workflow = await api.post<ExperimentWorkflow>("/api/workflows", {
+        template: "brightness_observation_v1",
+        force_new: true,
+      });
+      toast.push("success", "Brightness fixture proposed", "Inspect and approve the bounded fixture scope.");
+      navigate(`/workflows/${workflow.id}`);
+    } catch (caught) {
+      toast.push("error", "Could not start brightness fixture", errorMessage(caught));
+    } finally {
+      setStarting(false);
+    }
+  }
+
   return (
     <div className="page">
       <PageHeader
@@ -21,9 +44,14 @@ export function WorkflowsPage() {
         title="Experiments"
         description="Next evidence, human approval, Worker execution, CoCoder review and a durable human decision in one traceable record."
         actions={
-          <Link className="button button-secondary" to="/next">
-            <GitBranch size={15} /> Browse Next candidates
-          </Link>
+          <>
+            <button className="button button-secondary" onClick={() => void startBrightnessFixture()} disabled={starting}>
+              <Play size={15} /> {starting ? "Proposing…" : "Brightness fixture"}
+            </button>
+            <Link className="button button-secondary" to="/next">
+              <GitBranch size={15} /> Browse Next candidates
+            </Link>
+          </>
         }
       />
       {workflows.loading && !workflows.data ? <LoadingBlock label="Loading experiment workflows" /> : null}
