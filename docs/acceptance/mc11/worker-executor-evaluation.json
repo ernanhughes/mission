@@ -1,0 +1,24 @@
+{
+  "schema": "mc11.worker-executor-evaluation.v1",
+  "timestamp": "2026-10-24T22:42:02Z",
+  "requested_backend": "opencode-work",
+  "requested_model": "review_mimo_free",
+  "policy": "improvement.strengthen.acceptance_free",
+  "http_status": 200,
+  "duration_seconds": 1.97,
+  "result_status": "BLOCKED",
+  "unresolved": [
+    {
+      "code": "OP_ERROR",
+      "message": "MODEL_RUNTIME_BLOCKED: permission_denied: 403: {\"type\":\"FreeTierError\",\"message\":\"OpenCode's free tier can only be used from within OpenCode. Download it at https://opencode.ai and keep building.\"} "
+    }
+  ],
+  "execution": {
+    "backend": "opencode-work",
+    "model": "review_mimo_free"
+  },
+  "selected_backend": "direct",
+  "selected_model": "qwen2.5-coder:latest",
+  "direct_result": "succeeded in the MC11 acceptance workflows with AWAITING_ACCEPTANCE; deterministic tests were the gate",
+  "conclusion": "The hosted free route was blocked for opencode-work; direct local Ollama was retained. No Worker Evidence/Acceptance is fabricated."
+}

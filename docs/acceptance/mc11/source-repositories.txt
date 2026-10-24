@@ -1,0 +1,14 @@
+# Source repository state during MC11
+
+Captured: 2026-10-24T22:43:50.111554+00:00
+
+| Repository | Branch | HEAD | Changed paths | MC11 action |
+| --- | --- | --- | ---: | --- |
+| `C:\Projects\next` | `main` | `491b501` | 0 | MC10 export contract remains at `491b501`; clean. No MC11 source change. |
+| `C:\Projects\worker` | `main` | `0aecefa` | 33 | No source change. Existing 33 dirty paths preserved. opencode-work evaluated read-only; no local/free route was available. |
+| `C:\Projects\cocoder` | `cc-r06-p0-codeai-qualification` | `f4e90d6` | 36 | No source change. Existing 36 dirty paths preserved. Review action reused. |
+| `C:\Projects\work` | `main` | `e79e68c` | 1 | No source change. Existing 1 dirty path preserved. |
+
+Mission Control repository-local `.cocoder` directory present: **no**.
+
+No source repository was pushed. The MC11 workflows wrote only to the two git-ignored experiment sandboxes under Mission Control data.

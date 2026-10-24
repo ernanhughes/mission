@@ -1,0 +1,17 @@
+$ bun test ./tests
+bun test v1.4.3 (c6da4a4d3)
+
+tests\opencode-work.test.ts:
+{"provider_observability":{"schema_version":"provider-event.v1","event_id":"36578371-3967-40ba-b25d-d0bff148b32a","type":"PROVIDER_STATE_CHANGED","observed_at":"2026-10-24T22:54:46.534Z","execution_id":null,"provider_state_ref":"provider-state-9255372c-94ad-45b1-a5f2-60e538471eab","previous":null,"current":"UNKNOWN","provider":"pi","model":"default","failure_domain":"pi","observed_from":"configuration","quota_state":"UNKNOWN","retry_at":null}}
+{"provider_observability":{"schema_version":"provider-event.v1","event_id":"92005c0c-5b7f-4913-a89f-c572065feba6","type":"PROVIDER_STATE_CHANGED","observed_at":"2026-10-24T22:54:46.534Z","execution_id":null,"provider_state_ref":"provider-state-bdd81ebd-9f11-4342-a186-3f3f4bdf30a8","previous":null,"current":"UNKNOWN","provider":"pi","model":"opencode-go/deepseek-v4-flash","failure_domain":"pi","observed_from":"configuration","quota_state":"UNKNOWN","retry_at":null}}
+{"provider_observability":{"schema_version":"provider-event.v1","event_id":"f843a3f7-8fa0-4801-a3ad-d34d0c998db8","type":"PROVIDER_STATE_CHANGED","observed_at":"2026-10-24T22:54:46.534Z","execution_id":null,"provider_state_ref":"provider-state-dbeb84f3-afb8-4a7f-9b92-7812bc8153f6","previous":null,"current":"UNKNOWN","provider":"pi","model":"opencode/mimo-v2.6-flash-free","failure_domain":"pi","observed_from":"configuration","quota_state":"UNKNOWN","retry_at":null}}
+{"provider_observability":{"schema_version":"provider-event.v1","event_id":"d9b07934-e5ed-4c31-89a7-0a4025c76816","type":"PROVIDER_STATE_CHANGED","observed_at":"2026-10-24T22:54:46.534Z","execution_id":null,"provider_state_ref":"provider-state-19a4e78d-492b-49da-a08a-950098ba0dd3","previous":null,"current":"UNKNOWN","provider":"pi","model":"opencode-go/longcat-2.5-preview-free","failure_domain":"pi","observed_from":"configuration","quota_state":"UNKNOWN","retry_at":null}}
+{"provider_observability":{"schema_version":"provider-event.v1","event_id":"a03bab70-8bfa-47b6-b475-21fd9429d59e","type":"PROVIDER_STATE_CHANGED","observed_at":"2026-10-24T22:54:46.534Z","execution_id":null,"provider_state_ref":"provider-state-4d8dfcc2-88a8-46f9-9af2-dbd68a295704","previous":null,"current":"UNKNOWN","provider":"pi","model":"opencode-go/qwen3.8-flash","failure_domain":"pi","observed_from":"configuration","quota_state":"UNKNOWN","retry_at":null}}
+{"provider_observability":{"schema_version":"provider-event.v1","event_id":"16d1fc8f-4cc8-461e-8e61-130eb941f6bc","type":"PROVIDER_STATE_CHANGED","observed_at":"2026-10-24T22:54:46.534Z","execution_id":null,"provider_state_ref":"provider-state-3ad34b70-5570-4ab2-9944-c92e4b7bfb1c","previous":null,"current":"UNKNOWN","provider":"pi","model":"opencode-go/gpt-6-luna","failure_domain":"pi","observed_from":"configuration","quota_state":"UNKNOWN","retry_at":null}}
+{"provider_observability":{"schema_version":"provider-event.v1","event_id":"826a506c-04c2-4e11-9e18-de13fe8f735e","type":"PROVIDER_STATE_CHANGED","observed_at":"2026-10-24T22:54:46.534Z","execution_id":null,"provider_state_ref":"provider-state-dd2c412c-41e9-4af2-98b1-e80321af47f9","previous":null,"current":"UNKNOWN","provider":"opencode_go","model":"deepseek-v4-flash","failure_domain":"opencode_go","observed_from":"configuration","quota_state":"UNKNOWN","retry_at":null}}
+
+ 210 pass
+ 8 skip
+ 0 fail
+ 964 expect() calls
+Ran 218 tests across 24 files. [21.42s]

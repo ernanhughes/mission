@@ -1,0 +1,14 @@
+
+> mission-control-frontend@0.1.0 test
+> vitest run --reporter=dot
+
+
+ RUN  v5.0.5 C:/Projects/mission/frontend
+
+┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖
+
+ Test Files  10 passed (10)
+      Tests  26 passed (26)
+   Start at  23:54:46
+   Duration  4.62s (environment 47%, tests 33%, import 10%, setup 7%, transform 2%)
+
