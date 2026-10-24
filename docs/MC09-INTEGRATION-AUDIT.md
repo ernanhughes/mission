@@ -173,6 +173,12 @@ The review output is written to `data/integrations/cocoder/review-*.json`. A
 real review after this change created no `.cocoder` directory in the reviewed
 repository.
 
+Trade-off: the explicit config sets `[cqrs]` and otherwise uses CoCoder's
+defaults. A repository-local `.cocoder/config.toml` is not merged for
+Mission Control-launched reviews. Repositories that depend on custom CoCoder
+configuration should be reviewed through CoCoder's own interface until a safe
+config-merge contract exists.
+
 ### Actions
 
 `run_review` is registered and enabled with:

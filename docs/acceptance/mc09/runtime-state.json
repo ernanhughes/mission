@@ -1,0 +1,511 @@
+{
+  "health": {
+    "status": "ok",
+    "version": "0.1.0",
+    "database": "ok",
+    "schema_version": 2,
+    "ai_enabled": false,
+    "monitor_enabled": true
+  },
+  "environment_names_present": {
+    "NEXT_DSN": true,
+    "WORK_DATABASE_URL": true
+  },
+  "integrations": [
+    {
+      "application_id": "next",
+      "name": "Next",
+      "adapter": "next",
+      "protocol_version": "mc09.1",
+      "mode": "postgres-readonly",
+      "enabled": true,
+      "available": true,
+      "detail": "Read 130 opportunities, 12 runs, 31 evidence-gap records and 0 experiments from Next postgres-readonly. PostgreSQL reads use a read-only transaction. This is a database compatibility integration, not a stable Next API.",
+      "error": null,
+      "capabilities": [
+        "health",
+        "list_resources",
+        "get_resource",
+        "search_resources",
+        "list_actions",
+        "list_events"
+      ],
+      "actions": [
+        {
+          "id": "run_discovery",
+          "title": "Run Next discovery",
+          "description": "Next discovery fetches external sources, may call models, and writes to Next's authoritative store. It is not enabled without a dedicated approved Next operation contract.",
+          "risk": "external_network",
+          "capability": "execute_action",
+          "approval_required": true,
+          "side_effect": "external_communication",
+          "parameters_schema": {},
+          "enabled": false,
+          "unavailable_reason": "Blocked by design: no reviewed Next operation contract. Use Next's own interface for discovery until a bounded export/run contract is approved."
+        }
+      ],
+      "last_checked_at": "2026-10-24T12:37:24.002794+00:00",
+      "resource_counts": {
+        "next_evidence_gap": 31,
+        "next_opportunity": 130,
+        "next_run": 12
+      },
+      "repository_path": "C:\\Projects\\next",
+      "config": {
+        "sqlite_path": "C:\\Projects\\next\\data\\next.db",
+        "dsn_env": "NEXT_DSN",
+        "limit": 200
+      },
+      "repositories": []
+    },
+    {
+      "application_id": "cocoder",
+      "name": "CoCoder",
+      "adapter": "cocoder",
+      "protocol_version": "mc09.1",
+      "mode": "cli-artifact",
+      "enabled": true,
+      "available": true,
+      "detail": "Read 2 CoCoder review artifact(s) and 400 finding records. Acknowledging a finding is not code verification.",
+      "error": null,
+      "capabilities": [
+        "health",
+        "list_resources",
+        "get_resource",
+        "search_resources",
+        "list_actions",
+        "validate_action",
+        "execute_action",
+        "list_events"
+      ],
+      "actions": [
+        {
+          "id": "run_review",
+          "title": "Run a bounded CoCoder review",
+          "description": "Runs the configured CoCoder CLI against a registered repository and writes the JSON artifact under Mission Control's data directory.",
+          "risk": "bounded_local_computation",
+          "capability": "execute_action",
+          "approval_required": true,
+          "side_effect": "local_generated_artifacts",
+          "parameters_schema": {
+            "type": "object",
+            "required": [
+              "repo_path"
+            ],
+            "properties": {
+              "repo_path": {
+                "type": "string",
+                "description": "Registered repository path"
+              },
+              "base": {
+                "type": "string",
+                "default": "HEAD~1"
+              },
+              "head": {
+                "type": "string",
+                "default": "HEAD"
+              },
+              "request": {
+                "type": "string",
+                "description": "Optional intent text"
+              },
+              "timeout_seconds": {
+                "type": "integer",
+                "minimum": 10,
+                "maximum": 300
+              }
+            },
+            "additionalProperties": false
+          },
+          "enabled": true,
+          "unavailable_reason": null
+        }
+      ],
+      "last_checked_at": "2026-10-24T12:46:43.712627+00:00",
+      "resource_counts": {
+        "cocoder_finding": 400,
+        "cocoder_review": 2
+      },
+      "repository_path": "C:\\Projects\\cocoder",
+      "config": {
+        "artifact_dir": "integrations/cocoder",
+        "timeout_seconds": 180
+      },
+      "repositories": [
+        {
+          "path": "C:\\Projects\\bookbuilder",
+          "name": "BookBuilder",
+          "source": "Application"
+        },
+        {
+          "path": "C:\\Projects\\cocoder",
+          "name": "CoCoder",
+          "source": "Application"
+        },
+        {
+          "path": "C:\\Projects\\improve",
+          "name": "Improve",
+          "source": "Application"
+        },
+        {
+          "path": "C:\\books\\inference",
+          "name": "inference",
+          "source": "Project"
+        },
+        {
+          "path": "C:\\Projects\\language",
+          "name": "language",
+          "source": "Project"
+        },
+        {
+          "path": "C:\\Projects\\math",
+          "name": "math",
+          "source": "Project"
+        },
+        {
+          "path": "C:\\Projects\\math-r1",
+          "name": "math-r1",
+          "source": "Project"
+        },
+        {
+          "path": "C:\\Projects\\mission",
+          "name": "Mission Control",
+          "source": "Mission Control"
+        },
+        {
+          "path": "C:\\Projects\\next",
+          "name": "Next",
+          "source": "Application"
+        },
+        {
+          "path": "C:\\Projects\\project-language",
+          "name": "project-language",
+          "source": "Project"
+        },
+        {
+          "path": "C:\\Projects\\stephanie",
+          "name": "Stephanie",
+          "source": "Application"
+        },
+        {
+          "path": "C:\\Projects\\work",
+          "name": "Work",
+          "source": "Application"
+        },
+        {
+          "path": "C:\\Projects\\workbench",
+          "name": "Workbench",
+          "source": "Application"
+        },
+        {
+          "path": "C:\\Projects\\worker",
+          "name": "Worker",
+          "source": "Application"
+        },
+        {
+          "path": "C:\\Projects\\writer",
+          "name": "Writer",
+          "source": "Application"
+        }
+      ]
+    },
+    {
+      "application_id": "work",
+      "name": "Work",
+      "adapter": "work",
+      "protocol_version": "mc09.1",
+      "mode": "cli-json",
+      "enabled": true,
+      "available": true,
+      "detail": "Read 130 opportunities from Work's JSON CLI (63 qualified by Work's recorded policy). Mission Control did not write to Work.",
+      "error": null,
+      "capabilities": [
+        "health",
+        "list_resources",
+        "get_resource",
+        "search_resources",
+        "list_actions",
+        "list_events"
+      ],
+      "actions": [
+        {
+          "id": "sync_decision",
+          "title": "Synchronise a decision to Work",
+          "description": "Work exposes `work decide`, but writing to its PostgreSQL state is a separate approval boundary. Mission Control records decisions locally until this action is explicitly enabled and verified.",
+          "risk": "local_state",
+          "capability": "execute_action",
+          "approval_required": true,
+          "side_effect": "local_state",
+          "parameters_schema": {},
+          "enabled": false,
+          "unavailable_reason": "Read-only Work integration. Local decisions are preserved and labelled local_only; no Work database write is performed."
+        }
+      ],
+      "last_checked_at": "2026-10-24T12:37:29.305926+00:00",
+      "resource_counts": {
+        "work_opportunity": 130
+      },
+      "repository_path": "C:\\Projects\\work",
+      "config": {
+        "arguments": [
+          "opportunities",
+          "--json"
+        ],
+        "timeout_seconds": 90,
+        "env_names": [
+          "WORK_DATABASE_URL"
+        ],
+        "limit": 300
+      },
+      "repositories": []
+    }
+  ],
+  "inbox": {
+    "total": 45,
+    "by_source": {
+      "work": 15,
+      "next": 15,
+      "cocoder": 15
+    },
+    "priorities": {
+      "High": 29,
+      "Medium": 16
+    }
+  },
+  "search": {
+    "agent": {
+      "total": 100,
+      "by_source": {
+        "Next": 91,
+        "Work": 9
+      }
+    },
+    "exception": {
+      "total": 84,
+      "by_source": {
+        "CoCoder": 72,
+        "Work": 9,
+        "Decision": 3
+      }
+    },
+    "consulting": {
+      "total": 58,
+      "by_source": {
+        "Work": 56,
+        "Decision": 2
+      }
+    },
+    "mission": {
+      "total": 100,
+      "by_source": {
+        "CoCoder": 100
+      }
+    }
+  },
+  "decisions": {
+    "next": [
+      {
+        "decision": "defer",
+        "sync_state": "local_only",
+        "external_id": "9bb2f60c903a0cd548d9c86f0c01ae5f94506b421c35a877e74be5e2bb9653fe",
+        "reason": "Browser E2E: deferred after reviewing evidence gaps."
+      },
+      {
+        "decision": "defer",
+        "sync_state": "local_only",
+        "external_id": "842ff26f194366e80d119d9073855a132657311a94ffb855bc1bb3c269edfc3a",
+        "reason": "Browser acceptance: defer for later evidence review."
+      },
+      {
+        "decision": "shortlist",
+        "sync_state": "local_only",
+        "external_id": "10e8eac466f85aae0dd59c9d263ddde62b0f3be94d10505e09a429d50c2c5137",
+        "reason": "MC09 acceptance: shortlist for bounded experiment review."
+      }
+    ],
+    "work": [
+      {
+        "decision": "investigate",
+        "sync_state": "local_only",
+        "external_id": "be47dc52-93c3-570a-971c-b9cb788ba92a",
+        "reason": "Browser E2E: investigate this qualified opportunity."
+      },
+      {
+        "decision": "investigate",
+        "sync_state": "local_only",
+        "external_id": "308126e7-2cb0-5e29-9b10-a4ed867dd5d6",
+        "reason": "Browser E2E: investigate this qualified opportunity."
+      },
+      {
+        "decision": "shortlist",
+        "sync_state": "local_only",
+        "external_id": "ec3cf106-9556-5c09-9a5e-d08500f90fe3",
+        "reason": "MC09 acceptance: qualified opportunity worth investigation."
+      }
+    ],
+    "cocoder": [
+      {
+        "decision": "investigate",
+        "sync_state": "local_only",
+        "external_id": "review-1e0b33b8e9fd87a1:F-9787bc8f76",
+        "reason": "Browser E2E: investigate this high finding."
+      },
+      {
+        "decision": "investigate",
+        "sync_state": "local_only",
+        "external_id": "review-1e0b33b8e9fd87a1:F-bc50202534",
+        "reason": "Browser E2E: investigate this high finding."
+      },
+      {
+        "decision": "investigate",
+        "sync_state": "local_only",
+        "external_id": "review-1e0b33b8e9fd87a1:F-e705a9fbc4",
+        "reason": "MC09 acceptance: inspect the exception boundary."
+      }
+    ]
+  },
+  "executions": [
+    {
+      "id": "exec-14c4cf36d9914964",
+      "application_id": "cocoder",
+      "application_name": "CoCoder",
+      "action_id": "run_review",
+      "parameters": {
+        "repo_path": "C:\\Projects\\mission",
+        "base": "HEAD~1",
+        "timeout_seconds": 180,
+        "head": "HEAD"
+      },
+      "status": "succeeded",
+      "risk": "bounded_local_computation",
+      "approval_required": true,
+      "approved_at": "2026-10-24T12:46:10.621058+00:00",
+      "started_at": "2026-10-24T12:46:10.632262+00:00",
+      "ended_at": "2026-10-24T12:46:43.693514+00:00",
+      "exit_code": 0,
+      "output": "Wrote review-20261024T124610Z-3b03b5.json",
+      "error": null,
+      "result": {
+        "repository_path": "C:\\Projects\\mission",
+        "base": "HEAD~1",
+        "head": "HEAD",
+        "changed_files": 5,
+        "findings": 0,
+        "duration_seconds": 33.047
+      },
+      "artifact_ref": "C:\\Projects\\mission\\data\\integrations\\cocoder\\review-20261024T124610Z-3b03b5.json",
+      "created_at": "2026-10-24T12:46:10.621066+00:00"
+    },
+    {
+      "id": "exec-8732653dee5b42b7",
+      "application_id": "cocoder",
+      "application_name": "CoCoder",
+      "action_id": "run_review",
+      "parameters": {
+        "head": "HEAD",
+        "timeout_seconds": 240,
+        "repo_path": "C:\\Projects\\mission",
+        "base": "HEAD~2"
+      },
+      "status": "succeeded",
+      "risk": "bounded_local_computation",
+      "approval_required": true,
+      "approved_at": "2026-10-24T01:53:58.529973+00:00",
+      "started_at": "2026-10-24T01:53:58.543405+00:00",
+      "ended_at": "2026-10-24T01:56:37.374090+00:00",
+      "exit_code": 0,
+      "output": "Wrote review-20261024T015358Z-372d05.json",
+      "error": null,
+      "result": {
+        "repository_path": "C:\\Projects\\mission",
+        "base": "HEAD~2",
+        "head": "HEAD",
+        "changed_files": 146,
+        "findings": 478,
+        "duration_seconds": 158.808
+      },
+      "artifact_ref": "C:\\Projects\\mission\\data\\integrations\\cocoder\\review-20261024T015358Z-372d05.json",
+      "created_at": "2026-10-24T01:53:58.529984+00:00"
+    }
+  ],
+  "project_context": {
+    "math": [
+      {
+        "application_id": "next",
+        "title": "[explore] qijiashen/agentrl-bench-sql2b-candidates",
+        "local_decision": "defer"
+      },
+      {
+        "application_id": "work",
+        "title": "Ireland \u2013 IT services: consulting, software development, Internet and support \u2013 Support and Maintenance of NTA Dedicated Standalone ServiceNow Instances",
+        "local_decision": "shortlist"
+      }
+    ],
+    "language": [],
+    "inference": []
+  },
+  "resource_counts": {
+    "next": {
+      "next_evidence_gap": 31,
+      "next_opportunity": 130,
+      "next_run": 12
+    },
+    "cocoder": {
+      "cocoder_finding": 400,
+      "cocoder_review": 2
+    },
+    "work": {
+      "work_opportunity": 130
+    }
+  },
+  "tables": [
+    "integration_decisions",
+    "integration_executions",
+    "integration_records"
+  ],
+  "integration_records_current": 705,
+  "integration_record_apps": 3,
+  "integration_decisions": 9,
+  "integration_executions": 2,
+  "execution_statuses": {
+    "succeeded": 2
+  },
+  "migrations": [
+    {
+      "version": 1,
+      "name": "001_initial.sql",
+      "applied_at": "2026-10-23T18:31:58.426208+00:00"
+    },
+    {
+      "version": 2,
+      "name": "002_integration_foundation.sql",
+      "applied_at": "2026-10-24T01:53:34.111265+00:00"
+    }
+  ],
+  "cocoder_artifacts": [
+    {
+      "artifact": "review-20261024T015358Z-372d05.json",
+      "bytes": 714340,
+      "meta": {
+        "repository_path": "C:\\Projects\\mission",
+        "base": "HEAD~2",
+        "head": "HEAD",
+        "request": "",
+        "created_at": "2026-10-24T01:56:37.366441+00:00"
+      }
+    },
+    {
+      "artifact": "review-20261024T124610Z-3b03b5.json",
+      "bytes": 1957,
+      "meta": {
+        "repository_path": "C:\\Projects\\mission",
+        "base": "HEAD~1",
+        "head": "HEAD",
+        "request": "",
+        "created_at": "2026-10-24T12:46:43.691936+00:00"
+      }
+    }
+  ],
+  "cocoder_repo_state_exists": false,
+  "cocoder_engine_config": "[cqrs]\ndatabase = \"C:/Projects/mission/data/integrations/cocoder/engine/cocoder.db\"\nartifact_directory = \"C:/Projects/mission/data/integrations/cocoder/engine/artifacts\"\n"
+}
