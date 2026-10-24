@@ -48,6 +48,7 @@ from mission_control.schemas import (
     CheckpointRead,
     DecisionCreate,
     DecisionRead,
+    IntegrationRecordRead,
     OkResponse,
     OutcomeRead,
     ProjectCreate,
@@ -104,7 +105,11 @@ def get_project(
 ) -> ProjectDetail:
     from mission_control.adapters.service import AdapterService
 
-    return project_detail(session, project_id, AdapterService(request.app.state.database))
+    return project_detail(
+        session,
+        project_id,
+        AdapterService(request.app.state.database, request.app.state.settings),
+    )
 
 
 @router.patch("/projects/{project_id}", response_model=ProjectRead)
@@ -161,6 +166,20 @@ def open_project_repository(
         provenance="verified_observation",
     )
     return OkResponse(detail=f"Opened {repository.path} with {command}")
+
+
+@router.get(
+    "/projects/{project_id}/integration-context",
+    response_model=list[IntegrationRecordRead],
+)
+def project_integration_context(
+    project_id: str, session: Session = Depends(get_session)
+) -> list[IntegrationRecordRead]:
+    from mission_control.integrations.store import list_resources
+
+    if session.get(Project, project_id) is None:
+        raise NotFound("Project not found")
+    return list_resources(session, project_id=project_id, limit=100)
 
 
 @router.get("/resume", response_model=ResumeRead)

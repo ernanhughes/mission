@@ -1,7 +1,9 @@
-"""Adapter contracts.
+"""Adapter contracts for the unified application interface.
 
-Adapters only read. They return observations with source attribution; the
-adapter service is responsible for persistence and deduplication.
+The contract is deliberately small: adapters declare capabilities and actions,
+return normalised resources with source attribution, and may execute only the
+actions they register. Mission Control persists the read model and execution
+lifecycle; the source application remains the authority.
 """
 
 from __future__ import annotations
@@ -10,6 +12,8 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
+
+ADAPTER_PROTOCOL_VERSION = "mc09.1"
 
 
 @dataclass(slots=True)
@@ -21,6 +25,7 @@ class AdapterTarget:
     documentation_paths: list[str] = field(default_factory=list)
     related_project_ids: list[str] = field(default_factory=list)
     config: dict[str, Any] = field(default_factory=dict)
+    data_dir: str | None = None
 
     @property
     def primary_repository(self) -> Path | None:
@@ -59,6 +64,52 @@ class RecommendationSeed:
 
 
 @dataclass(slots=True)
+class ResourceSeed:
+    resource_type: str
+    external_id: str
+    title: str
+    summary: str = ""
+    state: str = ""
+    evidence: list[str] = field(default_factory=list)
+    data: dict[str, Any] = field(default_factory=dict)
+    source_version: str | None = None
+    source_timestamp: str | None = None
+    stale_after_seconds: int = 900
+
+
+@dataclass(slots=True)
+class ActionSpec:
+    id: str
+    title: str
+    description: str
+    risk: str
+    approval_required: bool = True
+    capability: str = "execute_action"
+    parameters_schema: dict[str, Any] = field(default_factory=dict)
+    enabled: bool = True
+    unavailable_reason: str | None = None
+    side_effect: str = "read_only"
+
+
+@dataclass(slots=True)
+class ActionContext:
+    application_id: str
+    data_dir: Path
+    allowed_repository_paths: list[str] = field(default_factory=list)
+    application_repository_path: str | None = None
+    config: dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass(slots=True)
+class ActionResult:
+    status: str = "succeeded"
+    output: str = ""
+    result: dict[str, Any] = field(default_factory=dict)
+    artifact_ref: str | None = None
+    exit_code: int | None = None
+
+
+@dataclass(slots=True)
 class AdapterResult:
     available: bool
     detail: str
@@ -66,12 +117,30 @@ class AdapterResult:
     error: str | None = None
     observations: list[Observation] = field(default_factory=list)
     recommendations: list[RecommendationSeed] = field(default_factory=list)
+    resources: list[ResourceSeed] = field(default_factory=list)
+    actions: list[ActionSpec] = field(default_factory=list)
 
 
 class Adapter(ABC):
     name: str
     capabilities: list[str]
+    protocol_version: str = ADAPTER_PROTOCOL_VERSION
+    actions: list[ActionSpec] = []
 
     @abstractmethod
     async def refresh(self, target: AdapterTarget) -> AdapterResult:
         raise NotImplementedError
+
+    def validate_action(
+        self, action_id: str, parameters: dict[str, Any], context: ActionContext
+    ) -> None:
+        """Reject invalid action parameters before an execution is queued.
+
+        Adapters that accept actions should override this. The same validation
+        must still run at execution time because registrations can change.
+        """
+
+    async def execute_action(
+        self, action_id: str, parameters: dict[str, Any], context: ActionContext
+    ) -> ActionResult:
+        raise NotImplementedError(f"Action '{action_id}' is not supported by {self.name}")

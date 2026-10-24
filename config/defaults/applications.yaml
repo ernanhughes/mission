@@ -22,8 +22,9 @@ applications:
       adapter: next
       enabled: true
       config:
-        database_path: 'C:\Projects\next\data\next.db'
-        limit: 8
+        dsn_env: NEXT_DSN
+        sqlite_path: 'C:\Projects\next\data\next.db'
+        limit: 200
     relationships:
       projects: [language, inference, math]
       outcomes: [books, ai-business]
@@ -49,7 +50,8 @@ applications:
       adapter: cocoder
       enabled: true
       config:
-        review_json_path: ''
+        artifact_dir: integrations/cocoder
+        timeout_seconds: 180
     relationships:
       projects: [language, math, inference]
       outcomes: [books, ai-business]
@@ -87,8 +89,12 @@ applications:
       - 'C:\Projects\work\docs\USAGE.md'
     integration:
       adapter: work
-      enabled: false
-      config: {}
+      enabled: true
+      config:
+        arguments: [opportunities, --json]
+        env_names: [WORK_DATABASE_URL]
+        timeout_seconds: 90
+        limit: 300
     relationships:
       projects: [language, inference, math]
       outcomes: [ai-business, programmer-ie]

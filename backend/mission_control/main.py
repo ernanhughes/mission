@@ -15,13 +15,25 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from mission_control import __version__
 from mission_control.adapters.service import AdapterService
-from mission_control.api import adapters, applications, briefing, dashboard, discovery, health, processes, projects, settings as settings_api
+from mission_control.api import (
+    adapters,
+    applications,
+    briefing,
+    dashboard,
+    discovery,
+    health,
+    integrations as integrations_api,
+    processes,
+    projects,
+    settings as settings_api,
+)
 from mission_control.config import RuntimeSettings
 from mission_control.core.errors import MissionControlError
 from mission_control.core.logging import configure_logging
 from mission_control.core.paths import is_within
 from mission_control.core.security import OriginGuardMiddleware, SecurityHeadersMiddleware
 from mission_control.discovery.service import DiscoveryService
+from mission_control.integrations.service import IntegrationService
 from mission_control.persistence.db import Database
 from mission_control.persistence.migrations import apply_migrations
 from mission_control.persistence.seed import seed_defaults
@@ -60,14 +72,16 @@ def create_app(runtime: RuntimeSettings | None = None) -> FastAPI:
         with database.session() as session:
             seed_defaults(session, settings)
         process_manager = ProcessManager(database, settings)
-        adapter_service = AdapterService(database)
+        adapter_service = AdapterService(database, settings)
         adapter_service.ensure_statuses()
         discovery_service = DiscoveryService(database)
+        integration_service = IntegrationService(database, settings)
         app.state.database = database
         app.state.settings = settings
         app.state.process_manager = process_manager
         app.state.adapter_service = adapter_service
         app.state.discovery = discovery_service
+        app.state.integration_service = integration_service
         await process_manager.reconcile_startup()
         refresh_task: asyncio.Task[None] | None = None
         if settings.start_monitor:
@@ -83,6 +97,10 @@ def create_app(runtime: RuntimeSettings | None = None) -> FastAPI:
                     await refresh_task
                 except (asyncio.CancelledError, Exception):
                     pass
+            try:
+                await integration_service.shutdown()
+            except Exception:
+                logger.exception("Integration action shutdown failed")
             await process_manager.shutdown()
             try:
                 await discovery_service.shutdown()
@@ -173,6 +191,7 @@ def create_app(runtime: RuntimeSettings | None = None) -> FastAPI:
     app.include_router(projects.router)
     app.include_router(discovery.router)
     app.include_router(adapters.router)
+    app.include_router(integrations_api.router)
     app.include_router(briefing.router)
     app.include_router(settings_api.router)
 

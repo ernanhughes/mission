@@ -73,7 +73,7 @@ def dashboard(
     ]
     open_tasks = list_tasks(session, status="open")
     pending_recommendations = list_recommendations(session, state="pending")
-    adapter_service = AdapterService(request.app.state.database)
+    adapter_service = AdapterService(request.app.state.database, request.app.state.settings)
     adapters = adapter_service.list_adapters()
     books = list_books(session)
     stats = {

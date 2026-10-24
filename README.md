@@ -11,9 +11,50 @@ Mission Control is a local-first control centre for an existing ecosystem of AI 
 - **Windows process control** — launch stored commands without a shell, capture logs, stop only Mission Control-owned process trees, detect port conflicts, and reattach to detached servers after a backend restart.
 - **Daily continuity** — project focus, checkpoints, tasks, decisions, activity and a resume card based on the latest saved checkpoint.
 - **Read-only discovery** — bounded scans of `C:\Projects` and `C:\books`, classification with evidence, exclusions, cancellation and persisted candidates. Discovery never enables a launch command.
-- **Evidence adapters** — Language, Inference, Math, Next (local SQLite snapshot), CoCoder review artifacts and Worker health. Unavailable integrations are shown as unavailable; they are not filled with sample data.
-- **Grounded daily briefing** — deterministic by default. Optional OpenAI-compatible AI interpretation only after explicit configuration, consent and request. AI remains advisory.
-- **Local API and OpenAPI docs** — FastAPI at `/api/*` and `/docs`.
+- **Unified engine workspaces (MC09)** - Next, Work and CoCoder expose their real data inside Mission Control: candidates and evidence, opportunities and qualification, repository findings and review operations.
+- **Unified inbox and federated search** - one attention queue and one search surface across Next, Work, CoCoder, projects, repositories, tasks, checkpoints and decisions. Source identity is preserved.
+- **Controlled application actions** - registered, validated operations with approval and durable execution history. CoCoder reviews can be launched from Mission Control; Next and Work write operations remain explicitly blocked.
+- **Shared project context** - associate Next candidates, Work opportunities and CoCoder findings with projects without copying ownership away from the source engines.
+- **Evidence adapters** - Language, Inference, Math, live read-only Next, Work JSON CLI, CoCoder artifacts and Worker health. Unavailable integrations are shown as unavailable; they are not filled with sample data.
+- **Grounded daily briefing** - deterministic by default. Optional OpenAI-compatible AI interpretation only after explicit configuration, consent and request. AI remains advisory.
+- **Local API and OpenAPI docs** - FastAPI at `/api/*` and `/docs`.
+
+## Unified application interface (MC09)
+
+Mission Control is the interface; Next, Work and CoCoder remain independent
+engines. The workspaces are real application surfaces, not shortcuts.
+
+| Workspace | What is usable |
+| --- | --- |
+| **Next** | Live opportunities, runs and evidence gaps; searchable candidates; scores and experiment detail; local decisions; project association. Discovery launch is blocked pending a reviewed contract. |
+| **Work** | Live opportunities and qualification; filtering; buyer/location/compensation context; local shortlist, defer, reject or investigate decisions. Source synchronisation is blocked. |
+| **CoCoder** | Repositories, assessments and findings; severity/evidence/affected paths; local dispositions; a registered, confirmed review action with execution history. |
+| **Inbox** | Pending items from Next, Work, CoCoder and Mission Control tasks, with source filters, priority and functional detail links. |
+| **Search** | Federated results from application resources, projects, repositories, tasks, checkpoints and decisions. |
+| **Project context** | Next, Work and CoCoder records associated with a project, with freshness and local decision state. |
+| **Command palette** | `Ctrl+K` navigation, project shortcuts, available refresh commands and federated search. |
+
+Decisions made in Mission Control are stored locally with
+`sync_state=local_only`. They never claim that Next, Work or CoCoder was updated.
+The UI distinguishes source state, cached observation time and human decisions.
+
+### Integration modes
+
+- **Next** - SELECT-only PostgreSQL session through the environment variable
+  named by `dsn_env` (default `NEXT_DSN`), with
+  `default_transaction_read_only=on`. If no DSN is configured, a configured
+  SQLite file is opened read-only. This is a database compatibility integration,
+  not a stable Next API.
+- **Work** - the documented `work opportunities --json` CLI. Mission Control
+  never invokes `work decide` or writes Work's database.
+- **CoCoder** - JSON review artifacts plus the `cocoder review` CLI. Mission
+  Control redirects CoCoder's own SQLite/artifact state into
+  `data/integrations/cocoder/engine` so reviewing a repository does not create a
+  repository-local `.cocoder` directory.
+
+See [the integration audit](docs/MC09-INTEGRATION-AUDIT.md) for verified source
+contracts and missing interfaces, and [the acceptance report](docs/acceptance/MC09-REPORT.md)
+for real data, browser evidence and limitations.
 
 ## Requirements
 
@@ -25,7 +66,10 @@ Tested on Windows 11 with:
 - PowerShell 5.1 or PowerShell 7+
 - Git on `PATH` for read-only repository observation
 
-No Docker, Kubernetes, hosted database or cloud service is required. PostgreSQL is not used by Mission Control.
+No Docker, Kubernetes, hosted database or cloud service is required. Mission
+Control itself stores state in SQLite. A PostgreSQL connection is optional and
+used only for a read-only Next integration when `NEXT_DSN` is configured; the
+SQLite snapshot remains the fallback.
 
 ## Install
 
@@ -99,6 +143,17 @@ The Home screen shows:
 2. Select Language, Inference or Math in the left rail.
 3. The workspace shows the user-maintained status, milestone, next action, checkpoint and manuscript paths.
 
+**Use an engine workspace**
+1. Open **Next**, **Work** or **CoCoder** under **Engines**.
+2. Use the tabs for candidates/opportunities/findings, evidence, decisions and operations.
+3. Open a record to inspect source evidence and record a local decision or project association.
+4. In CoCoder, **Operations** can launch a bounded review against a registered repository after confirmation.
+
+**Review the inbox and search**
+1. Open **Inbox** to see pending Next candidates, qualified Work opportunities, CoCoder findings and tasks together.
+2. Filter by source or priority; **Open** goes to the functional detail view.
+3. Open **Search** or press `Ctrl+K` to search application resources, projects, tasks, checkpoints and decisions.
+
 **Add an application**
 1. Open **Applications → Add application**.
 2. Fill identity and paths, then add a launch definition.
@@ -125,6 +180,11 @@ Default local data:
 ```text
 data/
   mission_control.db      SQLite database (registry, continuity, activity)
+  integrations/
+    cocoder/
+      cocoder-config.toml CoCoder state redirection
+      review-*.json       Real review artifacts
+      engine/             CoCoder SQLite and internal artifacts
   logs/
     mission-control.log   Rotating application log
     proc-*.log            Managed process output, redacted on read
@@ -246,17 +306,19 @@ C:\Users\<you>\AppData\Local\Programs\Microsoft VS Code\Code.exe
 
 ## Integrations and adapters
 
-Adapters are read-only and independent. Each records source, timestamp and evidence.
+Adapter reads are read-only and independent. Each records source, timestamp and
+evidence. Only registered actions can write, and only under Mission Control's
+data directory or local state.
 
-| Integration | State | What it reads |
+| Integration | State | What it reads / does |
 | --- | --- | --- |
 | Language book | Verified | `content/books/language` chapter files and `planning/STATUS.md` |
 | Inference book | Verified | `C:\books\inference` chapter files and the README's dated status claim |
 | Math book | Verified | `artifacts/math01/report.json` assessments, capabilities and unresolved obligations |
-| Next | Verified snapshot | Configured local SQLite `data/next.db` opportunity rows; labelled a snapshot, not a PostgreSQL/production view |
-| CoCoder | Requires artifact | A `cocoder review --format json --output FILE` artifact whose path is configured |
+| Next | Verified read-only | Live PostgreSQL through `NEXT_DSN` with a read-only transaction; configured SQLite fallback. Labelled a compatibility integration, not a stable Next API. Discovery launch is blocked. |
+| Work | Verified read-only | Documented `work opportunities --json`; 130 live opportunities in acceptance. Decisions remain local; no Work write path. |
+| CoCoder | Verified | JSON review artifacts and a registered bounded `run_review` action. Engine state and artifacts stay under `data/integrations/cocoder`. |
 | Worker | Verified endpoint | `GET /health` only; never submits work |
-| Work | Blocked | No verified read-only opportunity export configured; no opportunities are fabricated |
 | Writer / Improve / BookBuilder / Stephanie / Workbench | Not integrated | Repository/documentation access only; build and launch actions remain disabled until verified |
 
 Adapters fail in isolation. An unavailable adapter, timeout or malformed artifact produces an unavailable status and diagnostics, not a dashboard failure.
@@ -298,7 +360,7 @@ npm test
 npm run build
 ```
 
-Current result: **43 backend tests passing, 9 frontend tests passing, production build succeeds.** The suite includes real local process launch/stop/log capture, a backend restart reattachment test, real configured-editor invocation, discovery exclusions, migrations, checkpoint persistence, adapter failure isolation, origin/security checks and secret redaction.
+Current result: **50 backend tests passing, 23 frontend tests passing, production build succeeds.** The suite includes real local process launch/stop/log capture, a backend restart reattachment test, real configured-editor invocation, discovery exclusions, migrations, checkpoint persistence, adapter failure isolation, integration decisions/inbox/search, action parameter and repository validation, origin/security checks and secret redaction. MC09 additionally passed a 17-step real Chrome acceptance run; see [the MC09 report](docs/acceptance/MC09-REPORT.md).
 
 ## Troubleshooting
 
@@ -343,6 +405,9 @@ Current result: **43 backend tests passing, 9 frontend tests passing, production
 - Path traversal, relative roots and device paths are rejected.
 - Secrets are redacted in logs and never included in API responses.
 - Discovery and Git observation are read-only.
+- Integration actions are registered, schema-validated and adapter-validated before queueing. The browser sends an action ID and typed parameters, never a command.
+- CoCoder repository paths must match the registered allowlist; invalid paths return 422 before an execution exists.
+- CoCoder review state is redirected under Mission Control data; a review does not create `.cocoder` in the reviewed repository.
 - External publishing, repository mutation, model spending and destructive actions are not implemented as autonomous operations.
 
 See [docs/MC01-ARCHITECTURE.md](docs/MC01-ARCHITECTURE.md) and [docs/SECURITY.md](docs/SECURITY.md).
@@ -358,6 +423,10 @@ Mission Control was built in `C:\Projects\mission`. Integration repositories wer
 - [Architecture](docs/MC01-ARCHITECTURE.md)
 - [Security](docs/SECURITY.md)
 - [Milestone evidence](docs/milestones/README.md)
-- [Acceptance report](docs/acceptance/REPORT.md)
-- [Final engineering report](docs/acceptance/FINAL-ENGINEERING-REPORT.md)
+- [MC09 integration audit](docs/MC09-INTEGRATION-AUDIT.md)
+- [MC09 architecture](docs/MC09-ARCHITECTURE.md)
+- [MC09 acceptance report](docs/acceptance/MC09-REPORT.md)
+- [MC09 browser/runtime evidence](docs/acceptance/mc09/README.md)
+- [First-release acceptance report](docs/acceptance/REPORT.md)
+- [First-release final engineering report](docs/acceptance/FINAL-ENGINEERING-REPORT.md)
 - [UI smoke evidence](docs/acceptance/UI-SMOKE.md)

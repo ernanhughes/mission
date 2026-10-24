@@ -392,6 +392,130 @@ export type Health = {
   monitor_enabled: boolean;
 };
 
+export type IntegrationAction = {
+  id: string;
+  title: string;
+  description: string;
+  risk: string;
+  capability: string;
+  approval_required: boolean;
+  side_effect: string;
+  parameters_schema: {
+    type?: string;
+    required?: string[];
+    properties?: Record<string, { type?: string; description?: string; default?: unknown; minimum?: number; maximum?: number }>;
+    additionalProperties?: boolean;
+  };
+  enabled: boolean;
+  unavailable_reason: string | null;
+};
+
+export type Integration = {
+  application_id: string;
+  name: string;
+  adapter: string;
+  protocol_version: string;
+  mode: string;
+  enabled: boolean;
+  available: boolean;
+  detail: string;
+  error: string | null;
+  capabilities: string[];
+  actions: IntegrationAction[];
+  last_checked_at: string | null;
+  resource_counts: Record<string, number>;
+  repository_path: string | null;
+  config: Record<string, unknown>;
+  repositories: Array<{ path: string; name: string; source: string }>;
+};
+
+export type IntegrationDecision = {
+  id: string;
+  application_id: string;
+  resource_type: string;
+  external_id: string;
+  decision: string;
+  reason: string;
+  sync_state: string;
+  source_decision_id: string | null;
+  decided_at: string;
+  created_at: string;
+};
+
+export type IntegrationRecord = {
+  id: string;
+  application_id: string;
+  application_name: string | null;
+  resource_type: string;
+  external_id: string;
+  title: string;
+  summary: string;
+  state: string;
+  project_id: string | null;
+  project_name: string | null;
+  source_version: string | null;
+  source_timestamp: string | null;
+  observed_at: string;
+  stale_after_seconds: number;
+  stale: boolean;
+  current: boolean;
+  evidence: string[];
+  data: Record<string, any>;
+  local_decision: IntegrationDecision | null;
+  decision_options: string[];
+};
+
+export type IntegrationExecution = {
+  id: string;
+  application_id: string;
+  application_name: string | null;
+  action_id: string;
+  parameters: Record<string, unknown>;
+  status: string;
+  risk: string;
+  approval_required: boolean;
+  approved_at: string | null;
+  started_at: string | null;
+  ended_at: string | null;
+  exit_code: number | null;
+  output: string;
+  error: string | null;
+  result: Record<string, any>;
+  artifact_ref: string | null;
+  created_at: string;
+};
+
+export type InboxItem = {
+  id: string;
+  source_application: string;
+  source_name: string;
+  item_type: string;
+  title: string;
+  summary: string;
+  project_id: string | null;
+  project_name: string | null;
+  priority: number;
+  priority_label: string;
+  evidence: string[];
+  observed_at: string;
+  state: string;
+  actions: string[];
+  target_path: string;
+  resource_id: string | null;
+  decision_state: string;
+};
+
+export type SearchResult = {
+  id: string;
+  source: string;
+  source_id: string;
+  title: string;
+  subtitle: string;
+  project_id: string | null;
+  target_path: string;
+  observed_at: string | null;
+};
+
 export type ApiErrorPayload = {
   error?: {
     code?: string;
