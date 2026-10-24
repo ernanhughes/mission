@@ -33,6 +33,7 @@ import type { ExperimentWorkflow } from "../types/api";
 function statusState(status: string): string {
   if (status === "decided") return "running";
   if (status === "failed" || status === "review_failed") return "launch_failed";
+  if (status === "cancelled") return "cancelled";
   if (status === "executing" || status === "reviewing") return "in_progress";
   if (status === "approved") return "accepted";
   return "pending";
@@ -71,6 +72,9 @@ export function WorkflowDetailPage() {
   const measurement = data?.measurement ?? {};
   const review = data?.review_summary ?? {};
   const evidence = data?.next_evidence?.opportunity ?? {};
+  const isFixture =
+    String(data?.next_evidence?.source_kind || "next") === "fixture" ||
+    data?.template === "brightness_observation_v1";
   const canApprove = data?.status === "proposed";
   const canExecute = data?.status === "approved";
   const canDecide = Boolean(
@@ -130,6 +134,18 @@ export function WorkflowDetailPage() {
     );
   }
 
+  async function cancel() {
+    if (!data) return;
+    if (!window.confirm("Request cancellation at the next safe boundary? No result will be adopted.")) {
+      return;
+    }
+    await run(
+      "cancel",
+      () => api.post(`/api/workflows/${data.id}/cancel`, { reason: "Cancelled by the user" }),
+      "Cancellation recorded",
+    );
+  }
+
   async function decide(decision: "accept" | "reject" | "investigate") {
     if (!data) return;
     if (decision === "accept" && data.adverse_review && !overrideAdverse) {
@@ -183,10 +199,19 @@ export function WorkflowDetailPage() {
       <PageHeader
         eyebrow={`MC10 experiment · ${data.template}`}
         title={data.title}
-        description="One durable trace from Next evidence through approval, Worker execution, CoCoder review and the human decision."
+        description={
+          isFixture
+            ? "One durable trace from local fixture evidence through approval, Worker execution, CoCoder review and the human decision."
+            : "One durable trace from Next evidence through approval, Worker execution, CoCoder review and the human decision."
+        }
         actions={
           <>
             <SimpleStatusBadge state={statusState(data.status)} label={titleCase(data.status)} />
+            {["proposed", "approved", "executing", "reviewing"].includes(data.status) || busy === "execute" ? (
+              <button className="button button-danger" onClick={() => void cancel()} disabled={busy === "cancel"}>
+                <CircleSlash size={15} /> {busy === "cancel" ? "Cancelling…" : "Cancel"}
+              </button>
+            ) : null}
             {data.next_record_id ? (
               <Link className="button button-secondary" to={`/next?record=${data.next_record_id}`}>
                 <Telescope size={15} /> Open Next evidence
@@ -223,9 +248,16 @@ export function WorkflowDetailPage() {
 
       <div className="workflow-grid">
         <div className="workflow-column">
-          <Section title="Original research evidence" description="Preserved from Next's versioned export; Mission Control did not rewrite it.">
+          <Section
+            title={isFixture ? "Fixture evidence" : "Original research evidence"}
+            description={
+              isFixture
+                ? "Preserved from the local fixture manifest; Mission Control did not rewrite it."
+                : "Preserved from Next's versioned export; Mission Control did not rewrite it."
+            }
+          >
             <div className="workflow-evidence">
-              <span className="eyebrow">Next candidate</span>
+              <span className="eyebrow">{isFixture ? "Local fixture" : "Next candidate"}</span>
               <h3>{data.next_title}</h3>
               <p>{truncate(String(evidence.what_discovered || ""), 700)}</p>
               <dl className="kv-list">
@@ -310,13 +342,22 @@ export function WorkflowDetailPage() {
                 <KeyValue label="Patch">{String(data.patch.summary || "—")}</KeyValue>
                 <KeyValue label="Result commit"><code>{data.result_commit || "—"}</code></KeyValue>
               </dl>
-              {measurement.comparison ? (
+              {measurement.comparison && data.template === "trace_reduce_v1" ? (
                 <div className="workflow-measurements">
                   <Metric label="Baseline events" value={String(measurement.comparison.baseline_events ?? "—")} />
                   <Metric label="Baseline reduced" value={String(measurement.comparison.baseline_reduced_events ?? "—")} />
                   <Metric label="After events" value={String(measurement.comparison.after_events ?? "—")} />
                   <Metric label="After reduced" value={String(measurement.comparison.after_reduced_events ?? "—")} />
                   <Metric label="Reduction" value={`${Math.round(Number(measurement.comparison.after_reduction_ratio ?? 0) * 100)}%`} />
+                </div>
+              ) : null}
+              {measurement.comparison && data.template !== "trace_reduce_v1" ? (
+                <div className="workflow-measurements">
+                  <Metric label="Expected means" value={(measurement.comparison.expected_means || []).join(" / ") || "—"} />
+                  <Metric label="Observed means" value={(measurement.comparison.observed_means || []).join(" / ") || "—"} />
+                  <Metric label="Expected max" value={(measurement.comparison.expected_max || []).join(" / ") || "—"} />
+                  <Metric label="Observed max" value={(measurement.comparison.observed_max || []).join(" / ") || "—"} />
+                  <Metric label="Monotonic" value={measurement.comparison.monotonic ? "Yes" : "No"} />
                 </div>
               ) : null}
               {measurement.tests?.output_tail ? (
@@ -366,6 +407,44 @@ export function WorkflowDetailPage() {
               <EmptyState title="No review available" description="CoCoder review starts after a successful result commit." icon={<ShieldCheck size={18} />} />
             )}
           </Section>
+
+          {data.language_observations?.length ? (
+            <Section title="Language observation" description="A typed comparison of intention, expected properties and measured observations. It cannot rewrite the intention or control execution.">
+              {data.language_observations.map((observation) => (
+                <div className="workflow-review" key={observation.id}>
+                  <div className="workflow-review-head">
+                    <div>
+                      <span className="eyebrow">{observation.schema}</span>
+                      <h3>{observation.subject}</h3>
+                    </div>
+                    <SimpleStatusBadge
+                      state={observation.constraint_result === "pass" ? "running" : "launch_failed"}
+                      label={`Constraint ${observation.constraint_result}`}
+                    />
+                  </div>
+                  <div className="workflow-observation-properties">
+                    {observation.properties.map((property) => (
+                      <div className="workflow-observation-property" key={property.id}>
+                        <strong>{titleCase(property.id.replace(/_/g, " "))}</strong>
+                        <dl className="kv-list">
+                          <KeyValue label="Expected"><code>{JSON.stringify(property.expected)}</code></KeyValue>
+                          <KeyValue label="Observed"><code>{JSON.stringify(property.observed)}</code></KeyValue>
+                          <KeyValue label="Difference"><code>{JSON.stringify(property.difference)}</code></KeyValue>
+                          <KeyValue label="Within constraint">{property.within_constraint ? "Yes" : "No"}</KeyValue>
+                        </dl>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="muted small">Method: {observation.measurement_method || "not stated"}</p>
+                  {observation.uncertainty.length ? (
+                    <ul className="plain-list">
+                      {observation.uncertainty.map((item) => <li key={item}>{item}</li>)}
+                    </ul>
+                  ) : null}
+                </div>
+              ))}
+            </Section>
+          ) : null}
 
           {canDecide ? (
             <Section title="Human decision" description="The workflow cannot adopt itself. A human decision is required.">
@@ -445,7 +524,7 @@ export function WorkflowDetailPage() {
           <Section title="Provenance" description="Authoritative source references for this workflow.">
             <dl className="kv-list">
               <KeyValue label="Workflow"><code>{data.id}</code></KeyValue>
-              <KeyValue label="Next export"><PathText>{String(data.next_evidence.export_path || "")}</PathText></KeyValue>
+              <KeyValue label={isFixture ? "Fixture manifest" : "Next export"}><PathText>{String(data.next_evidence.export_path || "")}</PathText></KeyValue>
               <KeyValue label="Review artifact"><PathText>{data.review_artifact_path || "—"}</PathText></KeyValue>
               <KeyValue label="Created">{formatDateTime(data.created_at)}</KeyValue>
               <KeyValue label="Updated">{formatDateTime(data.updated_at)}</KeyValue>

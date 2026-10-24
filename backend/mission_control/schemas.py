@@ -937,6 +937,25 @@ class WorkflowEventRead(BaseModel):
     created_at: str
 
 
+class LanguageObservationRead(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    id: str
+    workflow_id: str
+    schema_name: str = Field(alias="schema", serialization_alias="schema")
+    template: str
+    intention_ref: str
+    subject: str
+    properties: list[dict[str, Any]]
+    measurement_method: str | None
+    evidence: list[str]
+    provenance: dict[str, Any]
+    uncertainty: list[str]
+    constraint_result: str
+    evaluation_version: str
+    created_at: str
+
+
 class ExperimentWorkflowRead(BaseModel):
     id: str
     title: str
@@ -969,15 +988,24 @@ class ExperimentWorkflowRead(BaseModel):
     final_decision: str | None
     final_reason: str
     override_adverse: bool
+    cancel_requested: bool
+    cancelled_at: str | None
     failure: str | None
     created_at: str
     updated_at: str
     events: list[WorkflowEventRead] = Field(default_factory=list)
+    language_observations: list[LanguageObservationRead] = Field(default_factory=list)
+
+
+class ProjectEvidenceTimeline(BaseModel):
+    project_id: str
+    workflows: list[ExperimentWorkflowRead]
+    observations: list[LanguageObservationRead]
 
 
 class WorkflowCreate(RawModel):
-    record_id: str = Field(min_length=1, max_length=200)
-    template: Literal["trace_reduce_v1"] = "trace_reduce_v1"
+    record_id: str | None = Field(default=None, max_length=200)
+    template: Literal["trace_reduce_v1", "brightness_observation_v1"] = "trace_reduce_v1"
     project_id: str | None = None
     force_new: bool = False
 
@@ -990,6 +1018,14 @@ class WorkflowApprove(RawModel):
 
 class WorkflowExecute(RawModel):
     confirm: bool = False
+
+
+class WorkflowCancel(RawModel):
+    reason: str = Field(default="", max_length=2000)
+
+
+class WorkflowProjectUpdate(RawModel):
+    project_id: str | None = None
 
 
 class WorkflowDecision(RawModel):

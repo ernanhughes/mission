@@ -104,6 +104,26 @@ after all rejected attempts. See
   Next's `ResearchStore` constructor, which may apply Next schema
   initialization/migrations; a no-migrate export mode is a follow-up.
 
+## MC11 execution hardening
+
+- Generated Python is executed only inside Docker:
+  `--network none`, read-only root and repository, non-root UID/GID, dropped
+  capabilities, `no-new-privileges`, 512 MB memory, 0.5 CPU, 64 PIDs, 64 MB
+  tmpfs and a host timeout.
+- There is no local-subprocess fallback. If Docker or the pinned image is
+  unavailable, experiment creation is blocked.
+- The image is local (`mission-control/sandbox-python:3.13`) and built from
+  `docker/sandbox/Dockerfile`.
+- Templates declare source contract, scope, entrypoint, validation, budget and
+  stop conditions. The browser selects a registered template ID only.
+- A duplicate execute command is rejected by an in-process active guard.
+- Cancellation is cooperative at safe boundaries; a cancelled run restores
+  uncommitted sandbox changes and never adopts a patch.
+- Result commits are tagged `mc11-result-<workflow>`; new attempts reset to the
+  template baseline after tagging the prior result.
+- `language.observation.v1` is stored as read-only evidence. It has no execution,
+  negotiation or corrective path.
+
 ## Tests
 
 Backend security tests verify:
@@ -126,7 +146,13 @@ Backend security tests verify:
 - stale approval / baseline drift is rejected before Worker execution;
 - adverse CoCoder review blocks automatic acceptance until explicit override;
 - replaying a completed workflow reuses the same Worker request and result
-  commit instead of creating duplicates.
+  commit instead of creating duplicates;
+- generated code is blocked from host execution without Docker;
+- Docker mounts the repository read-only and reports no-network/limits;
+- concurrent duplicate execute is rejected;
+- cancellation during Worker execution leaves no patch/commit;
+- modified approved source and changed baseline are rejected before Worker;
+- both templates produce `language.observation.v1` without changing intentions.
 
 ## Residual risks and limitations
 
@@ -139,5 +165,8 @@ Backend security tests verify:
 - The optional Next PostgreSQL credential lives in the process environment; read-only database grants are the defence if the process environment is compromised.
 - CoCoder review executes the configured CoCoder executable. A malicious replacement executable would run with the user's privileges; the executable path is administrative configuration, not a sandbox.
 - MC10-generated Python runs in a dedicated repository via a test subprocess, not a hard OS sandbox. AST checks, fixed scope and timeouts reduce but do not eliminate risk from arbitrary generated code.
-- Worker exposes an unauthenticated loopback HTTP API. Any local process can submit work to it; MC10 constrains what Mission Control submits, not what other local clients may do.
+- Worker exposes an unauthenticated loopback HTTP API. Any local process can submit work to it; Mission Control constrains what it submits, not what other local clients may do.
+- Docker Desktop and its daemon are trusted infrastructure. The sandbox does not defend against a compromised Docker daemon, a malicious base image or kernel/container escapes.
+- Cancellation is cooperative; it does not forcibly interrupt an in-flight model call. It prevents adoption and restores uncommitted sandbox state.
+- Worker `direct` remains lower-parity: no Work Evidence/Verify/Proof/Acceptance. This is surfaced as `AWAITING_ACCEPTANCE` and gated by deterministic tests.
 - Windows process reattachment depends on a stable long-lived root PID. A launcher that exits immediately after spawning a grandchild is reported as lost rather than guessed. Do not force-stop processes outside Mission Control.

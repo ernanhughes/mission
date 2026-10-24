@@ -6,10 +6,14 @@ from fastapi import APIRouter, Query, Request
 
 from mission_control.schemas import (
     ExperimentWorkflowRead,
+    ProjectEvidenceTimeline,
     WorkflowApprove,
+    WorkflowCancel,
     WorkflowCreate,
     WorkflowDecision,
+    WorkflowEventRead,
     WorkflowExecute,
+    WorkflowProjectUpdate,
 )
 from mission_control.workflows.service import WorkflowService
 
@@ -76,6 +80,46 @@ async def execute_workflow(
 )
 async def review_workflow(workflow_id: str, request: Request) -> ExperimentWorkflowRead:
     return await _service(request).review(workflow_id)
+
+
+@router.post(
+    "/workflows/{workflow_id}/cancel", response_model=ExperimentWorkflowRead
+)
+def cancel_workflow(
+    workflow_id: str, payload: WorkflowCancel, request: Request
+) -> ExperimentWorkflowRead:
+    return _service(request).cancel(workflow_id, payload.reason)
+
+
+@router.patch(
+    "/workflows/{workflow_id}/project", response_model=ExperimentWorkflowRead
+)
+def associate_workflow_project(
+    workflow_id: str, payload: WorkflowProjectUpdate, request: Request
+) -> ExperimentWorkflowRead:
+    return _service(request).associate_project(workflow_id, payload.project_id)
+
+
+@router.get(
+    "/workflows/{workflow_id}/events", response_model=list[WorkflowEventRead]
+)
+def workflow_events(
+    workflow_id: str,
+    request: Request,
+    after_sequence: int = Query(default=0, ge=0),
+) -> list[WorkflowEventRead]:
+    workflow = _service(request).get(workflow_id)
+    return [event for event in workflow.events if event.sequence > after_sequence]
+
+
+@router.get(
+    "/projects/{project_id}/evidence-timeline",
+    response_model=ProjectEvidenceTimeline,
+)
+def project_evidence_timeline(
+    project_id: str, request: Request
+) -> ProjectEvidenceTimeline:
+    return ProjectEvidenceTimeline(**_service(request).project_timeline(project_id))
 
 
 @router.post(

@@ -12,5 +12,6 @@
 | MC08 | Acceptance and documentation | 43 backend + 9 frontend tests; production build; acceptance report |
 | MC09 | Unified application interface | Live Next/Work/CoCoder workspaces, inbox, search, project context, command palette, bounded CoCoder action; 50 backend + 23 frontend tests; Chrome E2E |
 | MC10 | First cross-application workflow | Next export → human approval → local Worker execution → CoCoder review → measurement → human decision; 53 backend + 26 frontend tests; real Chrome acceptance; failed attempts preserved |
+| MC11 | Harden, generalise and observe | Docker execution boundary, two templates, cancellation/idempotency, Language observations, project timeline; 58 backend + 26 frontend tests; real Chrome acceptance |
 
 Milestone completion is based on executable evidence, not file creation. Detailed records are in the individual milestone files and [the acceptance report](../acceptance/REPORT.md).

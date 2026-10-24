@@ -15,6 +15,7 @@ from mission_control.models import IntegrationRecord
 from mission_control.persistence.db import Database
 from mission_control.persistence.migrations import apply_migrations
 from mission_control.persistence.seed import seed_defaults
+from mission_control.workflows.sandbox import SandboxResult
 from mission_control.workflows.service import WorkflowService
 
 CORRECT_CODE = '''def reduce_trace(events):
@@ -116,6 +117,55 @@ def _sandbox(root: Path) -> Path:
     return repo
 
 
+def _brightness_sandbox(root: Path) -> Path:
+    repo = root / "brightness-sandbox"
+    (repo / "brightness").mkdir(parents=True)
+    (repo / "tests").mkdir()
+    (repo / "scripts").mkdir()
+    (repo / "fixtures").mkdir()
+    (repo / ".gitignore").write_text("__pycache__/\n.pytest_cache/\n", encoding="utf-8")
+    (repo / "brightness" / "__init__.py").write_text("", encoding="utf-8")
+    (repo / "brightness" / "analyze.py").write_text(
+        "def analyze_frames(paths):\n    return [{'width': 2, 'height': 2, 'mean': 0.0, 'max': 0} for _p in paths]\n",
+        encoding="utf-8",
+    )
+    (repo / "tests" / "test_analyze.py").write_text(
+        "from brightness.analyze import analyze_frames\n"
+        "def test_means():\n    assert [x['mean'] for x in analyze_frames(['a','b'])] == [0.0, 128.0]\n",
+        encoding="utf-8",
+    )
+    (repo / "scripts" / "measure.py").write_text("print('{}')\n", encoding="utf-8")
+    for index, value in enumerate((0, 128, 255)):
+        (repo / "fixtures" / f"frame{index}.gray").write_bytes(bytes([value]) * 4)
+    (repo / "evidence.json").write_text(
+        json.dumps(
+            {
+                "schema": "mc11.fixture-evidence.v1",
+                "id": "brightness-fixture-v1",
+                "title": "Synthetic brightness progression",
+                "intention": "Measure brightness without altering media.",
+                "expected": {"means": [0.0, 128.0, 255.0], "max": [0, 128, 255], "monotonic": True},
+                "uncertainty": ["Synthetic fixture only."],
+            }
+        ),
+        encoding="utf-8",
+    )
+    _git(repo, "init", "-q")
+    _git(repo, "add", ".")
+    _git(
+        repo,
+        "-c",
+        "user.name=Test",
+        "-c",
+        "user.email=test@example.invalid",
+        "commit",
+        "-q",
+        "-m",
+        "baseline brightness",
+    )
+    return repo
+
+
 def _settings(tmp_path: Path) -> RuntimeSettings:
     return RuntimeSettings(
         repo_root=Path("C:/Projects/mission"),
@@ -150,8 +200,14 @@ def _seed_next(session, external_id: str = "opp-1") -> str:
 
 
 class FakeWorker:
-    def __init__(self, output: str | None = None, status: str = "AWAITING_ACCEPTANCE") -> None:
+    def __init__(
+        self,
+        output: str | None = None,
+        status: str = "AWAITING_ACCEPTANCE",
+        delay: float = 0.0,
+    ) -> None:
         self.calls = 0
+        self.delay = delay
         self.output = output or json.dumps(
             {
                 "schema": "mc10.patch.v1",
@@ -164,6 +220,8 @@ class FakeWorker:
 
     async def run(self, request, timeout_seconds):
         self.calls += 1
+        if self.delay:
+            await asyncio.sleep(self.delay)
         return {
             "schema": "worker.work-result.v1",
             "request_id": f"wrq_test_{self.calls}",
@@ -172,6 +230,65 @@ class FakeWorker:
             "execution": {"backend": "direct", "model": "qwen2.5-coder:latest"},
             "message": "fixture worker",
         }
+
+
+class FakeSandbox:
+    """Deterministic stand-in for the Docker boundary in unit tests."""
+
+    def describe(self):
+        return {
+            "backend": "test-fixture",
+            "network": "none",
+            "repository_mount": "read-only",
+        }
+
+    def run(self, repository: Path, command: list[str], *, timeout_seconds: float):
+        trace_file = repository / "tracelite" / "reduce.py"
+        is_brightness = not trace_file.exists()
+        if is_brightness:
+            content = (repository / "brightness" / "analyze.py").read_text(encoding="utf-8")
+            correct = "sum(bytes_data)" in content or "sum(data)" in content
+        else:
+            content = trace_file.read_text(encoding="utf-8")
+            correct = "result = []" in content or "reduced = [events[0]]" in content
+        if "pytest" in command:
+            return SandboxResult(
+                exit_code=0 if correct else 1,
+                stdout="5 passed" if correct else "2 failed, 3 passed",
+                stderr="",
+                duration_seconds=0.01,
+                backend="test-fixture",
+                image="test-fixture",
+                limits=self.describe(),
+            )
+        if is_brightness:
+            metrics = {
+                "frames": 3,
+                "expected_means": [0.0, 128.0, 255.0],
+                "observed_means": [0.0, 128.0, 255.0] if correct else [0.0, 0.0, 0.0],
+                "expected_max": [0, 128, 255],
+                "observed_max": [0, 128, 255] if correct else [0, 0, 0],
+                "monotonic": True,
+                "within_tolerance": correct,
+                "meets_target": correct,
+            }
+        else:
+            metrics = {
+                "baseline_events": 21,
+                "reduced_events": 3 if correct else 21,
+                "reduction_ratio": 0.8571 if correct else 0.0,
+                "expected_reduced_events": 3,
+                "meets_reduction_target": correct,
+            }
+        return SandboxResult(
+            exit_code=0 if correct else 1,
+            stdout=json.dumps(metrics),
+            stderr="",
+            duration_seconds=0.01,
+            backend="test-fixture",
+            image="test-fixture",
+            limits=self.describe(),
+        )
 
 
 class FakeReviewIntegration:
@@ -255,7 +372,11 @@ def _service(tmp_path: Path, worker: FakeWorker, artifact: Path):
     )
     integration = FakeReviewIntegration(artifact)
     service = WorkflowService(
-        database, settings, integration, worker_client=worker  # type: ignore[arg-type]
+        database,
+        settings,
+        integration,
+        worker_client=worker,
+        sandbox_runner=FakeSandbox(),  # type: ignore[arg-type]
     )
     return service, record_id, database
 
@@ -319,7 +440,7 @@ def test_workflow_approval_execution_review_decision_and_idempotency(
         assert new_attempt.id != created.id
         assert new_attempt.baseline_commit == created.baseline_commit
         assert _git(sandbox, "rev-parse", "HEAD").strip() == created.baseline_commit
-        assert f"mc10-result-{created.id}" in _git(sandbox, "tag", "--list", "mc10-*")
+        assert f"mc11-result-{created.id}" in _git(sandbox, "tag", "--list", "mc11-*")
     finally:
         database.dispose()
 
@@ -377,6 +498,158 @@ def test_scope_expansion_and_stale_approval_are_rejected(
         )
         with pytest.raises(Exception, match="stale"):
             asyncio.run(service.execute(second.id, confirm=True))
+    finally:
+        database.dispose()
+
+
+BRIGHTNESS_CODE = '''def analyze_frames(paths):
+    results = []
+    for path in paths:
+        with open(path, "rb") as handle:
+            data = handle.read()
+        results.append({"width": 2, "height": 2, "mean": sum(data) / len(data), "max": max(data)})
+    return results
+'''
+
+
+def test_brightness_template_generalises_and_records_language_observation(
+    tmp_path: Path, monkeypatch
+) -> None:
+    sandbox = _brightness_sandbox(tmp_path)
+    monkeypatch.setenv(
+        "MC11_SANDBOX_BRIGHTNESS_OBSERVATION_V1", str(sandbox)
+    )
+    artifact = _review_artifact(tmp_path / "review-brightness.json")
+    worker = FakeWorker(
+        output=BRIGHTNESS_CODE,
+    )
+    service, _, database = _service(tmp_path, worker, artifact)
+    try:
+        created = service.create(None, template="brightness_observation_v1")
+        assert created.status == "proposed"
+        assert created.template == "brightness_observation_v1"
+        assert created.next_external_id == "brightness-fixture-v1"
+        assert created.proposal["scope"] == ["brightness/analyze.py"]
+        assert created.proposal["baseline"]["tests"]["passed"] is False
+        assert created.language_intention["schema"] == "language.intention.v0"
+
+        service.approve(created.id, confirm=True, approved_by="user", scope_acknowledged=True)
+        executed = asyncio.run(service.execute(created.id, confirm=True))
+        assert executed.status == "executed"
+        assert executed.measurement["passed"] is True
+        assert executed.measurement["comparison"]["observed_means"] == [0.0, 128.0, 255.0]
+        assert len(executed.language_observations) == 1
+        observation = executed.language_observations[0]
+        assert observation.schema_name == "language.observation.v1"
+        assert observation.constraint_result == "pass"
+        assert {item["id"] for item in observation.properties} == {
+            "mean_brightness",
+            "max_brightness",
+            "monotonic_progression",
+        }
+
+        reviewed = asyncio.run(service.review(created.id))
+        assert reviewed.status == "reviewed"
+        decided = service.decide(
+            created.id, decision="accept", reason="Fixture measurement passed."
+        )
+        assert decided.final_decision == "accept"
+        associated = service.associate_project(created.id, "language")
+        assert associated.project_id == "language"
+        timeline = service.project_timeline("language")
+        assert any(
+            workflow.id == created.id for workflow in timeline["workflows"]
+        )
+        assert len(timeline["observations"]) >= 1
+    finally:
+        database.dispose()
+
+
+def test_modified_approved_file_is_rejected_before_worker(
+    tmp_path: Path, monkeypatch
+) -> None:
+    sandbox = _sandbox(tmp_path)
+    monkeypatch.setenv("MC10_SANDBOX", str(sandbox))
+    artifact = _review_artifact(tmp_path / "review.json")
+    worker = FakeWorker()
+    service, record_id, database = _service(tmp_path, worker, artifact)
+    monkeypatch.setenv(
+        "MC10_NEXT_EXPORT",
+        str(_settings(tmp_path).data_dir / "integrations" / "next" / "next-research-export-v1.json"),
+    )
+    try:
+        created = service.create(record_id)
+        service.approve(created.id, confirm=True, approved_by="user", scope_acknowledged=True)
+        (sandbox / "tracelite" / "reduce.py").write_text(
+            "def reduce_trace(events):\n    return events\n", encoding="utf-8"
+        )
+        with pytest.raises(Exception, match="approved file changed"):
+            asyncio.run(service.execute(created.id, confirm=True))
+        assert worker.calls == 0
+    finally:
+        database.dispose()
+
+
+def test_cancellation_is_truthful_at_the_next_boundary(
+    tmp_path: Path, monkeypatch
+) -> None:
+    sandbox = _sandbox(tmp_path)
+    monkeypatch.setenv("MC10_SANDBOX", str(sandbox))
+    artifact = _review_artifact(tmp_path / "review.json")
+    worker = FakeWorker(delay=0.25)
+    service, record_id, database = _service(tmp_path, worker, artifact)
+    monkeypatch.setenv(
+        "MC10_NEXT_EXPORT",
+        str(_settings(tmp_path).data_dir / "integrations" / "next" / "next-research-export-v1.json"),
+    )
+    try:
+        created = service.create(record_id)
+        service.approve(created.id, confirm=True, approved_by="user", scope_acknowledged=True)
+
+        async def scenario():
+            task = asyncio.create_task(service.execute(created.id, confirm=True))
+            await asyncio.sleep(0.08)
+            service.cancel(created.id, "Stop the experiment")
+            return await task
+
+        result = asyncio.run(scenario())
+        assert result.status == "cancelled"
+        assert result.cancel_requested is True
+        assert result.cancelled_at
+        assert any(event.event_type == "cancelled" for event in result.events)
+        assert worker.calls == 1
+        assert _git(sandbox, "status", "--porcelain").strip() == ""
+        assert _git(sandbox, "rev-parse", "HEAD").strip() == created.baseline_commit
+    finally:
+        database.dispose()
+
+
+def test_duplicate_execute_command_is_rejected_while_active(
+    tmp_path: Path, monkeypatch
+) -> None:
+    sandbox = _sandbox(tmp_path)
+    monkeypatch.setenv("MC10_SANDBOX", str(sandbox))
+    artifact = _review_artifact(tmp_path / "review.json")
+    worker = FakeWorker(delay=0.2)
+    service, record_id, database = _service(tmp_path, worker, artifact)
+    monkeypatch.setenv(
+        "MC10_NEXT_EXPORT",
+        str(_settings(tmp_path).data_dir / "integrations" / "next" / "next-research-export-v1.json"),
+    )
+    try:
+        created = service.create(record_id)
+        service.approve(created.id, confirm=True, approved_by="user", scope_acknowledged=True)
+
+        async def scenario():
+            first = asyncio.create_task(service.execute(created.id, confirm=True))
+            await asyncio.sleep(0.05)
+            with pytest.raises(Exception, match="already executing"):
+                await service.execute(created.id, confirm=True)
+            return await first
+
+        result = asyncio.run(scenario())
+        assert result.status == "executed"
+        assert worker.calls == 1
     finally:
         database.dispose()
 

@@ -451,10 +451,33 @@ class ExperimentWorkflow(Base):
     final_decision: Mapped[str | None] = mapped_column(String)
     final_reason: Mapped[str] = mapped_column(Text, default="", nullable=False)
     override_adverse: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    cancel_requested: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    cancelled_at: Mapped[str | None] = mapped_column(String)
     failure: Mapped[str | None] = mapped_column(Text)
     idempotency_key: Mapped[str] = mapped_column(String, unique=True, nullable=False)
     created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
     updated_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class LanguageObservation(Base):
+    __tablename__ = "language_observations"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    workflow_id: Mapped[str] = mapped_column(
+        String, ForeignKey("experiment_workflows.id", ondelete="CASCADE"), nullable=False
+    )
+    schema: Mapped[str] = mapped_column(String, nullable=False)
+    template: Mapped[str] = mapped_column(String, nullable=False)
+    intention_ref: Mapped[str] = mapped_column(String, nullable=False)
+    subject: Mapped[str] = mapped_column(String, nullable=False)
+    properties: Mapped[list[dict[str, Any]]] = mapped_column(JSON, default=list, nullable=False)
+    measurement_method: Mapped[str | None] = mapped_column(String)
+    evidence: Mapped[list[str]] = mapped_column(JSON, default=list, nullable=False)
+    provenance: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict, nullable=False)
+    uncertainty: Mapped[list[str]] = mapped_column(JSON, default=list, nullable=False)
+    constraint_result: Mapped[str] = mapped_column(String, nullable=False)
+    evaluation_version: Mapped[str] = mapped_column(String, nullable=False)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
 
 
 class WorkflowEvent(Base):

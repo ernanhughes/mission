@@ -50,6 +50,7 @@ import type {
   Checkpoint,
   IntegrationRecord,
   ProjectDetail,
+  ProjectEvidenceTimeline,
   Recommendation,
   Task,
 } from "../types/api";
@@ -381,6 +382,10 @@ export function ProjectPage() {
     `/api/projects/${projectId}/integration-context`,
     { pollMs: 60000 },
   );
+  const experimentTimeline = useApi<ProjectEvidenceTimeline>(
+    `/api/projects/${projectId}/evidence-timeline`,
+    { pollMs: 60000 },
+  );
   const toast = useToast();
   const [busy, setBusy] = useState(false);
   const [taskTitle, setTaskTitle] = useState("");
@@ -680,6 +685,68 @@ export function ProjectPage() {
               <EmptyState
                 title="No linked application records"
                 description="Open a record in Next, Work or CoCoder and associate it with this project."
+                icon={<Crosshair size={19} />}
+              />
+            ) : null}
+          </Section>
+
+          <Section
+            title="Experiment evidence"
+            description="Cross-application workflows and Language observations associated with this project. Observations never rewrite intentions or decisions."
+            actions={
+              experimentTimeline.data?.workflows.length ? (
+                <Tag tone="accent">{experimentTimeline.data.workflows.length} workflows</Tag>
+              ) : null
+            }
+          >
+            {experimentTimeline.loading ? <LoadingBlock label="Loading experiment evidence" compact /> : null}
+            {experimentTimeline.error ? <InlineError message={experimentTimeline.error.message} /> : null}
+            {experimentTimeline.data?.workflows.length ? (
+              <div className="workflow-list">
+                {experimentTimeline.data.workflows.map((workflow) => (
+                  <Link className="workflow-card" key={workflow.id} to={`/workflows/${workflow.id}`}>
+                    <div className="workflow-card-head">
+                      <div>
+                        <span className="eyebrow">{workflow.template}</span>
+                        <h2>{workflow.title}</h2>
+                      </div>
+                      <SimpleStatusBadge state={workflow.status === "decided" ? "running" : workflow.status === "cancelled" ? "cancelled" : "pending"} label={titleCase(workflow.status)} />
+                    </div>
+                    <div className="workflow-card-meta">
+                      <span>{workflow.measurement?.passed ? "Measurement passed" : "Measurement not passed"}</span>
+                      <span>{workflow.adverse_review ? "Adverse review" : "No adverse review"}</span>
+                      {workflow.final_decision ? <Tag tone="accent">Decision: {workflow.final_decision}</Tag> : null}
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            ) : null}
+            {experimentTimeline.data?.observations.length ? (
+              <div className="project-observations">
+                {experimentTimeline.data.observations.map((observation) => (
+                  <div key={observation.id}>
+                    <span className="eyebrow">{observation.schema}</span>
+                    <strong>{observation.subject}</strong>
+                    <span className={`tag ${observation.constraint_result === "pass" ? "tag-accent" : ""}`}>
+                      Constraint {observation.constraint_result}
+                    </span>
+                    <ul className="plain-list">
+                      {observation.properties.map((property) => (
+                        <li key={property.id}>
+                          {titleCase(property.id.replace(/_/g, " "))}: expected {JSON.stringify(property.expected)}, observed {JSON.stringify(property.observed)}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            ) : null}
+            {experimentTimeline.data &&
+            experimentTimeline.data.workflows.length === 0 &&
+            experimentTimeline.data.observations.length === 0 ? (
+              <EmptyState
+                title="No experiment evidence"
+                description="Approved experiment workflows associated with this project will appear here."
                 icon={<Crosshair size={19} />}
               />
             ) : null}

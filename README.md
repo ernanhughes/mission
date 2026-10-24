@@ -16,6 +16,7 @@ Mission Control is a local-first control centre for an existing ecosystem of AI 
 - **Controlled application actions** - registered, validated operations with approval and durable execution history. CoCoder reviews can be launched from Mission Control; Next and Work write operations remain explicitly blocked.
 - **Shared project context** - associate Next candidates, Work opportunities and CoCoder findings with projects without copying ownership away from the source engines.
 - **Cross-application experiments (MC10)** - one traceable Next → approval → Worker → CoCoder → human-decision workflow, with scope enforcement, local inference and durable evidence.
+- **Hardened experiments (MC11)** - Docker-isolated generated-code execution, two versioned templates, cancellation and duplicate-execution guards, `language.observation.v1`, and a project evidence timeline.
 - **Evidence adapters** - Language, Inference, Math, live read-only Next, Work JSON CLI, CoCoder artifacts and Worker health. Unavailable integrations are shown as unavailable; they are not filled with sample data.
 - **Grounded daily briefing** - deterministic by default. Optional OpenAI-compatible AI interpretation only after explicit configuration, consent and request. AI remains advisory.
 - **Local API and OpenAPI docs** - FastAPI at `/api/*` and `/docs`.
@@ -125,6 +126,47 @@ the immutable research evidence for a workflow.
 See [the MC10 audit](docs/MC10-REALITY-AUDIT.md), [workflow contract](docs/MC10-WORKFLOW-CONTRACT.md)
 and [acceptance report](docs/acceptance/MC10-REPORT.md).
 
+## Hardened experiments and Language observations (MC11)
+
+MC11 turns the single MC10 workflow into a bounded, reusable mechanism:
+
+- **Docker execution boundary** — generated code runs read-only, with no network,
+  non-root, dropped capabilities, 512 MB memory, 0.5 CPU, 64 PIDs, a 64 MB
+  `/tmp`, and a host timeout. Host execution is refused when Docker is
+  unavailable.
+- **Two templates** — TraceLite (`next_export`) and brightness
+  (`fixture_manifest`). Templates declare source contract, scope, entrypoint,
+  expected result, budget, stop conditions, validation and review requirements.
+- **Truthful lifecycle** — `proposed`, `approved`, `executing`, `executed`,
+  `reviewing`, `reviewed`, `decided`, `failed`, `cancelled`.
+  Duplicate execute commands are rejected; cancellation is observed at safe
+  boundaries and never adopts an uncommitted patch.
+- **Language Level 1** — `language.observation.v1` records expected/observed
+  properties, method, evidence, uncertainty and constraint result. It never
+  controls execution or rewrites the intention.
+- **Project evidence** — workflows and observations can be associated with a
+  project and queried in one timeline.
+
+The MC10 accepted workflow and evidence remain intact. The original
+`language.intention.v0` contract is unchanged.
+
+See [the execution-integrity audit](docs/MC11-EXECUTION-INTEGRITY-AUDIT.md),
+[template and Language contract](docs/MC11-TEMPLATES-AND-LANGUAGE.md) and
+[MC11 acceptance report](docs/acceptance/MC11-REPORT.md).
+
+### Docker sandbox setup
+
+The image is local and pinned:
+
+```powershell
+docker build -t mission-control/sandbox-python:3.13 `
+  -f docker\sandbox\Dockerfile docker\sandbox
+```
+
+Docker Desktop must be running for experiment execution. If it is unavailable,
+workflow creation fails with a clear diagnostic; Mission Control will not fall
+back to executing generated code on Windows.
+
 ## Requirements
 
 Tested on Windows 11 with:
@@ -134,11 +176,13 @@ Tested on Windows 11 with:
 - npm 11
 - PowerShell 5.1 or PowerShell 7+
 - Git on `PATH` for read-only repository observation
-- **Optional for MC10 experiments:** Bun 1.x for Worker and a local
-  OpenAI-compatible model endpoint (Ollama was used for acceptance)
+- **For MC10/MC11 experiments:** Bun 1.x for Worker, a local
+  OpenAI-compatible model endpoint (Ollama was used for acceptance), and Docker
+  Desktop for the generated-code sandbox
 
-No Docker, Kubernetes, hosted database or cloud service is required. Mission
-Control itself stores state in SQLite. A PostgreSQL connection is optional and
+The Mission Control core does not require Docker, Kubernetes, a hosted database
+or a cloud service. Generated-code experiment execution does require a local
+Docker daemon. Mission Control itself stores state in SQLite. A PostgreSQL connection is optional and
 used only for a read-only Next integration when `NEXT_DSN` is configured; the
 SQLite snapshot remains the fallback. Hosted paid inference is not required for
 MC10 experiments.
@@ -222,7 +266,7 @@ The Home screen shows:
 4. In CoCoder, **Operations** can launch a bounded review against a registered repository after confirmation.
 
 **Run a cross-application experiment**
-1. Open the TraceLite candidate in **Next** and press **Propose TraceLite experiment**, or open an existing trace under **Experiments**.
+1. Open the TraceLite candidate in **Next** and press **Propose TraceLite experiment**, or open an existing trace under **Experiments**. Use **Experiments → Brightness fixture** for the second template.
 2. Inspect the original research evidence, exact file scope, Worker model, budget, stop conditions and evaluation criteria.
 3. Tick the scope acknowledgement and approve. No Worker call occurs before approval.
 4. Execute with confirmation. Mission Control applies only the approved patch, runs deterministic tests/measurement and requests a CoCoder review of the actual result commit.
@@ -269,7 +313,8 @@ data/
       review-*.json       Real review artifacts
       engine/             CoCoder SQLite and internal artifacts
   experiments/
-    tracelite-spike/      Git sandbox for the MC10 experiment
+    tracelite-spike/      Git sandbox for the TraceLite template
+    brightness-fixture/   Git sandbox for the brightness template
   logs/
     mission-control.log   Rotating application log
     proc-*.log            Managed process output, redacted on read
@@ -445,7 +490,7 @@ npm test
 npm run build
 ```
 
-Current result: **53 backend tests passing, 26 frontend tests passing, production build succeeds.** The suite includes real local process launch/stop/log capture, a backend restart reattachment test, real configured-editor invocation, discovery exclusions, migrations, checkpoint persistence, adapter failure isolation, integration decisions/inbox/search, action parameter and repository validation, workflow approval/scope/stale-approval/adverse-review/replay tests, origin/security checks and secret redaction. MC10 additionally passed a real Chrome acceptance workflow; see [the MC10 report](docs/acceptance/MC10-REPORT.md).
+Current result: **58 backend tests passing, 26 frontend tests passing, production build succeeds.** The suite includes real local process launch/stop/log capture, a backend restart reattachment test, real configured-editor invocation, discovery exclusions, migrations, checkpoint persistence, adapter failure isolation, integration decisions/inbox/search, action parameter and repository validation, workflow approval/scope/stale-approval/adverse-review/replay tests, Docker sandbox isolation, cancellation/duplicate-execution guards, two-template execution and Language observation tests. MC11 additionally passed a real Chrome acceptance workflow; see [the MC11 report](docs/acceptance/MC11-REPORT.md).
 
 ## Troubleshooting
 
@@ -495,7 +540,10 @@ Current result: **53 backend tests passing, 26 frontend tests passing, productio
 - CoCoder review state is redirected under Mission Control data; a review does not create `.cocoder` in the reviewed repository.
 - MC10 workflow approval is bound to an exact file scope, baseline commit, file hash, Worker config and prompt hash. Execution rejects stale approval, a changed baseline/file, or a dirty sandbox.
 - Worker output is applied only to the approved path; extra paths and dangerous Python constructs are rejected before writing.
-- MC10 acceptance used a local Ollama model and no paid inference route.
+- MC11 generated code executes only in Docker with no network, a read-only repository mount, non-root user, dropped capabilities and CPU/memory/PID/time limits. Missing Docker blocks execution; there is no host fallback.
+- Execute commands are guarded against duplicates; cancellation is cooperative and never adopts an uncommitted patch.
+- `language.observation.v1` is read-only evidence: it cannot rewrite intentions or control execution.
+- MC10/MC11 acceptance used a local Ollama model and no paid inference route.
 - External publishing, repository mutation, model spending and destructive actions are not implemented as autonomous operations.
 
 See [docs/MC01-ARCHITECTURE.md](docs/MC01-ARCHITECTURE.md) and [docs/SECURITY.md](docs/SECURITY.md).
@@ -519,6 +567,10 @@ Mission Control was built in `C:\Projects\mission`. Integration repositories wer
 - [MC10 workflow contract](docs/MC10-WORKFLOW-CONTRACT.md)
 - [MC10 acceptance report](docs/acceptance/MC10-REPORT.md)
 - [MC10 browser/runtime evidence](docs/acceptance/mc10/README.md)
+- [MC11 execution-integrity audit](docs/MC11-EXECUTION-INTEGRITY-AUDIT.md)
+- [MC11 templates and Language contract](docs/MC11-TEMPLATES-AND-LANGUAGE.md)
+- [MC11 acceptance report](docs/acceptance/MC11-REPORT.md)
+- [MC11 browser/runtime evidence](docs/acceptance/mc11/README.md)
 - [First-release acceptance report](docs/acceptance/REPORT.md)
 - [First-release final engineering report](docs/acceptance/FINAL-ENGINEERING-REPORT.md)
 - [UI smoke evidence](docs/acceptance/UI-SMOKE.md)

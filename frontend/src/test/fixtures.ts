@@ -615,6 +615,8 @@ export function makeWorkflow(overrides: Partial<ExperimentWorkflow> = {}): Exper
     final_decision: null,
     final_reason: "",
     override_adverse: false,
+    cancel_requested: false,
+    cancelled_at: null,
     failure: null,
     created_at: now,
     updated_at: now,
@@ -623,6 +625,7 @@ export function makeWorkflow(overrides: Partial<ExperimentWorkflow> = {}): Exper
       { id: "wev-2", workflow_id: "wf-fixture-1", sequence: 2, event_type: "approved", source: "user", summary: "Approved by user.", payload: {}, source_ref: null, created_at: now },
       { id: "wev-3", workflow_id: "wf-fixture-1", sequence: 3, event_type: "review_completed", source: "cocoder", summary: "CoCoder reviewed one changed file.", payload: {}, source_ref: null, created_at: now },
     ],
+    language_observations: [],
     ...overrides,
   };
 }

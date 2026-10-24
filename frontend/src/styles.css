@@ -5027,6 +5027,46 @@ pre {
   white-space: pre-wrap;
 }
 
+.workflow-observation-properties {
+  display: grid;
+  gap: 9px;
+  margin: 12px 0;
+}
+
+.workflow-observation-property {
+  padding: 10px 11px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--panel-2);
+}
+
+.workflow-observation-property > strong {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 0.78rem;
+}
+
+.project-observations {
+  display: grid;
+  gap: 9px;
+  margin-top: 14px;
+}
+
+.project-observations > div {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 11px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel-2);
+}
+
+.project-observations .plain-list {
+  margin-top: 4px;
+}
+
 .workflow-note {
   margin-top: 12px;
 }

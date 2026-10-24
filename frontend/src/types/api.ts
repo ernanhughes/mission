@@ -517,6 +517,29 @@ export type WorkflowEvent = {
   created_at: string;
 };
 
+export type LanguageObservation = {
+  id: string;
+  workflow_id: string;
+  schema: string;
+  template: string;
+  intention_ref: string;
+  subject: string;
+  properties: Array<{
+    id: string;
+    expected: unknown;
+    observed: unknown;
+    difference: unknown;
+    within_constraint: boolean;
+  }>;
+  measurement_method: string | null;
+  evidence: string[];
+  provenance: Record<string, any>;
+  uncertainty: string[];
+  constraint_result: string;
+  evaluation_version: string;
+  created_at: string;
+};
+
 export type ExperimentWorkflow = {
   id: string;
   title: string;
@@ -549,10 +572,19 @@ export type ExperimentWorkflow = {
   final_decision: string | null;
   final_reason: string;
   override_adverse: boolean;
+  cancel_requested: boolean;
+  cancelled_at: string | null;
   failure: string | null;
   created_at: string;
   updated_at: string;
   events: WorkflowEvent[];
+  language_observations: LanguageObservation[];
+};
+
+export type ProjectEvidenceTimeline = {
+  project_id: string;
+  workflows: ExperimentWorkflow[];
+  observations: LanguageObservation[];
 };
 
 export type SearchResult = {
