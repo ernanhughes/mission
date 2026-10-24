@@ -1,0 +1,182 @@
+{
+  "generated_at": "2026-10-24T12:52:40.488Z",
+  "base_url": "http://127.0.0.1:8790",
+  "browser": "Google Chrome (headless via puppeteer-core)",
+  "viewport": {
+    "width": 1500,
+    "height": 1100
+  },
+  "steps": [
+    {
+      "step": "next_overview",
+      "ok": true,
+      "duration_ms": 619
+    },
+    {
+      "step": "next_candidates",
+      "ok": true,
+      "duration_ms": 827
+    },
+    {
+      "step": "work_local_decision",
+      "ok": true,
+      "external_id": "be47dc52-93c3-570a-971c-b9cb788ba92a"
+    },
+    {
+      "step": "work_opportunities",
+      "ok": true,
+      "duration_ms": 1152
+    },
+    {
+      "step": "cocoder_high_filter",
+      "count": "12 records"
+    },
+    {
+      "step": "cocoder_local_decision",
+      "ok": true,
+      "external_id": "review-1e0b33b8e9fd87a1:F-9787bc8f76"
+    },
+    {
+      "step": "cocoder_findings",
+      "ok": true,
+      "duration_ms": 1930
+    },
+    {
+      "step": "cocoder_operations",
+      "ok": true,
+      "duration_ms": 454
+    },
+    {
+      "step": "inbox_sources",
+      "sources": [
+        "Work",
+        "Next",
+        "CoCoder"
+      ],
+      "count": 45
+    },
+    {
+      "step": "inbox_open_detail",
+      "target": "/work"
+    },
+    {
+      "step": "inbox",
+      "ok": true,
+      "duration_ms": 1449
+    },
+    {
+      "step": "search_sources",
+      "query": "agent",
+      "sources": [
+        "Next",
+        "Work"
+      ]
+    },
+    {
+      "step": "search_cross_source",
+      "ok": true,
+      "duration_ms": 948
+    },
+    {
+      "step": "project_context_records",
+      "count": 2
+    },
+    {
+      "step": "project_context",
+      "ok": true,
+      "duration_ms": 292
+    },
+    {
+      "step": "integrations",
+      "ok": true,
+      "duration_ms": 374
+    },
+    {
+      "step": "security_rejections",
+      "ok": true,
+      "detail": {
+        "outside_status": 422,
+        "outside_error": "repo_path is not a registered repository",
+        "injected_status": 422,
+        "injected_error": "Unknown action parameters: command",
+        "unconfirmed_status": 409,
+        "next_disabled_status": 409,
+        "next_disabled_body": {
+          "error": {
+            "code": "capability_unavailable",
+            "message": "This action is not enabled",
+            "detail": "Blocked by design: no reviewed Next operation contract. Use Next's own interface for discovery until a bounded export/run contract is approved."
+          }
+        },
+        "executions_before": 2,
+        "executions_after": 2
+      }
+    }
+  ],
+  "console_errors": [],
+  "expected_console_errors": [
+    "Failed to load resource: the server responded with a status of 422 (Unprocessable Content)",
+    "Failed to load resource: the server responded with a status of 422 (Unprocessable Content)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)"
+  ],
+  "page_errors": [],
+  "metrics": {
+    "next_overview": {
+      "milliseconds": 619,
+      "url": "http://127.0.0.1:8790/next"
+    },
+    "next_candidates": {
+      "milliseconds": 827,
+      "url": "http://127.0.0.1:8790/next"
+    },
+    "work_opportunities": {
+      "milliseconds": 1152,
+      "url": "http://127.0.0.1:8790/work"
+    },
+    "cocoder_findings": {
+      "milliseconds": 1930,
+      "url": "http://127.0.0.1:8790/cocoder"
+    },
+    "cocoder_operations": {
+      "milliseconds": 454,
+      "url": "http://127.0.0.1:8790/cocoder"
+    },
+    "inbox": {
+      "milliseconds": 1449,
+      "url": "http://127.0.0.1:8790/inbox"
+    },
+    "search_cross_source": {
+      "milliseconds": 948,
+      "url": "http://127.0.0.1:8790/search?q=agent"
+    },
+    "command_palette": {
+      "milliseconds": 478
+    },
+    "project_context": {
+      "milliseconds": 292,
+      "url": "http://127.0.0.1:8790/projects/math"
+    },
+    "integrations": {
+      "milliseconds": 374,
+      "url": "http://127.0.0.1:8790/integrations"
+    }
+  },
+  "screenshots": [
+    "01-next-overview.png",
+    "01b-next-candidates.png",
+    "02-next-detail-local-decision.png",
+    "03-work-opportunity-detail.png",
+    "03b-work-local-decision.png",
+    "04-cocoder-finding-detail.png",
+    "04b-cocoder-local-decision.png",
+    "05-cocoder-operations.png",
+    "06-unified-inbox.png",
+    "06b-inbox-cocoder-filter.png",
+    "07-search-cross-source.png",
+    "08-command-palette-search.png",
+    "09-project-shared-context.png",
+    "10-integrations.png"
+  ],
+  "ok": true
+}

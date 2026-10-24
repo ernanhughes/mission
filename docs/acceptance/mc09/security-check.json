@@ -1,0 +1,17 @@
+{
+  "outside_status": 422,
+  "outside_error": "repo_path is not a registered repository",
+  "injected_status": 422,
+  "injected_error": "Unknown action parameters: command",
+  "unconfirmed_status": 409,
+  "next_disabled_status": 409,
+  "next_disabled_body": {
+    "error": {
+      "code": "capability_unavailable",
+      "message": "This action is not enabled",
+      "detail": "Blocked by design: no reviewed Next operation contract. Use Next's own interface for discovery until a bounded export/run contract is approved."
+    }
+  },
+  "executions_before": 2,
+  "executions_after": 2
+}

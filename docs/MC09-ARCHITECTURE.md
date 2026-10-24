@@ -89,7 +89,9 @@ resource type and external ID. It does not rewrite source state.
   configured files.
 - The review action validates a registered repository, Git refs and timeout.
 - CoCoder is launched with an explicit `--config` that redirects its SQLite and
-  artifact directories under `data/integrations/cocoder/engine`.
+  artifact directories under `data/integrations/cocoder/engine`. This config
+  uses CoCoder defaults apart from `[cqrs]`; repository-local CoCoder config is
+  not merged in this release.
 - Review output is written under `data/integrations/cocoder/review-*.json` with a
   sidecar metadata file recording repository, base, head and intent.
 - Review does not modify tracked source files. Acknowledging a finding is not
