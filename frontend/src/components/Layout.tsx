@@ -6,6 +6,7 @@ import {
   BookOpen,
   BriefcaseBusiness,
   Crosshair,
+  GitBranch,
   Inbox,
   LayoutDashboard,
   Menu,
@@ -41,6 +42,7 @@ const navigation = [
       { to: "/next", label: "Next", icon: Telescope },
       { to: "/work", label: "Work", icon: BriefcaseBusiness },
       { to: "/cocoder", label: "CoCoder", icon: ShieldCheck },
+      { to: "/workflows", label: "Experiments", icon: GitBranch },
     ],
   },
   {

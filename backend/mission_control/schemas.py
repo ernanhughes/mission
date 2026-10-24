@@ -925,5 +925,78 @@ class AdapterRefreshResponse(BaseModel):
     pending_recommendations: int = 0
 
 
+class WorkflowEventRead(BaseModel):
+    id: str
+    workflow_id: str
+    sequence: int
+    event_type: str
+    source: str
+    summary: str
+    payload: dict[str, Any]
+    source_ref: str | None
+    created_at: str
+
+
+class ExperimentWorkflowRead(BaseModel):
+    id: str
+    title: str
+    template: str
+    status: str
+    next_record_id: str | None
+    next_external_id: str
+    next_title: str
+    project_id: str | None
+    project_name: str | None
+    next_evidence: dict[str, Any]
+    proposal: dict[str, Any]
+    language_intention: dict[str, Any]
+    repository_path: str
+    baseline_commit: str
+    approved_scope: list[str]
+    approval_hash: str | None
+    approved_at: str | None
+    approved_by: str | None
+    worker_request_id: str | None
+    worker_status: str | None
+    worker_result: dict[str, Any]
+    patch: dict[str, Any]
+    result_commit: str | None
+    measurement: dict[str, Any]
+    review_execution_id: str | None
+    review_artifact_path: str | None
+    review_summary: dict[str, Any]
+    adverse_review: bool
+    final_decision: str | None
+    final_reason: str
+    override_adverse: bool
+    failure: str | None
+    created_at: str
+    updated_at: str
+    events: list[WorkflowEventRead] = Field(default_factory=list)
+
+
+class WorkflowCreate(RawModel):
+    record_id: str = Field(min_length=1, max_length=200)
+    template: Literal["trace_reduce_v1"] = "trace_reduce_v1"
+    project_id: str | None = None
+    force_new: bool = False
+
+
+class WorkflowApprove(RawModel):
+    confirm: bool = False
+    approved_by: str = Field(default="user", max_length=120)
+    scope_acknowledged: bool = False
+
+
+class WorkflowExecute(RawModel):
+    confirm: bool = False
+
+
+class WorkflowDecision(RawModel):
+    decision: Literal["accept", "reject", "investigate"]
+    reason: str = Field(default="", max_length=4000)
+    override_adverse: bool = False
+
+
 BookRead.model_rebuild()
 ProjectDetail.model_rebuild()

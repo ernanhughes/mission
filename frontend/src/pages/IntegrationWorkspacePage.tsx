@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
   AlertTriangle,
   BriefcaseBusiness,
@@ -45,6 +45,7 @@ import {
   truncate,
 } from "../lib/format";
 import type {
+  ExperimentWorkflow,
   Integration,
   IntegrationDecision,
   IntegrationExecution,
@@ -713,6 +714,31 @@ function DetailView({
   projects: Project[];
   onChanged: () => void;
 }) {
+  const navigate = useNavigate();
+  const toast = useToast();
+  const [proposing, setProposing] = useState(false);
+  const canProposeWorkflow =
+    record.application_id === "next" &&
+    record.title.includes("TraceLite") &&
+    record.state === "NEW";
+
+  async function proposeWorkflow() {
+    setProposing(true);
+    try {
+      const workflow = await api.post<ExperimentWorkflow>("/api/workflows", {
+        record_id: record.id,
+        template: "trace_reduce_v1",
+        force_new: true,
+      });
+      toast.push("success", "Experiment proposal created", "Review the scope before approving.");
+      navigate(`/workflows/${workflow.id}`);
+    } catch (caught) {
+      toast.push("error", "Could not create experiment proposal", errorMessage(caught));
+    } finally {
+      setProposing(false);
+    }
+  }
+
   return (
     <article className="record-detail">
       <header className="record-detail-head">
@@ -735,6 +761,17 @@ function DetailView({
         <span>{record.source_version || "version not stated"}</span>
         <span>Observed {timeAgo(record.observed_at)}</span>
       </div>
+      {canProposeWorkflow ? (
+        <div className="workflow-cta">
+          <div>
+            <span className="eyebrow">MC10 cross-application experiment</span>
+            <p>Create a bounded proposal for human approval. No Worker execution occurs until you approve the scope.</p>
+          </div>
+          <button className="button button-primary button-small" onClick={() => void proposeWorkflow()} disabled={proposing}>
+            <Sparkles size={14} /> {proposing ? "Proposing…" : "Propose TraceLite experiment"}
+          </button>
+        </div>
+      ) : null}
       {record.application_id === "next" ? <NextDetail record={record} /> : null}
       {record.application_id === "work" ? <WorkDetail record={record} /> : null}
       {record.application_id === "cocoder" ? <CoCoderDetail record={record} /> : null}

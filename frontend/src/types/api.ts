@@ -505,6 +505,56 @@ export type InboxItem = {
   decision_state: string;
 };
 
+export type WorkflowEvent = {
+  id: string;
+  workflow_id: string;
+  sequence: number;
+  event_type: string;
+  source: string;
+  summary: string;
+  payload: Record<string, any>;
+  source_ref: string | null;
+  created_at: string;
+};
+
+export type ExperimentWorkflow = {
+  id: string;
+  title: string;
+  template: string;
+  status: string;
+  next_record_id: string | null;
+  next_external_id: string;
+  next_title: string;
+  project_id: string | null;
+  project_name: string | null;
+  next_evidence: Record<string, any>;
+  proposal: Record<string, any>;
+  language_intention: Record<string, any>;
+  repository_path: string;
+  baseline_commit: string;
+  approved_scope: string[];
+  approval_hash: string | null;
+  approved_at: string | null;
+  approved_by: string | null;
+  worker_request_id: string | null;
+  worker_status: string | null;
+  worker_result: Record<string, any>;
+  patch: Record<string, any>;
+  result_commit: string | null;
+  measurement: Record<string, any>;
+  review_execution_id: string | null;
+  review_artifact_path: string | null;
+  review_summary: Record<string, any>;
+  adverse_review: boolean;
+  final_decision: string | null;
+  final_reason: string;
+  override_adverse: boolean;
+  failure: string | null;
+  created_at: string;
+  updated_at: string;
+  events: WorkflowEvent[];
+};
+
 export type SearchResult = {
   id: string;
   source: string;

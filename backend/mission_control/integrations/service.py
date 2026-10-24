@@ -31,6 +31,7 @@ from mission_control.integrations.store import counts_by_type
 from mission_control.models import (
     AdapterStatus,
     Application,
+    ExperimentWorkflow,
     IntegrationExecution,
     ProjectRepository,
     Repository,
@@ -314,6 +315,13 @@ class IntegrationService:
                     ProjectRepository,
                     ProjectRepository.repository_id == Repository.id,
                 )
+            ).all()
+            if path
+        )
+        allowed_paths.update(
+            path
+            for path in session.scalars(
+                select(ExperimentWorkflow.repository_path)
             ).all()
             if path
         )
