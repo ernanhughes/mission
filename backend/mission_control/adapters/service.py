@@ -22,7 +22,9 @@ from mission_control.adapters.cocoder import CoCoderAdapter
 from mission_control.adapters.next import NextAdapter
 from mission_control.adapters.work import WorkAdapter
 from mission_control.adapters.worker import WorkerAdapter
+from mission_control.config import RuntimeSettings
 from mission_control.core.errors import NotFound
+from mission_control.integrations.store import upsert_resources
 from mission_control.models import (
     AdapterStatus,
     Application,
@@ -57,6 +59,14 @@ _AUTO_PROJECT_ADAPTERS = {
 }
 
 
+def get_app_adapter(name: str) -> Adapter | None:
+    return _APP_ADAPTERS.get(name)
+
+
+def available_app_adapters() -> dict[str, Adapter]:
+    return dict(_APP_ADAPTERS)
+
+
 def _age_seconds(value: str | None) -> float | None:
     if not value:
         return None
@@ -70,8 +80,9 @@ def _age_seconds(value: str | None) -> float | None:
 
 
 class AdapterService:
-    def __init__(self, database: Database) -> None:
+    def __init__(self, database: Database, settings: RuntimeSettings | None = None) -> None:
         self.database = database
+        self.settings = settings or RuntimeSettings()
 
     # --------------------------------------------------------------- targets
     def _application_target(self, session: Session, application: Application) -> AdapterTarget:
@@ -86,6 +97,7 @@ class AdapterService:
             documentation_paths=application.documentation_paths,
             related_project_ids=application.related_projects,
             config=application.adapter_config or {},
+            data_dir=str(self.settings.data_dir),
         )
 
     def _project_target(self, session: Session, project: Project) -> AdapterTarget:
@@ -306,6 +318,8 @@ class AdapterService:
     ) -> int:
         created = 0
         target_key = application_id or project_id or "global"
+        if application_id and result.resources:
+            upsert_resources(session, application_id, result.resources)
         for observation in result.observations[:25]:
             dedupe = f"obs-{adapter_name}-{target_key}-{observation.external_id}"
             occurrence = observation.occurred_at or now_iso()

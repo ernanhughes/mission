@@ -1,5 +1,6 @@
 # Local runtime data and secrets
 data/
+.cocoder/
 .env
 .env.*
 !.env.example

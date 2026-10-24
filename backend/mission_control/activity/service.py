@@ -30,6 +30,7 @@ EVENT_TYPES = {
     "adapter_available",
     "adapter_unavailable",
     "adapter_observation",
+    "integration_action",
     "discovery_scan",
     "briefing_generated",
     "system",

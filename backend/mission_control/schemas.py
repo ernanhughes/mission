@@ -691,6 +691,144 @@ class DiscoveryRootUpdate(RawModel):
         return normalize_absolute_path(value, field="discovery root")
 
 
+class IntegrationActionRead(BaseModel):
+    id: str
+    title: str
+    description: str
+    risk: str
+    capability: str
+    approval_required: bool
+    side_effect: str
+    parameters_schema: dict[str, Any]
+    enabled: bool
+    unavailable_reason: str | None
+
+
+class IntegrationRead(BaseModel):
+    application_id: str
+    name: str
+    adapter: str
+    protocol_version: str
+    mode: str
+    enabled: bool
+    available: bool
+    detail: str
+    error: str | None
+    capabilities: list[str]
+    actions: list[IntegrationActionRead]
+    last_checked_at: str | None
+    resource_counts: dict[str, int]
+    repository_path: str | None
+    config: dict[str, Any] = Field(default_factory=dict)
+    repositories: list[dict[str, str]] = Field(default_factory=list)
+
+
+class IntegrationConfigUpdate(RawModel):
+    adapter_config: dict[str, Any]
+    adapter_enabled: bool | None = None
+
+
+class IntegrationDecisionRead(BaseModel):
+    id: str
+    application_id: str
+    resource_type: str
+    external_id: str
+    decision: str
+    reason: str
+    sync_state: str
+    source_decision_id: str | None
+    decided_at: str
+    created_at: str
+
+
+class IntegrationRecordRead(BaseModel):
+    id: str
+    application_id: str
+    application_name: str | None
+    resource_type: str
+    external_id: str
+    title: str
+    summary: str
+    state: str
+    project_id: str | None
+    project_name: str | None
+    source_version: str | None
+    source_timestamp: str | None
+    observed_at: str
+    stale_after_seconds: int
+    stale: bool
+    current: bool
+    evidence: list[str]
+    data: dict[str, Any]
+    local_decision: IntegrationDecisionRead | None
+    decision_options: list[str]
+
+
+class IntegrationResourcePatch(RawModel):
+    project_id: str | None = None
+
+
+class IntegrationDecisionCreate(RawModel):
+    decision: str = Field(min_length=1, max_length=40)
+    reason: str = Field(default="", max_length=4000)
+
+
+class IntegrationExecutionCreate(RawModel):
+    parameters: dict[str, Any] = Field(default_factory=dict)
+    confirm: bool = False
+
+
+class IntegrationExecutionRead(BaseModel):
+    id: str
+    application_id: str
+    application_name: str | None
+    action_id: str
+    parameters: dict[str, Any]
+    status: str
+    risk: str
+    approval_required: bool
+    approved_at: str | None
+    started_at: str | None
+    ended_at: str | None
+    exit_code: int | None
+    output: str
+    error: str | None
+    result: dict[str, Any]
+    artifact_ref: str | None
+    created_at: str
+
+
+class InboxItemRead(BaseModel):
+    id: str
+    source_application: str
+    source_name: str
+    item_type: str
+    title: str
+    summary: str
+    project_id: str | None
+    project_name: str | None
+    priority: int
+    priority_label: str
+    evidence: list[str]
+    observed_at: str
+    state: str
+    actions: list[str]
+    target_path: str
+    resource_id: str | None
+    decision_state: str
+
+
+class SearchResultRead(BaseModel):
+    id: str
+    source: str
+    source_id: str
+    title: str
+    subtitle: str
+    project_id: str | None
+    target_path: str
+    observed_at: str | None
+
+
 class HealthRead(BaseModel):
     status: str
     version: str

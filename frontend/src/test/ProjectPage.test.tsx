@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 import { Route, Routes } from "react-router-dom";
 import { ProjectPage } from "../pages/ProjectPage";
 import { apiError, json, mockFetch, renderRoute } from "./helpers";
-import { makeAdapter, makeProjectDetail, makeTask } from "./fixtures";
+import { makeAdapter, makeProjectDetail, makeTask, makeWorkRecord } from "./fixtures";
 
 function renderProject() {
   return renderRoute(
@@ -37,8 +37,11 @@ describe("ProjectPage", () => {
         }),
       ],
     });
+    const linked = makeWorkRecord({ id: "res-work-linked", project_id: "math", project_name: "Math" });
     const calls = mockFetch(({ path, method }) => {
       if (path === "/api/projects/math" && method === "GET") return json(detail);
+      if (path === "/api/projects/math/integration-context" && method === "GET")
+        return json([linked]);
       if (path === "/api/checkpoints" && method === "POST")
         return json({
           id: "cp-new",
@@ -62,6 +65,12 @@ describe("ProjectPage", () => {
 
     expect(await screen.findByRole("heading", { name: "Math" })).toBeInTheDocument();
     expect(screen.getByText("Work has no verified read-only opportunity export configured.")).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "Cross-application context" })).toBeInTheDocument();
+    expect(screen.getByText("Fixture qualified opportunity")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /Fixture qualified opportunity/i })).toHaveAttribute(
+      "href",
+      "/work?record=res-work-linked",
+    );
 
     await user.type(screen.getByLabelText("What happened?"), "Reviewed proof obligations.");
     await user.type(screen.getByLabelText("Next intended action"), "Check composition.");

@@ -4,8 +4,12 @@ import type {
   Application,
   Book,
   Dashboard,
+  InboxItem,
+  Integration,
+  IntegrationRecord,
   Project,
   ProjectDetail,
+  SearchResult,
   Settings,
   Task,
 } from "../types/api";
@@ -364,6 +368,177 @@ export function makeProjectDetail(overrides: Partial<ProjectDetail> = {}): Proje
     ],
     activity: [makeActivity()],
     adapters: [makeAdapter()],
+    ...overrides,
+  };
+}
+
+export function makeIntegration(overrides: Partial<Integration> = {}): Integration {
+  return {
+    application_id: "next",
+    name: "Next",
+    adapter: "next",
+    protocol_version: "mc09.1",
+    mode: "postgres-readonly",
+    enabled: true,
+    available: true,
+    detail: "Read 130 opportunities from Next's read-only PostgreSQL store.",
+    error: null,
+    capabilities: ["health", "list_resources", "get_resource", "search_resources", "list_actions"],
+    actions: [
+      {
+        id: "run_discovery",
+        title: "Run Next discovery",
+        description: "Blocked until a reviewed operation contract exists.",
+        risk: "external_network",
+        capability: "execute_action",
+        approval_required: true,
+        side_effect: "external_communication",
+        parameters_schema: {},
+        enabled: false,
+        unavailable_reason: "No reviewed Next operation contract.",
+      },
+    ],
+    last_checked_at: now,
+    resource_counts: { next_opportunity: 130, next_run: 12, next_evidence_gap: 31 },
+    repository_path: "C:\\Projects\\next",
+    config: { dsn_env: "NEXT_DSN", limit: 200 },
+    repositories: [],
+    ...overrides,
+  };
+}
+
+export function makeIntegrationRecord(overrides: Partial<IntegrationRecord> = {}): IntegrationRecord {
+  return {
+    id: "res-next-1",
+    application_id: "next",
+    application_name: "Next",
+    resource_type: "next_opportunity",
+    external_id: "next-fixture-1",
+    title: "Fixture Next recommendation",
+    summary: "A grounded research candidate from the live store.",
+    state: "NEW",
+    project_id: null,
+    project_name: null,
+    source_version: "next-postgres-readonly-v1",
+    source_timestamp: now,
+    observed_at: now,
+    stale_after_seconds: 900,
+    stale: false,
+    current: true,
+    evidence: ["next:fixture"],
+    data: {
+      queue_type: "validated",
+      scores: { score: 42, feasibility: 8 },
+      what_discovered: "A mechanism worth testing.",
+      capability_unlocked: "A cheaper evaluation path.",
+      simplest_experiment: "Compare on the fixture benchmark.",
+      falsification: "No gain over the baseline.",
+      evaluation_basis: "provisional",
+      items: [],
+      source_decision_history: [],
+    },
+    local_decision: null,
+    decision_options: ["shortlist", "accept", "defer", "reject", "investigate"],
+    ...overrides,
+  };
+}
+
+export function makeWorkRecord(overrides: Partial<IntegrationRecord> = {}): IntegrationRecord {
+  return makeIntegrationRecord({
+    id: "res-work-1",
+    application_id: "work",
+    application_name: "Work",
+    resource_type: "work_opportunity",
+    external_id: "work-fixture-1",
+    title: "Fixture qualified opportunity",
+    summary: "Review the fixture opportunity.",
+    state: "DISCOVERED / qualified",
+    data: {
+      buyer: "Fixture Buyer",
+      location: "Ireland",
+      remote: true,
+      track: "DIRECT_CONTRACT",
+      availability: "OPEN",
+      qualification: {
+        qualified: true,
+        score: 72,
+        bucket: "direct_income",
+        policy: "track-aware-v3",
+        evidence_mode: "SINGLE_AUTHORITATIVE_SOURCE",
+        next_action: "Verify eligibility before committing time.",
+        unknowns: ["Eligibility remains unknown."],
+        blocked: [],
+      },
+      compensation: { amount: 1000, currency: "EUR", money_type: "STATED" },
+    },
+    decision_options: ["shortlist", "defer", "reject", "investigate"],
+    ...overrides,
+  });
+}
+
+export function makeCoCoderRecord(overrides: Partial<IntegrationRecord> = {}): IntegrationRecord {
+  return makeIntegrationRecord({
+    id: "res-cocoder-1",
+    application_id: "cocoder",
+    application_name: "CoCoder",
+    resource_type: "cocoder_finding",
+    external_id: "review-fixture:F-1",
+    title: "HIGH: Exception handling widened",
+    summary: "The handler catches Exception and does not re-raise.",
+    state: "high / confirmed",
+    data: {
+      severity: "high",
+      confidence: "confirmed",
+      claim_type: "derived_structural_effect",
+      rule_code: "EXCEPTION_HANDLER_WIDENED",
+      category: "exception_boundary",
+      statement: "The handler catches Exception and does not re-raise.",
+      question: "Should the handler be narrower?",
+      repository_path: "C:\\Projects\\mission",
+      base: "HEAD~1",
+      head: "HEAD",
+      artifact_path: "C:\\data\\integrations\\cocoder\\review.json",
+      affected_paths: ["backend/example.py"],
+      unknowns: ["Which exception types are intended."],
+    },
+    decision_options: ["investigate", "acknowledge", "defer"],
+    ...overrides,
+  });
+}
+
+export function makeInboxItem(overrides: Partial<InboxItem> = {}): InboxItem {
+  return {
+    id: "inbox-res-next-1",
+    source_application: "next",
+    source_name: "Next",
+    item_type: "next_recommendation",
+    title: "Fixture Next recommendation",
+    summary: "A grounded research candidate from the live store.",
+    project_id: null,
+    project_name: null,
+    priority: 92,
+    priority_label: "High",
+    evidence: ["next:fixture"],
+    observed_at: now,
+    state: "NEW",
+    actions: ["shortlist", "accept", "defer", "reject", "investigate"],
+    target_path: "/next?record=res-next-1",
+    resource_id: "res-next-1",
+    decision_state: "pending",
+    ...overrides,
+  };
+}
+
+export function makeSearchResult(overrides: Partial<SearchResult> = {}): SearchResult {
+  return {
+    id: "res-next-1",
+    source: "Next",
+    source_id: "next-fixture-1",
+    title: "Fixture Next recommendation",
+    subtitle: "A grounded research candidate.",
+    project_id: null,
+    target_path: "/next?record=res-next-1",
+    observed_at: now,
     ...overrides,
   };
 }

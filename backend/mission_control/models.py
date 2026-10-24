@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from sqlalchemy import Boolean, Float, ForeignKey, Integer, String, Text
+from sqlalchemy import Boolean, Float, ForeignKey, Integer, String, Text, UniqueConstraint
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy.types import JSON
 
@@ -342,6 +342,76 @@ class DiscoveryRoot(Base):
     path: Mapped[str] = mapped_column(Text, primary_key=True)
     enabled: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     added_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class IntegrationRecord(Base):
+    __tablename__ = "integration_records"
+    __table_args__ = (
+        UniqueConstraint("application_id", "resource_type", "external_id", name="uq_integration_resource"),
+    )
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    application_id: Mapped[str] = mapped_column(
+        String, ForeignKey("applications.id", ondelete="CASCADE"), nullable=False
+    )
+    resource_type: Mapped[str] = mapped_column(String, nullable=False)
+    external_id: Mapped[str] = mapped_column(String, nullable=False)
+    title: Mapped[str] = mapped_column(String, nullable=False)
+    summary: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    state: Mapped[str] = mapped_column(String, default="", nullable=False)
+    project_id: Mapped[str | None] = mapped_column(
+        String, ForeignKey("projects.id", ondelete="SET NULL")
+    )
+    source_version: Mapped[str | None] = mapped_column(String)
+    source_timestamp: Mapped[str | None] = mapped_column(String)
+    observed_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+    stale_after_seconds: Mapped[int] = mapped_column(Integer, default=900, nullable=False)
+    evidence: Mapped[list[str]] = mapped_column(JSON, default=list, nullable=False)
+    data: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict, nullable=False)
+    search_text: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    current: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+    updated_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class IntegrationDecision(Base):
+    __tablename__ = "integration_decisions"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    application_id: Mapped[str] = mapped_column(
+        String, ForeignKey("applications.id", ondelete="CASCADE"), nullable=False
+    )
+    resource_type: Mapped[str] = mapped_column(String, nullable=False)
+    external_id: Mapped[str] = mapped_column(String, nullable=False)
+    decision: Mapped[str] = mapped_column(String, nullable=False)
+    reason: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    sync_state: Mapped[str] = mapped_column(String, default="local_only", nullable=False)
+    source_decision_id: Mapped[str | None] = mapped_column(String)
+    decided_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class IntegrationExecution(Base):
+    __tablename__ = "integration_executions"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    application_id: Mapped[str] = mapped_column(
+        String, ForeignKey("applications.id", ondelete="CASCADE"), nullable=False
+    )
+    action_id: Mapped[str] = mapped_column(String, nullable=False)
+    parameters: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict, nullable=False)
+    status: Mapped[str] = mapped_column(String, default="queued", nullable=False)
+    risk: Mapped[str] = mapped_column(String, default="read_only", nullable=False)
+    approval_required: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    approved_at: Mapped[str | None] = mapped_column(String)
+    started_at: Mapped[str | None] = mapped_column(String)
+    ended_at: Mapped[str | None] = mapped_column(String)
+    exit_code: Mapped[int | None] = mapped_column(Integer)
+    output: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    error: Mapped[str | None] = mapped_column(Text)
+    result: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict, nullable=False)
+    artifact_ref: Mapped[str | None] = mapped_column(Text)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
 
 
 class Briefing(Base):

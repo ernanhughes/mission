@@ -48,6 +48,7 @@ import type {
   Adapter,
   Application,
   Checkpoint,
+  IntegrationRecord,
   ProjectDetail,
   Recommendation,
   Task,
@@ -376,6 +377,10 @@ export function ProjectPage() {
   const { projectId = "" } = useParams();
   const project = useApi<ProjectDetail>(`/api/projects/${projectId}`, { pollMs: 60000 });
   const applications = useApi<Application[]>("/api/applications?enabled_only=true");
+  const integrationContext = useApi<IntegrationRecord[]>(
+    `/api/projects/${projectId}/integration-context`,
+    { pollMs: 60000 },
+  );
   const toast = useToast();
   const [busy, setBusy] = useState(false);
   const [taskTitle, setTaskTitle] = useState("");
@@ -621,6 +626,63 @@ export function ProjectPage() {
                 description="Math, Next and CoCoder evidence will appear here when adapters find something reviewable."
               />
             )}
+          </Section>
+
+          <Section
+            title="Cross-application context"
+            description="Next research, Work opportunities and CoCoder findings associated with this project. Source systems remain authoritative."
+            actions={
+              integrationContext.data?.length ? (
+                <Tag tone="accent">{integrationContext.data.length} linked</Tag>
+              ) : null
+            }
+          >
+            {integrationContext.loading ? <LoadingBlock label="Loading linked context" compact /> : null}
+            {integrationContext.error ? (
+              <InlineError message={integrationContext.error.message} />
+            ) : null}
+            {integrationContext.data?.length ? (
+              <div className="project-context-list">
+                {integrationContext.data.map((record) => (
+                  <Link
+                    className="project-context-item"
+                    key={record.id}
+                    to={`/${record.application_id}?record=${record.id}`}
+                  >
+                    <div className="project-context-head">
+                      <span className={`source-pill source-${record.application_id}`}>
+                        {record.application_name ?? titleCase(record.application_id)}
+                      </span>
+                      <SimpleStatusBadge
+                        state={record.stale ? "stale" : "running"}
+                        label={record.state || titleCase(record.resource_type)}
+                      />
+                      <span className="project-context-time">
+                        {timeAgo(record.source_timestamp || record.observed_at)}
+                      </span>
+                    </div>
+                    <strong>{record.title}</strong>
+                    <p>{truncate(record.summary || "No source summary.", 240)}</p>
+                    <div className="project-context-meta">
+                      <span>{titleCase(record.resource_type.replace(/_/g, " "))}</span>
+                      {record.local_decision ? (
+                        <span className="local-decision-pill">
+                          {record.local_decision.decision} · local only
+                        </span>
+                      ) : null}
+                      {record.stale ? <span className="warn-text">stale observation</span> : null}
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            ) : null}
+            {integrationContext.data && integrationContext.data.length === 0 ? (
+              <EmptyState
+                title="No linked application records"
+                description="Open a record in Next, Work or CoCoder and associate it with this project."
+                icon={<Crosshair size={19} />}
+              />
+            ) : null}
           </Section>
 
           <Section title="Tasks" description="Explicit user actions. Evidence adapters do not create tasks automatically.">
