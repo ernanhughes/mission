@@ -1,0 +1,147 @@
+{
+  "generated_at": "2026-10-24T17:54:48.177Z",
+  "workflow_id": "wf-72d32f9abfaa4144",
+  "browser": "Google Chrome (headless via puppeteer-core)",
+  "steps": [
+    {
+      "step": "proposal_inspected",
+      "ok": true
+    },
+    {
+      "step": "approved_in_ui",
+      "ok": true
+    },
+    {
+      "step": "executed_and_reviewed_in_ui",
+      "ok": true
+    },
+    {
+      "step": "human_decision_in_ui",
+      "ok": true
+    },
+    {
+      "step": "replay_idempotent",
+      "ok": true
+    }
+  ],
+  "console_errors": [],
+  "page_errors": [],
+  "screenshots": [
+    "00-next-tracelite-candidate.png",
+    "01-workflow-proposal.png",
+    "02-workflow-approved.png",
+    "03-workflow-reviewed.png",
+    "04-workflow-decided.png"
+  ],
+  "workflow": {
+    "status": "decided",
+    "final_decision": "accept",
+    "worker_status": "AWAITING_ACCEPTANCE",
+    "worker_request_id": "wrq_6b926abd0c72c625a5d43b9e99706c4d",
+    "result_commit": "7403d1be2f7cefbea8d8d8861469bf366d3a3a21",
+    "measurement_passed": true,
+    "comparison": {
+      "baseline_events": 21,
+      "baseline_reduced_events": 21,
+      "after_events": 21,
+      "after_reduced_events": 3,
+      "after_reduction_ratio": 0.8571
+    },
+    "review": {
+      "schema": "mc10.review-summary.v1",
+      "available": true,
+      "artifact_path": "C:\\Projects\\mission\\data\\integrations\\cocoder\\review-20261024T175451Z-a4d12d.json",
+      "review_schema": "0.2",
+      "changed_files": 1,
+      "findings": 0,
+      "high": 0,
+      "medium": 0,
+      "low": 0,
+      "info": 0,
+      "adverse": false,
+      "sample": []
+    },
+    "adverse_review": false,
+    "events": [
+      {
+        "sequence": 1,
+        "event_type": "research_imported",
+        "source": "next",
+        "summary": "Imported 32e30df92070ef58c36324e400b2f6d54aacc375c9f14fd0b0de542630ce6c06 from next-research-export-v1."
+      },
+      {
+        "sequence": 2,
+        "event_type": "proposal_created",
+        "source": "mission-control",
+        "summary": "Created a bounded experiment proposal for human approval."
+      },
+      {
+        "sequence": 3,
+        "event_type": "baseline_observed",
+        "source": "sandbox",
+        "summary": "Observed the baseline tests and reduction measurement."
+      },
+      {
+        "sequence": 4,
+        "event_type": "approved",
+        "source": "user",
+        "summary": "Approved by user for scope tracelite/reduce.py."
+      },
+      {
+        "sequence": 5,
+        "event_type": "execution_started",
+        "source": "mission-control",
+        "summary": "Approval verified; Worker execution started."
+      },
+      {
+        "sequence": 6,
+        "event_type": "worker_responded",
+        "source": "worker",
+        "summary": "Worker returned AWAITING_ACCEPTANCE using direct/qwen2.5-coder:latest."
+      },
+      {
+        "sequence": 7,
+        "event_type": "patch_applied",
+        "source": "mission-control",
+        "summary": "Applied the model patch within the approved file scope."
+      },
+      {
+        "sequence": 8,
+        "event_type": "measurement_recorded",
+        "source": "sandbox",
+        "summary": "Tests passed and the reduction target was met."
+      },
+      {
+        "sequence": 9,
+        "event_type": "result_committed",
+        "source": "sandbox",
+        "summary": "Committed the experiment result as 7403d1be2f7c."
+      },
+      {
+        "sequence": 10,
+        "event_type": "review_requested",
+        "source": "mission-control",
+        "summary": "Requested a CoCoder review of the actual result commit."
+      },
+      {
+        "sequence": 11,
+        "event_type": "review_started",
+        "source": "cocoder",
+        "summary": "CoCoder execution exec-2f90d75a73a9418d queued."
+      },
+      {
+        "sequence": 12,
+        "event_type": "review_completed",
+        "source": "cocoder",
+        "summary": "CoCoder reviewed 1 changed file(s): 0 finding(s), 0 high, 0 medium."
+      },
+      {
+        "sequence": 13,
+        "event_type": "human_decision",
+        "source": "user",
+        "summary": "Human decision: accept."
+      }
+    ]
+  },
+  "ok": true
+}

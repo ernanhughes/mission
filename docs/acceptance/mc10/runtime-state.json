@@ -1,0 +1,1007 @@
+{
+  "health": {
+    "status": "ok",
+    "version": "0.1.0",
+    "database": "ok",
+    "schema_version": 3,
+    "ai_enabled": false,
+    "monitor_enabled": true
+  },
+  "worker_health": {
+    "status": "ready",
+    "version": "0.2.0",
+    "executors": [
+      {
+        "id": "direct",
+        "available": true,
+        "details": {
+          "gateway": "ollama",
+          "runtime_parity": false
+        }
+      }
+    ],
+    "models": {
+      "catalogue": [
+        {
+          "id": "pi_default",
+          "adapter": "pi",
+          "model": "default",
+          "failure_domain": "pi",
+          "economic_tier": "subscription",
+          "data_policy": "private",
+          "configured_family": "unknown",
+          "family_source": "unknown",
+          "mapping_version": "",
+          "health": "unknown",
+          "provider_state_ref": "provider-state-eb461445-6b18-4275-87b3-e993f1858acc",
+          "retry_at": null
+        },
+        {
+          "id": "strengthen_deepseek_go",
+          "adapter": "pi",
+          "model": "opencode-go/deepseek-v4-flash",
+          "failure_domain": "pi",
+          "economic_tier": "subscription",
+          "data_policy": "private",
+          "configured_family": "deepseek",
+          "family_source": "verified_mapping",
+          "mapping_version": "worker-families/2026-10-13-longcat",
+          "health": "unknown",
+          "provider_state_ref": "provider-state-353d4041-1b28-435f-9815-94523f6d540c",
+          "retry_at": null
+        },
+        {
+          "id": "review_mimo_free",
+          "adapter": "pi",
+          "model": "opencode/mimo-v2.6-flash-free",
+          "failure_domain": "pi",
+          "economic_tier": "free",
+          "data_policy": "training_allowed",
+          "configured_family": "mimo",
+          "family_source": "verified_mapping",
+          "mapping_version": "worker-families/2026-10-13-longcat",
+          "health": "unknown",
+          "provider_state_ref": "provider-state-ba091795-ca54-4127-8594-5c13646029ce",
+          "retry_at": null
+        },
+        {
+          "id": "review_longcat_free",
+          "adapter": "pi",
+          "model": "opencode-go/longcat-2.5-preview-free",
+          "failure_domain": "pi",
+          "economic_tier": "free",
+          "data_policy": "training_allowed",
+          "configured_family": "longcat",
+          "family_source": "verified_mapping",
+          "mapping_version": "worker-families/2026-10-13-longcat",
+          "health": "unknown",
+          "provider_state_ref": "provider-state-4f648401-b4e6-4fd9-973b-ec3612d43b91",
+          "retry_at": null
+        },
+        {
+          "id": "review_qwen_go",
+          "adapter": "pi",
+          "model": "opencode-go/qwen3.8-flash",
+          "failure_domain": "pi",
+          "economic_tier": "subscription",
+          "data_policy": "private",
+          "configured_family": "qwen",
+          "family_source": "verified_mapping",
+          "mapping_version": "worker-families/2026-10-13-longcat",
+          "health": "unknown",
+          "provider_state_ref": "provider-state-d687aa8c-17c0-4e91-b270-f53a38329728",
+          "retry_at": null
+        },
+        {
+          "id": "review_luna_go",
+          "adapter": "pi",
+          "model": "opencode-go/gpt-6-luna",
+          "failure_domain": "pi",
+          "economic_tier": "subscription",
+          "data_policy": "private",
+          "configured_family": "gpt",
+          "family_source": "verified_mapping",
+          "mapping_version": "worker-families/2026-10-13-longcat",
+          "health": "unknown",
+          "provider_state_ref": "provider-state-c790bf21-c6fc-4c10-93a9-3e1983ac79a1",
+          "retry_at": null
+        },
+        {
+          "id": "muse_go",
+          "adapter": "opencode_go",
+          "model": "deepseek-v4-flash",
+          "failure_domain": "opencode_go",
+          "economic_tier": "subscription",
+          "data_policy": "private",
+          "configured_family": "deepseek",
+          "family_source": "verified_mapping",
+          "mapping_version": "worker-families/2026-10-13-longcat",
+          "health": "unknown",
+          "provider_state_ref": "provider-state-db9df84a-55c9-4087-b3ab-1fe371dc08c4",
+          "retry_at": null
+        }
+      ],
+      "policies": {
+        "default": {
+          "routes": [
+            "pi_default"
+          ],
+          "allow_direct_paid": false,
+          "attempts_per_route": 2
+        },
+        "improvement.strengthen.reader": {
+          "routes": [
+            "strengthen_deepseek_go"
+          ],
+          "allow_direct_paid": false,
+          "attempts_per_route": 1
+        },
+        "improvement.strengthen.transfer": {
+          "routes": [
+            "strengthen_deepseek_go"
+          ],
+          "allow_direct_paid": false,
+          "attempts_per_route": 1
+        },
+        "improvement.strengthen.enhancement": {
+          "routes": [
+            "strengthen_deepseek_go"
+          ],
+          "allow_direct_paid": false,
+          "attempts_per_route": 1
+        },
+        "improvement.strengthen.comparison": {
+          "routes": [
+            "strengthen_deepseek_go"
+          ],
+          "allow_direct_paid": false,
+          "attempts_per_route": 1
+        },
+        "improvement.strengthen.acceptance_free": {
+          "routes": [
+            "review_mimo_free",
+            "review_longcat_free"
+          ],
+          "allow_direct_paid": false,
+          "attempts_per_route": 1
+        },
+        "improvement.strengthen.acceptance_go": {
+          "routes": [
+            "review_qwen_go"
+          ],
+          "allow_direct_paid": false,
+          "attempts_per_route": 1
+        },
+        "improvement.strengthen.acceptance_luna": {
+          "routes": [
+            "review_luna_go"
+          ],
+          "allow_direct_paid": false,
+          "attempts_per_route": 1
+        }
+      },
+      "status": "unknown",
+      "catalogue_available": true,
+      "catalogue_source": "static",
+      "policy": "default",
+      "allow_direct_paid": false,
+      "preflight": {
+        "schema_version": "provider-preflight.v1",
+        "decision": "PROCEED_WITH_UNKNOWN_STATE",
+        "routes": [
+          {
+            "route": "pi_default",
+            "provider_state_ref": "provider-state-eb461445-6b18-4275-87b3-e993f1858acc",
+            "provider_state": {
+              "schema_version": "provider-state.v1",
+              "provider_state_id": "provider-state-eb461445-6b18-4275-87b3-e993f1858acc",
+              "provider": "pi",
+              "model": "default",
+              "failure_domain": "pi",
+              "scope": "model",
+              "observed_at": "2026-10-24T13:42:55.575Z",
+              "observed_from": "configuration",
+              "status": "UNKNOWN",
+              "authentication": "UNKNOWN",
+              "model_available": "UNKNOWN",
+              "request_admissible": "UNKNOWN",
+              "quota_state": "UNKNOWN",
+              "quota_windows": [],
+              "reset_at": null,
+              "retry_at": null,
+              "retry_source": "NONE",
+              "extra_credit_usd": null,
+              "extra_usage": "UNKNOWN",
+              "last_provider_error": null
+            }
+          }
+        ],
+        "warnings": [
+          "Quota is not observed; configured models and past successes do not establish current request admissibility."
+        ]
+      },
+      "routes": [
+        {
+          "id": "pi_default",
+          "provider": "pi",
+          "model": "default",
+          "failure_domain": "pi",
+          "economic_tier": "subscription",
+          "health": "unknown",
+          "provider_state_ref": "provider-state-eb461445-6b18-4275-87b3-e993f1858acc",
+          "provider_state": {
+            "schema_version": "provider-state.v1",
+            "provider_state_id": "provider-state-eb461445-6b18-4275-87b3-e993f1858acc",
+            "provider": "pi",
+            "model": "default",
+            "failure_domain": "pi",
+            "scope": "model",
+            "observed_at": "2026-10-24T13:42:55.575Z",
+            "observed_from": "configuration",
+            "status": "UNKNOWN",
+            "authentication": "UNKNOWN",
+            "model_available": "UNKNOWN",
+            "request_admissible": "UNKNOWN",
+            "quota_state": "UNKNOWN",
+            "quota_windows": [],
+            "reset_at": null,
+            "retry_at": null,
+            "retry_source": "NONE",
+            "extra_credit_usd": null,
+            "extra_usage": "UNKNOWN",
+            "last_provider_error": null
+          }
+        }
+      ]
+    },
+    "listener": {
+      "host": "127.0.0.1",
+      "port": 7317
+    },
+    "security": {
+      "api_auth_required": false
+    }
+  },
+  "workflows": [
+    {
+      "id": "wf-72d32f9abfaa4144",
+      "status": "decided",
+      "final_decision": "accept",
+      "worker_status": "AWAITING_ACCEPTANCE",
+      "worker_request_id": "wrq_6b926abd0c72c625a5d43b9e99706c4d",
+      "result_commit": "7403d1be2f7cefbea8d8d8861469bf366d3a3a21",
+      "failure": null,
+      "adverse_review": false,
+      "created_at": "2026-10-24T17:54:40.098118+00:00",
+      "updated_at": "2026-10-24T17:55:03.336970+00:00"
+    },
+    {
+      "id": "wf-95ec73f2ed6644fc",
+      "status": "failed",
+      "final_decision": null,
+      "worker_status": "AWAITING_ACCEPTANCE",
+      "worker_request_id": "wrq_b08876b6df20e38e164b9c6ff9bba050",
+      "result_commit": null,
+      "failure": "Patch rejected: ValueError: Generated Python is invalid: invalid syntax (<unknown>, line 1)",
+      "adverse_review": false,
+      "created_at": "2026-10-24T17:53:20.134507+00:00",
+      "updated_at": "2026-10-24T17:53:35.747916+00:00"
+    },
+    {
+      "id": "wf-cae5173ef54444af",
+      "status": "decided",
+      "final_decision": "accept",
+      "worker_status": "AWAITING_ACCEPTANCE",
+      "worker_request_id": "wrq_bf01411467e93f3207c98029236c19c0",
+      "result_commit": "8d9075bf1525c87ac8d67eec342448c760db87d6",
+      "failure": null,
+      "adverse_review": false,
+      "created_at": "2026-10-24T17:50:23.131567+00:00",
+      "updated_at": "2026-10-24T17:51:36.292254+00:00"
+    },
+    {
+      "id": "wf-9bf2966467f44959",
+      "status": "decided",
+      "final_decision": "accept",
+      "worker_status": "AWAITING_ACCEPTANCE",
+      "worker_request_id": "wrq_f81f96cb15f409497b9ba37bcd443428",
+      "result_commit": "e153dd5b5980433e76f9b9e1ace2c0da5cc1ddc3",
+      "failure": null,
+      "adverse_review": false,
+      "created_at": "2026-10-24T17:39:20.726708+00:00",
+      "updated_at": "2026-10-24T17:40:04.801416+00:00"
+    },
+    {
+      "id": "wf-b53bf11c526b4209",
+      "status": "failed",
+      "final_decision": null,
+      "worker_status": "AWAITING_ACCEPTANCE",
+      "worker_request_id": "wrq_5a632e7aeb0f12b31e852ed44342dbf5",
+      "result_commit": null,
+      "failure": "Patch rejected: JSONDecodeError: Expecting ',' delimiter: line 6 column 20 (char 106)",
+      "adverse_review": false,
+      "created_at": "2026-10-24T17:35:56.217377+00:00",
+      "updated_at": "2026-10-24T17:37:15.217022+00:00"
+    },
+    {
+      "id": "wf-7bdb167746664a39",
+      "status": "decided",
+      "final_decision": "reject",
+      "worker_status": "AWAITING_ACCEPTANCE",
+      "worker_request_id": "wrq_85c6f5042fc8a3f0fb662cd150c85427",
+      "result_commit": "68a23d97b5f363e85cab2ebcfbed56089513e048",
+      "failure": null,
+      "adverse_review": false,
+      "created_at": "2026-10-24T13:58:51.675520+00:00",
+      "updated_at": "2026-10-24T17:35:28.476818+00:00"
+    }
+  ],
+  "accepted_workflow": {
+    "id": "wf-72d32f9abfaa4144",
+    "title": "TraceLite proxy: [exploit] TraceLite: Efficient Trace Reduction for SWE Agents via Optical Compression and Redundancy Removal",
+    "template": "trace_reduce_v1",
+    "status": "decided",
+    "next_record_id": "res-eab312f10e6b9c6d7dac",
+    "next_external_id": "32e30df92070ef58c36324e400b2f6d54aacc375c9f14fd0b0de542630ce6c06",
+    "next_title": "[exploit] TraceLite: Efficient Trace Reduction for SWE Agents via Optical Compression and Redundancy Removal",
+    "project_id": null,
+    "project_name": null,
+    "next_evidence": {
+      "schema": "next-research-export-v1",
+      "generated_at": "2026-10-24T13:42:17.035190+00:00",
+      "export_path": "C:\\Projects\\mission\\data\\integrations\\next\\next-research-export-v1.json",
+      "opportunity": {
+        "id": "32e30df92070ef58c36324e400b2f6d54aacc375c9f14fd0b0de542630ce6c06",
+        "title": "[exploit] TraceLite: Efficient Trace Reduction for SWE Agents via Optical Compression and Redundancy Removal",
+        "status": "NEW",
+        "queue_type": "validated",
+        "score": 78.0,
+        "what_discovered": "arxiv reports: TraceLite: Efficient Trace Reduction for SWE Agents via Optical Compression and Redundancy Removal. Software engineering agents solve repository-level tasks through iterative tool use, but their continuously growing interaction traces incur substantial token consumption and inference overhead. Existing compression approaches often require model training, auxiliary LLM calls, or assumptions about specific content such as source code. We present TraceLite, a simple yet effective, training-free fra",
+        "evidence": "Source: 2610.28612v1 (arxiv).",
+        "what_is_new": "Applies a reported mechanism to a bottleneck we already have.",
+        "capability_unlocked": "If effective, could reduce 'Pi' limitation: Human attention consumed reviewing and correcting AI work..",
+        "relation_to_existing": "Relates to project 'Pi' (Agent harness for running AI research tasks with tool use.). Limitations: Human attention consumed reviewing and correcting AI work.; Transcript-driven workflow makes state hard to review at a glance..",
+        "simplest_experiment": "Run a bounded spike reproducing the reported mechanism on one baseline task; compare to current approach.",
+        "falsification": "No measurable improvement on held-out tasks, or the mechanism needs more compute/tokens than budgeted.",
+        "cost_estimate": "Small: bounded spike, measured against baseline.",
+        "why_not": "The reported result may not transfer to our stack; source popularity is not proof of benefit; our bottleneck may be mis-diagnosed.",
+        "evaluation_basis": "mechanism-analysis estimate (NXT03)",
+        "uncertainty": 34.7,
+        "created_at": "2026-10-21T13:45:09.935668+00:00",
+        "items": [
+          {
+            "id": "32e30df92070ef58c36324e400b2f6d54aacc375c9f14fd0b0de542630ce6c06",
+            "source": "arxiv",
+            "source_id": "2610.28612v1",
+            "title": "TraceLite: Efficient Trace Reduction for SWE Agents via Optical Compression and Redundancy Removal",
+            "url": "2610.28612v1",
+            "summary": "Software engineering agents solve repository-level tasks through iterative tool use, but their continuously growing interaction traces incur substantial token consumption and inference overhead. Existing compression approaches often require model training, auxiliary LLM calls, or assumptions about specific content such as source code. We present TraceLite, a simple yet effective, training-free framework for compressing heterogeneous SWE-agent observations. Our preliminary study shows that optical rendering preserves substantial textual and semantic information under moderate compression, while agent trajectories exhibit both cross-step and phase-level redundancy. Motivated by these findings, TraceLite preserves recent observations as high-fidelity text, renders historical observations as compact images, removes overlapping content, and discards phase-expired observation payloads after code editing. It requires neither offline training nor auxiliary LLM inference. We evaluate TraceLite on SWE-bench Verified and DeepSWE using GPT-5.6-Luna and Gemini-3.8Flash as backbone models. On SWE-bench Verified, TraceLite achieves 78.25% resolve rate, outperforming the evaluated compression baselines while reducing average input-token consumption and API cost by 33.05% and 21.30%, respectively. Moreover, it introduces only 0.438 seconds of compression latency per observation. These results demonstrate that TraceLite improves SWE-agent efficiency with low processing overhead and without compromising issue-resolution capability. Our code is available at https://github.com/xjywhu/TraceLite.",
+            "published_at": "2026-10-20T17:53:35Z",
+            "updated_at": "2026-10-20T17:53:35Z",
+            "collected_at": "2026-10-21T13:44:54.315496+00:00",
+            "channels": [],
+            "themes": [],
+            "score": 0.4
+          }
+        ],
+        "evidence_gaps": null
+      }
+    },
+    "proposal": {
+      "schema": "mc10.experiment-proposal.v1",
+      "template": "trace_reduce_v1",
+      "objective": "Implement a bounded trace-reduction proxy for the Next TraceLite candidate, changing only tracelite/reduce.py.",
+      "hypothesis": "arxiv reports: TraceLite: Efficient Trace Reduction for SWE Agents via Optical Compression and Redundancy Removal. Software engineering agents solve repository-level tasks through iterative tool use, but their continuously growing interaction traces incur substantial token consumption and inference overhead. Existing compression approaches often require model training, auxiliary LLM calls, or assumptions about specific content such as source code. We present TraceLite, a simple yet effective, training-free fra",
+      "source_experiment": "Run a bounded spike reproducing the reported mechanism on one baseline task; compare to current approach.",
+      "falsification": "No measurable improvement on held-out tasks, or the mechanism needs more compute/tokens than budgeted.",
+      "scope": [
+        "tracelite/reduce.py"
+      ],
+      "repository_path": "C:\\Projects\\mission\\data\\experiments\\tracelite-spike",
+      "baseline_commit": "ca5dfb35c035357d50e31ca7780ffaf3eb1af9dc",
+      "baseline_scope_sha256": "89d9fbb3eebe3c6d4544851efc25ba03f7c7b7371fbe1ed0fc15dfc10e6eb9b2",
+      "project_id": null,
+      "expected_result": "All sandbox tests pass and the duplicate-heavy fixture is reduced from 21 events to 3 events.",
+      "stop_conditions": [
+        "Worker is unavailable or blocked",
+        "The patch changes a path outside the approved scope",
+        "Generated Python is invalid or uses forbidden operations",
+        "Deterministic tests fail",
+        "The reduction target is not met",
+        "CoCoder reports a high or medium finding",
+        "The approved scope or baseline becomes stale"
+      ],
+      "evaluation_criteria": [
+        "pytest passes in the sandbox",
+        "measure.py exits 0 and reports 21 -> 3 events",
+        "git diff contains exactly the approved scope",
+        "CoCoder reviews the exact result commit"
+      ],
+      "worker": {
+        "backend": "direct",
+        "model": "qwen2.5-coder:latest",
+        "base_url": "http://127.0.0.1:7317",
+        "max_model_calls": 1,
+        "timeout_seconds": 180
+      },
+      "prompt": "You are executing a bounded research experiment derived from the Next candidate \"[exploit] TraceLite: Efficient Trace Reduction for SWE Agents via Optical Compression and Redundancy Removal\".\n\nReturn ONLY the complete Python file content for tracelite/reduce.py. Do not use markdown fences. Do not add commentary.\n\nRules:\n- Modify only tracelite/reduce.py.\n- The file must be complete and valid Python.\n- The function must satisfy every test below.\n- Never mutate the input list.\n- Use exactly this algorithm: start with an empty result list; iterate over every event in order; append the event only when the result is empty or the event differs from the last result item; return the result list. Do not append the last event a second time.\n- Do not add imports unless required.\n\nCurrent file:\ndef reduce_trace(events):\n    \"\"\"Return a reduced trace preserving first/last and order.\"\"\"\n    return list(events)\n\n\nTests:\nfrom tracelite.reduce import reduce_trace\n\n\ndef test_empty_trace():\n    assert reduce_trace([]) == []\n\n\ndef test_removes_consecutive_duplicates():\n    events = [{\"step\": \"a\"}, {\"step\": \"a\"}, {\"step\": \"b\"}]\n    assert reduce_trace(events) == [{\"step\": \"a\"}, {\"step\": \"b\"}]\n\n\ndef test_preserves_first_and_last():\n    events = [{\"step\": \"start\"}, {\"step\": \"middle\"}, {\"step\": \"end\"}]\n    result = reduce_trace(events)\n    assert result[0] == events[0]\n    assert result[-1] == events[-1]\n\n\ndef test_reduces_duplicate_heavy_fixture():\n    events = [{\"step\": \"a\"}] * 10 + [{\"step\": \"b\"}] * 10 + [{\"step\": \"c\"}]\n    assert reduce_trace(events) == [{\"step\": \"a\"}, {\"step\": \"b\"}, {\"step\": \"c\"}]\n\n\ndef test_does_not_mutate_input():\n    events = [{\"step\": \"a\"}, {\"step\": \"a\"}, {\"step\": \"b\"}]\n    original = list(events)\n    reduce_trace(events)\n    assert events == original\n\n",
+      "baseline": {
+        "tests": {
+          "command": "python -m pytest -q",
+          "exit_code": 1,
+          "passed": false,
+          "output_tail": ".F.F.                                                                    [100%]\n================================== FAILURES ===================================\n_____________________ test_removes_consecutive_duplicates _____________________\n\n    def test_removes_consecutive_duplicates():\n        events = [{\"step\": \"a\"}, {\"step\": \"a\"}, {\"step\": \"b\"}]\n>       assert reduce_trace(events) == [{\"step\": \"a\"}, {\"step\": \"b\"}]\nE       AssertionError: assert [{'step': 'a'...{'step': 'b'}] == [{'step': 'a'}, {'step': 'b'}]\nE         \nE         At index 1 diff: {'step': 'a'} != {'step': 'b'}\nE         Left contains one more item: {'step': 'b'}\nE         Use -v to get more diff\n\ntests\\test_reduce.py:10: AssertionError\n____________________ test_reduces_duplicate_heavy_fixture _____________________\n\n    def test_reduces_duplicate_heavy_fixture():\n        events = [{\"step\": \"a\"}] * 10 + [{\"step\": \"b\"}] * 10 + [{\"step\": \"c\"}]\n>       assert reduce_trace(events) == [{\"step\": \"a\"}, {\"step\": \"b\"}, {\"step\": \"c\"}]\nE       AssertionError: assert [{'step': 'a'...p': 'a'}, ...] == [{'step': 'a'...{'step': 'c'}]\nE         \nE         At index 1 diff: {'step': 'a'} != {'step': 'b'}\nE         Left contains 18 more items, first extra item: {'step': 'a'}\nE         Use -v to get more diff\n\ntests\\test_reduce.py:22: AssertionError\n=========================== short test summary info ===========================\nFAILED tests\\test_reduce.py::test_removes_consecutive_duplicates - AssertionE...\nFAILED tests\\test_reduce.py::test_reduces_duplicate_heavy_fixture - Assertion...\n2 failed, 3 passed in 0.05s\n"
+        },
+        "measurement": {
+          "command": "python scripts/measure.py",
+          "exit_code": 1,
+          "passed": false,
+          "metrics": {
+            "baseline_events": 21,
+            "reduced_events": 21,
+            "reduction_ratio": 0.0,
+            "expected_reduced_events": 3,
+            "meets_reduction_target": false
+          },
+          "output_tail": "{\"baseline_events\": 21, \"reduced_events\": 21, \"reduction_ratio\": 0.0, \"expected_reduced_events\": 3, \"meets_reduction_target\": false}\n"
+        },
+        "scope_sha256": "89d9fbb3eebe3c6d4544851efc25ba03f7c7b7371fbe1ed0fc15dfc10e6eb9b2"
+      },
+      "next_export": {
+        "path": "C:\\Projects\\mission\\data\\integrations\\next\\next-research-export-v1.json",
+        "schema": "next-research-export-v1",
+        "generated_at": "2026-10-24T13:42:17.035190+00:00"
+      },
+      "provenance": {
+        "next_record_id": "res-eab312f10e6b9c6d7dac",
+        "next_external_id": "32e30df92070ef58c36324e400b2f6d54aacc375c9f14fd0b0de542630ce6c06",
+        "next_title": "[exploit] TraceLite: Efficient Trace Reduction for SWE Agents via Optical Compression and Redundancy Removal",
+        "next_source_timestamp": "2026-10-21T13:45:09.935668+00:00",
+        "next_observed_at": "2026-10-24T17:50:22.233908+00:00"
+      }
+    },
+    "language_intention": {
+      "schema": "language.intention.v0",
+      "silent": true,
+      "intent": "Implement a bounded trace-reduction proxy for the Next TraceLite candidate, changing only tracelite/reduce.py.",
+      "constraints": [
+        "Worker is unavailable or blocked",
+        "The patch changes a path outside the approved scope",
+        "Generated Python is invalid or uses forbidden operations",
+        "Deterministic tests fail",
+        "The reduction target is not met",
+        "CoCoder reports a high or medium finding",
+        "The approved scope or baseline becomes stale"
+      ],
+      "scope": [
+        "tracelite/reduce.py"
+      ],
+      "expected_result": "All sandbox tests pass and the duplicate-heavy fixture is reduced from 21 events to 3 events.",
+      "evaluation_criteria": [
+        "pytest passes in the sandbox",
+        "measure.py exits 0 and reports 21 -> 3 events",
+        "git diff contains exactly the approved scope",
+        "CoCoder reviews the exact result commit"
+      ],
+      "observations": [],
+      "decision": null,
+      "note": "Structured intention only; no Language model or interpretation is used."
+    },
+    "repository_path": "C:\\Projects\\mission\\data\\experiments\\tracelite-spike",
+    "baseline_commit": "ca5dfb35c035357d50e31ca7780ffaf3eb1af9dc",
+    "approved_scope": [
+      "tracelite/reduce.py"
+    ],
+    "approval_hash": "fd2d491828ca3648e408475f2cf1fa2ce2a0a866d6c4d979ad4d1b29f0956dd4",
+    "approved_at": "2026-10-24T17:54:49.479922+00:00",
+    "approved_by": "user",
+    "worker_request_id": "wrq_6b926abd0c72c625a5d43b9e99706c4d",
+    "worker_status": "AWAITING_ACCEPTANCE",
+    "worker_result": {
+      "schema": "worker.work-result.v1",
+      "request_id": "wrq_6b926abd0c72c625a5d43b9e99706c4d",
+      "status": "AWAITING_ACCEPTANCE",
+      "execution": {
+        "backend": "direct",
+        "model": "qwen2.5-coder:latest"
+      },
+      "provenance": {
+        "worker_request_id": "wrq_6b926abd0c72c625a5d43b9e99706c4d",
+        "application": "mission-control"
+      },
+      "message": "direct model output; not Evidence, Verification, Proof, or Acceptance",
+      "unresolved": null,
+      "output_excerpt": "```python\ndef reduce_trace(events):\n    \"\"\"Return a reduced trace preserving first/last and order.\"\"\"\n    result = []\n    for event in events:\n        if not result or event != result[-1]:\n            result.append(event)\n    return result\n```",
+      "output_sha256": "0465702d8fde2efdf4abf2b7748dcd9600a2b38d542f8fbb9c08d2a5fc850e37"
+    },
+    "patch": {
+      "schema": "mc10.patch.v1",
+      "summary": "Worker generated code for the approved file scope.",
+      "expected_result": "Deterministic tests and reduction target pass.",
+      "files": [
+        {
+          "path": "tracelite/reduce.py",
+          "sha256": "47083cadc115825ec0277ad7ec7d60737e270e46df4c119107a318ec9e7da4fa"
+        }
+      ]
+    },
+    "result_commit": "7403d1be2f7cefbea8d8d8861469bf366d3a3a21",
+    "measurement": {
+      "schema": "mc10.measurement.v1",
+      "passed": true,
+      "tests": {
+        "command": "python -m pytest -q",
+        "exit_code": 0,
+        "passed": true,
+        "output_tail": ".....                                                                    [100%]\n5 passed in 0.01s\n"
+      },
+      "after": {
+        "command": "python scripts/measure.py",
+        "exit_code": 0,
+        "passed": true,
+        "metrics": {
+          "baseline_events": 21,
+          "reduced_events": 3,
+          "reduction_ratio": 0.8571,
+          "expected_reduced_events": 3,
+          "meets_reduction_target": true
+        },
+        "output_tail": "{\"baseline_events\": 21, \"reduced_events\": 3, \"reduction_ratio\": 0.8571, \"expected_reduced_events\": 3, \"meets_reduction_target\": true}\n"
+      },
+      "baseline": {
+        "baseline_events": 21,
+        "reduced_events": 21,
+        "reduction_ratio": 0.0,
+        "expected_reduced_events": 3,
+        "meets_reduction_target": false
+      },
+      "comparison": {
+        "baseline_events": 21,
+        "baseline_reduced_events": 21,
+        "after_events": 21,
+        "after_reduced_events": 3,
+        "after_reduction_ratio": 0.8571
+      }
+    },
+    "review_execution_id": "exec-2f90d75a73a9418d",
+    "review_artifact_path": "C:\\Projects\\mission\\data\\integrations\\cocoder\\review-20261024T175451Z-a4d12d.json",
+    "review_summary": {
+      "schema": "mc10.review-summary.v1",
+      "available": true,
+      "artifact_path": "C:\\Projects\\mission\\data\\integrations\\cocoder\\review-20261024T175451Z-a4d12d.json",
+      "review_schema": "0.2",
+      "changed_files": 1,
+      "findings": 0,
+      "high": 0,
+      "medium": 0,
+      "low": 0,
+      "info": 0,
+      "adverse": false,
+      "sample": []
+    },
+    "adverse_review": false,
+    "final_decision": "accept",
+    "final_reason": "The local proxy passed deterministic tests and reduced the duplicate-heavy trace 21 to 3. CoCoder found no high or medium issues.",
+    "override_adverse": false,
+    "failure": null,
+    "created_at": "2026-10-24T17:54:40.098118+00:00",
+    "updated_at": "2026-10-24T17:55:03.336970+00:00",
+    "events": [
+      {
+        "id": "wev-95e47c01638440ca",
+        "workflow_id": "wf-72d32f9abfaa4144",
+        "sequence": 1,
+        "event_type": "research_imported",
+        "source": "next",
+        "summary": "Imported 32e30df92070ef58c36324e400b2f6d54aacc375c9f14fd0b0de542630ce6c06 from next-research-export-v1.",
+        "payload": {
+          "schema": "next-research-export-v1",
+          "generated_at": "2026-10-24T13:42:17.035190+00:00",
+          "export_path": "C:\\Projects\\mission\\data\\integrations\\next\\next-research-export-v1.json"
+        },
+        "source_ref": "C:\\Projects\\mission\\data\\integrations\\next\\next-research-export-v1.json",
+        "created_at": "2026-10-24T17:54:40.101612+00:00"
+      },
+      {
+        "id": "wev-f31a9b0d0e994d9a",
+        "workflow_id": "wf-72d32f9abfaa4144",
+        "sequence": 2,
+        "event_type": "proposal_created",
+        "source": "mission-control",
+        "summary": "Created a bounded experiment proposal for human approval.",
+        "payload": {
+          "schema": "mc10.experiment-proposal.v1",
+          "template": "trace_reduce_v1",
+          "objective": "Implement a bounded trace-reduction proxy for the Next TraceLite candidate, changing only tracelite/reduce.py.",
+          "hypothesis": "arxiv reports: TraceLite: Efficient Trace Reduction for SWE Agents via Optical Compression and Redundancy Removal. Software engineering agents solve repository-level tasks through iterative tool use, but their continuously growing interaction traces incur substantial token consumption and inference overhead. Existing compression approaches often require model training, auxiliary LLM calls, or assumptions about specific content such as source code. We present TraceLite, a simple yet effective, training-free fra",
+          "source_experiment": "Run a bounded spike reproducing the reported mechanism on one baseline task; compare to current approach.",
+          "falsification": "No measurable improvement on held-out tasks, or the mechanism needs more compute/tokens than budgeted.",
+          "scope": [
+            "tracelite/reduce.py"
+          ],
+          "repository_path": "C:\\Projects\\mission\\data\\experiments\\tracelite-spike",
+          "baseline_commit": "ca5dfb35c035357d50e31ca7780ffaf3eb1af9dc",
+          "baseline_scope_sha256": "89d9fbb3eebe3c6d4544851efc25ba03f7c7b7371fbe1ed0fc15dfc10e6eb9b2",
+          "project_id": null,
+          "expected_result": "All sandbox tests pass and the duplicate-heavy fixture is reduced from 21 events to 3 events.",
+          "stop_conditions": [
+            "Worker is unavailable or blocked",
+            "The patch changes a path outside the approved scope",
+            "Generated Python is invalid or uses forbidden operations",
+            "Deterministic tests fail",
+            "The reduction target is not met",
+            "CoCoder reports a high or medium finding",
+            "The approved scope or baseline becomes stale"
+          ],
+          "evaluation_criteria": [
+            "pytest passes in the sandbox",
+            "measure.py exits 0 and reports 21 -> 3 events",
+            "git diff contains exactly the approved scope",
+            "CoCoder reviews the exact result commit"
+          ],
+          "worker": {
+            "backend": "direct",
+            "model": "qwen2.5-coder:latest",
+            "base_url": "http://127.0.0.1:7317",
+            "max_model_calls": 1,
+            "timeout_seconds": 180
+          },
+          "prompt": "You are executing a bounded research experiment derived from the Next candidate \"[exploit] TraceLite: Efficient Trace Reduction for SWE Agents via Optical Compression and Redundancy Removal\".\n\nReturn ONLY the complete Python file content for tracelite/reduce.py. Do not use markdown fences. Do not add commentary.\n\nRules:\n- Modify only tracelite/reduce.py.\n- The file must be complete and valid Python.\n- The function must satisfy every test below.\n- Never mutate the input list.\n- Use exactly this algorithm: start with an empty result list; iterate over every event in order; append the event only when the result is empty or the event differs from the last result item; return the result list. Do not append the last event a second time.\n- Do not add imports unless required.\n\nCurrent file:\ndef reduce_trace(events):\n    \"\"\"Return a reduced trace preserving first/last and order.\"\"\"\n    return list(events)\n\n\nTests:\nfrom tracelite.reduce import reduce_trace\n\n\ndef test_empty_trace():\n    assert reduce_trace([]) == []\n\n\ndef test_removes_consecutive_duplicates():\n    events = [{\"step\": \"a\"}, {\"step\": \"a\"}, {\"step\": \"b\"}]\n    assert reduce_trace(events) == [{\"step\": \"a\"}, {\"step\": \"b\"}]\n\n\ndef test_preserves_first_and_last():\n    events = [{\"step\": \"start\"}, {\"step\": \"middle\"}, {\"step\": \"end\"}]\n    result = reduce_trace(events)\n    assert result[0] == events[0]\n    assert result[-1] == events[-1]\n\n\ndef test_reduces_duplicate_heavy_fixture():\n    events = [{\"step\": \"a\"}] * 10 + [{\"step\": \"b\"}] * 10 + [{\"step\": \"c\"}]\n    assert reduce_trace(events) == [{\"step\": \"a\"}, {\"step\": \"b\"}, {\"step\": \"c\"}]\n\n\ndef test_does_not_mutate_input():\n    events = [{\"step\": \"a\"}, {\"step\": \"a\"}, {\"step\": \"b\"}]\n    original = list(events)\n    reduce_trace(events)\n    assert events == original\n\n",
+          "baseline": {
+            "tests": {
+              "command": "python -m pytest -q",
+              "exit_code": 1,
+              "passed": false,
+              "output_tail": ".F.F.                                                                    [100%]\n================================== FAILURES ===================================\n_____________________ test_removes_consecutive_duplicates _____________________\n\n    def test_removes_consecutive_duplicates():\n        events = [{\"step\": \"a\"}, {\"step\": \"a\"}, {\"step\": \"b\"}]\n>       assert reduce_trace(events) == [{\"step\": \"a\"}, {\"step\": \"b\"}]\nE       AssertionError: assert [{'step': 'a'...{'step': 'b'}] == [{'step': 'a'}, {'step': 'b'}]\nE         \nE         At index 1 diff: {'step': 'a'} != {'step': 'b'}\nE         Left contains one more item: {'step': 'b'}\nE         Use -v to get more diff\n\ntests\\test_reduce.py:10: AssertionError\n____________________ test_reduces_duplicate_heavy_fixture _____________________\n\n    def test_reduces_duplicate_heavy_fixture():\n        events = [{\"step\": \"a\"}] * 10 + [{\"step\": \"b\"}] * 10 + [{\"step\": \"c\"}]\n>       assert reduce_trace(events) == [{\"step\": \"a\"}, {\"step\": \"b\"}, {\"step\": \"c\"}]\nE       AssertionError: assert [{'step': 'a'...p': 'a'}, ...] == [{'step': 'a'...{'step': 'c'}]\nE         \nE         At index 1 diff: {'step': 'a'} != {'step': 'b'}\nE         Left contains 18 more items, first extra item: {'step': 'a'}\nE         Use -v to get more diff\n\ntests\\test_reduce.py:22: AssertionError\n=========================== short test summary info ===========================\nFAILED tests\\test_reduce.py::test_removes_consecutive_duplicates - AssertionE...\nFAILED tests\\test_reduce.py::test_reduces_duplicate_heavy_fixture - Assertion...\n2 failed, 3 passed in 0.05s\n"
+            },
+            "measurement": {
+              "command": "python scripts/measure.py",
+              "exit_code": 1,
+              "passed": false,
+              "metrics": {
+                "baseline_events": 21,
+                "reduced_events": 21,
+                "reduction_ratio": 0.0,
+                "expected_reduced_events": 3,
+                "meets_reduction_target": false
+              },
+              "output_tail": "{\"baseline_events\": 21, \"reduced_events\": 21, \"reduction_ratio\": 0.0, \"expected_reduced_events\": 3, \"meets_reduction_target\": false}\n"
+            },
+            "scope_sha256": "89d9fbb3eebe3c6d4544851efc25ba03f7c7b7371fbe1ed0fc15dfc10e6eb9b2"
+          },
+          "next_export": {
+            "path": "C:\\Projects\\mission\\data\\integrations\\next\\next-research-export-v1.json",
+            "schema": "next-research-export-v1",
+            "generated_at": "2026-10-24T13:42:17.035190+00:00"
+          },
+          "provenance": {
+            "next_record_id": "res-eab312f10e6b9c6d7dac",
+            "next_external_id": "32e30df92070ef58c36324e400b2f6d54aacc375c9f14fd0b0de542630ce6c06",
+            "next_title": "[exploit] TraceLite: Efficient Trace Reduction for SWE Agents via Optical Compression and Redundancy Removal",
+            "next_source_timestamp": "2026-10-21T13:45:09.935668+00:00",
+            "next_observed_at": "2026-10-24T17:50:22.233908+00:00"
+          }
+        },
+        "source_ref": null,
+        "created_at": "2026-10-24T17:54:40.102786+00:00"
+      },
+      {
+        "id": "wev-f4089e3bfa204dce",
+        "workflow_id": "wf-72d32f9abfaa4144",
+        "sequence": 3,
+        "event_type": "baseline_observed",
+        "source": "sandbox",
+        "summary": "Observed the baseline tests and reduction measurement.",
+        "payload": {
+          "tests": {
+            "command": "python -m pytest -q",
+            "exit_code": 1,
+            "passed": false,
+            "output_tail": ".F.F.                                                                    [100%]\n================================== FAILURES ===================================\n_____________________ test_removes_consecutive_duplicates _____________________\n\n    def test_removes_consecutive_duplicates():\n        events = [{\"step\": \"a\"}, {\"step\": \"a\"}, {\"step\": \"b\"}]\n>       assert reduce_trace(events) == [{\"step\": \"a\"}, {\"step\": \"b\"}]\nE       AssertionError: assert [{'step': 'a'...{'step': 'b'}] == [{'step': 'a'}, {'step': 'b'}]\nE         \nE         At index 1 diff: {'step': 'a'} != {'step': 'b'}\nE         Left contains one more item: {'step': 'b'}\nE         Use -v to get more diff\n\ntests\\test_reduce.py:10: AssertionError\n____________________ test_reduces_duplicate_heavy_fixture _____________________\n\n    def test_reduces_duplicate_heavy_fixture():\n        events = [{\"step\": \"a\"}] * 10 + [{\"step\": \"b\"}] * 10 + [{\"step\": \"c\"}]\n>       assert reduce_trace(events) == [{\"step\": \"a\"}, {\"step\": \"b\"}, {\"step\": \"c\"}]\nE       AssertionError: assert [{'step': 'a'...p': 'a'}, ...] == [{'step': 'a'...{'step': 'c'}]\nE         \nE         At index 1 diff: {'step': 'a'} != {'step': 'b'}\nE         Left contains 18 more items, first extra item: {'step': 'a'}\nE         Use -v to get more diff\n\ntests\\test_reduce.py:22: AssertionError\n=========================== short test summary info ===========================\nFAILED tests\\test_reduce.py::test_removes_consecutive_duplicates - AssertionE...\nFAILED tests\\test_reduce.py::test_reduces_duplicate_heavy_fixture - Assertion...\n2 failed, 3 passed in 0.05s\n"
+          },
+          "measurement": {
+            "command": "python scripts/measure.py",
+            "exit_code": 1,
+            "passed": false,
+            "metrics": {
+              "baseline_events": 21,
+              "reduced_events": 21,
+              "reduction_ratio": 0.0,
+              "expected_reduced_events": 3,
+              "meets_reduction_target": false
+            },
+            "output_tail": "{\"baseline_events\": 21, \"reduced_events\": 21, \"reduction_ratio\": 0.0, \"expected_reduced_events\": 3, \"meets_reduction_target\": false}\n"
+          },
+          "scope_sha256": "89d9fbb3eebe3c6d4544851efc25ba03f7c7b7371fbe1ed0fc15dfc10e6eb9b2"
+        },
+        "source_ref": null,
+        "created_at": "2026-10-24T17:54:40.103158+00:00"
+      },
+      {
+        "id": "wev-2055c4ad8a4e410d",
+        "workflow_id": "wf-72d32f9abfaa4144",
+        "sequence": 4,
+        "event_type": "approved",
+        "source": "user",
+        "summary": "Approved by user for scope tracelite/reduce.py.",
+        "payload": {
+          "approval_hash": "fd2d491828ca3648e408475f2cf1fa2ce2a0a866d6c4d979ad4d1b29f0956dd4",
+          "scope": [
+            "tracelite/reduce.py"
+          ],
+          "approved_by": "user"
+        },
+        "source_ref": null,
+        "created_at": "2026-10-24T17:54:49.481537+00:00"
+      },
+      {
+        "id": "wev-cc92969e39d84b7a",
+        "workflow_id": "wf-72d32f9abfaa4144",
+        "sequence": 5,
+        "event_type": "execution_started",
+        "source": "mission-control",
+        "summary": "Approval verified; Worker execution started.",
+        "payload": {
+          "approval_hash": "fd2d491828ca3648e408475f2cf1fa2ce2a0a866d6c4d979ad4d1b29f0956dd4"
+        },
+        "source_ref": null,
+        "created_at": "2026-10-24T17:54:49.888214+00:00"
+      },
+      {
+        "id": "wev-1f2c80c4c008489f",
+        "workflow_id": "wf-72d32f9abfaa4144",
+        "sequence": 6,
+        "event_type": "worker_responded",
+        "source": "worker",
+        "summary": "Worker returned AWAITING_ACCEPTANCE using direct/qwen2.5-coder:latest.",
+        "payload": {
+          "request_id": "wrq_6b926abd0c72c625a5d43b9e99706c4d",
+          "status": "AWAITING_ACCEPTANCE",
+          "execution": {
+            "backend": "direct",
+            "model": "qwen2.5-coder:latest"
+          },
+          "provenance": {
+            "worker_request_id": "wrq_6b926abd0c72c625a5d43b9e99706c4d",
+            "application": "mission-control"
+          }
+        },
+        "source_ref": null,
+        "created_at": "2026-10-24T17:54:51.101886+00:00"
+      },
+      {
+        "id": "wev-8a943f9f9b424d6c",
+        "workflow_id": "wf-72d32f9abfaa4144",
+        "sequence": 7,
+        "event_type": "patch_applied",
+        "source": "mission-control",
+        "summary": "Applied the model patch within the approved file scope.",
+        "payload": {
+          "schema": "mc10.patch.v1",
+          "summary": "Worker generated code for the approved file scope.",
+          "expected_result": "Deterministic tests and reduction target pass.",
+          "files": [
+            {
+              "path": "tracelite/reduce.py",
+              "sha256": "47083cadc115825ec0277ad7ec7d60737e270e46df4c119107a318ec9e7da4fa"
+            }
+          ]
+        },
+        "source_ref": null,
+        "created_at": "2026-10-24T17:54:51.144812+00:00"
+      },
+      {
+        "id": "wev-487514eee1944e7c",
+        "workflow_id": "wf-72d32f9abfaa4144",
+        "sequence": 8,
+        "event_type": "measurement_recorded",
+        "source": "sandbox",
+        "summary": "Tests passed and the reduction target was met.",
+        "payload": {
+          "schema": "mc10.measurement.v1",
+          "passed": true,
+          "tests": {
+            "command": "python -m pytest -q",
+            "exit_code": 0,
+            "passed": true,
+            "output_tail": ".....                                                                    [100%]\n5 passed in 0.01s\n"
+          },
+          "after": {
+            "command": "python scripts/measure.py",
+            "exit_code": 0,
+            "passed": true,
+            "metrics": {
+              "baseline_events": 21,
+              "reduced_events": 3,
+              "reduction_ratio": 0.8571,
+              "expected_reduced_events": 3,
+              "meets_reduction_target": true
+            },
+            "output_tail": "{\"baseline_events\": 21, \"reduced_events\": 3, \"reduction_ratio\": 0.8571, \"expected_reduced_events\": 3, \"meets_reduction_target\": true}\n"
+          },
+          "baseline": {
+            "baseline_events": 21,
+            "reduced_events": 21,
+            "reduction_ratio": 0.0,
+            "expected_reduced_events": 3,
+            "meets_reduction_target": false
+          },
+          "comparison": {
+            "baseline_events": 21,
+            "baseline_reduced_events": 21,
+            "after_events": 21,
+            "after_reduced_events": 3,
+            "after_reduction_ratio": 0.8571
+          }
+        },
+        "source_ref": null,
+        "created_at": "2026-10-24T17:54:51.540404+00:00"
+      },
+      {
+        "id": "wev-a2162ff424f1402c",
+        "workflow_id": "wf-72d32f9abfaa4144",
+        "sequence": 9,
+        "event_type": "result_committed",
+        "source": "sandbox",
+        "summary": "Committed the experiment result as 7403d1be2f7c.",
+        "payload": {
+          "commit": "7403d1be2f7cefbea8d8d8861469bf366d3a3a21",
+          "scope": [
+            "tracelite/reduce.py"
+          ]
+        },
+        "source_ref": "7403d1be2f7cefbea8d8d8861469bf366d3a3a21",
+        "created_at": "2026-10-24T17:54:51.737759+00:00"
+      },
+      {
+        "id": "wev-04a2d84f87b242c2",
+        "workflow_id": "wf-72d32f9abfaa4144",
+        "sequence": 10,
+        "event_type": "review_requested",
+        "source": "mission-control",
+        "summary": "Requested a CoCoder review of the actual result commit.",
+        "payload": {
+          "repository_path": "C:\\Projects\\mission\\data\\experiments\\tracelite-spike",
+          "base": "ca5dfb35c035357d50e31ca7780ffaf3eb1af9dc",
+          "head": "7403d1be2f7cefbea8d8d8861469bf366d3a3a21"
+        },
+        "source_ref": null,
+        "created_at": "2026-10-24T17:54:51.748360+00:00"
+      },
+      {
+        "id": "wev-ce4542d9932b46ad",
+        "workflow_id": "wf-72d32f9abfaa4144",
+        "sequence": 11,
+        "event_type": "review_started",
+        "source": "cocoder",
+        "summary": "CoCoder execution exec-2f90d75a73a9418d queued.",
+        "payload": {
+          "execution_id": "exec-2f90d75a73a9418d"
+        },
+        "source_ref": null,
+        "created_at": "2026-10-24T17:54:51.770437+00:00"
+      },
+      {
+        "id": "wev-8ac4c482c6574d3d",
+        "workflow_id": "wf-72d32f9abfaa4144",
+        "sequence": 12,
+        "event_type": "review_completed",
+        "source": "cocoder",
+        "summary": "CoCoder reviewed 1 changed file(s): 0 finding(s), 0 high, 0 medium.",
+        "payload": {
+          "schema": "mc10.review-summary.v1",
+          "available": true,
+          "artifact_path": "C:\\Projects\\mission\\data\\integrations\\cocoder\\review-20261024T175451Z-a4d12d.json",
+          "review_schema": "0.2",
+          "changed_files": 1,
+          "findings": 0,
+          "high": 0,
+          "medium": 0,
+          "low": 0,
+          "info": 0,
+          "adverse": false,
+          "sample": []
+        },
+        "source_ref": "C:\\Projects\\mission\\data\\integrations\\cocoder\\review-20261024T175451Z-a4d12d.json",
+        "created_at": "2026-10-24T17:55:01.831349+00:00"
+      },
+      {
+        "id": "wev-7cf220b8e80240bc",
+        "workflow_id": "wf-72d32f9abfaa4144",
+        "sequence": 13,
+        "event_type": "human_decision",
+        "source": "user",
+        "summary": "Human decision: accept.",
+        "payload": {
+          "decision": "accept",
+          "reason": "The local proxy passed deterministic tests and reduced the duplicate-heavy trace 21 to 3. CoCoder found no high or medium issues.",
+          "override_adverse": false
+        },
+        "source_ref": null,
+        "created_at": "2026-10-24T17:55:03.338904+00:00"
+      }
+    ]
+  },
+  "next_export": {
+    "path": "data\\integrations\\next\\next-research-export-v1.json",
+    "schema": "next-research-export-v1",
+    "generated_at": "2026-10-24T13:42:17.035190+00:00",
+    "opportunities": 130,
+    "runs": 12,
+    "bytes": 1082976
+  },
+  "sandbox": {
+    "path": "data\\experiments\\tracelite-spike",
+    "head": "7403d1be2f7cefbea8d8d8861469bf366d3a3a21",
+    "log": [
+      "7403d1b MC10 experiment wf-72d32f9abfaa4144: TraceLite proxy: [exploit] TraceLite: Efficient Trace Reduction for SWE Agents via Optical Compression and Redundancy Re",
+      "ca5dfb3 Baseline TraceLite proxy experiment"
+    ],
+    "tags": [
+      "mc10-baseline",
+      "mc10-before-retry-38e5019bb2",
+      "mc10-failed-attempt-1",
+      "mc10-result-wf-72d32f9abfaa4144",
+      "mc10-result-wf-9bf2966467f44959",
+      "mc10-result-wf-cae5173ef54444af"
+    ],
+    "status": [],
+    "diff_baseline_to_result": [
+      "tracelite/reduce.py | 6 +++++-",
+      " 1 file changed, 5 insertions(+), 1 deletion(-)"
+    ],
+    "reduce_py": "def reduce_trace(events):\n    \"\"\"Return a reduced trace preserving first/last and order.\"\"\"\n    result = []\n    for event in events:\n        if not result or event != result[-1]:\n            result.append(event)\n    return result",
+    "measure_stdout": "{\"baseline_events\": 21, \"reduced_events\": 3, \"reduction_ratio\": 0.8571, \"expected_reduced_events\": 3, \"meets_reduction_target\": true}"
+  },
+  "review_artifact": {
+    "path": "C:\\Projects\\mission\\data\\integrations\\cocoder\\review-20261024T175451Z-a4d12d.json",
+    "schema": "0.2",
+    "changed_files": [
+      "tracelite/reduce.py"
+    ],
+    "findings": [],
+    "evidence_count": 0,
+    "bytes": 1855
+  },
+  "source_repositories": {
+    "next": {
+      "head": "491b501",
+      "branch": "main",
+      "changed_paths": 0
+    },
+    "worker": {
+      "head": "0aecefa",
+      "branch": "main",
+      "changed_paths": 33
+    },
+    "cocoder": {
+      "head": "f4e90d6",
+      "branch": "cc-r06-p0-codeai-qualification",
+      "changed_paths": 36
+    },
+    "work": {
+      "head": "e79e68c",
+      "branch": "main",
+      "changed_paths": 1
+    }
+  },
+  "environment_names_present": {
+    "NEXT_DSN": true,
+    "WORK_DATABASE_URL": true
+  },
+  "paid_inference": {
+    "used": false,
+    "worker_backend": "direct",
+    "worker_model": "qwen2.5-coder:latest",
+    "gateway": "local Ollama http://127.0.0.1:11434/v1",
+    "note": "Worker direct executor called the local Ollama gateway; no hosted paid route was configured."
+  },
+  "research_export_test": {
+    "next_test": "tests/test_export_contract.py: 2 passed"
+  },
+  "worker_gateway_tests": {
+    "passed": 210,
+    "skipped": 8,
+    "failed": 0
+  }
+}

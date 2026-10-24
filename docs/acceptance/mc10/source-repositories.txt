@@ -1,0 +1,16 @@
+# Source repository state during MC10
+
+Captured: 2026-10-24T18:04:40.157288+00:00
+
+| Repository | Branch | HEAD | Changed paths | MC10 action |
+| --- | --- | --- | ---: | --- |
+| `C:\Projects\next` | `main` | `491b501` | 0 | Added and tested `next-research-export-v1`; committed locally as `491b501`. Clean. |
+| `C:\Projects\worker` | `main` | `0aecefa` | 33 | No source change. Used the documented HTTP `/v1/work` interface with a local Ollama `direct` executor. Pre-existing 33 changes preserved. |
+| `C:\Projects\cocoder` | `cc-r06-p0-codeai-qualification` | `f4e90d6` | 36 | No source change. Used the existing review action and artifact contract. Pre-existing 36 changes preserved. |
+| `C:\Projects\work` | `main` | `e79e68c` | 1 | No source change. Pre-existing 1 change (`work/dashboard.py`) preserved. |
+
+Mission Control repository-local `.cocoder` directory present: **no**.
+
+No source repository was pushed. Work, Worker and CoCoder were not written by the MC10 workflow.
+
+The MC10 sandbox repository is under `data/experiments/tracelite-spike` (git-ignored runtime data).
