@@ -80,6 +80,30 @@ unconfirmed action 409, disabled Next action 409, and execution count unchanged
 after all rejected attempts. See
 [acceptance/mc09/security-check.json](acceptance/mc09/security-check.json).
 
+## MC10 experiment workflows
+
+- The browser sends a registered workflow ID and typed decisions, never a
+  command, file path or shell argument.
+- Approval binds objective, exact scope, repository, baseline commit, file hash,
+  Worker config and prompt hash into an approval hash.
+- Execution rechecks the hash, baseline HEAD, approved file hash and clean
+  sandbox. Stale approval or baseline drift returns 409 before Worker is called.
+- Worker executes in a dedicated Git sandbox under Mission Control data.
+- Worker output is treated as untrusted. A patch must resolve to exactly the
+  approved path; extra files are rejected.
+- Generated Python is parsed with `ast`; imports, dunder attributes and dangerous
+  calls (`open`, `eval`, `exec`, `compile`, `__import__`, `getattr`, etc.) are
+  rejected. The file is committed only after the approved-scope diff is checked.
+- Each attempt resets to the tagged `mc10-baseline`; result commits are tagged
+  before reset so evidence is preserved.
+- CoCoder high/medium findings set an adverse flag. Accept is blocked unless a
+  human explicitly overrides with a reason; failed tests can never be accepted.
+- MC10 used a local Ollama model through Worker's `direct` executor. No hosted
+  paid inference route was configured.
+- The Next export command is source-owned and changes no research rows. It uses
+  Next's `ResearchStore` constructor, which may apply Next schema
+  initialization/migrations; a no-migrate export mode is a follow-up.
+
 ## Tests
 
 Backend security tests verify:
@@ -97,7 +121,12 @@ Backend security tests verify:
 - integration action schema rejects extra command fields;
 - CoCoder review rejects unregistered repositories and unsafe refs before queueing;
 - failed source refresh does not break other workspaces;
-- CoCoder engine state is redirected outside the reviewed repository.
+- CoCoder engine state is redirected outside the reviewed repository;
+- workflow scope expansion is rejected before writing;
+- stale approval / baseline drift is rejected before Worker execution;
+- adverse CoCoder review blocks automatic acceptance until explicit override;
+- replaying a completed workflow reuses the same Worker request and result
+  commit instead of creating duplicates.
 
 ## Residual risks and limitations
 
@@ -109,4 +138,6 @@ Backend security tests verify:
 - SQLite and `data/` are not encrypted at rest. CoCoder review artifacts can contain source excerpts and are stored there.
 - The optional Next PostgreSQL credential lives in the process environment; read-only database grants are the defence if the process environment is compromised.
 - CoCoder review executes the configured CoCoder executable. A malicious replacement executable would run with the user's privileges; the executable path is administrative configuration, not a sandbox.
+- MC10-generated Python runs in a dedicated repository via a test subprocess, not a hard OS sandbox. AST checks, fixed scope and timeouts reduce but do not eliminate risk from arbitrary generated code.
+- Worker exposes an unauthenticated loopback HTTP API. Any local process can submit work to it; MC10 constrains what Mission Control submits, not what other local clients may do.
 - Windows process reattachment depends on a stable long-lived root PID. A launcher that exits immediately after spawning a grandchild is reported as lost rather than guessed. Do not force-stop processes outside Mission Control.

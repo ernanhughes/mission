@@ -15,6 +15,7 @@ Mission Control is a local-first control centre for an existing ecosystem of AI 
 - **Unified inbox and federated search** - one attention queue and one search surface across Next, Work, CoCoder, projects, repositories, tasks, checkpoints and decisions. Source identity is preserved.
 - **Controlled application actions** - registered, validated operations with approval and durable execution history. CoCoder reviews can be launched from Mission Control; Next and Work write operations remain explicitly blocked.
 - **Shared project context** - associate Next candidates, Work opportunities and CoCoder findings with projects without copying ownership away from the source engines.
+- **Cross-application experiments (MC10)** - one traceable Next → approval → Worker → CoCoder → human-decision workflow, with scope enforcement, local inference and durable evidence.
 - **Evidence adapters** - Language, Inference, Math, live read-only Next, Work JSON CLI, CoCoder artifacts and Worker health. Unavailable integrations are shown as unavailable; they are not filled with sample data.
 - **Grounded daily briefing** - deterministic by default. Optional OpenAI-compatible AI interpretation only after explicit configuration, consent and request. AI remains advisory.
 - **Local API and OpenAPI docs** - FastAPI at `/api/*` and `/docs`.
@@ -56,6 +57,74 @@ See [the integration audit](docs/MC09-INTEGRATION-AUDIT.md) for verified source
 contracts and missing interfaces, and [the acceptance report](docs/acceptance/MC09-REPORT.md)
 for real data, browser evidence and limitations.
 
+## Cross-application experiments (MC10)
+
+MC10 adds one complete, evidence-preserving workflow rather than another
+dashboard:
+
+```text
+Next evidence
+  -> Mission Control proposal with exact scope, budget and stop conditions
+  -> human approval (scope acknowledgement + approval hash)
+  -> Worker local execution
+  -> approved one-file patch + deterministic tests/measurement
+  -> CoCoder review of the actual result commit
+  -> human accept / reject / investigate
+```
+
+The first template is a bounded TraceLite proxy experiment derived from a real
+Next candidate. It implements `reduce_trace` in a dedicated Git sandbox and
+measures a duplicate-heavy trace (`21 -> 3` events; 85.7% reduction).
+
+Open **Experiments** in the navigation. A TraceLite candidate in Next also shows
+**Propose TraceLite experiment**; nothing executes until the exact file scope is
+approved.
+
+### Requirements for MC10 experiments
+
+- A running Worker service at `http://127.0.0.1:7317`.
+- A local OpenAI-compatible model endpoint; the acceptance run used Ollama at
+  `http://127.0.0.1:11434/v1` with `qwen2.5-coder:latest`.
+- Worker's `direct` executor configured with that local gateway. No hosted paid
+  route is used.
+- The experiment sandbox under `data/experiments/tracelite-spike` and the
+  Next export under `data/integrations/next/`.
+
+Worker's `direct` executor is explicitly lower-parity: it returns model output
+with `AWAITING_ACCEPTANCE`, not Work Evidence or Acceptance. MC10 never presents
+that output as verified. Deterministic tests are the gate, and CoCoder reviews
+the resulting commit independently.
+
+### Next research export
+
+Next now owns a versioned read-only export:
+
+```powershell
+C:\Projects\next\.venv\Scripts\python.exe -m next export `
+  --output C:\Projects\mission\data\integrations\next\next-research-export-v1.json `
+  --limit 200
+```
+
+The MC09 read-only PostgreSQL adapter remains in place; MC10 uses the export as
+the immutable research evidence for a workflow.
+
+### Safety guarantees
+
+- Approval is bound to a hash of objective, exact file scope, repository,
+  baseline commit, file hash, Worker config and prompt.
+- Execution rejects stale approval, a changed baseline/file, or a dirty sandbox.
+- The model may change only `tracelite/reduce.py`; extra paths are rejected.
+- Generated Python is AST-checked; imports and dangerous calls are rejected.
+- A new attempt resets to the tagged `mc10-baseline`; prior result commits are
+  tagged before reset.
+- CoCoder high/medium findings block automatic acceptance; an explicit human
+  override with a reason is required.
+- Replaying a completed create/execute/review returns the same identities; it
+  does not create duplicate Worker requests or commits.
+
+See [the MC10 audit](docs/MC10-REALITY-AUDIT.md), [workflow contract](docs/MC10-WORKFLOW-CONTRACT.md)
+and [acceptance report](docs/acceptance/MC10-REPORT.md).
+
 ## Requirements
 
 Tested on Windows 11 with:
@@ -65,11 +134,14 @@ Tested on Windows 11 with:
 - npm 11
 - PowerShell 5.1 or PowerShell 7+
 - Git on `PATH` for read-only repository observation
+- **Optional for MC10 experiments:** Bun 1.x for Worker and a local
+  OpenAI-compatible model endpoint (Ollama was used for acceptance)
 
 No Docker, Kubernetes, hosted database or cloud service is required. Mission
 Control itself stores state in SQLite. A PostgreSQL connection is optional and
 used only for a read-only Next integration when `NEXT_DSN` is configured; the
-SQLite snapshot remains the fallback.
+SQLite snapshot remains the fallback. Hosted paid inference is not required for
+MC10 experiments.
 
 ## Install
 
@@ -149,6 +221,13 @@ The Home screen shows:
 3. Open a record to inspect source evidence and record a local decision or project association.
 4. In CoCoder, **Operations** can launch a bounded review against a registered repository after confirmation.
 
+**Run a cross-application experiment**
+1. Open the TraceLite candidate in **Next** and press **Propose TraceLite experiment**, or open an existing trace under **Experiments**.
+2. Inspect the original research evidence, exact file scope, Worker model, budget, stop conditions and evaluation criteria.
+3. Tick the scope acknowledgement and approve. No Worker call occurs before approval.
+4. Execute with confirmation. Mission Control applies only the approved patch, runs deterministic tests/measurement and requests a CoCoder review of the actual result commit.
+5. Inspect the review and record **Accept**, **Investigate** or **Reject**. CoCoder high/medium findings require an explicit override to accept.
+
 **Review the inbox and search**
 1. Open **Inbox** to see pending Next candidates, qualified Work opportunities, CoCoder findings and tasks together.
 2. Filter by source or priority; **Open** goes to the functional detail view.
@@ -179,12 +258,18 @@ Default local data:
 
 ```text
 data/
-  mission_control.db      SQLite database (registry, continuity, activity)
+  mission_control.db      SQLite database (registry, continuity, workflows)
   integrations/
+    next/
+      next-research-export-v1.json  Versioned Next research evidence
+    worker/
+      worker-config.json  Local Worker direct-executor configuration
     cocoder/
       cocoder-config.toml CoCoder state redirection
       review-*.json       Real review artifacts
       engine/             CoCoder SQLite and internal artifacts
+  experiments/
+    tracelite-spike/      Git sandbox for the MC10 experiment
   logs/
     mission-control.log   Rotating application log
     proc-*.log            Managed process output, redacted on read
@@ -318,7 +403,7 @@ data directory or local state.
 | Next | Verified read-only | Live PostgreSQL through `NEXT_DSN` with a read-only transaction; configured SQLite fallback. Labelled a compatibility integration, not a stable Next API. Discovery launch is blocked. |
 | Work | Verified read-only | Documented `work opportunities --json`; 130 live opportunities in acceptance. Decisions remain local; no Work write path. |
 | CoCoder | Verified | JSON review artifacts and a registered bounded `run_review` action. Engine state and artifacts stay under `data/integrations/cocoder`. |
-| Worker | Verified endpoint | `GET /health` only; never submits work |
+| Worker | Verified HTTP + local executor | `GET /health` for status; MC10 workflows can call `POST /v1/work` with the local `direct` Ollama executor. The adapter health surface does not submit work by itself. |
 | Writer / Improve / BookBuilder / Stephanie / Workbench | Not integrated | Repository/documentation access only; build and launch actions remain disabled until verified |
 
 Adapters fail in isolation. An unavailable adapter, timeout or malformed artifact produces an unavailable status and diagnostics, not a dashboard failure.
@@ -360,7 +445,7 @@ npm test
 npm run build
 ```
 
-Current result: **50 backend tests passing, 23 frontend tests passing, production build succeeds.** The suite includes real local process launch/stop/log capture, a backend restart reattachment test, real configured-editor invocation, discovery exclusions, migrations, checkpoint persistence, adapter failure isolation, integration decisions/inbox/search, action parameter and repository validation, origin/security checks and secret redaction. MC09 additionally passed a 17-step real Chrome acceptance run; see [the MC09 report](docs/acceptance/MC09-REPORT.md).
+Current result: **53 backend tests passing, 26 frontend tests passing, production build succeeds.** The suite includes real local process launch/stop/log capture, a backend restart reattachment test, real configured-editor invocation, discovery exclusions, migrations, checkpoint persistence, adapter failure isolation, integration decisions/inbox/search, action parameter and repository validation, workflow approval/scope/stale-approval/adverse-review/replay tests, origin/security checks and secret redaction. MC10 additionally passed a real Chrome acceptance workflow; see [the MC10 report](docs/acceptance/MC10-REPORT.md).
 
 ## Troubleshooting
 
@@ -408,13 +493,16 @@ Current result: **50 backend tests passing, 23 frontend tests passing, productio
 - Integration actions are registered, schema-validated and adapter-validated before queueing. The browser sends an action ID and typed parameters, never a command.
 - CoCoder repository paths must match the registered allowlist; invalid paths return 422 before an execution exists.
 - CoCoder review state is redirected under Mission Control data; a review does not create `.cocoder` in the reviewed repository.
+- MC10 workflow approval is bound to an exact file scope, baseline commit, file hash, Worker config and prompt hash. Execution rejects stale approval, a changed baseline/file, or a dirty sandbox.
+- Worker output is applied only to the approved path; extra paths and dangerous Python constructs are rejected before writing.
+- MC10 acceptance used a local Ollama model and no paid inference route.
 - External publishing, repository mutation, model spending and destructive actions are not implemented as autonomous operations.
 
 See [docs/MC01-ARCHITECTURE.md](docs/MC01-ARCHITECTURE.md) and [docs/SECURITY.md](docs/SECURITY.md).
 
 ## Repository policy
 
-Mission Control was built in `C:\Projects\mission`. Integration repositories were inspected read-only. No fetch, pull, reset, clean, checkout, dependency installation, database write or publication was performed in them. Pre-existing dirty states are recorded separately in [docs/acceptance/PRE-EXISTING-REPO-STATES.md](docs/acceptance/PRE-EXISTING-REPO-STATES.md).
+Mission Control was built in `C:\Projects\mission`. Integration repositories were inspected read-only during MC09. For MC10, Next received one local, tested source contract (`491b501`) adding `next export`; it was not pushed. The export command uses Next's own `ResearchStore`, which may apply Next's own schema initialization/migrations; the export itself changes no research rows. Work, Worker and CoCoder source files were not modified. Pre-existing dirty states are recorded separately in [docs/acceptance/PRE-EXISTING-REPO-STATES.md](docs/acceptance/PRE-EXISTING-REPO-STATES.md).
 
 ## Documentation map
 
@@ -427,6 +515,10 @@ Mission Control was built in `C:\Projects\mission`. Integration repositories wer
 - [MC09 architecture](docs/MC09-ARCHITECTURE.md)
 - [MC09 acceptance report](docs/acceptance/MC09-REPORT.md)
 - [MC09 browser/runtime evidence](docs/acceptance/mc09/README.md)
+- [MC10 reality audit](docs/MC10-REALITY-AUDIT.md)
+- [MC10 workflow contract](docs/MC10-WORKFLOW-CONTRACT.md)
+- [MC10 acceptance report](docs/acceptance/MC10-REPORT.md)
+- [MC10 browser/runtime evidence](docs/acceptance/mc10/README.md)
 - [First-release acceptance report](docs/acceptance/REPORT.md)
 - [First-release final engineering report](docs/acceptance/FINAL-ENGINEERING-REPORT.md)
 - [UI smoke evidence](docs/acceptance/UI-SMOKE.md)

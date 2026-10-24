@@ -21,6 +21,7 @@ const commands: CommandItem[] = [
   { id: "next", label: "Next workspace", hint: "Candidates, evidence, recommendations", path: "/next" },
   { id: "work", label: "Work workspace", hint: "Opportunities and qualification", path: "/work" },
   { id: "cocoder", label: "CoCoder workspace", hint: "Assessments and findings", path: "/cocoder" },
+  { id: "workflows", label: "Experiment workflows", hint: "Next → approval → Worker → CoCoder → decision", path: "/workflows" },
   { id: "books", label: "Books", hint: "Language, Inference, Math", path: "/books" },
   { id: "projects", label: "Projects", hint: "All bodies of work", path: "/projects" },
   { id: "project-math", label: "Math project", hint: "Book, proof obligations and shared context", path: "/projects/math" },

@@ -414,6 +414,68 @@ class IntegrationExecution(Base):
     created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
 
 
+class ExperimentWorkflow(Base):
+    __tablename__ = "experiment_workflows"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    title: Mapped[str] = mapped_column(String, nullable=False)
+    template: Mapped[str] = mapped_column(String, nullable=False)
+    status: Mapped[str] = mapped_column(String, default="proposed", nullable=False)
+    next_record_id: Mapped[str | None] = mapped_column(
+        String, ForeignKey("integration_records.id", ondelete="SET NULL")
+    )
+    next_external_id: Mapped[str] = mapped_column(String, nullable=False)
+    next_title: Mapped[str] = mapped_column(String, nullable=False)
+    project_id: Mapped[str | None] = mapped_column(
+        String, ForeignKey("projects.id", ondelete="SET NULL")
+    )
+    next_evidence: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict, nullable=False)
+    proposal: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict, nullable=False)
+    language_intention: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict, nullable=False)
+    repository_path: Mapped[str] = mapped_column(Text, nullable=False)
+    baseline_commit: Mapped[str] = mapped_column(String, nullable=False)
+    approved_scope: Mapped[list[str]] = mapped_column(JSON, default=list, nullable=False)
+    approval_hash: Mapped[str | None] = mapped_column(String)
+    approved_at: Mapped[str | None] = mapped_column(String)
+    approved_by: Mapped[str | None] = mapped_column(String)
+    worker_request_id: Mapped[str | None] = mapped_column(String)
+    worker_status: Mapped[str | None] = mapped_column(String)
+    worker_result: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict, nullable=False)
+    patch: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict, nullable=False)
+    result_commit: Mapped[str | None] = mapped_column(String)
+    measurement: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict, nullable=False)
+    review_execution_id: Mapped[str | None] = mapped_column(String)
+    review_artifact_path: Mapped[str | None] = mapped_column(Text)
+    review_summary: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict, nullable=False)
+    adverse_review: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    final_decision: Mapped[str | None] = mapped_column(String)
+    final_reason: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    override_adverse: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    failure: Mapped[str | None] = mapped_column(Text)
+    idempotency_key: Mapped[str] = mapped_column(String, unique=True, nullable=False)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+    updated_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class WorkflowEvent(Base):
+    __tablename__ = "workflow_events"
+    __table_args__ = (
+        UniqueConstraint("workflow_id", "sequence", name="uq_workflow_event_sequence"),
+    )
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    workflow_id: Mapped[str] = mapped_column(
+        String, ForeignKey("experiment_workflows.id", ondelete="CASCADE"), nullable=False
+    )
+    sequence: Mapped[int] = mapped_column(Integer, nullable=False)
+    event_type: Mapped[str] = mapped_column(String, nullable=False)
+    source: Mapped[str] = mapped_column(String, nullable=False)
+    summary: Mapped[str] = mapped_column(Text, nullable=False)
+    payload: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict, nullable=False)
+    source_ref: Mapped[str | None] = mapped_column(Text)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
 class Briefing(Base):
     __tablename__ = "briefings"
 
