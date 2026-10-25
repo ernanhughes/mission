@@ -1,0 +1,173 @@
+projects:
+  dense-fixture:
+    id: dense-fixture
+    label: Dense Fixture
+    name: Dense Fixture
+    active: true
+    project_root: C:\Projects\mission\docs\acceptance\mc-writer-01\fixtures\dense-fixture
+    content_dir: C:\Projects\mission\docs\acceptance\mc-writer-01\fixtures\dense-fixture\content\books\dense-fixture
+    status_dir: C:\Projects\mission\docs\acceptance\mc-writer-01\fixtures\dense-fixture\.writer\status
+    profile: technical
+    chapters:
+      path: content/books/dense-fixture
+      pattern: '*.md'
+    metadata:
+      path: metadata
+      pattern: '*.yaml'
+    book:
+      manuscript: 01-chapter.md
+  fragmented-fixture:
+    id: fragmented-fixture
+    label: Fragmented Fixture
+    name: Fragmented Fixture
+    active: true
+    project_root: C:\Projects\mission\docs\acceptance\mc-writer-01\fixtures\fragmented-fixture
+    content_dir: C:\Projects\mission\docs\acceptance\mc-writer-01\fixtures\fragmented-fixture\content\books\fragmented-fixture
+    status_dir: C:\Projects\mission\docs\acceptance\mc-writer-01\fixtures\fragmented-fixture\.writer\status
+    profile: technical
+    chapters:
+      path: content/books/fragmented-fixture
+      pattern: '*.md'
+    metadata:
+      path: metadata
+      pattern: '*.yaml'
+    book:
+      manuscript: 01-chapter.md
+  uniform-fixture:
+    id: uniform-fixture
+    label: Uniform Fixture
+    name: Uniform Fixture
+    active: true
+    project_root: C:\Projects\mission\docs\acceptance\mc-writer-01\fixtures\uniform-fixture
+    content_dir: C:\Projects\mission\docs\acceptance\mc-writer-01\fixtures\uniform-fixture\content\books\uniform-fixture
+    status_dir: C:\Projects\mission\docs\acceptance\mc-writer-01\fixtures\uniform-fixture\.writer\status
+    profile: technical
+    chapters:
+      path: content/books/uniform-fixture
+      pattern: '*.md'
+    metadata:
+      path: metadata
+      pattern: '*.yaml'
+    book:
+      manuscript: 01-chapter.md
+  language:
+    id: language
+    label: language
+    name: language
+    active: true
+    project_root: C:\Projects\language\
+    content_dir: C:\Projects\language\content
+    chat_dir: C:\Projects\language\content\chat
+    metadata_dir: C:\Projects\language\metadata
+    status_dir: C:\Projects\language\content\config\artifact_status
+    profile: technical
+    formatter:
+      profile: technical_book
+      semantic:
+        provider: local_argumentative
+    tags:
+    - book
+    - technical
+    - training-source
+    - sentence-training
+    repo:
+      provider: github
+      url: https://github.com/ernanhughes/language.git
+      local_path: C:\Projects\language\
+      default_branch: main
+    training:
+      enabled: true
+      source_type: book_git_history
+      corpus: technical_books
+      status: active
+      min_quality_stage: draft
+      roles:
+      - sentence_quality
+      - sentence_preference
+      - artifact_repair
+      - sicql
+    glob: '*.md'
+    exclude_prefixes:
+    - '00'
+    chapters:
+      path: content\books\language
+      pattern: '*.md'
+    metadata:
+      path: metadata
+      pattern: '*.yaml'
+    book:
+      manuscript: language.md
+      publication_status: research
+    research:
+      bibliography: research/bibliography.yaml
+    workflows:
+      artifact_review: config/workflows/writing/artifact_review.yaml
+      overnight_sentence_review: config/workflows/writing/overnight_sentence_review.yaml
+    settings:
+      enable_artifacts: true
+      enable_sentence_review: true
+      max_sentences_per_run: 1000
+    cadence:
+      enabled: true
+      mode: dimension_gate
+      freeze_path: config/cadence_freeze.json
+      thresholds:
+        highlight: 0.55
+        queue: 0.75
+        repair: 0.9
+      audit_rate: 0.05
+      window_sizes:
+      - 3
+      - 4
+      - 5
+    preview:
+      renderer: hugo
+      base_url: http://localhost:1313
+      route_prefix: /books/language/
+    validation:
+      enabled: true
+      scope:
+        chapters:
+          path: content/books/language
+          pattern: '*.md'
+        manuscript: language.md
+      output:
+        root: .writer/validation
+        formats:
+        - json
+        - markdown
+        chapter_dir: chapters
+        manuscript_dir: manuscript
+      frontmatter:
+        write: false
+        namespace: writer.validation
+        status_key: chapter_status
+      stale_policy:
+        invalidate_final: true
+      finalization:
+        final_status: final
+        require_current_validation: true
+        require_all_blocking_checks: true
+        human_approval_required: true
+      checks:
+      - id: manuscript_integrity
+        type: validation_profile
+        profile: manuscript
+        required: true
+        blocking: true
+      - id: qc
+        type: runtime
+        runtime: qc
+        profile: technical
+        required: true
+        blocking: true
+      - id: readthrough
+        type: human
+        runtime: readthrough
+        required: true
+        blocking: true
+      - id: usage
+        type: runtime
+        runtime: usage
+        required: false
+        blocking: false

@@ -1,0 +1,2167 @@
+{
+  "schema": "mc-writer-01.runtime-state.v1",
+  "captured_at": "2026-10-25T00:26:13.893588+00:00",
+  "live_service": {
+    "url": "http://127.0.0.1:8790",
+    "workspace": {
+      "available": true,
+      "detail": "Read 29 Writer book summaries: 7 audited, 7 need review, 0 stale, 0 not run. Writer remains the source of the reports; no manuscript was edited.",
+      "error": null,
+      "last_checked_at": "2026-10-24T23:54:17.354763+00:00",
+      "generated_at": "2026-10-24T23:54:09.046241Z",
+      "totals": {
+        "books": 29,
+        "with_manuscript": 7,
+        "audited": 7,
+        "current": 0,
+        "needs_review": 7,
+        "stale": 0,
+        "partial": 0,
+        "not_run": 0,
+        "blocked": 21,
+        "no_manuscript": 1,
+        "error": 0
+      },
+      "limitations": [
+        "Mission Control displays Writer's report; it does not recalculate readability or findings.",
+        "NOT_RUN is not zero and not a pass. STALE means the source fingerprint changed after the report.",
+        "Metadata, MRI and Strengthen status are shown as not tracked because Editing v1 does not infer them.",
+        "The cross-book queue orders presentation only. It does not create an editorial decision."
+      ],
+      "books": [
+        {
+          "project_id": "advanced-agents-from-first-principles",
+          "title": "advanced-agents-from-first-principles",
+          "status": "NEEDS_REVIEW",
+          "profile": "technical",
+          "chapters_available": 46,
+          "report_id": "edit-20261024T235405973191Z-54162b204174",
+          "last_checked": "2026-10-24T23:54:05.935443Z",
+          "canonical_fingerprint": "54162b204174bf4b1544f5f08a935f4ed78a8de384cf73cedb9ad7c87d64bd06",
+          "highest_risk": {
+            "kind": "finding",
+            "severity": "high",
+            "code": "READABILITY.FRAGMENTATION",
+            "chapter_id": "chapter:advanced-agents-from-first-principles:00-chapter",
+            "chapter_title": "Advanced Agents From First Principles 00: When Should You Use an Advanced Agent Architecture?",
+            "subdimension": "fragmentation",
+            "locator": {
+              "chapter_id": "chapter:advanced-agents-from-first-principles:00-chapter",
+              "source_path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\00-chapter.md",
+              "relative_path": "content/books/advanced-agents-from-first-principles/00-chapter.md",
+              "line_start": 14,
+              "line_end": 14,
+              "paragraph_index": 1,
+              "section_title": "Opening",
+              "excerpt": "It can:"
+            },
+            "score": 0.0,
+            "finding_count": 8
+          },
+          "readability": {
+            "note": "Subdimensions are independent. No composite book-quality score is calculated, and disagreement between them is preserved.",
+            "highest_risk": {
+              "chapter_id": "chapter:advanced-agents-from-first-principles:00-chapter",
+              "chapter_title": "Advanced Agents From First Principles 00: When Should You Use an Advanced Agent Architecture?",
+              "subdimension": "fragmentation",
+              "label": "Fragmentation",
+              "score": 0.0,
+              "status_band": "high",
+              "finding_codes": [
+                "READABILITY.FRAGMENTATION"
+              ],
+              "finding_count": 183
+            },
+            "subdimensions": [
+              {
+                "id": "paragraph_load",
+                "label": "Paragraph load",
+                "worst_score": 100.0,
+                "worst_band": "good",
+                "worst_chapter_id": "chapter:advanced-agents-from-first-principles:00-chapter",
+                "chapters_flagged": 0
+              },
+              {
+                "id": "sentence_load",
+                "label": "Sentence load",
+                "worst_score": 99.7,
+                "worst_band": "good",
+                "worst_chapter_id": "chapter:advanced-agents-from-first-principles:25-chapter",
+                "chapters_flagged": 0
+              },
+              {
+                "id": "fragmentation",
+                "label": "Fragmentation",
+                "worst_score": 0.0,
+                "worst_band": "high",
+                "worst_chapter_id": "chapter:advanced-agents-from-first-principles:00-chapter",
+                "chapters_flagged": 46
+              },
+              {
+                "id": "rhythm",
+                "label": "Rhythm",
+                "worst_score": 41.7,
+                "worst_band": "review",
+                "worst_chapter_id": "chapter:advanced-agents-from-first-principles:20-chapter",
+                "chapters_flagged": 46
+              },
+              {
+                "id": "lexical_accessibility",
+                "label": "Lexical accessibility",
+                "worst_score": 77.8,
+                "worst_band": "watch",
+                "worst_chapter_id": "chapter:advanced-agents-from-first-principles:32-chapter",
+                "chapters_flagged": 0
+              },
+              {
+                "id": "section_structure",
+                "label": "Section structure",
+                "worst_score": 0.0,
+                "worst_band": "high",
+                "worst_chapter_id": "chapter:advanced-agents-from-first-principles:05-chapter",
+                "chapters_flagged": 46
+              }
+            ]
+          },
+          "scope": {
+            "kind": "book",
+            "whole_book": true,
+            "chapter_ids": [
+              "chapter:advanced-agents-from-first-principles:00-chapter",
+              "chapter:advanced-agents-from-first-principles:01-chapter",
+              "chapter:advanced-agents-from-first-principles:02-chapter",
+              "chapter:advanced-agents-from-first-principles:03-chapter",
+              "chapter:advanced-agents-from-first-principles:04-chapter",
+              "chapter:advanced-agents-from-first-principles:05-chapter",
+              "chapter:advanced-agents-from-first-principles:06-chapter",
+              "chapter:advanced-agents-from-first-principles:07-chapter",
+              "chapter:advanced-agents-from-first-principles:08-chapter",
+              "chapter:advanced-agents-from-first-principles:09-chapter",
+              "chapter:advanced-agents-from-first-principles:10-chapter",
+              "chapter:advanced-agents-from-first-principles:11-chapter",
+              "chapter:advanced-agents-from-first-principles:12-chapter",
+              "chapter:advanced-agents-from-first-principles:13-chapter",
+              "chapter:advanced-agents-from-first-principles:14-chapter",
+              "chapter:advanced-agents-from-first-principles:15-chapter",
+              "chapter:advanced-agents-from-first-principles:16-chapter",
+              "chapter:advanced-agents-from-first-principles:17-chapter",
+              "chapter:advanced-agents-from-first-principles:18-chapter",
+              "chapter:advanced-agents-from-first-principles:19-chapter",
+              "chapter:advanced-agents-from-first-principles:20-chapter",
+              "chapter:advanced-agents-from-first-principles:21-chapter",
+              "chapter:advanced-agents-from-first-principles:22-chapter",
+              "chapter:advanced-agents-from-first-principles:23-chapter",
+              "chapter:advanced-agents-from-first-principles:24-chapter",
+              "chapter:advanced-agents-from-first-principles:25-chapter",
+              "chapter:advanced-agents-from-first-principles:26-chapter",
+              "chapter:advanced-agents-from-first-principles:27-chapter",
+              "chapter:advanced-agents-from-first-principles:28-chapter",
+              "chapter:advanced-agents-from-first-principles:29-chapter",
+              "chapter:advanced-agents-from-first-principles:30-chapter",
+              "chapter:advanced-agents-from-first-principles:31-chapter",
+              "chapter:advanced-agents-from-first-principles:32-chapter",
+              "chapter:advanced-agents-from-first-principles:33-chapter",
+              "chapter:advanced-agents-from-first-principles:34-chapter",
+              "chapter:advanced-agents-from-first-principles:35-chapter",
+              "chapter:advanced-agents-from-first-principles:36-chapter",
+              "chapter:advanced-agents-from-first-principles:37-chapter",
+              "chapter:advanced-agents-from-first-principles:38-chapter",
+              "chapter:advanced-agents-from-first-principles:39-chapter",
+              "chapter:advanced-agents-from-first-principles:40-chapter",
+              "chapter:advanced-agents-from-first-principles:41-chapter",
+              "chapter:advanced-agents-from-first-principles:42-chapter",
+              "chapter:advanced-agents-from-first-principles:43-chapter",
+              "chapter:advanced-agents-from-first-principles:44-chapter",
+              "chapter:advanced-agents-from-first-principles:45-chapter"
+            ]
+          },
+          "errors": []
+        },
+        {
+          "project_id": "cellular-automata-from-first-principles",
+          "title": "cellular-automata-from-first-principles",
+          "status": "NEEDS_REVIEW",
+          "profile": "technical",
+          "chapters_available": 59,
+          "report_id": "edit-20261024T235407410870Z-64441f163d7a",
+          "last_checked": "2026-10-24T23:54:07.389255Z",
+          "canonical_fingerprint": "64441f163d7a3c26190b4b4c591900491a47d9cf005e0440879a4e749ae89ae8",
+          "highest_risk": {
+            "kind": "finding",
+            "severity": "high",
+            "code": "READABILITY.FRAGMENTATION",
+            "chapter_id": "chapter:cellular-automata-from-first-principles:01-chapter",
+            "chapter_title": "The smallest useful model",
+            "subdimension": "fragmentation",
+            "locator": {
+              "chapter_id": "chapter:cellular-automata-from-first-principles:01-chapter",
+              "source_path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\01-chapter.md",
+              "relative_path": "content/books/cellular-automata-from-first-principles/01-chapter.md",
+              "line_start": 13,
+              "line_end": 13,
+              "paragraph_index": 1,
+              "section_title": "Opening",
+              "excerpt": "You need:"
+            },
+            "score": 0.0,
+            "finding_count": 8
+          },
+          "readability": {
+            "note": "Subdimensions are independent. No composite book-quality score is calculated, and disagreement between them is preserved.",
+            "highest_risk": {
+              "chapter_id": "chapter:cellular-automata-from-first-principles:01-chapter",
+              "chapter_title": "The smallest useful model",
+              "subdimension": "fragmentation",
+              "label": "Fragmentation",
+              "score": 0.0,
+              "status_band": "high",
+              "finding_codes": [
+                "READABILITY.FRAGMENTATION"
+              ],
+              "finding_count": 162
+            },
+            "subdimensions": [
+              {
+                "id": "paragraph_load",
+                "label": "Paragraph load",
+                "worst_score": 100.0,
+                "worst_band": "good",
+                "worst_chapter_id": "chapter:cellular-automata-from-first-principles:01-chapter",
+                "chapters_flagged": 0
+              },
+              {
+                "id": "sentence_load",
+                "label": "Sentence load",
+                "worst_score": 96.7,
+                "worst_band": "good",
+                "worst_chapter_id": "chapter:cellular-automata-from-first-principles:15-chapter",
+                "chapters_flagged": 0
+              },
+              {
+                "id": "fragmentation",
+                "label": "Fragmentation",
+                "worst_score": 0.0,
+                "worst_band": "high",
+                "worst_chapter_id": "chapter:cellular-automata-from-first-principles:01-chapter",
+                "chapters_flagged": 57
+              },
+              {
+                "id": "rhythm",
+                "label": "Rhythm",
+                "worst_score": 43.9,
+                "worst_band": "review",
+                "worst_chapter_id": "chapter:cellular-automata-from-first-principles:47-chapter",
+                "chapters_flagged": 34
+              },
+              {
+                "id": "lexical_accessibility",
+                "label": "Lexical accessibility",
+                "worst_score": 84.4,
+                "worst_band": "good",
+                "worst_chapter_id": "chapter:cellular-automata-from-first-principles:55-chapter",
+                "chapters_flagged": 0
+              },
+              {
+                "id": "section_structure",
+                "label": "Section structure",
+                "worst_score": 55.7,
+                "worst_band": "review",
+                "worst_chapter_id": "chapter:cellular-automata-from-first-principles:19-chapter",
+                "chapters_flagged": 2
+              }
+            ]
+          },
+          "scope": {
+            "kind": "book",
+            "whole_book": true,
+            "chapter_ids": [
+              "chapter:cellular-automata-from-first-principles:01-chapter",
+              "chapter:cellular-automata-from-first-principles:02-chapter",
+              "chapter:cellular-automata-from-first-principles:03-chapter",
+              "chapter:cellular-automata-from-first-principles:04-chapter",
+              "chapter:cellular-automata-from-first-principles:05-chapter",
+              "chapter:cellular-automata-from-first-principles:06-chapter",
+              "chapter:cellular-automata-from-first-principles:07-chapter",
+              "chapter:cellular-automata-from-first-principles:08-chapter",
+              "chapter:cellular-automata-from-first-principles:09-chapter",
+              "chapter:cellular-automata-from-first-principles:10-chapter",
+              "chapter:cellular-automata-from-first-principles:11-chapter",
+              "chapter:cellular-automata-from-first-principles:12-chapter",
+              "chapter:cellular-automata-from-first-principles:13-chapter",
+              "chapter:cellular-automata-from-first-principles:14-chapter",
+              "chapter:cellular-automata-from-first-principles:15-chapter",
+              "chapter:cellular-automata-from-first-principles:16-chapter",
+              "chapter:cellular-automata-from-first-principles:17-chapter",
+              "chapter:cellular-automata-from-first-principles:18-chapter",
+              "chapter:cellular-automata-from-first-principles:19-chapter",
+              "chapter:cellular-automata-from-first-principles:20-chapter",
+              "chapter:cellular-automata-from-first-principles:21-chapter",
+              "chapter:cellular-automata-from-first-principles:22-chapter",
+              "chapter:cellular-automata-from-first-principles:23-chapter",
+              "chapter:cellular-automata-from-first-principles:24-chapter",
+              "chapter:cellular-automata-from-first-principles:25-chapter",
+              "chapter:cellular-automata-from-first-principles:26-chapter",
+              "chapter:cellular-automata-from-first-principles:27-chapter",
+              "chapter:cellular-automata-from-first-principles:28-chapter",
+              "chapter:cellular-automata-from-first-principles:29-chapter",
+              "chapter:cellular-automata-from-first-principles:30-chapter",
+              "chapter:cellular-automata-from-first-principles:31-chapter",
+              "chapter:cellular-automata-from-first-principles:32-chapter",
+              "chapter:cellular-automata-from-first-principles:33-chapter",
+              "chapter:cellular-automata-from-first-principles:34-chapter",
+              "chapter:cellular-automata-from-first-principles:35-chapter",
+              "chapter:cellular-automata-from-first-principles:36-chapter",
+              "chapter:cellular-automata-from-first-principles:37-chapter",
+              "chapter:cellular-automata-from-first-principles:38-chapter",
+              "chapter:cellular-automata-from-first-principles:39-chapter",
+              "chapter:cellular-automata-from-first-principles:40-chapter",
+              "chapter:cellular-automata-from-first-principles:41-chapter",
+              "chapter:cellular-automata-from-first-principles:42-chapter",
+              "chapter:cellular-automata-from-first-principles:43-chapter",
+              "chapter:cellular-automata-from-first-principles:44-chapter",
+              "chapter:cellular-automata-from-first-principles:45-chapter",
+              "chapter:cellular-automata-from-first-principles:46-chapter",
+              "chapter:cellular-automata-from-first-principles:47-chapter",
+              "chapter:cellular-automata-from-first-principles:48-chapter",
+              "chapter:cellular-automata-from-first-principles:49-chapter",
+              "chapter:cellular-automata-from-first-principles:50-chapter",
+              "chapter:cellular-automata-from-first-principles:51-chapter",
+              "chapter:cellular-automata-from-first-principles:52-chapter",
+              "chapter:cellular-automata-from-first-principles:53-chapter",
+              "chapter:cellular-automata-from-first-principles:54-chapter",
+              "chapter:cellular-automata-from-first-principles:55-chapter",
+              "chapter:cellular-automata-from-first-principles:56-chapter",
+              "chapter:cellular-automata-from-first-principles:57-chapter",
+              "chapter:cellular-automata-from-first-principles:58-chapter",
+              "chapter:cellular-automata-from-first-principles:59-chapter"
+            ]
+          },
+          "errors": []
+        },
+        {
+          "project_id": "models-from-first-principles",
+          "title": "models-from-first-principles",
+          "status": "NEEDS_REVIEW",
+          "profile": "technical",
+          "chapters_available": 12,
+          "report_id": "edit-20261024T235409056682Z-4e6d97366df1",
+          "last_checked": "2026-10-24T23:54:09.046241Z",
+          "canonical_fingerprint": "4e6d97366df16145ca491754f4d1285d9d0412c02ab5de31cd39ed5fd7a2a8d8",
+          "highest_risk": {
+            "kind": "finding",
+            "severity": "high",
+            "code": "READABILITY.FRAGMENTATION",
+            "chapter_id": "chapter:models-from-first-principles:01-chapter",
+            "chapter_title": "The Model Inside the Model",
+            "subdimension": "fragmentation",
+            "locator": {
+              "chapter_id": "chapter:models-from-first-principles:01-chapter",
+              "source_path": "C:\\Projects\\programmer.ie\\content\\books\\models-from-first-principles\\01-chapter.md",
+              "relative_path": "content/books/models-from-first-principles/01-chapter.md",
+              "line_start": 14,
+              "line_end": 14,
+              "paragraph_index": 1,
+              "section_title": "Opening",
+              "excerpt": "The previous PyTorch From First Principles series worked from the bottom up."
+            },
+            "score": 0.0,
+            "finding_count": 8
+          },
+          "readability": {
+            "note": "Subdimensions are independent. No composite book-quality score is calculated, and disagreement between them is preserved.",
+            "highest_risk": {
+              "chapter_id": "chapter:models-from-first-principles:01-chapter",
+              "chapter_title": "The Model Inside the Model",
+              "subdimension": "fragmentation",
+              "label": "Fragmentation",
+              "score": 0.0,
+              "status_band": "high",
+              "finding_codes": [
+                "READABILITY.FRAGMENTATION"
+              ],
+              "finding_count": 48
+            },
+            "subdimensions": [
+              {
+                "id": "paragraph_load",
+                "label": "Paragraph load",
+                "worst_score": 100.0,
+                "worst_band": "good",
+                "worst_chapter_id": "chapter:models-from-first-principles:01-chapter",
+                "chapters_flagged": 0
+              },
+              {
+                "id": "sentence_load",
+                "label": "Sentence load",
+                "worst_score": 99.8,
+                "worst_band": "good",
+                "worst_chapter_id": "chapter:models-from-first-principles:10-chapter",
+                "chapters_flagged": 0
+              },
+              {
+                "id": "fragmentation",
+                "label": "Fragmentation",
+                "worst_score": 0.0,
+                "worst_band": "high",
+                "worst_chapter_id": "chapter:models-from-first-principles:01-chapter",
+                "chapters_flagged": 12
+              },
+              {
+                "id": "rhythm",
+                "label": "Rhythm",
+                "worst_score": 42.1,
+                "worst_band": "review",
+                "worst_chapter_id": "chapter:models-from-first-principles:09-chapter",
+                "chapters_flagged": 12
+              },
+              {
+                "id": "lexical_accessibility",
+                "label": "Lexical accessibility",
+                "worst_score": 100.0,
+                "worst_band": "good",
+                "worst_chapter_id": "chapter:models-from-first-principles:01-chapter",
+                "chapters_flagged": 0
+              },
+              {
+                "id": "section_structure",
+                "label": "Section structure",
+                "worst_score": 0.0,
+                "worst_band": "high",
+                "worst_chapter_id": "chapter:models-from-first-principles:07-chapter",
+                "chapters_flagged": 10
+              }
+            ]
+          },
+          "scope": {
+            "kind": "book",
+            "whole_book": true,
+            "chapter_ids": [
+              "chapter:models-from-first-principles:01-chapter",
+              "chapter:models-from-first-principles:02-chapter",
+              "chapter:models-from-first-principles:03-chapter",
+              "chapter:models-from-first-principles:04-chapter",
+              "chapter:models-from-first-principles:05-chapter",
+              "chapter:models-from-first-principles:06-chapter",
+              "chapter:models-from-first-principles:07-chapter",
+              "chapter:models-from-first-principles:08-chapter",
+              "chapter:models-from-first-principles:09-chapter",
+              "chapter:models-from-first-principles:10-chapter",
+              "chapter:models-from-first-principles:11-chapter",
+              "chapter:models-from-first-principles:15-chapter"
+            ]
+          },
+          "errors": []
+        },
+        {
+          "project_id": "programmer_ie",
+          "title": "Programmer.ie Posts",
+          "status": "NEEDS_REVIEW",
+          "profile": "technical",
+          "chapters_available": 19,
+          "report_id": "edit-20261024T235403044697Z-8f2d619cfed3",
+          "last_checked": "2026-10-24T23:54:03.034158Z",
+          "canonical_fingerprint": "8f2d619cfed3b3926e31f128cd62fc14e871c74a6c9783d9160c77689c35667a",
+          "highest_risk": {
+            "kind": "finding",
+            "severity": "high",
+            "code": "READABILITY.FRAGMENTATION",
+            "chapter_id": "chapter:programmer_ie:09-can-experience-change-the-material",
+            "chapter_title": "One More Kind of Cell",
+            "subdimension": "fragmentation",
+            "locator": {
+              "chapter_id": "chapter:programmer_ie:09-can-experience-change-the-material",
+              "source_path": "C:\\Projects\\programmer.ie\\content\\books\\digital-life\\09-can-experience-change-the-material.md",
+              "relative_path": "content/books/digital-life/09-can-experience-change-the-material.md",
+              "line_start": 20,
+              "line_end": 20,
+              "paragraph_index": 3,
+              "section_title": "Opening",
+              "excerpt": "As material, an occupied cell has carried almost no internal distinction beyond the fact that it exists."
+            },
+            "score": 1.2,
+            "finding_count": 8
+          },
+          "readability": {
+            "note": "Subdimensions are independent. No composite book-quality score is calculated, and disagreement between them is preserved.",
+            "highest_risk": {
+              "chapter_id": "chapter:programmer_ie:02-what-is-digital-life",
+              "chapter_title": "The Cargo Cult of Life",
+              "subdimension": "fragmentation",
+              "label": "Fragmentation",
+              "score": 0.0,
+              "status_band": "high",
+              "finding_codes": [
+                "READABILITY.FRAGMENTATION"
+              ],
+              "finding_count": 47
+            },
+            "subdimensions": [
+              {
+                "id": "paragraph_load",
+                "label": "Paragraph load",
+                "worst_score": 99.3,
+                "worst_band": "good",
+                "worst_chapter_id": "chapter:programmer_ie:14-can-finite-computation-couple-distant-events",
+                "chapters_flagged": 0
+              },
+              {
+                "id": "sentence_load",
+                "label": "Sentence load",
+                "worst_score": 96.4,
+                "worst_band": "good",
+                "worst_chapter_id": "chapter:programmer_ie:18-what-is-digital-life",
+                "chapters_flagged": 0
+              },
+              {
+                "id": "fragmentation",
+                "label": "Fragmentation",
+                "worst_score": 0.0,
+                "worst_band": "high",
+                "worst_chapter_id": "chapter:programmer_ie:02-what-is-digital-life",
+                "chapters_flagged": 10
+              },
+              {
+                "id": "rhythm",
+                "label": "Rhythm",
+                "worst_score": 86.9,
+                "worst_band": "good",
+                "worst_chapter_id": "chapter:programmer_ie:04-now-there-are-two",
+                "chapters_flagged": 0
+              },
+              {
+                "id": "lexical_accessibility",
+                "label": "Lexical accessibility",
+                "worst_score": 85.9,
+                "worst_band": "good",
+                "worst_chapter_id": "chapter:programmer_ie:18-what-is-digital-life",
+                "chapters_flagged": 0
+              },
+              {
+                "id": "section_structure",
+                "label": "Section structure",
+                "worst_score": 75.7,
+                "worst_band": "watch",
+                "worst_chapter_id": "chapter:programmer_ie:01-how-to-read-this-book",
+                "chapters_flagged": 0
+              }
+            ]
+          },
+          "scope": {
+            "kind": "book",
+            "whole_book": true,
+            "chapter_ids": [
+              "chapter:programmer_ie:01-how-to-read-this-book",
+              "chapter:programmer_ie:02-what-is-digital-life",
+              "chapter:programmer_ie:02-what-would-digital-life-mean",
+              "chapter:programmer_ie:03-look-at-this-thing",
+              "chapter:programmer_ie:04-now-there-are-two",
+              "chapter:programmer_ie:05-so-we-built-the-wrong-thing-on-purpose",
+              "chapter:programmer_ie:06-it-looked-like-flocking",
+              "chapter:programmer_ie:07-the-digital-crystal",
+              "chapter:programmer_ie:08-the-crystal-gets-a-past",
+              "chapter:programmer_ie:09-can-experience-change-the-material",
+              "chapter:programmer_ie:10-what-survives-material-loss",
+              "chapter:programmer_ie:11-what-does-it-cost-to-stay",
+              "chapter:programmer_ie:12-is-there-actually-one-thing-here",
+              "chapter:programmer_ie:13-what-does-one-attachment-cause",
+              "chapter:programmer_ie:14-can-finite-computation-couple-distant-events",
+              "chapter:programmer_ie:15-can-the-past-redirect-the-future",
+              "chapter:programmer_ie:16-we-found-an-individual-then-we-didnt",
+              "chapter:programmer_ie:17-how-to-fail-correctly",
+              "chapter:programmer_ie:18-what-is-digital-life"
+            ]
+          },
+          "errors": []
+        },
+        {
+          "project_id": "freestyle-cognition",
+          "title": "freestyle-cognition",
+          "status": "NEEDS_REVIEW",
+          "profile": "technical",
+          "chapters_available": 32,
+          "report_id": "edit-20261024T235408324040Z-352dfd8d7ed3",
+          "last_checked": "2026-10-24T23:54:08.310011Z",
+          "canonical_fingerprint": "352dfd8d7ed3d27b3545f41a43a03ef5f3c465acac14da4ab7e30f521285eb9a",
+          "highest_risk": {
+            "kind": "finding",
+            "severity": "high",
+            "code": "READABILITY.FRAGMENTATION",
+            "chapter_id": "chapter:freestyle-cognition:01-chapter",
+            "chapter_title": "\ud83d\udca1 What Just Happened?",
+            "subdimension": "fragmentation",
+            "locator": {
+              "chapter_id": "chapter:freestyle-cognition:01-chapter",
+              "source_path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\01-chapter.md",
+              "relative_path": "content/books/freestyle-cognition/01-chapter.md",
+              "line_start": 15,
+              "line_end": 15,
+              "paragraph_index": 0,
+              "section_title": "Opening",
+              "excerpt": "You\u2019ve probably done it already."
+            },
+            "score": 6.8,
+            "finding_count": 8
+          },
+          "readability": {
+            "note": "Subdimensions are independent. No composite book-quality score is calculated, and disagreement between them is preserved.",
+            "highest_risk": {
+              "chapter_id": "chapter:freestyle-cognition:02-chapter",
+              "chapter_title": "\ud83c\udfaf Goal of this Chapter",
+              "subdimension": "fragmentation",
+              "label": "Fragmentation",
+              "score": 0.0,
+              "status_band": "high",
+              "finding_codes": [
+                "READABILITY.FRAGMENTATION"
+              ],
+              "finding_count": 83
+            },
+            "subdimensions": [
+              {
+                "id": "paragraph_load",
+                "label": "Paragraph load",
+                "worst_score": 99.5,
+                "worst_band": "good",
+                "worst_chapter_id": "chapter:freestyle-cognition:10-chapter",
+                "chapters_flagged": 0
+              },
+              {
+                "id": "sentence_load",
+                "label": "Sentence load",
+                "worst_score": 98.6,
+                "worst_band": "good",
+                "worst_chapter_id": "chapter:freestyle-cognition:01-chapter",
+                "chapters_flagged": 0
+              },
+              {
+                "id": "fragmentation",
+                "label": "Fragmentation",
+                "worst_score": 0.0,
+                "worst_band": "high",
+                "worst_chapter_id": "chapter:freestyle-cognition:02-chapter",
+                "chapters_flagged": 16
+              },
+              {
+                "id": "rhythm",
+                "label": "Rhythm",
+                "worst_score": 53.5,
+                "worst_band": "review",
+                "worst_chapter_id": "chapter:freestyle-cognition:22-chapter",
+                "chapters_flagged": 3
+              },
+              {
+                "id": "lexical_accessibility",
+                "label": "Lexical accessibility",
+                "worst_score": 72.5,
+                "worst_band": "watch",
+                "worst_chapter_id": "chapter:freestyle-cognition:16-chapter",
+                "chapters_flagged": 0
+              },
+              {
+                "id": "section_structure",
+                "label": "Section structure",
+                "worst_score": 52.6,
+                "worst_band": "review",
+                "worst_chapter_id": "chapter:freestyle-cognition:14-chapter",
+                "chapters_flagged": 5
+              }
+            ]
+          },
+          "scope": {
+            "kind": "book",
+            "whole_book": true,
+            "chapter_ids": [
+              "chapter:freestyle-cognition:01-chapter",
+              "chapter:freestyle-cognition:02-chapter",
+              "chapter:freestyle-cognition:03-chapter",
+              "chapter:freestyle-cognition:04-chapter",
+              "chapter:freestyle-cognition:05-chapter",
+              "chapter:freestyle-cognition:06-chapter",
+              "chapter:freestyle-cognition:07-chapter",
+              "chapter:freestyle-cognition:08-chapter",
+              "chapter:freestyle-cognition:09-chapter",
+              "chapter:freestyle-cognition:10-chapter",
+              "chapter:freestyle-cognition:11-chapter",
+              "chapter:freestyle-cognition:12-chapter",
+              "chapter:freestyle-cognition:13-chapter",
+              "chapter:freestyle-cognition:14-chapter",
+              "chapter:freestyle-cognition:15-chapter",
+              "chapter:freestyle-cognition:16-chapter",
+              "chapter:freestyle-cognition:17-chapter",
+              "chapter:freestyle-cognition:18-chapter",
+              "chapter:freestyle-cognition:19-chapter",
+              "chapter:freestyle-cognition:20-chapter",
+              "chapter:freestyle-cognition:21-chapter",
+              "chapter:freestyle-cognition:22-chapter",
+              "chapter:freestyle-cognition:23-chapter",
+              "chapter:freestyle-cognition:24-chapter",
+              "chapter:freestyle-cognition:25-chapter",
+              "chapter:freestyle-cognition:26-chapter",
+              "chapter:freestyle-cognition:27-chapter",
+              "chapter:freestyle-cognition:28-chapter",
+              "chapter:freestyle-cognition:29-chapter",
+              "chapter:freestyle-cognition:30-chapter",
+              "chapter:freestyle-cognition:31-chapter",
+              "chapter:freestyle-cognition:32-chapter"
+            ]
+          },
+          "errors": []
+        },
+        {
+          "project_id": "agent-architectures",
+          "title": "agent-architectures",
+          "status": "NEEDS_REVIEW",
+          "profile": "technical",
+          "chapters_available": 16,
+          "report_id": "edit-20261024T235406346355Z-cbc9b7adffc9",
+          "last_checked": "2026-10-24T23:54:06.340848Z",
+          "canonical_fingerprint": "cbc9b7adffc9b504726a117d371dd1ef3238fa666b73ec8d9aa28da0362da308",
+          "highest_risk": {
+            "kind": "finding",
+            "severity": "high",
+            "code": "READABILITY.FRAGMENTATION",
+            "chapter_id": "chapter:agent-architectures:10-chapter",
+            "chapter_title": "What Is Freestyle Cognition?",
+            "subdimension": "fragmentation",
+            "locator": {
+              "chapter_id": "chapter:agent-architectures:10-chapter",
+              "source_path": "C:\\Projects\\programmer.ie\\content\\books\\agent-architectures\\10-chapter.md",
+              "relative_path": "content/books/agent-architectures/10-chapter.md",
+              "line_start": 17,
+              "line_end": 17,
+              "paragraph_index": 2,
+              "section_title": "What Is Freestyle Cognition?",
+              "excerpt": "You do not begin with a complete specification. You begin with curiosity:"
+            },
+            "score": 15.7,
+            "finding_count": 8
+          },
+          "readability": {
+            "note": "Subdimensions are independent. No composite book-quality score is calculated, and disagreement between them is preserved.",
+            "highest_risk": {
+              "chapter_id": "chapter:agent-architectures:81-chapter",
+              "chapter_title": "The ladder",
+              "subdimension": "lexical_accessibility",
+              "label": "Lexical accessibility",
+              "score": 0.0,
+              "status_band": "high",
+              "finding_codes": [
+                "READABILITY.LEXICAL_DIFFICULTY"
+              ],
+              "finding_count": 28
+            },
+            "subdimensions": [
+              {
+                "id": "paragraph_load",
+                "label": "Paragraph load",
+                "worst_score": 98.9,
+                "worst_band": "good",
+                "worst_chapter_id": "chapter:agent-architectures:07-chapter",
+                "chapters_flagged": 0
+              },
+              {
+                "id": "sentence_load",
+                "label": "Sentence load",
+                "worst_score": 96.1,
+                "worst_band": "good",
+                "worst_chapter_id": "chapter:agent-architectures:12-chapter",
+                "chapters_flagged": 0
+              },
+              {
+                "id": "fragmentation",
+                "label": "Fragmentation",
+                "worst_score": 15.7,
+                "worst_band": "high",
+                "worst_chapter_id": "chapter:agent-architectures:10-chapter",
+                "chapters_flagged": 4
+              },
+              {
+                "id": "rhythm",
+                "label": "Rhythm",
+                "worst_score": 93.6,
+                "worst_band": "good",
+                "worst_chapter_id": "chapter:agent-architectures:05-chapter",
+                "chapters_flagged": 0
+              },
+              {
+                "id": "lexical_accessibility",
+                "label": "Lexical accessibility",
+                "worst_score": 0.0,
+                "worst_band": "high",
+                "worst_chapter_id": "chapter:agent-architectures:81-chapter",
+                "chapters_flagged": 1
+              },
+              {
+                "id": "section_structure",
+                "label": "Section structure",
+                "worst_score": 69.6,
+                "worst_band": "watch",
+                "worst_chapter_id": "chapter:agent-architectures:04-chapter",
+                "chapters_flagged": 0
+              }
+            ]
+          },
+          "scope": {
+            "kind": "book",
+            "whole_book": true,
+            "chapter_ids": [
+              "chapter:agent-architectures:01-chapter",
+              "chapter:agent-architectures:02-chapter",
+              "chapter:agent-architectures:03-chapter",
+              "chapter:agent-architectures:04-chapter",
+              "chapter:agent-architectures:05-chapter",
+              "chapter:agent-architectures:06-chapter",
+              "chapter:agent-architectures:07-chapter",
+              "chapter:agent-architectures:08-chapter",
+              "chapter:agent-architectures:09-chapter",
+              "chapter:agent-architectures:10-chapter",
+              "chapter:agent-architectures:11-chapter",
+              "chapter:agent-architectures:12-chapter",
+              "chapter:agent-architectures:80-chapter",
+              "chapter:agent-architectures:81-chapter",
+              "chapter:agent-architectures:82-chapter",
+              "chapter:agent-architectures:90-chapter"
+            ]
+          },
+          "errors": []
+        },
+        {
+          "project_id": "language",
+          "title": "language",
+          "status": "NEEDS_REVIEW",
+          "profile": "technical",
+          "chapters_available": 38,
+          "report_id": "edit-20261024T235402252638Z-4c44a9e02cc3",
+          "last_checked": "2026-10-24T23:54:02.238783Z",
+          "canonical_fingerprint": "4c44a9e02cc3a83b876836c21f760f67e402ad81b52730d12fea58593cfebdae",
+          "highest_risk": {
+            "kind": "finding",
+            "severity": "high",
+            "code": "READABILITY.FRAGMENTATION",
+            "chapter_id": "chapter:language:24-chapter",
+            "chapter_title": "Memory can be right and still make the present wrong",
+            "subdimension": "fragmentation",
+            "locator": {
+              "chapter_id": "chapter:language:24-chapter",
+              "source_path": "C:\\Projects\\language\\content\\books\\language\\24-chapter.md",
+              "relative_path": "content/books/language/24-chapter.md",
+              "line_start": 22,
+              "line_end": 22,
+              "paragraph_index": 4,
+              "section_title": "Memory can be right and still make the present wrong",
+              "excerpt": "In October, she asks why a duplicate write can still appear during recovery."
+            },
+            "score": 29.3,
+            "finding_count": 8
+          },
+          "readability": {
+            "note": "Subdimensions are independent. No composite book-quality score is calculated, and disagreement between them is preserved.",
+            "highest_risk": {
+              "chapter_id": "chapter:language:24-chapter",
+              "chapter_title": "Memory can be right and still make the present wrong",
+              "subdimension": "fragmentation",
+              "label": "Fragmentation",
+              "score": 29.3,
+              "status_band": "high",
+              "finding_codes": [
+                "READABILITY.FRAGMENTATION"
+              ],
+              "finding_count": 55
+            },
+            "subdimensions": [
+              {
+                "id": "paragraph_load",
+                "label": "Paragraph load",
+                "worst_score": 61.0,
+                "worst_band": "watch",
+                "worst_chapter_id": "chapter:language:04-chapter",
+                "chapters_flagged": 0
+              },
+              {
+                "id": "sentence_load",
+                "label": "Sentence load",
+                "worst_score": 95.9,
+                "worst_band": "good",
+                "worst_chapter_id": "chapter:language:12-chapter",
+                "chapters_flagged": 0
+              },
+              {
+                "id": "fragmentation",
+                "label": "Fragmentation",
+                "worst_score": 29.3,
+                "worst_band": "high",
+                "worst_chapter_id": "chapter:language:24-chapter",
+                "chapters_flagged": 1
+              },
+              {
+                "id": "rhythm",
+                "label": "Rhythm",
+                "worst_score": 53.6,
+                "worst_band": "review",
+                "worst_chapter_id": "chapter:language:03-chapter",
+                "chapters_flagged": 1
+              },
+              {
+                "id": "lexical_accessibility",
+                "label": "Lexical accessibility",
+                "worst_score": 47.9,
+                "worst_band": "review",
+                "worst_chapter_id": "chapter:language:36-chapter",
+                "chapters_flagged": 4
+              },
+              {
+                "id": "section_structure",
+                "label": "Section structure",
+                "worst_score": 97.3,
+                "worst_band": "good",
+                "worst_chapter_id": "chapter:language:24-chapter",
+                "chapters_flagged": 0
+              }
+            ]
+          },
+          "scope": {
+            "kind": "book",
+            "whole_book": true,
+            "chapter_ids": [
+              "chapter:language:01-chapter",
+              "chapter:language:02-chapter",
+              "chapter:language:03-chapter",
+              "chapter:language:04-chapter",
+              "chapter:language:05-chapter",
+              "chapter:language:06-chapter",
+              "chapter:language:07-chapter",
+              "chapter:language:08-chapter",
+              "chapter:language:09-chapter",
+              "chapter:language:10-chapter",
+              "chapter:language:11-chapter",
+              "chapter:language:12-chapter",
+              "chapter:language:13-chapter",
+              "chapter:language:14-chapter",
+              "chapter:language:15-chapter",
+              "chapter:language:16-chapter",
+              "chapter:language:17-chapter",
+              "chapter:language:18-chapter",
+              "chapter:language:19-chapter",
+              "chapter:language:20-chapter",
+              "chapter:language:21-chapter",
+              "chapter:language:22-chapter",
+              "chapter:language:23-chapter",
+              "chapter:language:24-chapter",
+              "chapter:language:25-chapter",
+              "chapter:language:26-chapter",
+              "chapter:language:27-chapter",
+              "chapter:language:28-chapter",
+              "chapter:language:29-chapter",
+              "chapter:language:30-chapter",
+              "chapter:language:31-chapter",
+              "chapter:language:32-chapter",
+              "chapter:language:33-chapter",
+              "chapter:language:34-chapter",
+              "chapter:language:35-chapter",
+              "chapter:language:36-chapter",
+              "chapter:language:37-chapter",
+              "chapter:language:38-chapter"
+            ]
+          },
+          "errors": []
+        },
+        {
+          "project_id": "writer",
+          "title": "Writer",
+          "status": "NO_MANUSCRIPT",
+          "profile": "technical",
+          "chapters_available": 0,
+          "report_id": null,
+          "last_checked": null,
+          "canonical_fingerprint": null,
+          "highest_risk": null,
+          "readability": null,
+          "scope": null,
+          "errors": []
+        },
+        {
+          "project_id": "agents-from-first-principles",
+          "title": "agents-from-first-principles",
+          "status": "BLOCKED",
+          "profile": "technical",
+          "chapters_available": 0,
+          "report_id": null,
+          "last_checked": null,
+          "canonical_fingerprint": null,
+          "highest_risk": null,
+          "readability": null,
+          "scope": null,
+          "errors": [
+            "Project root unavailable: C:\\Projects\\new-books"
+          ]
+        },
+        {
+          "project_id": "applied-ai",
+          "title": "applied-ai",
+          "status": "BLOCKED",
+          "profile": "technical",
+          "chapters_available": 0,
+          "report_id": null,
+          "last_checked": null,
+          "canonical_fingerprint": null,
+          "highest_risk": null,
+          "readability": null,
+          "scope": null,
+          "errors": [
+            "Project root unavailable: C:\\Projects\\new-books"
+          ]
+        },
+        {
+          "project_id": "axiom_zero",
+          "title": "Axiom Zero",
+          "status": "BLOCKED",
+          "profile": "fiction",
+          "chapters_available": 0,
+          "report_id": null,
+          "last_checked": null,
+          "canonical_fingerprint": null,
+          "highest_risk": null,
+          "readability": null,
+          "scope": null,
+          "errors": [
+            "Project root unavailable: C:\\Projects\\axiom-zero"
+          ]
+        },
+        {
+          "project_id": "becoming_alice",
+          "title": "Becoming Alice",
+          "status": "BLOCKED",
+          "profile": "fiction",
+          "chapters_available": 0,
+          "report_id": null,
+          "last_checked": null,
+          "canonical_fingerprint": null,
+          "highest_risk": null,
+          "readability": null,
+          "scope": null,
+          "errors": [
+            "Project root unavailable: C:\\Projects\\becoming-alice"
+          ]
+        },
+        {
+          "project_id": "browser-ai-from-first-principles",
+          "title": "browser-ai-from-first-principles",
+          "status": "BLOCKED",
+          "profile": "technical",
+          "chapters_available": 0,
+          "report_id": null,
+          "last_checked": null,
+          "canonical_fingerprint": null,
+          "highest_risk": null,
+          "readability": null,
+          "scope": null,
+          "errors": [
+            "Project root unavailable: C:\\Projects\\new-books"
+          ]
+        },
+        {
+          "project_id": "coin",
+          "title": "Coin",
+          "status": "BLOCKED",
+          "profile": "fiction",
+          "chapters_available": 0,
+          "report_id": null,
+          "last_checked": null,
+          "canonical_fingerprint": null,
+          "highest_risk": null,
+          "readability": null,
+          "scope": null,
+          "errors": [
+            "Project root unavailable: C:\\Projects\\coin"
+          ]
+        },
+        {
+          "project_id": "collapse",
+          "title": "Collapse",
+          "status": "BLOCKED",
+          "profile": "fiction",
+          "chapters_available": 0,
+          "report_id": null,
+          "last_checked": null,
+          "canonical_fingerprint": null,
+          "highest_risk": null,
+          "readability": null,
+          "scope": null,
+          "errors": [
+            "Project root unavailable: C:\\Projects\\collapse"
+          ]
+        },
+        {
+          "project_id": "context",
+          "title": "context",
+          "status": "BLOCKED",
+          "profile": "technical",
+          "chapters_available": 0,
+          "report_id": null,
+          "last_checked": null,
+          "canonical_fingerprint": null,
+          "highest_risk": null,
+          "readability": null,
+          "scope": null,
+          "errors": [
+            "Project root unavailable: C:\\Projects\\context"
+          ]
+        },
+        {
+          "project_id": "debugging-ai",
+          "title": "debugging-ai",
+          "status": "BLOCKED",
+          "profile": "technical",
+          "chapters_available": 0,
+          "report_id": null,
+          "last_checked": null,
+          "canonical_fingerprint": null,
+          "highest_risk": null,
+          "readability": null,
+          "scope": null,
+          "errors": [
+            "Project root unavailable: C:\\Projects\\new-books"
+          ]
+        },
+        {
+          "project_id": "digital-life",
+          "title": "digital-life",
+          "status": "BLOCKED",
+          "profile": "technical",
+          "chapters_available": 0,
+          "report_id": null,
+          "last_checked": null,
+          "canonical_fingerprint": null,
+          "highest_risk": null,
+          "readability": null,
+          "scope": null,
+          "errors": [
+            "Project root unavailable: C:\\Projects\\digital-life"
+          ]
+        },
+        {
+          "project_id": "dspy-from-first-principles",
+          "title": "dspy-from-first-principles",
+          "status": "BLOCKED",
+          "profile": "technical",
+          "chapters_available": 0,
+          "report_id": null,
+          "last_checked": null,
+          "canonical_fingerprint": null,
+          "highest_risk": null,
+          "readability": null,
+          "scope": null,
+          "errors": [
+            "Project root unavailable: C:\\Projects\\new-books"
+          ]
+        },
+        {
+          "project_id": "embeddings-from-first-principles",
+          "title": "embeddings-from-first-principles",
+          "status": "BLOCKED",
+          "profile": "technical",
+          "chapters_available": 0,
+          "report_id": null,
+          "last_checked": null,
+          "canonical_fingerprint": null,
+          "highest_risk": null,
+          "readability": null,
+          "scope": null,
+          "errors": [
+            "Project root unavailable: C:\\Projects\\new-books"
+          ]
+        },
+        {
+          "project_id": "goblins",
+          "title": "Goblins in the Machine",
+          "status": "BLOCKED",
+          "profile": "fiction",
+          "chapters_available": 0,
+          "report_id": null,
+          "last_checked": null,
+          "canonical_fingerprint": null,
+          "highest_risk": null,
+          "readability": null,
+          "scope": null,
+          "errors": [
+            "Project root unavailable: C:\\Projects\\goblins"
+          ]
+        },
+        {
+          "project_id": "hallucination-from-first-principles",
+          "title": "hallucination-from-first-principles",
+          "status": "BLOCKED",
+          "profile": "technical",
+          "chapters_available": 0,
+          "report_id": null,
+          "last_checked": null,
+          "canonical_fingerprint": null,
+          "highest_risk": null,
+          "readability": null,
+          "scope": null,
+          "errors": [
+            "Project root unavailable: C:\\Projects\\new-books"
+          ]
+        },
+        {
+          "project_id": "latent",
+          "title": "Latent",
+          "status": "BLOCKED",
+          "profile": "fiction",
+          "chapters_available": 0,
+          "report_id": null,
+          "last_checked": null,
+          "canonical_fingerprint": null,
+          "highest_risk": null,
+          "readability": null,
+          "scope": null,
+          "errors": [
+            "Project root unavailable: C:\\Projects\\latent"
+          ]
+        },
+        {
+          "project_id": "memory",
+          "title": "memory",
+          "status": "BLOCKED",
+          "profile": "technical",
+          "chapters_available": 0,
+          "report_id": null,
+          "last_checked": null,
+          "canonical_fingerprint": null,
+          "highest_risk": null,
+          "readability": null,
+          "scope": null,
+          "errors": [
+            "Project root unavailable: C:\\Projects\\memory"
+          ]
+        },
+        {
+          "project_id": "pi",
+          "title": "pi",
+          "status": "BLOCKED",
+          "profile": "technical",
+          "chapters_available": 0,
+          "report_id": null,
+          "last_checked": null,
+          "canonical_fingerprint": null,
+          "highest_risk": null,
+          "readability": null,
+          "scope": null,
+          "errors": [
+            "Project root unavailable: C:\\Projects\\pi"
+          ]
+        },
+        {
+          "project_id": "projection",
+          "title": "Projection",
+          "status": "BLOCKED",
+          "profile": "fiction",
+          "chapters_available": 0,
+          "report_id": null,
+          "last_checked": null,
+          "canonical_fingerprint": null,
+          "highest_risk": null,
+          "readability": null,
+          "scope": null,
+          "errors": [
+            "Project root unavailable: C:\\Projects\\projection"
+          ]
+        },
+        {
+          "project_id": "pytorch-from-first-principles",
+          "title": "pytorch-from-first-principles",
+          "status": "BLOCKED",
+          "profile": "technical",
+          "chapters_available": 0,
+          "report_id": null,
+          "last_checked": null,
+          "canonical_fingerprint": null,
+          "highest_risk": null,
+          "readability": null,
+          "scope": null,
+          "errors": [
+            "Project root unavailable: C:\\Projects\\new-books"
+          ]
+        },
+        {
+          "project_id": "softwear",
+          "title": "Softwear",
+          "status": "BLOCKED",
+          "profile": "fiction",
+          "chapters_available": 0,
+          "report_id": null,
+          "last_checked": null,
+          "canonical_fingerprint": null,
+          "highest_risk": null,
+          "readability": null,
+          "scope": null,
+          "errors": [
+            "Project root unavailable: C:\\Projects\\softwear"
+          ]
+        },
+        {
+          "project_id": "techno_prophet",
+          "title": "Techno Prophet",
+          "status": "BLOCKED",
+          "profile": "fiction",
+          "chapters_available": 0,
+          "report_id": null,
+          "last_checked": null,
+          "canonical_fingerprint": null,
+          "highest_risk": null,
+          "readability": null,
+          "scope": null,
+          "errors": [
+            "Project root unavailable: C:\\Projects\\techno-prophet"
+          ]
+        }
+      ],
+      "review_queue": [
+        {
+          "project_id": "advanced-agents-from-first-principles",
+          "title": "advanced-agents-from-first-principles",
+          "status": "NEEDS_REVIEW",
+          "risk_rank": 2,
+          "highest_risk": {
+            "kind": "finding",
+            "severity": "high",
+            "code": "READABILITY.FRAGMENTATION",
+            "chapter_id": "chapter:advanced-agents-from-first-principles:00-chapter",
+            "chapter_title": "Advanced Agents From First Principles 00: When Should You Use an Advanced Agent Architecture?",
+            "subdimension": "fragmentation",
+            "locator": {
+              "chapter_id": "chapter:advanced-agents-from-first-principles:00-chapter",
+              "source_path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\00-chapter.md",
+              "relative_path": "content/books/advanced-agents-from-first-principles/00-chapter.md",
+              "line_start": 14,
+              "line_end": 14,
+              "paragraph_index": 1,
+              "section_title": "Opening",
+              "excerpt": "It can:"
+            },
+            "score": 0.0,
+            "finding_count": 8
+          },
+          "finding_count": 8,
+          "report_id": "edit-20261024T235405973191Z-54162b204174",
+          "last_checked": "2026-10-24T23:54:05.935443Z"
+        },
+        {
+          "project_id": "cellular-automata-from-first-principles",
+          "title": "cellular-automata-from-first-principles",
+          "status": "NEEDS_REVIEW",
+          "risk_rank": 2,
+          "highest_risk": {
+            "kind": "finding",
+            "severity": "high",
+            "code": "READABILITY.FRAGMENTATION",
+            "chapter_id": "chapter:cellular-automata-from-first-principles:01-chapter",
+            "chapter_title": "The smallest useful model",
+            "subdimension": "fragmentation",
+            "locator": {
+              "chapter_id": "chapter:cellular-automata-from-first-principles:01-chapter",
+              "source_path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\01-chapter.md",
+              "relative_path": "content/books/cellular-automata-from-first-principles/01-chapter.md",
+              "line_start": 13,
+              "line_end": 13,
+              "paragraph_index": 1,
+              "section_title": "Opening",
+              "excerpt": "You need:"
+            },
+            "score": 0.0,
+            "finding_count": 8
+          },
+          "finding_count": 8,
+          "report_id": "edit-20261024T235407410870Z-64441f163d7a",
+          "last_checked": "2026-10-24T23:54:07.389255Z"
+        },
+        {
+          "project_id": "models-from-first-principles",
+          "title": "models-from-first-principles",
+          "status": "NEEDS_REVIEW",
+          "risk_rank": 2,
+          "highest_risk": {
+            "kind": "finding",
+            "severity": "high",
+            "code": "READABILITY.FRAGMENTATION",
+            "chapter_id": "chapter:models-from-first-principles:01-chapter",
+            "chapter_title": "The Model Inside the Model",
+            "subdimension": "fragmentation",
+            "locator": {
+              "chapter_id": "chapter:models-from-first-principles:01-chapter",
+              "source_path": "C:\\Projects\\programmer.ie\\content\\books\\models-from-first-principles\\01-chapter.md",
+              "relative_path": "content/books/models-from-first-principles/01-chapter.md",
+              "line_start": 14,
+              "line_end": 14,
+              "paragraph_index": 1,
+              "section_title": "Opening",
+              "excerpt": "The previous PyTorch From First Principles series worked from the bottom up."
+            },
+            "score": 0.0,
+            "finding_count": 8
+          },
+          "finding_count": 8,
+          "report_id": "edit-20261024T235409056682Z-4e6d97366df1",
+          "last_checked": "2026-10-24T23:54:09.046241Z"
+        },
+        {
+          "project_id": "programmer_ie",
+          "title": "Programmer.ie Posts",
+          "status": "NEEDS_REVIEW",
+          "risk_rank": 2,
+          "highest_risk": {
+            "kind": "finding",
+            "severity": "high",
+            "code": "READABILITY.FRAGMENTATION",
+            "chapter_id": "chapter:programmer_ie:09-can-experience-change-the-material",
+            "chapter_title": "One More Kind of Cell",
+            "subdimension": "fragmentation",
+            "locator": {
+              "chapter_id": "chapter:programmer_ie:09-can-experience-change-the-material",
+              "source_path": "C:\\Projects\\programmer.ie\\content\\books\\digital-life\\09-can-experience-change-the-material.md",
+              "relative_path": "content/books/digital-life/09-can-experience-change-the-material.md",
+              "line_start": 20,
+              "line_end": 20,
+              "paragraph_index": 3,
+              "section_title": "Opening",
+              "excerpt": "As material, an occupied cell has carried almost no internal distinction beyond the fact that it exists."
+            },
+            "score": 1.2,
+            "finding_count": 8
+          },
+          "finding_count": 8,
+          "report_id": "edit-20261024T235403044697Z-8f2d619cfed3",
+          "last_checked": "2026-10-24T23:54:03.034158Z"
+        },
+        {
+          "project_id": "freestyle-cognition",
+          "title": "freestyle-cognition",
+          "status": "NEEDS_REVIEW",
+          "risk_rank": 2,
+          "highest_risk": {
+            "kind": "finding",
+            "severity": "high",
+            "code": "READABILITY.FRAGMENTATION",
+            "chapter_id": "chapter:freestyle-cognition:01-chapter",
+            "chapter_title": "\ud83d\udca1 What Just Happened?",
+            "subdimension": "fragmentation",
+            "locator": {
+              "chapter_id": "chapter:freestyle-cognition:01-chapter",
+              "source_path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\01-chapter.md",
+              "relative_path": "content/books/freestyle-cognition/01-chapter.md",
+              "line_start": 15,
+              "line_end": 15,
+              "paragraph_index": 0,
+              "section_title": "Opening",
+              "excerpt": "You\u2019ve probably done it already."
+            },
+            "score": 6.8,
+            "finding_count": 8
+          },
+          "finding_count": 8,
+          "report_id": "edit-20261024T235408324040Z-352dfd8d7ed3",
+          "last_checked": "2026-10-24T23:54:08.310011Z"
+        },
+        {
+          "project_id": "agent-architectures",
+          "title": "agent-architectures",
+          "status": "NEEDS_REVIEW",
+          "risk_rank": 2,
+          "highest_risk": {
+            "kind": "finding",
+            "severity": "high",
+            "code": "READABILITY.FRAGMENTATION",
+            "chapter_id": "chapter:agent-architectures:10-chapter",
+            "chapter_title": "What Is Freestyle Cognition?",
+            "subdimension": "fragmentation",
+            "locator": {
+              "chapter_id": "chapter:agent-architectures:10-chapter",
+              "source_path": "C:\\Projects\\programmer.ie\\content\\books\\agent-architectures\\10-chapter.md",
+              "relative_path": "content/books/agent-architectures/10-chapter.md",
+              "line_start": 17,
+              "line_end": 17,
+              "paragraph_index": 2,
+              "section_title": "What Is Freestyle Cognition?",
+              "excerpt": "You do not begin with a complete specification. You begin with curiosity:"
+            },
+            "score": 15.7,
+            "finding_count": 8
+          },
+          "finding_count": 8,
+          "report_id": "edit-20261024T235406346355Z-cbc9b7adffc9",
+          "last_checked": "2026-10-24T23:54:06.340848Z"
+        },
+        {
+          "project_id": "language",
+          "title": "language",
+          "status": "NEEDS_REVIEW",
+          "risk_rank": 2,
+          "highest_risk": {
+            "kind": "finding",
+            "severity": "high",
+            "code": "READABILITY.FRAGMENTATION",
+            "chapter_id": "chapter:language:24-chapter",
+            "chapter_title": "Memory can be right and still make the present wrong",
+            "subdimension": "fragmentation",
+            "locator": {
+              "chapter_id": "chapter:language:24-chapter",
+              "source_path": "C:\\Projects\\language\\content\\books\\language\\24-chapter.md",
+              "relative_path": "content/books/language/24-chapter.md",
+              "line_start": 22,
+              "line_end": 22,
+              "paragraph_index": 4,
+              "section_title": "Memory can be right and still make the present wrong",
+              "excerpt": "In October, she asks why a duplicate write can still appear during recovery."
+            },
+            "score": 29.3,
+            "finding_count": 8
+          },
+          "finding_count": 8,
+          "report_id": "edit-20261024T235402252638Z-4c44a9e02cc3",
+          "last_checked": "2026-10-24T23:54:02.238783Z"
+        }
+      ]
+    }
+  },
+  "acceptance_service": {
+    "url": "http://127.0.0.1:8791",
+    "registry": "C:\\Projects\\mission\\docs\\acceptance\\mc-writer-01\\acceptance-registry.yaml",
+    "workspace": {
+      "available": true,
+      "detail": "Read 4 Writer book summaries: 4 audited, 4 need review, 0 stale, 0 not run. Writer remains the source of the reports; no manuscript was edited.",
+      "error": null,
+      "last_checked_at": "2026-10-24T23:52:56.072648+00:00",
+      "generated_at": "2026-10-24T23:46:54.545001Z",
+      "totals": {
+        "books": 4,
+        "with_manuscript": 4,
+        "audited": 4,
+        "current": 0,
+        "needs_review": 4,
+        "stale": 0,
+        "partial": 0,
+        "not_run": 0,
+        "blocked": 0,
+        "no_manuscript": 0,
+        "error": 0
+      },
+      "limitations": [
+        "Mission Control displays Writer's report; it does not recalculate readability or findings.",
+        "NOT_RUN is not zero and not a pass. STALE means the source fingerprint changed after the report.",
+        "Metadata, MRI and Strengthen status are shown as not tracked because Editing v1 does not infer them.",
+        "The cross-book queue orders presentation only. It does not create an editorial decision."
+      ],
+      "books": [
+        {
+          "project_id": "fragmented-fixture",
+          "title": "Fragmented Fixture",
+          "status": "NEEDS_REVIEW",
+          "profile": "technical",
+          "chapters_available": 1,
+          "report_id": "edit-20261024T234652276937Z-f900e4907dc2",
+          "last_checked": "2026-10-24T23:46:52.276937Z",
+          "canonical_fingerprint": "f900e4907dc250687f4117fac24b6f36b82b1371db6c4a17034f7bfd47c4a7f6",
+          "highest_risk": {
+            "kind": "finding",
+            "severity": "high",
+            "code": "READABILITY.FRAGMENTATION",
+            "chapter_id": "chapter:fragmented-fixture:01-chapter",
+            "chapter_title": "Fragmented Fixture",
+            "subdimension": "fragmentation",
+            "locator": {
+              "chapter_id": "chapter:fragmented-fixture:01-chapter",
+              "source_path": "C:\\Projects\\mission\\docs\\acceptance\\mc-writer-01\\fixtures\\fragmented-fixture\\content\\books\\fragmented-fixture\\01-chapter.md",
+              "relative_path": "content/books/fragmented-fixture/01-chapter.md",
+              "line_start": 5,
+              "line_end": 5,
+              "paragraph_index": 1,
+              "section_title": "Opening",
+              "excerpt": "Short line."
+            },
+            "score": 0.0,
+            "finding_count": 2
+          },
+          "readability": {
+            "note": "Subdimensions are independent. No composite book-quality score is calculated, and disagreement between them is preserved.",
+            "highest_risk": {
+              "chapter_id": "chapter:fragmented-fixture:01-chapter",
+              "chapter_title": "Fragmented Fixture",
+              "subdimension": "fragmentation",
+              "label": "Fragmentation",
+              "score": 0.0,
+              "status_band": "high",
+              "finding_codes": [
+                "READABILITY.FRAGMENTATION"
+              ],
+              "finding_count": 2
+            },
+            "subdimensions": [
+              {
+                "id": "paragraph_load",
+                "label": "Paragraph load",
+                "worst_score": 100.0,
+                "worst_band": "good",
+                "worst_chapter_id": "chapter:fragmented-fixture:01-chapter",
+                "chapters_flagged": 0
+              },
+              {
+                "id": "sentence_load",
+                "label": "Sentence load",
+                "worst_score": 100.0,
+                "worst_band": "good",
+                "worst_chapter_id": "chapter:fragmented-fixture:01-chapter",
+                "chapters_flagged": 0
+              },
+              {
+                "id": "fragmentation",
+                "label": "Fragmentation",
+                "worst_score": 0.0,
+                "worst_band": "high",
+                "worst_chapter_id": "chapter:fragmented-fixture:01-chapter",
+                "chapters_flagged": 1
+              },
+              {
+                "id": "rhythm",
+                "label": "Rhythm",
+                "worst_score": 41.5,
+                "worst_band": "review",
+                "worst_chapter_id": "chapter:fragmented-fixture:01-chapter",
+                "chapters_flagged": 1
+              },
+              {
+                "id": "lexical_accessibility",
+                "label": "Lexical accessibility",
+                "worst_score": 44.8,
+                "worst_band": "review",
+                "worst_chapter_id": "chapter:fragmented-fixture:01-chapter",
+                "chapters_flagged": 1
+              },
+              {
+                "id": "section_structure",
+                "label": "Section structure",
+                "worst_score": 100.0,
+                "worst_band": "good",
+                "worst_chapter_id": "chapter:fragmented-fixture:01-chapter",
+                "chapters_flagged": 0
+              }
+            ]
+          },
+          "scope": {
+            "kind": "book",
+            "whole_book": true,
+            "chapter_ids": [
+              "chapter:fragmented-fixture:01-chapter"
+            ]
+          },
+          "errors": []
+        },
+        {
+          "project_id": "uniform-fixture",
+          "title": "Uniform Fixture",
+          "status": "NEEDS_REVIEW",
+          "profile": "technical",
+          "chapters_available": 1,
+          "report_id": "edit-20261024T234652460575Z-dbfd96ac3591",
+          "last_checked": "2026-10-24T23:46:52.459575Z",
+          "canonical_fingerprint": "dbfd96ac3591c003a59df49aca2b9ab2bf3986bcc910197cf01052df2086b6ff",
+          "highest_risk": {
+            "kind": "finding",
+            "severity": "high",
+            "code": "READABILITY.LEXICAL_DIFFICULTY",
+            "chapter_id": "chapter:uniform-fixture:01-chapter",
+            "chapter_title": "Uniform Fixture",
+            "subdimension": "lexical_accessibility",
+            "locator": {
+              "chapter_id": "chapter:uniform-fixture:01-chapter",
+              "source_path": "C:\\Projects\\mission\\docs\\acceptance\\mc-writer-01\\fixtures\\uniform-fixture\\content\\books\\uniform-fixture\\01-chapter.md",
+              "relative_path": "content/books/uniform-fixture/01-chapter.md",
+              "line_start": 1,
+              "line_end": 1,
+              "paragraph_index": null,
+              "section_title": null,
+              "excerpt": "Chapter-level lexical estimate"
+            },
+            "score": 0.0,
+            "finding_count": 2
+          },
+          "readability": {
+            "note": "Subdimensions are independent. No composite book-quality score is calculated, and disagreement between them is preserved.",
+            "highest_risk": {
+              "chapter_id": "chapter:uniform-fixture:01-chapter",
+              "chapter_title": "Uniform Fixture",
+              "subdimension": "lexical_accessibility",
+              "label": "Lexical accessibility",
+              "score": 0.0,
+              "status_band": "high",
+              "finding_codes": [
+                "READABILITY.LEXICAL_DIFFICULTY"
+              ],
+              "finding_count": 2
+            },
+            "subdimensions": [
+              {
+                "id": "paragraph_load",
+                "label": "Paragraph load",
+                "worst_score": 100.0,
+                "worst_band": "good",
+                "worst_chapter_id": "chapter:uniform-fixture:01-chapter",
+                "chapters_flagged": 0
+              },
+              {
+                "id": "sentence_load",
+                "label": "Sentence load",
+                "worst_score": 100.0,
+                "worst_band": "good",
+                "worst_chapter_id": "chapter:uniform-fixture:01-chapter",
+                "chapters_flagged": 0
+              },
+              {
+                "id": "fragmentation",
+                "label": "Fragmentation",
+                "worst_score": 100.0,
+                "worst_band": "good",
+                "worst_chapter_id": "chapter:uniform-fixture:01-chapter",
+                "chapters_flagged": 0
+              },
+              {
+                "id": "rhythm",
+                "label": "Rhythm",
+                "worst_score": 41.5,
+                "worst_band": "review",
+                "worst_chapter_id": "chapter:uniform-fixture:01-chapter",
+                "chapters_flagged": 1
+              },
+              {
+                "id": "lexical_accessibility",
+                "label": "Lexical accessibility",
+                "worst_score": 0.0,
+                "worst_band": "high",
+                "worst_chapter_id": "chapter:uniform-fixture:01-chapter",
+                "chapters_flagged": 1
+              },
+              {
+                "id": "section_structure",
+                "label": "Section structure",
+                "worst_score": 100.0,
+                "worst_band": "good",
+                "worst_chapter_id": "chapter:uniform-fixture:01-chapter",
+                "chapters_flagged": 0
+              }
+            ]
+          },
+          "scope": {
+            "kind": "book",
+            "whole_book": true,
+            "chapter_ids": [
+              "chapter:uniform-fixture:01-chapter"
+            ]
+          },
+          "errors": []
+        },
+        {
+          "project_id": "dense-fixture",
+          "title": "Dense Fixture",
+          "status": "NEEDS_REVIEW",
+          "profile": "technical",
+          "chapters_available": 1,
+          "report_id": "edit-20261024T234652099917Z-098282e998d2",
+          "last_checked": "2026-10-24T23:46:52.098415Z",
+          "canonical_fingerprint": "098282e998d29ee25b94c05d2041683a4bce933957d7b4226938b336f19fb5c7",
+          "highest_risk": {
+            "kind": "finding",
+            "severity": "high",
+            "code": "READABILITY.PARAGRAPH_DENSITY",
+            "chapter_id": "chapter:dense-fixture:01-chapter",
+            "chapter_title": "Dense Fixture",
+            "subdimension": "paragraph_load",
+            "locator": {
+              "chapter_id": "chapter:dense-fixture:01-chapter",
+              "source_path": "C:\\Projects\\mission\\docs\\acceptance\\mc-writer-01\\fixtures\\dense-fixture\\content\\books\\dense-fixture\\01-chapter.md",
+              "relative_path": "content/books/dense-fixture/01-chapter.md",
+              "line_start": 3,
+              "line_end": 3,
+              "paragraph_index": 0,
+              "section_title": "Opening",
+              "excerpt": "argument argument argument argument argument argument argument argument argument argument argument argument argument argument argument argument argument argument argument argument argument argument argument argument argument argument argume"
+            },
+            "score": 6.7,
+            "finding_count": 4
+          },
+          "readability": {
+            "note": "Subdimensions are independent. No composite book-quality score is calculated, and disagreement between them is preserved.",
+            "highest_risk": {
+              "chapter_id": "chapter:dense-fixture:01-chapter",
+              "chapter_title": "Dense Fixture",
+              "subdimension": "sentence_load",
+              "label": "Sentence load",
+              "score": 0.0,
+              "status_band": "high",
+              "finding_codes": [
+                "READABILITY.LONG_SENTENCE"
+              ],
+              "finding_count": 4
+            },
+            "subdimensions": [
+              {
+                "id": "paragraph_load",
+                "label": "Paragraph load",
+                "worst_score": 6.7,
+                "worst_band": "high",
+                "worst_chapter_id": "chapter:dense-fixture:01-chapter",
+                "chapters_flagged": 1
+              },
+              {
+                "id": "sentence_load",
+                "label": "Sentence load",
+                "worst_score": 0.0,
+                "worst_band": "high",
+                "worst_chapter_id": "chapter:dense-fixture:01-chapter",
+                "chapters_flagged": 1
+              },
+              {
+                "id": "fragmentation",
+                "label": "Fragmentation",
+                "worst_score": 82.0,
+                "worst_band": "good",
+                "worst_chapter_id": "chapter:dense-fixture:01-chapter",
+                "chapters_flagged": 0
+              },
+              {
+                "id": "rhythm",
+                "label": "Rhythm",
+                "worst_score": 41.5,
+                "worst_band": "review",
+                "worst_chapter_id": "chapter:dense-fixture:01-chapter",
+                "chapters_flagged": 1
+              },
+              {
+                "id": "lexical_accessibility",
+                "label": "Lexical accessibility",
+                "worst_score": 0.0,
+                "worst_band": "high",
+                "worst_chapter_id": "chapter:dense-fixture:01-chapter",
+                "chapters_flagged": 1
+              },
+              {
+                "id": "section_structure",
+                "label": "Section structure",
+                "worst_score": 100.0,
+                "worst_band": "good",
+                "worst_chapter_id": "chapter:dense-fixture:01-chapter",
+                "chapters_flagged": 0
+              }
+            ]
+          },
+          "scope": {
+            "kind": "book",
+            "whole_book": true,
+            "chapter_ids": [
+              "chapter:dense-fixture:01-chapter"
+            ]
+          },
+          "errors": []
+        },
+        {
+          "project_id": "language",
+          "title": "language",
+          "status": "NEEDS_REVIEW",
+          "profile": "technical",
+          "chapters_available": 38,
+          "report_id": "edit-20261024T234654572138Z-4c44a9e02cc3",
+          "last_checked": "2026-10-24T23:46:54.545001Z",
+          "canonical_fingerprint": "4c44a9e02cc3a83b876836c21f760f67e402ad81b52730d12fea58593cfebdae",
+          "highest_risk": {
+            "kind": "finding",
+            "severity": "high",
+            "code": "READABILITY.FRAGMENTATION",
+            "chapter_id": "chapter:language:24-chapter",
+            "chapter_title": "Memory can be right and still make the present wrong",
+            "subdimension": "fragmentation",
+            "locator": {
+              "chapter_id": "chapter:language:24-chapter",
+              "source_path": "C:\\Projects\\language\\content\\books\\language\\24-chapter.md",
+              "relative_path": "content/books/language/24-chapter.md",
+              "line_start": 22,
+              "line_end": 22,
+              "paragraph_index": 4,
+              "section_title": "Memory can be right and still make the present wrong",
+              "excerpt": "In October, she asks why a duplicate write can still appear during recovery."
+            },
+            "score": 29.3,
+            "finding_count": 8
+          },
+          "readability": {
+            "note": "Subdimensions are independent. No composite book-quality score is calculated, and disagreement between them is preserved.",
+            "highest_risk": {
+              "chapter_id": "chapter:language:24-chapter",
+              "chapter_title": "Memory can be right and still make the present wrong",
+              "subdimension": "fragmentation",
+              "label": "Fragmentation",
+              "score": 29.3,
+              "status_band": "high",
+              "finding_codes": [
+                "READABILITY.FRAGMENTATION"
+              ],
+              "finding_count": 55
+            },
+            "subdimensions": [
+              {
+                "id": "paragraph_load",
+                "label": "Paragraph load",
+                "worst_score": 61.0,
+                "worst_band": "watch",
+                "worst_chapter_id": "chapter:language:04-chapter",
+                "chapters_flagged": 0
+              },
+              {
+                "id": "sentence_load",
+                "label": "Sentence load",
+                "worst_score": 95.9,
+                "worst_band": "good",
+                "worst_chapter_id": "chapter:language:12-chapter",
+                "chapters_flagged": 0
+              },
+              {
+                "id": "fragmentation",
+                "label": "Fragmentation",
+                "worst_score": 29.3,
+                "worst_band": "high",
+                "worst_chapter_id": "chapter:language:24-chapter",
+                "chapters_flagged": 1
+              },
+              {
+                "id": "rhythm",
+                "label": "Rhythm",
+                "worst_score": 53.6,
+                "worst_band": "review",
+                "worst_chapter_id": "chapter:language:03-chapter",
+                "chapters_flagged": 1
+              },
+              {
+                "id": "lexical_accessibility",
+                "label": "Lexical accessibility",
+                "worst_score": 47.9,
+                "worst_band": "review",
+                "worst_chapter_id": "chapter:language:36-chapter",
+                "chapters_flagged": 4
+              },
+              {
+                "id": "section_structure",
+                "label": "Section structure",
+                "worst_score": 97.3,
+                "worst_band": "good",
+                "worst_chapter_id": "chapter:language:24-chapter",
+                "chapters_flagged": 0
+              }
+            ]
+          },
+          "scope": {
+            "kind": "book",
+            "whole_book": true,
+            "chapter_ids": [
+              "chapter:language:01-chapter",
+              "chapter:language:02-chapter",
+              "chapter:language:03-chapter",
+              "chapter:language:04-chapter",
+              "chapter:language:05-chapter",
+              "chapter:language:06-chapter",
+              "chapter:language:07-chapter",
+              "chapter:language:08-chapter",
+              "chapter:language:09-chapter",
+              "chapter:language:10-chapter",
+              "chapter:language:11-chapter",
+              "chapter:language:12-chapter",
+              "chapter:language:13-chapter",
+              "chapter:language:14-chapter",
+              "chapter:language:15-chapter",
+              "chapter:language:16-chapter",
+              "chapter:language:17-chapter",
+              "chapter:language:18-chapter",
+              "chapter:language:19-chapter",
+              "chapter:language:20-chapter",
+              "chapter:language:21-chapter",
+              "chapter:language:22-chapter",
+              "chapter:language:23-chapter",
+              "chapter:language:24-chapter",
+              "chapter:language:25-chapter",
+              "chapter:language:26-chapter",
+              "chapter:language:27-chapter",
+              "chapter:language:28-chapter",
+              "chapter:language:29-chapter",
+              "chapter:language:30-chapter",
+              "chapter:language:31-chapter",
+              "chapter:language:32-chapter",
+              "chapter:language:33-chapter",
+              "chapter:language:34-chapter",
+              "chapter:language:35-chapter",
+              "chapter:language:36-chapter",
+              "chapter:language:37-chapter",
+              "chapter:language:38-chapter"
+            ]
+          },
+          "errors": []
+        }
+      ],
+      "review_queue": [
+        {
+          "project_id": "fragmented-fixture",
+          "title": "Fragmented Fixture",
+          "status": "NEEDS_REVIEW",
+          "risk_rank": 2,
+          "highest_risk": {
+            "kind": "finding",
+            "severity": "high",
+            "code": "READABILITY.FRAGMENTATION",
+            "chapter_id": "chapter:fragmented-fixture:01-chapter",
+            "chapter_title": "Fragmented Fixture",
+            "subdimension": "fragmentation",
+            "locator": {
+              "chapter_id": "chapter:fragmented-fixture:01-chapter",
+              "source_path": "C:\\Projects\\mission\\docs\\acceptance\\mc-writer-01\\fixtures\\fragmented-fixture\\content\\books\\fragmented-fixture\\01-chapter.md",
+              "relative_path": "content/books/fragmented-fixture/01-chapter.md",
+              "line_start": 5,
+              "line_end": 5,
+              "paragraph_index": 1,
+              "section_title": "Opening",
+              "excerpt": "Short line."
+            },
+            "score": 0.0,
+            "finding_count": 2
+          },
+          "finding_count": 3,
+          "report_id": "edit-20261024T234652276937Z-f900e4907dc2",
+          "last_checked": "2026-10-24T23:46:52.276937Z"
+        },
+        {
+          "project_id": "uniform-fixture",
+          "title": "Uniform Fixture",
+          "status": "NEEDS_REVIEW",
+          "risk_rank": 2,
+          "highest_risk": {
+            "kind": "finding",
+            "severity": "high",
+            "code": "READABILITY.LEXICAL_DIFFICULTY",
+            "chapter_id": "chapter:uniform-fixture:01-chapter",
+            "chapter_title": "Uniform Fixture",
+            "subdimension": "lexical_accessibility",
+            "locator": {
+              "chapter_id": "chapter:uniform-fixture:01-chapter",
+              "source_path": "C:\\Projects\\mission\\docs\\acceptance\\mc-writer-01\\fixtures\\uniform-fixture\\content\\books\\uniform-fixture\\01-chapter.md",
+              "relative_path": "content/books/uniform-fixture/01-chapter.md",
+              "line_start": 1,
+              "line_end": 1,
+              "paragraph_index": null,
+              "section_title": null,
+              "excerpt": "Chapter-level lexical estimate"
+            },
+            "score": 0.0,
+            "finding_count": 2
+          },
+          "finding_count": 3,
+          "report_id": "edit-20261024T234652460575Z-dbfd96ac3591",
+          "last_checked": "2026-10-24T23:46:52.459575Z"
+        },
+        {
+          "project_id": "dense-fixture",
+          "title": "Dense Fixture",
+          "status": "NEEDS_REVIEW",
+          "risk_rank": 2,
+          "highest_risk": {
+            "kind": "finding",
+            "severity": "high",
+            "code": "READABILITY.PARAGRAPH_DENSITY",
+            "chapter_id": "chapter:dense-fixture:01-chapter",
+            "chapter_title": "Dense Fixture",
+            "subdimension": "paragraph_load",
+            "locator": {
+              "chapter_id": "chapter:dense-fixture:01-chapter",
+              "source_path": "C:\\Projects\\mission\\docs\\acceptance\\mc-writer-01\\fixtures\\dense-fixture\\content\\books\\dense-fixture\\01-chapter.md",
+              "relative_path": "content/books/dense-fixture/01-chapter.md",
+              "line_start": 3,
+              "line_end": 3,
+              "paragraph_index": 0,
+              "section_title": "Opening",
+              "excerpt": "argument argument argument argument argument argument argument argument argument argument argument argument argument argument argument argument argument argument argument argument argument argument argument argument argument argument argume"
+            },
+            "score": 6.7,
+            "finding_count": 4
+          },
+          "finding_count": 5,
+          "report_id": "edit-20261024T234652099917Z-098282e998d2",
+          "last_checked": "2026-10-24T23:46:52.098415Z"
+        },
+        {
+          "project_id": "language",
+          "title": "language",
+          "status": "NEEDS_REVIEW",
+          "risk_rank": 2,
+          "highest_risk": {
+            "kind": "finding",
+            "severity": "high",
+            "code": "READABILITY.FRAGMENTATION",
+            "chapter_id": "chapter:language:24-chapter",
+            "chapter_title": "Memory can be right and still make the present wrong",
+            "subdimension": "fragmentation",
+            "locator": {
+              "chapter_id": "chapter:language:24-chapter",
+              "source_path": "C:\\Projects\\language\\content\\books\\language\\24-chapter.md",
+              "relative_path": "content/books/language/24-chapter.md",
+              "line_start": 22,
+              "line_end": 22,
+              "paragraph_index": 4,
+              "section_title": "Memory can be right and still make the present wrong",
+              "excerpt": "In October, she asks why a duplicate write can still appear during recovery."
+            },
+            "score": 29.3,
+            "finding_count": 8
+          },
+          "finding_count": 8,
+          "report_id": "edit-20261024T234654572138Z-4c44a9e02cc3",
+          "last_checked": "2026-10-24T23:46:54.545001Z"
+        }
+      ]
+    }
+  },
+  "writer_report_store": {
+    "path": "C:\\Projects\\writer\\.writer\\editing",
+    "ignore_status": "git-ignored"
+  },
+  "source_repositories": {
+    "writer": {
+      "branch": "main",
+      "head": "da0ef153e",
+      "changed_paths": 16
+    },
+    "mission": {
+      "branch": "main",
+      "head": "9a3d45b",
+      "changed_paths": 29
+    },
+    "language": {
+      "branch": "main",
+      "head": "c7e7953",
+      "changed_paths": 0
+    },
+    "next": {
+      "branch": "main",
+      "head": "491b501",
+      "changed_paths": 0
+    },
+    "worker": {
+      "branch": "main",
+      "head": "0aecefa",
+      "changed_paths": 33
+    },
+    "cocoder": {
+      "branch": "cc-r06-p0-codeai-qualification",
+      "head": "f4e90d6",
+      "changed_paths": 36
+    },
+    "work": {
+      "branch": "main",
+      "head": "e79e68c",
+      "changed_paths": 1
+    }
+  },
+  "live_writer_page_screenshot": "C:\\Projects\\mission\\docs\\acceptance\\mc-writer-01\\07-live-writer-real.png"
+}

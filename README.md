@@ -17,7 +17,8 @@ Mission Control is a local-first control centre for an existing ecosystem of AI 
 - **Shared project context** - associate Next candidates, Work opportunities and CoCoder findings with projects without copying ownership away from the source engines.
 - **Cross-application experiments (MC10)** - one traceable Next → approval → Worker → CoCoder → human-decision workflow, with scope enforcement, local inference and durable evidence.
 - **Hardened experiments (MC11)** - Docker-isolated generated-code execution, two versioned templates, cancellation and duplicate-execution guards, `language.observation.v1`, and a project evidence timeline.
-- **Evidence adapters** - Language, Inference, Math, live read-only Next, Work JSON CLI, CoCoder artifacts and Worker health. Unavailable integrations are shown as unavailable; they are not filled with sample data.
+- **Writer editing (MC-WRITER-01)** - Writer-owned readability reports with six independent subdimensions, findings and source locators, displayed in Mission Control with explicit `NOT_RUN` / `CURRENT` / `STALE` / `PARTIAL` / `ERROR` states and a cross-book review queue.
+- **Evidence adapters** - Language, Inference, Math, live read-only Next, Work JSON CLI, CoCoder artifacts, Writer editing reports and Worker health. Unavailable integrations are shown as unavailable; they are not filled with sample data.
 - **Grounded daily briefing** - deterministic by default. Optional OpenAI-compatible AI interpretation only after explicit configuration, consent and request. AI remains advisory.
 - **Local API and OpenAPI docs** - FastAPI at `/api/*` and `/docs`.
 
@@ -272,6 +273,14 @@ The Home screen shows:
 4. Execute with confirmation. Mission Control applies only the approved patch, runs deterministic tests/measurement and requests a CoCoder review of the actual result commit.
 5. Inspect the review and record **Accept**, **Investigate** or **Reject**. CoCoder high/medium findings require an explicit override to accept.
 
+**Review Writer editing evidence**
+1. Open **Writer** under **Engines**.
+2. Inspect the cross-book queue and choose a book.
+3. Review the independent readability subdimensions; no composite quality score is shown.
+4. Select a chapter to inspect raw metrics, findings, source line locators and stale/current state.
+5. Press **Run Writer audits** to launch Writer's read-only audit. Progress is shown from the durable integration execution record, not an invented percentage.
+6. Press **Refresh Writer data** to re-read Writer's reports and fingerprint-based staleness.
+
 **Review the inbox and search**
 1. Open **Inbox** to see pending Next candidates, qualified Work opportunities, CoCoder findings and tasks together.
 2. Filter by source or priority; **Open** goes to the functional detail view.
@@ -449,7 +458,8 @@ data directory or local state.
 | Work | Verified read-only | Documented `work opportunities --json`; 130 live opportunities in acceptance. Decisions remain local; no Work write path. |
 | CoCoder | Verified | JSON review artifacts and a registered bounded `run_review` action. Engine state and artifacts stay under `data/integrations/cocoder`. |
 | Worker | Verified HTTP + local executor | `GET /health` for status; MC10 workflows can call `POST /v1/work` with the local `direct` Ollama executor. The adapter health surface does not submit work by itself. |
-| Writer / Improve / BookBuilder / Stephanie / Workbench | Not integrated | Repository/documentation access only; build and launch actions remain disabled until verified |
+| Writer | Verified read-only + approved audit action | Writer CLI `editing summary --json` and `editing audit --all --json`; reports, six independent readability subdimensions, stale fingerprints and a review queue. Mission Control never parses manuscripts or calculates scores. |
+| Improve / BookBuilder / Stephanie / Workbench | Not integrated | Repository/documentation access only; build and launch actions remain disabled until verified |
 
 Adapters fail in isolation. An unavailable adapter, timeout or malformed artifact produces an unavailable status and diagnostics, not a dashboard failure.
 
@@ -490,7 +500,7 @@ npm test
 npm run build
 ```
 
-Current result: **58 backend tests passing, 26 frontend tests passing, production build succeeds.** The suite includes real local process launch/stop/log capture, a backend restart reattachment test, real configured-editor invocation, discovery exclusions, migrations, checkpoint persistence, adapter failure isolation, integration decisions/inbox/search, action parameter and repository validation, workflow approval/scope/stale-approval/adverse-review/replay tests, Docker sandbox isolation, cancellation/duplicate-execution guards, two-template execution and Language observation tests. MC11 additionally passed a real Chrome acceptance workflow; see [the MC11 report](docs/acceptance/MC11-REPORT.md).
+Current result: **63 backend tests passing, 29 frontend tests passing, production build succeeds.** The suite includes real local process launch/stop/log capture, a backend restart reattachment test, real configured-editor invocation, discovery exclusions, migrations, checkpoint persistence, adapter failure isolation, integration decisions/inbox/search, action parameter and repository validation, workflow approval/scope/stale-approval/adverse-review/replay tests, Docker sandbox isolation, cancellation/duplicate-execution guards, two-template execution, Language observation tests, Writer adapter contract validation and Writer book/chapter presentation. MC-WRITER-01 additionally passed a real Chrome acceptance workflow; see [the MC-WRITER-01 report](docs/acceptance/MC-WRITER-01-REPORT.md).
 
 ## Troubleshooting
 
@@ -544,6 +554,8 @@ Current result: **58 backend tests passing, 26 frontend tests passing, productio
 - Execute commands are guarded against duplicates; cancellation is cooperative and never adopts an uncommitted patch.
 - `language.observation.v1` is read-only evidence: it cannot rewrite intentions or control execution.
 - MC10/MC11 acceptance used a local Ollama model and no paid inference route.
+- MC-WRITER-01 consumes Writer's versioned editing report. Mission Control does not import Writer's parser or scoring code, and its Writer audit action writes only Writer-owned report artifacts.
+- `NOT_RUN` is never displayed as zero or a pass; `STALE` is derived from Writer source fingerprints. Metadata, MRI and Strengthen are explicitly `NOT_TRACKED` by Editing v1.
 - External publishing, repository mutation, model spending and destructive actions are not implemented as autonomous operations.
 
 See [docs/MC01-ARCHITECTURE.md](docs/MC01-ARCHITECTURE.md) and [docs/SECURITY.md](docs/SECURITY.md).
@@ -571,6 +583,9 @@ Mission Control was built in `C:\Projects\mission`. Integration repositories wer
 - [MC11 templates and Language contract](docs/MC11-TEMPLATES-AND-LANGUAGE.md)
 - [MC11 acceptance report](docs/acceptance/MC11-REPORT.md)
 - [MC11 browser/runtime evidence](docs/acceptance/mc11/README.md)
+- [MC-WRITER-01 integration contract](docs/MC-WRITER-01-WRITER-INTEGRATION.md)
+- [MC-WRITER-01 acceptance report](docs/acceptance/MC-WRITER-01-REPORT.md)
+- [MC-WRITER-01 browser/runtime evidence](docs/acceptance/mc-writer-01/README.md)
 - [First-release acceptance report](docs/acceptance/REPORT.md)
 - [First-release final engineering report](docs/acceptance/FINAL-ENGINEERING-REPORT.md)
 - [UI smoke evidence](docs/acceptance/UI-SMOKE.md)

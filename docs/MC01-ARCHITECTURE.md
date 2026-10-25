@@ -222,6 +222,8 @@ Initial adapters:
 - CoCoder configured review artifact.
 - Worker health.
 - Work reports a blocked contract rather than inventing records.
+- Writer editing summary and an approved read-only audit action. Mission Control
+  consumes Writer's versioned report and never parses or scores a manuscript.
 
 ## Daily briefing and provenance
 
@@ -247,6 +249,8 @@ Optional AI:
   - **Project workspace** handles checkpoint, tasks, decisions, recommendations, adapters, Git, outcome relationships.
   - **Applications** supports registry CRUD, launch/stop/restart, logs and full launch configuration.
   - **Books** is a first-class three-book workspace with explicit user status.
+  - **Writer** shows Writer-owned editing reports, independent readability
+    subdimensions, findings and stale/current evidence.
   - **Activity** filters and differentiates provenance.
   - **Settings** covers discovery roots/exclusions, editor/browser, limits, adapters, AI, startup profile and retention.
 - Accessibility: semantic headings, keyboard focus in dialogs, focus-visible outlines, labels, disabled reasons, responsive layout, light/dark themes, reduced-motion support.
@@ -269,6 +273,6 @@ Optional AI:
 - No cross-repository write operations.
 - No publishing action or paid model call.
 - No full conversation capture from other applications.
-- No Work/Writer/Improve/Stephanie adapters because no verified read-only contract was available.
+- No Work/Improve/Stephanie adapters because no verified read-only contract was available. Writer is integrated through its versioned Editing CLI contract (MC-WRITER-01); Work decisions remain local.
 
 These are future extensions, not reasons to fake capability.

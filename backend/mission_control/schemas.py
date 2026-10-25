@@ -1003,6 +1003,22 @@ class ProjectEvidenceTimeline(BaseModel):
     observations: list[LanguageObservationRead]
 
 
+class WriterWorkspaceRead(BaseModel):
+    available: bool
+    detail: str
+    error: str | None = None
+    last_checked_at: str | None = None
+    generated_at: str | None = None
+    totals: dict[str, Any] = Field(default_factory=dict)
+    review_queue: list[dict[str, Any]] = Field(default_factory=list)
+    books: list[dict[str, Any]] = Field(default_factory=list)
+    limitations: list[str] = Field(default_factory=list)
+
+
+class WriterAuditRequest(RawModel):
+    profile: Literal["technical-nonfiction-v1"] = "technical-nonfiction-v1"
+
+
 class WorkflowCreate(RawModel):
     record_id: str | None = Field(default=None, max_length=200)
     template: Literal["trace_reduce_v1", "brightness_observation_v1"] = "trace_reduce_v1"

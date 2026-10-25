@@ -27,6 +27,7 @@ from mission_control.api import (
     projects,
     settings as settings_api,
     workflows as workflows_api,
+    writer as writer_api,
 )
 from mission_control.config import RuntimeSettings
 from mission_control.core.errors import MissionControlError
@@ -197,6 +198,7 @@ def create_app(runtime: RuntimeSettings | None = None) -> FastAPI:
     app.include_router(adapters.router)
     app.include_router(integrations_api.router)
     app.include_router(workflows_api.router)
+    app.include_router(writer_api.router)
     app.include_router(briefing.router)
     app.include_router(settings_api.router)
 

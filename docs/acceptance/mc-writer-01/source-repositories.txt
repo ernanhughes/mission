@@ -1,0 +1,17 @@
+# MC-WRITER-01 source repository state
+
+Captured: 2026-10-25T00:24:30.279278+00:00
+
+| Repository | Branch | HEAD | Changed paths | MC-WRITER-01 action |
+| --- | --- | --- | ---: | --- |
+| Writer (`C:\Projects\writer`) | `main` | `da0ef153e` | 16 | Editing runtime, CLI, docs and tests added. 3 pre-existing modified paths preserved; no commit/push. |
+| Mission Control (`C:\Projects\mission`) | `main` | `9a3d45b` | 29 | Writer adapter, API, page, tests, migration and acceptance evidence added. No commit/push. |
+| Language (`C:\Projects\language`) | `main` | `c7e7953` | 0 | Read-only calibration and acceptance audits. Clean before and after; manuscript tree hash unchanged. |
+| Next (`C:\Projects\next`) | `main` | `491b501` | 0 | No change. |
+| Worker (`C:\Projects\worker`) | `main` | `0aecefa` | 33 | No change; 33 pre-existing changes preserved. |
+| CoCoder (`C:\Projects\cocoder`) | `cc-r06-p0-codeai-qualification` | `f4e90d6` | 36 | No change; 36 pre-existing changes preserved. |
+| Work (`C:\Projects\work`) | `main` | `e79e68c` | 1 | No change; 1 pre-existing change preserved. |
+
+Mission Control `.cocoder` present: **no**.
+Writer `.cocoder` present: **yes (pre-existing, preserved)**.
+No source repository was pushed. Writer reports live under the git-ignored `.writer/editing` store.

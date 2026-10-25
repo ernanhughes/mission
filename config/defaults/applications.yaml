@@ -137,9 +137,14 @@ applications:
       - 'C:\Projects\writer\README.md'
       - 'C:\Projects\writer\docs\cli\INDEX.md'
     integration:
-      adapter: null
-      enabled: false
-      config: {}
+      adapter: writer
+      enabled: true
+      config:
+        executable: 'C:\Projects\writer\venv\Scripts\writer.exe'
+        working_directory: 'C:\Projects\writer'
+        arguments: [editing, summary, --json]
+        timeout_seconds: 60
+        env_names: [WRITER_PROJECTS_CONFIG]
     relationships:
       projects: [language, inference]
       outcomes: [books, programmer-ie]

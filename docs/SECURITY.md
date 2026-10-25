@@ -124,6 +124,28 @@ after all rejected attempts. See
 - `language.observation.v1` is stored as read-only evidence. It has no execution,
   negotiation or corrective path.
 
+## MC-WRITER-01 editing integration
+
+- Mission Control calls Writer through a configured native executable and
+  structured arguments. The browser sends only a registered action ID and the
+  fixed profile parameter; it never supplies a command, path or environment.
+- The Writer adapter validates the versioned CLI envelope
+  (`writer.editing.cli.v1`) and summary schema
+  (`writer-editing-summary-v1`) before importing anything. Malformed output is
+  unavailable, not guessed.
+- Mission Control does not import Writer's Markdown parser or scoring code. It
+  preserves Writer scores, findings, locators, errors and limitations verbatim.
+- The approved audit action runs Writer's read-only audit. It writes only
+  Writer-owned `.writer/editing` artifacts; no manuscript or book repository is
+  edited.
+- `NOT_RUN` is not interpreted as zero or a pass. `STALE` is Writer's
+  fingerprint comparison; Mission Control does not substitute a timestamp.
+- Metadata, MRI and Strengthen are shown as `NOT_TRACKED`; Editing v1 does not
+  infer them.
+- The audit execution is bounded and recorded in the existing durable
+  integration-execution lifecycle. Browser-side text is rendered as text, never
+  as executable code.
+
 ## Tests
 
 Backend security tests verify:
@@ -152,7 +174,12 @@ Backend security tests verify:
 - concurrent duplicate execute is rejected;
 - cancellation during Worker execution leaves no patch/commit;
 - modified approved source and changed baseline are rejected before Worker;
-- both templates produce `language.observation.v1` without changing intentions.
+- both templates produce `language.observation.v1` without changing intentions;
+- Writer CLI output is schema-checked and malformed/unversioned output is
+  rejected without inventing books;
+- Writer audit action rejects an unsupported profile;
+- `NOT_RUN` remains distinct from a pass, and independent subdimension scores are
+  preserved in the Mission Control read model.
 
 ## Residual risks and limitations
 

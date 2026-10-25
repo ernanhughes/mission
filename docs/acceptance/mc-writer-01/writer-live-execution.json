@@ -1,0 +1,38 @@
+{
+  "id": "exec-42b9faeb4b0b49ab",
+  "application_id": "writer",
+  "application_name": "Writer",
+  "action_id": "audit_registered_books",
+  "parameters": {
+    "profile": "technical-nonfiction-v1"
+  },
+  "status": "succeeded",
+  "risk": "bounded_local_computation",
+  "approval_required": true,
+  "approved_at": "2026-10-24T23:53:57.893505+00:00",
+  "started_at": "2026-10-24T23:53:57.905686+00:00",
+  "ended_at": "2026-10-24T23:54:11.188715+00:00",
+  "exit_code": 0,
+  "output": "Writer editing audit complete: 7 audited, 7 need review, 0 stale.",
+  "error": null,
+  "result": {
+    "schema_version": "writer-editing-summary-v1",
+    "totals": {
+      "registered_active": 29,
+      "with_manuscript": 7,
+      "audited": 7,
+      "current": 0,
+      "needs_review": 7,
+      "stale": 0,
+      "partial": 0,
+      "not_run": 0,
+      "blocked": 21,
+      "no_manuscript": 1,
+      "error": 0
+    },
+    "store_path": "C:\\Projects\\writer\\.writer\\editing",
+    "generated_at": "2026-10-24T23:54:10.077082Z"
+  },
+  "artifact_ref": "C:\\Projects\\writer\\.writer\\editing",
+  "created_at": "2026-10-24T23:53:57.893512+00:00"
+}
