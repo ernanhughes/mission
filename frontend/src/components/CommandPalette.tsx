@@ -22,6 +22,7 @@ const commands: CommandItem[] = [
   { id: "work", label: "Work workspace", hint: "Opportunities and qualification", path: "/work" },
   { id: "cocoder", label: "CoCoder workspace", hint: "Assessments and findings", path: "/cocoder" },
   { id: "workflows", label: "Experiment workflows", hint: "Next → approval → Worker → CoCoder → decision", path: "/workflows" },
+  { id: "writer", label: "Writer editing", hint: "Readability reports, findings and stale evidence", path: "/writer" },
   { id: "books", label: "Books", hint: "Language, Inference, Math", path: "/books" },
   { id: "projects", label: "Projects", hint: "All bodies of work", path: "/projects" },
   { id: "project-math", label: "Math project", hint: "Book, proof obligations and shared context", path: "/projects/math" },
@@ -40,6 +41,7 @@ function sourceForRecord(target: string): string {
   if (target.startsWith("/next")) return "Next";
   if (target.startsWith("/work")) return "Work";
   if (target.startsWith("/cocoder")) return "CoCoder";
+  if (target.startsWith("/writer")) return "Writer";
   return "Mission Control";
 }
 

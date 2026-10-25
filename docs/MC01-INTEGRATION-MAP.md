@@ -9,7 +9,7 @@ This map distinguishes what was **verified**, what is **inferred**, what is **no
 | Next | Local SQLite database and opportunity tables; CLI; PostgreSQL option | Read-only snapshot observations | Verified (local snapshot), no recommendations auto-created |
 | CoCoder | JSON review artifact with findings and evidence | Findings + high-severity review suggestions | Requires a configured artifact path |
 | Work | PostgreSQL CLI/web dashboard | No records imported | Blocked: no verified read-only export configured |
-| Writer | CLI, web runtime, contracts | Repository/documentation access | Not integrated (adapter not available) |
+| Writer | CLI, Editing runtime, versioned reports | Editing summary, book/chapter evidence, approved read-only audit | Integrated in MC-WRITER-01 (read-only) |
 | Improve | Repository, tests, docs | Repository access | Not integrated |
 | BookBuilder | `bookbuilder build --config` CLI | Disabled build template | Verified CLI shape, not enabled for a book |
 | Worker | `/health` and `/v1/work` HTTP API | Health-only adapter | Verified health, not running; no work submitted |
@@ -82,9 +82,16 @@ This map distinguishes what was **verified**, what is **inferred**, what is **no
 - Monorepo runtime + CLI (`writer <command>`), 28 top-level commands, writer-web server on 127.0.0.1:8010, contract and skill documentation.
 - Working tree was already dirty; Mission Control did not run Writer tests or write anything.
 
-**Not available**
-- No stable adapter contract was established for book status or editorial findings from the outputs inspected.
-- No Writer launch is enabled because the installation and working directory require explicit verification.
+**MC-WRITER-01 update**
+- Writer now exposes `runtime.editing` and `writer editing summary|audit|... --json`
+  plus `writer-editing-report-v1`. Mission Control consumes the CLI contract and
+  does not parse manuscripts or calculate scores.
+- The approved `audit_registered_books` action runs Writer's read-only audit and
+  writes only Writer-owned `.writer/editing` artifacts.
+- `NOT_RUN`/`CURRENT`/`STALE`/`PARTIAL`/`ERROR` are preserved; Metadata, MRI and
+  Strengthen are explicitly `NOT_TRACKED` by Editing v1.
+- See `docs/MC-WRITER-01-WRITER-INTEGRATION.md` and
+  `docs/acceptance/MC-WRITER-01-REPORT.md`.
 
 **Verified Improve**
 - Repository with CLI/package and documentation. No stable status endpoint was established.

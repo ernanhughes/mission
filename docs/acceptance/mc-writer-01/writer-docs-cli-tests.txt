@@ -1,0 +1,54 @@
+..FF...............                                                      [100%]
+================================== FAILURES ===================================
+___________________ test_every_genuine_domain_has_docs_dir ____________________
+
+    def test_every_genuine_domain_has_docs_dir() -> None:
+        missing = [
+            p.name for p in _genuine_domains() if not (RUNTIME_DOCS / p.name).is_dir()
+        ]
+>       assert not missing, (
+            f"runtime implementation without docs/runtime/<name>/: {missing}"
+        )
+E       AssertionError: runtime implementation without docs/runtime/<name>/: ['metadata_generation']
+E       assert not ['metadata_generation']
+
+tests\runtime\test_docs_architecture.py:93: AssertionError
+____________ test_every_genuine_domain_has_skill_or_justified_gap _____________
+
+    def test_every_genuine_domain_has_skill_or_justified_gap() -> None:
+        # world/workflow_execution are empty shells without implementation surface.
+        justified = {"world", "workflow_execution"}
+        missing = [
+            p.name
+            for p in _genuine_domains()
+            if not (RUNTIME_DOCS / p.name / "SKILL.md").exists() and p.name not in justified
+        ]
+>       assert not missing, f"genuine runtimes without docs SKILL.md: {missing}"
+E       AssertionError: genuine runtimes without docs SKILL.md: ['metadata_generation']
+E       assert not ['metadata_generation']
+
+tests\runtime\test_docs_architecture.py:106: AssertionError
+============================== warnings summary ===============================
+tests/runtime/test_docs_architecture.py::test_layout_single_authority
+  c:\Projects\writer\tests\conftest.py:136: SAWarning: Cannot correctly sort tables; there are unresolvable cycles between tables "inquiry_branches, inquiry_entries", which is usually caused by mutually dependent foreign key constraints.  Foreign key constraints involving these tables will not be considered; this warning may raise an error in a future release.
+    for table in Base.metadata.sorted_tables:
+
+tests/runtime/test_docs_architecture.py::test_layout_single_authority
+  c:\Projects\writer\tests\conftest.py:145: SAWarning: Cannot correctly sort tables; there are unresolvable cycles between tables "inquiry_branches, inquiry_entries", which is usually caused by mutually dependent foreign key constraints.  Foreign key constraints involving these tables will not be considered; this warning may raise an error in a future release.
+    for table in Base.metadata.sorted_tables:
+
+tests/runtime/test_docs_architecture.py: 15 warnings
+tests/cli/test_cli_docs_coverage.py: 4 warnings
+  c:\Projects\writer\tests\conftest.py:252: SAWarning: Cannot correctly sort tables; there are unresolvable cycles between tables "inquiry_branches, inquiry_entries", which is usually caused by mutually dependent foreign key constraints.  Foreign key constraints involving these tables will not be considered; this warning may raise an error in a future release.
+    snapshot = {table.name: set(table.indexes) for table in Base.metadata.sorted_tables}
+
+tests/runtime/test_docs_architecture.py: 15 warnings
+tests/cli/test_cli_docs_coverage.py: 4 warnings
+  c:\Projects\writer\tests\conftest.py:256: SAWarning: Cannot correctly sort tables; there are unresolvable cycles between tables "inquiry_branches, inquiry_entries", which is usually caused by mutually dependent foreign key constraints.  Foreign key constraints involving these tables will not be considered; this warning may raise an error in a future release.
+    for table in Base.metadata.sorted_tables:
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/runtime/test_docs_architecture.py::test_every_genuine_domain_has_docs_dir
+FAILED tests/runtime/test_docs_architecture.py::test_every_genuine_domain_has_skill_or_justified_gap
+2 failed, 17 passed, 40 warnings in 17.27s

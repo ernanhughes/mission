@@ -1,0 +1,12 @@
+{
+  "schema": "mc-writer-01.fingerprint-recheck.v1",
+  "command": "writer editing audit language --no-write --json (twice)",
+  "left_report_id": "edit-20261024T234635842018Z-4c44a9e02cc3",
+  "right_report_id": "edit-20261024T234642397148Z-4c44a9e02cc3",
+  "left_canonical_fingerprint": "4c44a9e02cc3a83b876836c21f760f67e402ad81b52730d12fea58593cfebdae",
+  "right_canonical_fingerprint": "4c44a9e02cc3a83b876836c21f760f67e402ad81b52730d12fea58593cfebdae",
+  "equal": true,
+  "chapters": 38,
+  "partial": false,
+  "errors": []
+}

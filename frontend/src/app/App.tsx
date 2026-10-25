@@ -13,6 +13,7 @@ import { IntegrationsPage } from "../pages/IntegrationsPage";
 import { IntegrationWorkspacePage } from "../pages/IntegrationWorkspacePage";
 import { WorkflowsPage } from "../pages/WorkflowsPage";
 import { WorkflowDetailPage } from "../pages/WorkflowDetailPage";
+import { WriterPage } from "../pages/WriterPage";
 
 export function App() {
   return (
@@ -26,6 +27,7 @@ export function App() {
         <Route path="cocoder" element={<IntegrationWorkspacePage appId="cocoder" />} />
         <Route path="workflows" element={<WorkflowsPage />} />
         <Route path="workflows/:workflowId" element={<WorkflowDetailPage />} />
+        <Route path="writer" element={<WriterPage />} />
         <Route path="integrations" element={<IntegrationsPage />} />
         <Route path="projects" element={<ProjectsPage />} />
         <Route path="projects/:projectId" element={<ProjectPage />} />

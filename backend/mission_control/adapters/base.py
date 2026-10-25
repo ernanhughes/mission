@@ -107,6 +107,7 @@ class ActionResult:
     result: dict[str, Any] = field(default_factory=dict)
     artifact_ref: str | None = None
     exit_code: int | None = None
+    error: str | None = None
 
 
 @dataclass(slots=True)

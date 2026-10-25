@@ -45,7 +45,7 @@ from mission_control.schemas import (
 
 logger = logging.getLogger(__name__)
 
-INTEGRATION_APPLICATIONS = ("next", "work", "cocoder")
+INTEGRATION_APPLICATIONS = ("next", "work", "cocoder", "writer")
 _ALLOWED_CONFIG_KEYS = {
     "next": {"dsn_env", "sqlite_path", "limit"},
     "work": {
@@ -57,6 +57,13 @@ _ALLOWED_CONFIG_KEYS = {
         "limit",
     },
     "cocoder": {"executable", "artifact_dir", "artifact_paths", "env_names", "timeout_seconds"},
+    "writer": {
+        "executable",
+        "working_directory",
+        "arguments",
+        "env_names",
+        "timeout_seconds",
+    },
 }
 _SECRET_MARKERS = ("secret", "password", "token", "api_key", "apikey")
 
@@ -78,6 +85,8 @@ def _mode_for(application: Application) -> str:
 
         return "postgres-readonly" if os.environ.get(dsn_env) else "sqlite-snapshot"
     if application.id == "work":
+        return "cli-json"
+    if application.id == "writer":
         return "cli-json"
     return "cli-artifact"
 
@@ -435,7 +444,9 @@ class IntegrationService:
                 execution.status = action_result.status
                 execution.output = action_result.output[-20_000:]
                 execution.error = None if action_result.status == "succeeded" else (
-                    action_result.output[-2000:] or "Integration action failed"
+                    (action_result.error or action_result.output or "Integration action failed")[
+                        -2000:
+                    ]
                 )
                 execution.exit_code = action_result.exit_code
                 execution.result = action_result.result

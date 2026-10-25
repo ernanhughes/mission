@@ -517,6 +517,115 @@ export type WorkflowEvent = {
   created_at: string;
 };
 
+export type WriterDimension = {
+  id: string;
+  label: string;
+  score: number | null;
+  status_band: string;
+  finding_codes: string[];
+  raw_metrics: Record<string, any>;
+  explanation?: string;
+  limitations?: string[];
+  scoring?: Record<string, any>;
+};
+
+export type WriterFinding = {
+  code: string;
+  severity: "high" | "medium" | "low" | "info";
+  dimension: string;
+  subdimension: string;
+  book_id: string;
+  chapter_id: string | null;
+  source_path: string | null;
+  locator: {
+    chapter_id: string;
+    source_path: string;
+    relative_path: string;
+    line_start: number | null;
+    line_end: number | null;
+    paragraph_index: number | null;
+    section_title: string | null;
+    excerpt: string;
+  } | null;
+  measured: Record<string, any>;
+  reason: string;
+  recommendation: string;
+  limitations: string[];
+};
+
+export type WriterReadabilitySubdimension = {
+  id: string;
+  label: string;
+  worst_score: number | null;
+  worst_band: string;
+  worst_chapter_id: string | null;
+  chapters_flagged: number;
+  chapter_scores: Array<Record<string, any>>;
+};
+
+export type WriterReadability = {
+  note: string;
+  subdimensions: WriterReadabilitySubdimension[];
+  highest_risk: Record<string, any> | null;
+};
+
+export type WriterChapter = {
+  chapter_id: string;
+  title: string;
+  source_path: string;
+  relative_path: string;
+  source_fingerprint: string;
+  order: number;
+  word_count: number;
+  paragraph_count: number;
+  sentence_count: number;
+  status: string;
+  current: boolean;
+  status_band: string;
+  highest_risk: Record<string, any> | null;
+  dimensions: WriterDimension[];
+  finding_codes: string[];
+  finding_count: number;
+  findings: WriterFinding[];
+};
+
+export type WriterBook = {
+  project_id: string;
+  title: string;
+  status: string;
+  profile: string;
+  project_root: string;
+  content_dir: string;
+  repository_path: string;
+  chapters_available: number;
+  source_revision: string | null;
+  source_dirty: boolean | null;
+  report_id: string | null;
+  scope: { kind: string; whole_book: boolean; chapter_ids: string[] } | null;
+  last_checked: string | null;
+  canonical_fingerprint: string | null;
+  editing: Record<string, any>;
+  pipeline: Record<string, any>;
+  readability: WriterReadability | null;
+  highest_risk: Record<string, any> | null;
+  chapters: WriterChapter[];
+  findings_preview: WriterFinding[];
+  errors: string[];
+  limitations: string[];
+};
+
+export type WriterWorkspace = {
+  available: boolean;
+  detail: string;
+  error: string | null;
+  last_checked_at: string | null;
+  generated_at: string | null;
+  totals: Record<string, number>;
+  review_queue: Array<Record<string, any>>;
+  books: WriterBook[];
+  limitations: string[];
+};
+
 export type LanguageObservation = {
   id: string;
   workflow_id: string;

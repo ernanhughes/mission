@@ -22,6 +22,7 @@ from mission_control.adapters.cocoder import CoCoderAdapter
 from mission_control.adapters.next import NextAdapter
 from mission_control.adapters.work import WorkAdapter
 from mission_control.adapters.worker import WorkerAdapter
+from mission_control.adapters.writer import WriterAdapter
 from mission_control.config import RuntimeSettings
 from mission_control.core.errors import NotFound
 from mission_control.integrations.store import upsert_resources
@@ -45,6 +46,7 @@ _APP_ADAPTERS: dict[str, Adapter] = {
     "cocoder": CoCoderAdapter(),
     "worker": WorkerAdapter(),
     "work": WorkAdapter(),
+    "writer": WriterAdapter(),
 }
 _PROJECT_ADAPTERS: dict[str, Adapter] = {
     "language": LanguageBookAdapter(),

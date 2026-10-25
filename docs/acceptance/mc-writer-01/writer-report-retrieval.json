@@ -1,0 +1,17 @@
+{
+  "schema": "mc-writer-01.report-retrieval.v1",
+  "show_ok": true,
+  "report_schema": "writer-editing-report-v1",
+  "report_id": "edit-20261024T235402252638Z-4c44a9e02cc3",
+  "canonical_fingerprint": "4c44a9e02cc3a83b876836c21f760f67e402ad81b52730d12fea58593cfebdae",
+  "chapters": 38,
+  "status": {
+    "report_id": "edit-20261024T235402252638Z-4c44a9e02cc3",
+    "project_id": "language",
+    "status": "NEEDS_REVIEW",
+    "stale": false,
+    "detail": "",
+    "canonical_fingerprint": "4c44a9e02cc3a83b876836c21f760f67e402ad81b52730d12fea58593cfebdae",
+    "generated_at": "2026-10-24T23:54:02.238783Z"
+  }
+}
