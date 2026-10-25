@@ -16,8 +16,8 @@ Mission Control `.cocoder` present: **no**.
 Writer `.cocoder` present: **yes (pre-existing, preserved)**.
 Writer and Mission Control were committed and pushed to `origin/main` after the
 acceptance run, on explicit user approval:
-- Writer: `08bf4f485` (pre-existing Worker bearer-token support) and `a3d711d7a` (Editing runtime)
-- Mission Control: `845838e` (Writer Editing integration)
+- Writer: `08bf4f485` (pre-existing Worker bearer-token support), `a3d711d7a` (Editing runtime), `4f1e8d03f` (evidence note)
+- Mission Control: `845838e` (Writer Editing integration), `8e445c7` (evidence note)
 
 No other source repository was pushed. Writer reports live under the git-ignored
 `.writer/editing` store. Both worktrees are clean.

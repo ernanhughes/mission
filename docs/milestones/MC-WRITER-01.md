@@ -20,8 +20,8 @@ presents them.
 | Browser E2E | 8 steps, 0 console/page errors |
 | Cross-book coverage | 7 of 29 active projects audited; 21 blocked paths; 1 no manuscript |
 | Manuscript mutation | none (Language tree hash unchanged) |
-| Writer commit | `a3d711d7a` (plus `08bf4f485` for pre-existing Worker bearer-token work) |
-| Mission Control commit | `845838e` |
+| Writer commits | `a3d711d7a` (plus `08bf4f485` for pre-existing Worker bearer-token work, and `4f1e8d03f` evidence note) |
+| Mission Control commits | `845838e` integration, `8e445c7` evidence note |
 | Push | `origin/main` for both repositories |
 | Paid inference | none |
 
