@@ -340,10 +340,10 @@ behind separate authorisation.
 Both repositories were committed and pushed to `origin/main` on explicit user
 approval after acceptance. Both worktrees are clean.
 
-| Repository | Final HEAD | Commits |
-| --- | --- | --- |
-| Writer | `a3d711d7a` | `08bf4f485` pre-existing Worker bearer-token support (included because the user asked to push all changes); `a3d711d7a` Editing runtime and reports |
-| Mission Control | `845838e` | `845838e` Writer Editing integration (on top of the previously unpushed MC10/MC11 commits) |
+| Repository | Milestone commits |
+| --- | --- |
+| Writer | `08bf4f485` pre-existing Worker bearer-token support (included because the user asked to push all changes); `a3d711d7a` Editing runtime and reports; `4f1e8d03f` evidence note |
+| Mission Control | `845838e` Writer Editing integration (on top of the previously unpushed MC10/MC11 commits); `8e445c7` evidence note |
 
 No pull request, paid model call, source-manuscript edit or book repository write
 occurred. Report artifacts are in Writer's git-ignored `.writer/editing` store.
