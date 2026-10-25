@@ -337,13 +337,13 @@ behind separate authorisation.
 
 ## 15. Final git state
 
-Both repositories remain uncommitted and unpushed, as required.
+Both repositories were committed and pushed to `origin/main` on explicit user
+approval after acceptance. Both worktrees are clean.
 
-| Repository | HEAD | Working tree |
+| Repository | Final HEAD | Commits |
 | --- | --- | --- |
-| Writer | `da0ef153e` | 9 modified (3 pre-existing preserved) + 7 new implementation/doc paths |
-| Mission Control | `9a3d45b` | 17 modified + 12 new integration, migration, test, page and acceptance paths |
+| Writer | `a3d711d7a` | `08bf4f485` pre-existing Worker bearer-token support (included because the user asked to push all changes); `a3d711d7a` Editing runtime and reports |
+| Mission Control | `845838e` | `845838e` Writer Editing integration (on top of the previously unpushed MC10/MC11 commits) |
 
-No push, pull request, paid model call, source-manuscript edit or book repository
-write occurred. Report artifacts are in Writer's git-ignored `.writer/editing`
-store.
+No pull request, paid model call, source-manuscript edit or book repository write
+occurred. Report artifacts are in Writer's git-ignored `.writer/editing` store.
