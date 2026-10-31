@@ -1,8 +1,12 @@
 import { useMemo, useState } from "react";
-import { AppWindow, Plus, Search } from "lucide-react";
+import { AppWindow, ExternalLink, Plus, Search } from "lucide-react";
 import { api, errorMessage } from "../api/client";
 import { useApi } from "../api/useApi";
 import { ApplicationCard } from "../features/applications/ApplicationCard";
+import {
+  applicationBrowserUrl,
+  openApplicationUrl,
+} from "../features/applications/openApplicationUrl";
 import { ApplicationForm } from "../features/applications/ApplicationForm";
 import { useToast } from "../components/Toast";
 import {
@@ -27,7 +31,12 @@ export function ApplicationsPage() {
   const [pinnedOnly, setPinnedOnly] = useState(false);
   const [editing, setEditing] = useState<Application | "new" | null>(null);
   const [stopping, setStopping] = useState<string | null>(null);
+  const [opening, setOpening] = useState<string | null>(null);
 
+  const appsById = useMemo(
+    () => new Map((applications.data ?? []).map((app) => [app.id, app])),
+    [applications.data],
+  );
   const categories = useMemo(
     () => Array.from(new Set((applications.data ?? []).map((app) => app.category))).sort(),
     [applications.data],
@@ -47,6 +56,19 @@ export function ApplicationsPage() {
       })
       .sort((a, b) => a.display_order - b.display_order || a.name.localeCompare(b.name));
   }, [applications.data, pinnedOnly, category, search]);
+
+  async function openApp(app: Application) {
+    setOpening(app.id);
+    try {
+      const url = await openApplicationUrl(app.id);
+      toast.push("info", "Opened web interface", url);
+      applications.reload();
+    } catch (caught) {
+      toast.push("error", "Could not open URL", errorMessage(caught));
+    } finally {
+      setOpening(null);
+    }
+  }
 
   async function stopProcess(process: ProcessInstance) {
     setStopping(process.id);
@@ -165,44 +187,65 @@ export function ApplicationsPage() {
                 </tr>
               </thead>
               <tbody>
-                {processes.data.map((process) => (
-                  <tr key={process.id}>
-                    <td>
-                      <strong>{process.application_name ?? process.application_id}</strong>
-                      {process.reattached ? <span className="table-note">reattached</span> : null}
-                    </td>
-                    <td>
-                      <SimpleStatusBadge
-                        state={
-                          process.status === "running"
-                            ? "running"
-                            : process.status === "failed"
-                              ? "launch_failed"
-                              : "stopped"
-                        }
-                        label={titleCase(process.status)}
-                      />
-                    </td>
-                    <td>{process.pid ?? "—"}</td>
-                    <td title={formatDateTime(process.started_at)}>{timeAgo(process.started_at)}</td>
-                    <td>
-                      <code className="table-command">{process.command_preview ?? "—"}</code>
-                    </td>
-                    <td className="table-actions">
-                      {process.status === "running" ? (
-                        <button
-                          className="button button-danger button-small"
-                          onClick={() => void stopProcess(process)}
-                          disabled={stopping === process.id}
-                        >
-                          Stop
-                        </button>
-                      ) : (
-                        <span className="muted small">{process.error ?? "—"}</span>
-                      )}
-                    </td>
-                  </tr>
-                ))}
+                {processes.data.map((process) => {
+                  const app = appsById.get(process.application_id);
+                  const browserUrl = app ? applicationBrowserUrl(app) : null;
+                  const canOpen = process.status === "running" && app?.actions.open_url.enabled;
+                  return (
+                    <tr key={process.id}>
+                      <td>
+                        <strong>{process.application_name ?? process.application_id}</strong>
+                        {process.reattached ? (
+                          <span className="table-note">reattached</span>
+                        ) : null}
+                      </td>
+                      <td>
+                        <SimpleStatusBadge
+                          state={
+                            process.status === "running"
+                              ? "running"
+                              : process.status === "failed"
+                                ? "launch_failed"
+                                : "stopped"
+                          }
+                          label={titleCase(process.status)}
+                        />
+                      </td>
+                      <td>{process.pid ?? "—"}</td>
+                      <td title={formatDateTime(process.started_at)}>
+                        {timeAgo(process.started_at)}
+                      </td>
+                      <td>
+                        <code className="table-command">{process.command_preview ?? "—"}</code>
+                      </td>
+                      <td className="table-actions">
+                        {process.status === "running" ? (
+                          <div className="button-row">
+                            {canOpen && app ? (
+                              <button
+                                className="button button-primary button-small"
+                                onClick={() => void openApp(app)}
+                                disabled={opening === app.id}
+                                title={browserUrl ?? undefined}
+                              >
+                                <ExternalLink size={14} /> Open
+                              </button>
+                            ) : null}
+                            <button
+                              className="button button-danger button-small"
+                              onClick={() => void stopProcess(process)}
+                              disabled={stopping === process.id}
+                            >
+                              Stop
+                            </button>
+                          </div>
+                        ) : (
+                          <span className="muted small">{process.error ?? "—"}</span>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

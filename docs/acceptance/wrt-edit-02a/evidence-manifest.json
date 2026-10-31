@@ -1,0 +1,291 @@
+{
+  "schema": "wrt-edit-02a.evidence-manifest.v2",
+  "file_count": 57,
+  "files": [
+    {
+      "path": "audit-all.json",
+      "bytes": 11389897,
+      "sha256": "531adefe9329ae3ae9803f1f3f76b40c82677eb7657eafbb5084e7800789cf28"
+    },
+    {
+      "path": "browser-check.json",
+      "bytes": 299,
+      "sha256": "b3bb950c120743dbcceebbd3da955a6ce076cc75d005b4f6450e5b0a3a331259"
+    },
+    {
+      "path": "c-books-inventory.json",
+      "bytes": 5079,
+      "sha256": "45284297e33208e2c6e4fc9438abb991608d0f1bfee188d34bab7daef44b078b"
+    },
+    {
+      "path": "calibration-blind-passages.csv",
+      "bytes": 34251,
+      "sha256": "f768eb800381105c80dcec432c4fc58387e90bf34322297bc1bd0bef8d8fee24"
+    },
+    {
+      "path": "calibration-integrity.json",
+      "bytes": 2376,
+      "sha256": "29783825da79a9f1d9364ff0aa774dbefd745cffdfb085ec82fb8644a31c3c48"
+    },
+    {
+      "path": "calibration-passages.json",
+      "bytes": 155985,
+      "sha256": "b6508201eeb1c6089ce7bcae46a1d73e34617f33b27ede2147dc6fcd14f3fb36"
+    },
+    {
+      "path": "calibration-review-template.csv",
+      "bytes": 832,
+      "sha256": "28830c74662da3080abe7ddf8a86197055698203dd93de2eafdb7a2bdb39e6df"
+    },
+    {
+      "path": "chapter-baseline.csv",
+      "bytes": 282666,
+      "sha256": "1e0a591e0a9536520bfb1ca6d040a8b1ac252daf2321a3845144c4a99f9d4f64"
+    },
+    {
+      "path": "cross-book-analysis.json",
+      "bytes": 1664642,
+      "sha256": "2fd03411be8097fb1f635dd98d91abb1abc7b2b96b6bab347b03180d4663f0b9"
+    },
+    {
+      "path": "duplicate-content.json",
+      "bytes": 5025,
+      "sha256": "f08bde69a97b1188ffc5042310f2f7d1ab6b49461945c3e7b3aa512c0614a380"
+    },
+    {
+      "path": "engineering-health/mission-backend-tests.txt",
+      "bytes": 573,
+      "sha256": "7d72830dbb27500c6becc09527e6382829c94f34182d6ad6918f1d896884aee5"
+    },
+    {
+      "path": "engineering-health/mission-frontend-build.txt",
+      "bytes": 446,
+      "sha256": "f9d73ef757e8ef3cd38a1d6f34a758b683957db0fe01f80ab79e247b09c7492b"
+    },
+    {
+      "path": "engineering-health/mission-frontend-tests.txt",
+      "bytes": 464,
+      "sha256": "946d3bc9e7817dcffda064efdcfe9a7f06ea0246570d52d4c0fccb1a20b4ee8c"
+    },
+    {
+      "path": "engineering-health/mission-writer-integration-tests.txt",
+      "bytes": 571,
+      "sha256": "a0d5ae0dc739b8a93355572734571f99f5e272151e5bd0ba8cd7398bdace2cd8"
+    },
+    {
+      "path": "engineering-health/writer-docs-tests.txt",
+      "bytes": 4024,
+      "sha256": "7ae4def3f599f115bcb73e8f5527d82b6a7d9417634e916d88d2d8223674a9af"
+    },
+    {
+      "path": "engineering-health/writer-editing-ruff.txt",
+      "bytes": 20,
+      "sha256": "a4443afdcfb6d7363adb285762515ccf7cf50473b1a05c20c1a50f6bed4d26b0"
+    },
+    {
+      "path": "engineering-health/writer-editing-tests.txt",
+      "bytes": 101,
+      "sha256": "e811450098d0444c37488e97c7c33740795b458c015de3143e024b1aeb48c266"
+    },
+    {
+      "path": "engineering-health/writer-full-tests.txt",
+      "bytes": 2642,
+      "sha256": "a35d0cd99b2c4d1dbd38f37367843905d6ed107315b95e76f3e499f2449893ab"
+    },
+    {
+      "path": "finding-index.csv",
+      "bytes": 739103,
+      "sha256": "540c2aae63a7796453b1c403270b25ab6243b82e1660a4bcfcf1098da9c25e53"
+    },
+    {
+      "path": "high-risk-chapters.csv",
+      "bytes": 20187,
+      "sha256": "790d9e26f64bac91f06ba8a76e6d075c76732d22d5a2c09e0722cb4fd06ef34a"
+    },
+    {
+      "path": "manuscript-hashes-after.json",
+      "bytes": 160635,
+      "sha256": "fe08684728ccef7a5c5d04e97e4716092c381b6f813d52cf2eeea5e444114261"
+    },
+    {
+      "path": "manuscript-hashes-before.json",
+      "bytes": 160635,
+      "sha256": "fe08684728ccef7a5c5d04e97e4716092c381b6f813d52cf2eeea5e444114261"
+    },
+    {
+      "path": "mission-runner.diff",
+      "bytes": 635,
+      "sha256": "ccf44b2cd39019d7e0c3106fc94514a7318d8198502a4e5a7495776bf55d2467"
+    },
+    {
+      "path": "mission-writer-workspace.json",
+      "bytes": 18536479,
+      "sha256": "ee47979ba773c26d8d6202b3e647b7de1de5a7a6c47ecf977e913dae4187966c"
+    },
+    {
+      "path": "previous-baseline/analysis/WRT-EDIT-02A-CALIBRATION-SAMPLE.md",
+      "bytes": 8576,
+      "sha256": "695014d479a5672b145119ea95bba090ce56de2e5fe394384bdc8d4e36b68bbc"
+    },
+    {
+      "path": "previous-baseline/analysis/WRT-EDIT-02A-CROSS-BOOK-BASELINE.md",
+      "bytes": 12801,
+      "sha256": "8d070b32fb31e8b078aae07b9d09253f201472788b5484b6de6088adf07643e8"
+    },
+    {
+      "path": "previous-baseline/analysis/WRT-EDIT-02A-ENGINEERING-HEALTH.md",
+      "bytes": 4278,
+      "sha256": "4f22b9362a4cb62fbf865cf2a98528d3e74eaa072a68271279b0445d2272a5e7"
+    },
+    {
+      "path": "previous-baseline/analysis/WRT-EDIT-02A-REGISTRY-AUDIT.md",
+      "bytes": 7977,
+      "sha256": "285a8f01bbf5d913834ddabb21a864c49d42ab10f75fd3d5372a45b2250d378f"
+    },
+    {
+      "path": "previous-baseline/audit-all.json",
+      "bytes": 3444505,
+      "sha256": "b6c29984e3bb147189d635924601e001d7b450a614a2dfe34b87cbef1b043704"
+    },
+    {
+      "path": "previous-baseline/browser-check.json",
+      "bytes": 193,
+      "sha256": "ac062c7a75f7ea59329bb81964d5f81b61fbe5da4b1888a8b897eaf506a839dd"
+    },
+    {
+      "path": "previous-baseline/calibration-blind-passages.csv",
+      "bytes": 20607,
+      "sha256": "21bdd4157d2515edb40c3219324ef92c7a741a9b65124e8f3e7f6df094e98738"
+    },
+    {
+      "path": "previous-baseline/calibration-integrity.json",
+      "bytes": 1542,
+      "sha256": "58734fddc47c11710244436ebda1e3f70038a17fe9c8a363e762405d9d4e8e30"
+    },
+    {
+      "path": "previous-baseline/calibration-passages.json",
+      "bytes": 125172,
+      "sha256": "0887c6cc4bf7326461427bc93a74caa981c287078a8d2ab396ee7d374577bee2"
+    },
+    {
+      "path": "previous-baseline/calibration-review-template.csv",
+      "bytes": 748,
+      "sha256": "5705ff3dc3b4b1564291df1c45caa2626f1a26a3b46d5ce027985065e63400d8"
+    },
+    {
+      "path": "previous-baseline/chapter-baseline.csv",
+      "bytes": 84685,
+      "sha256": "8e5f5e502435824e70e649949b38f2d0f49c442994385c4c5e47452bfbcece4a"
+    },
+    {
+      "path": "previous-baseline/cross-book-analysis.json",
+      "bytes": 408051,
+      "sha256": "95b3513b5328a56d01d10a8d721b05ccdb55cd4560ba8a707514e7856287c705"
+    },
+    {
+      "path": "previous-baseline/finding-index.csv",
+      "bytes": 214880,
+      "sha256": "f62b0ab36bfba7348a00db28e8809ac09a864165bc3fc015ecd488b0785112d2"
+    },
+    {
+      "path": "previous-baseline/manuscript-hashes-after.json",
+      "bytes": 424,
+      "sha256": "e208bfa4569bc1a2cfa62a411e3088809ea1c7e7e3e0ab05186fc9a48ea020df"
+    },
+    {
+      "path": "previous-baseline/manuscript-hashes-before.json",
+      "bytes": 424,
+      "sha256": "e208bfa4569bc1a2cfa62a411e3088809ea1c7e7e3e0ab05186fc9a48ea020df"
+    },
+    {
+      "path": "previous-baseline/mission-writer-workspace.json",
+      "bytes": 5737775,
+      "sha256": "908140047974b7bdbf36df38ffcb867db1fdc875bb0898fbca1dd1f7469b5dd3"
+    },
+    {
+      "path": "previous-baseline/README.md",
+      "bytes": 416,
+      "sha256": "a15799f68f4afc049faf147e61f66e4d75645c60aa6180a3efa05f72d5413208"
+    },
+    {
+      "path": "previous-baseline/registry-audit.json",
+      "bytes": 58402,
+      "sha256": "f2526f3d91f156c3db4904d1499017a6e9378b7594bd8996d68e051ec279ee6e"
+    },
+    {
+      "path": "previous-baseline/registry-raw.json",
+      "bytes": 68669,
+      "sha256": "e024a73f7e1379f65078d47ee95e9b0236e975be7537cccb7c82744eb5f1f414"
+    },
+    {
+      "path": "previous-baseline/summary-after.json",
+      "bytes": 3444507,
+      "sha256": "dce3153c117a3f83cd47bbd12648f33edd25659c18ca31d5179a24c47df559ee"
+    },
+    {
+      "path": "previous-baseline/writer-live-after-audit.png",
+      "bytes": 1327137,
+      "sha256": "1411a886f1fc842e66609c31184fdc915fd9f7edf4797d0b7f642ef563be1fdb"
+    },
+    {
+      "path": "README.md",
+      "bytes": 5340,
+      "sha256": "4187b9dbf9b972bc20fd04ab39afd9b58075600836b9ed336377bf56bcfeae8a"
+    },
+    {
+      "path": "registry-audit.json",
+      "bytes": 146344,
+      "sha256": "773e2ba67e1e5154eb868fa55fa715eefef4c695ecc0bdf8dc53179d2b2dabe1"
+    },
+    {
+      "path": "registry-change.diff",
+      "bytes": 22621,
+      "sha256": "37e0fd2f15de4ce114cb2450916a279d821dfc8c700708c27dff163ee17e462e"
+    },
+    {
+      "path": "registry-raw.json",
+      "bytes": 18470,
+      "sha256": "06cccaebcfe24092f0424f363203a9f906bf97ed5a0440e899c80995e0c66a9f"
+    },
+    {
+      "path": "report-fingerprints.csv",
+      "bytes": 7022,
+      "sha256": "259880151a91bcecda824392befeb53a0a59bd4609a0070a9b10fd3ad5977012"
+    },
+    {
+      "path": "scripts/calibration-sample.py",
+      "bytes": 14667,
+      "sha256": "786f047d951eaba7c3769ae54c78412ddfca2ce0e0b0e70b5192d5fa7b024671"
+    },
+    {
+      "path": "scripts/cross-book-analysis.py",
+      "bytes": 13668,
+      "sha256": "9231578fad45f2d9496c3dbf2d4f72aaa5623fbcf743143cc2e0b56b7e9ba5d1"
+    },
+    {
+      "path": "scripts/duplicate-content.py",
+      "bytes": 6852,
+      "sha256": "11a4ed2af05fde6d1a117e49c79653fef18060471695eb96f4d6254c87ccb227"
+    },
+    {
+      "path": "scripts/manuscript-hash.py",
+      "bytes": 3080,
+      "sha256": "86b887c6f9d326dc3388b28b2297542654f9336bfe5749204c72b740d829962e"
+    },
+    {
+      "path": "summary-after.json",
+      "bytes": 11389899,
+      "sha256": "d7bd8ca61c483d0c5d67132c459fb9698149883ef5c0ce11e9ad3378b41e3452"
+    },
+    {
+      "path": "summary-before.json",
+      "bytes": 3447160,
+      "sha256": "1531de36049a8591eb73e1fc35aa065f4bfcb12d9a9c81abc8691d5f464c9aa6"
+    },
+    {
+      "path": "writer-live-after-audit.png",
+      "bytes": 1413154,
+      "sha256": "5ac4aa00945753bb640bf35309a3e2e1b4bad53c7c03d723f2f97f116909f4c3"
+    }
+  ]
+}

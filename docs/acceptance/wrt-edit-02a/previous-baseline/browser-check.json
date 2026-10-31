@@ -1,0 +1,10 @@
+{
+  "ok": true,
+  "url": "http://127.0.0.1:8790/writer",
+  "book_rows": 29,
+  "has_queue": true,
+  "has_needs_review": true,
+  "has_blocked": true,
+  "console_errors": [],
+  "page_errors": []
+}

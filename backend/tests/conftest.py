@@ -27,6 +27,9 @@ def runtime(tmp_path: Path) -> RuntimeSettings:
         port=8790,
         start_monitor=False,
         seed_defaults=True,
+        workbench_decisions_path=tmp_path / "workbench-decisions.jsonl",
+        workbench_preferences_path=tmp_path / "workbench-preferences.json",
+        workbench_url="http://workbench.test",
     )
 
 

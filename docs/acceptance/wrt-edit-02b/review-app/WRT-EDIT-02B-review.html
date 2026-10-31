@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WRT-EDIT-02B — Passage review</title>
+<style>
+  :root {
+    --bg: #f4f1ea;
+    --card: #fffdf8;
+    --ink: #1f1d18;
+    --muted: #6f695d;
+    --line: #d9d2c4;
+    --accent: #2f6f5e;
+    --accent-strong: #225446;
+    --accent-soft: #e7f0ec;
+    --warn: #8a5a1f;
+    --shadow: 0 8px 30px rgba(40, 34, 24, 0.08);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-bottom: 96px; }
+  body {
+    margin: 0;
+    background:
+      radial-gradient(1200px 600px at 10% -10%, #fffaf0 0%, transparent 55%),
+      radial-gradient(900px 500px at 110% 10%, #e9f2ee 0%, transparent 50%),
+      var(--bg);
+    color: var(--ink);
+    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.45;
+  }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 22px 20px 110px; }
+  header { display: flex; justify-content: space-between; gap: 18px; align-items: flex-start; flex-wrap: wrap; }
+  h1 { margin: 0 0 4px; font-size: clamp(1.3rem, 2.4vw, 1.8rem); letter-spacing: -0.02em; }
+  .sub { margin: 0; color: var(--muted); font-size: 0.95rem; max-width: 760px; }
+  .brand { color: var(--accent-strong); font-weight: 700; letter-spacing: 0.08em; font-size: 0.72rem; text-transform: uppercase; }
+  .top-actions { display: flex; gap: 8px; align-items: center; }
+  button { font: inherit; }
+  .btn {
+    border: 1px solid var(--line); background: var(--card); color: var(--ink);
+    border-radius: 9px; padding: 9px 14px; cursor: pointer;
+    transition: background 120ms ease, border-color 120ms ease, transform 80ms ease;
+  }
+  .btn:hover { border-color: #bfb6a5; background: #fff; }
+  .btn:active { transform: translateY(1px); }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: white; font-weight: 650; }
+  .btn.primary:hover { background: var(--accent-strong); border-color: var(--accent-strong); }
+  .btn.ghost { background: transparent; }
+  .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+  .toolbar {
+    margin-top: 18px; padding: 12px 14px; background: rgba(255,253,248,0.82);
+    border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow);
+    display: flex; gap: 14px; align-items: center; flex-wrap: wrap;
+  }
+  .toolbar label { display: flex; gap: 7px; align-items: center; color: var(--muted); font-size: 0.88rem; }
+  select, input[type="text"] {
+    font: inherit; color: var(--ink); background: white; border: 1px solid var(--line);
+    border-radius: 7px; padding: 7px 9px; min-height: 36px;
+  }
+  input[type="text"] { min-width: min(340px, 55vw); }
+  .save-status { margin-left: auto; color: var(--muted); font-size: 0.82rem; min-width: 112px; text-align: right; }
+  .progress-shell { margin-top: 14px; height: 7px; background: #e2dccf; border-radius: 999px; overflow: hidden; }
+  .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent), #4f9a82); transition: width 220ms ease; }
+  .progress-text { display: flex; justify-content: space-between; gap: 12px; margin-top: 7px; color: var(--muted); font-size: 0.84rem; }
+  .passage-card {
+    margin-top: 18px; background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+    box-shadow: var(--shadow); padding: 20px 22px;
+  }
+  .passage-meta { display: flex; justify-content: space-between; gap: 12px; color: var(--muted); font-size: 0.8rem; margin-bottom: 12px; }
+  .passage-id { font-variant-numeric: tabular-nums; letter-spacing: 0.05em; }
+  .passage-text {
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", Palatino, serif;
+    font-size: clamp(1.02rem, 1.4vw, 1.13rem);
+    line-height: 1.68;
+    white-space: pre-wrap;
+    max-height: 42vh;
+    overflow: auto;
+    padding-right: 8px;
+  }
+  .questions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-top: 16px; }
+  fieldset.q {
+    margin: 0; padding: 14px 14px 15px; scroll-margin-bottom: 96px; border: 1px solid var(--line); border-radius: 12px;
+    background: rgba(255,253,248,0.78); min-width: 0;
+  }
+  fieldset.q legend { padding: 0 6px; font-weight: 650; font-size: 0.9rem; }
+  .options { display: flex; flex-wrap: wrap; gap: 7px; }
+  .options.overall { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .option {
+    border: 1px solid var(--line); background: white; color: var(--ink);
+    border-radius: 8px; padding: 8px 11px; cursor: pointer; min-height: 38px;
+    transition: background 110ms ease, border-color 110ms ease, color 110ms ease;
+  }
+  .option:hover { border-color: #b7ae9d; }
+  .option[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: white; }
+  .option[aria-pressed="true"]:hover { background: var(--accent-strong); border-color: var(--accent-strong); }
+  .option.overall { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; padding: 8px 5px; }
+  .option.overall b { font-size: 1.15rem; line-height: 1; }
+  .option.overall span { font-size: 0.68rem; line-height: 1.15; opacity: 0.82; text-align: center; }
+  .notes-wrap { grid-column: 1 / -1; }
+  textarea {
+    width: 100%; min-height: 82px; resize: vertical; font: inherit; color: var(--ink);
+    border: 1px solid var(--line); border-radius: 9px; padding: 10px 11px; background: white;
+  }
+  .hint { color: var(--muted); font-size: 0.78rem; margin-top: 8px; }
+  .nav {
+    margin-top: 18px; border-top: 1px solid var(--line);
+    padding: 12px 0 calc(12px + env(safe-area-inset-bottom));
+  }
+  .nav-inner { max-width: 1120px; margin: 0 auto; padding: 0 20px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .nav .spacer { flex: 1; }
+  .complete {
+    margin-top: 16px; scroll-margin-bottom: 96px; padding: 18px; border: 1px solid #bcd6ca; border-radius: 14px;
+    background: var(--accent-soft); box-shadow: var(--shadow);
+  }
+  .complete h2 { margin: 0 0 6px; font-size: 1.1rem; }
+  .complete p { margin: 0 0 12px; color: #315449; }
+  .complete .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .hidden { display: none !important; }
+  details.jump { margin-top: 18px; color: var(--muted); }
+  details.jump summary { cursor: pointer; font-size: 0.86rem; }
+  .jump-grid { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 9px; }
+  .jump-grid button { min-width: 34px; padding: 5px 7px; border-radius: 7px; border: 1px solid var(--line); background: white; cursor: pointer; font-size: 0.78rem; }
+  .jump-grid button.scored { background: var(--accent-soft); border-color: #bcd6ca; color: var(--accent-strong); }
+  .jump-grid button.current { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .toast {
+    position: fixed; left: 50%; bottom: 92px; transform: translateX(-50%) translateY(10px);
+    background: #1f1d18; color: white; padding: 9px 14px; border-radius: 999px;
+    font-size: 0.84rem; opacity: 0; pointer-events: none; transition: opacity 160ms ease, transform 160ms ease;
+    z-index: 50; max-width: 90vw; text-align: center;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .warn { color: var(--warn); }
+  @media (max-width: 760px) {
+    .wrap { padding: 16px 12px 110px; }
+    .questions { grid-template-columns: 1fr; }
+    .options.overall { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+    .option.overall span { font-size: 0.6rem; }
+    .passage-card { padding: 15px 14px; }
+    .passage-text { max-height: 38vh; }
+    .save-status { width: 100%; text-align: left; margin-left: 0; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <div class="brand">WRT-EDIT-02B · human-grounded calibration</div>
+      <h1>Passage review</h1>
+      <p class="sub">Read the passage, click your judgements, then Next. Review in sets of 10 — you can stop after this set and download a partial CSV.</p>
+    </div>
+    <div class="top-actions">
+      <button class="btn primary" id="nextTop" type="button">Next →</button>
+      <button class="btn" id="exportTop" type="button">Download CSV</button>
+    </div>
+  </header>
+
+  <section class="toolbar" aria-label="Review settings">
+    <label>Set
+      <select id="batchSelect">
+        <option value="1">1 of 5</option>
+        <option value="2">2 of 5</option>
+        <option value="3">3 of 5</option>
+        <option value="4">4 of 5</option>
+        <option value="5">5 of 5</option>
+      </select>
+    </label>
+    <button class="btn ghost" id="allBtn" type="button" aria-pressed="false">All 50</button>
+    <label>Reviewer
+      <input id="reviewerInput" type="text" autocomplete="off" spellcheck="false" aria-label="Reviewer name">
+    </label>
+    <span class="save-status" id="saveStatus">Saved locally</span>
+  </section>
+
+  <div class="progress-shell" aria-hidden="true"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-text"><span id="progressText"></span><span id="modeLabel"></span></div>
+
+  <main>
+    <section class="passage-card" aria-label="Passage">
+      <div class="passage-meta">
+        <span id="passageLabel"></span>
+        <span class="passage-id" id="passageId"></span>
+      </div>
+      <div class="passage-text" id="passageText"></div>
+    </section>
+
+    <section class="questions" id="questions" aria-label="Assessment">
+      <fieldset class="q">
+        <legend>Overall readability</legend>
+        <div class="options overall" data-field="overall">
+          <button class="option overall" type="button" data-value="1"><b>1</b><span>Very hard</span></button>
+          <button class="option overall" type="button" data-value="2"><b>2</b><span>Hard</span></button>
+          <button class="option overall" type="button" data-value="3"><b>3</b><span>Mixed</span></button>
+          <button class="option overall" type="button" data-value="4"><b>4</b><span>Easy</span></button>
+          <button class="option overall" type="button" data-value="5"><b>5</b><span>Very easy</span></button>
+        </div>
+      </fieldset>
+
+      <fieldset class="q">
+        <legend>Density</legend>
+        <div class="options" data-field="density">
+          <button class="option" type="button" data-value="too_dense">Too dense</button>
+          <button class="option" type="button" data-value="appropriate">Appropriate</button>
+          <button class="option" type="button" data-value="too_sparse">Too sparse</button>
+        </div>
+      </fieldset>
+
+      <fieldset class="q">
+        <legend>Fragmentation</legend>
+        <div class="options" data-field="fragmentation">
+          <button class="option" type="button" data-value="too_fragmented">Too fragmented</button>
+          <button class="option" type="button" data-value="appropriate">Appropriate</button>
+          <button class="option" type="button" data-value="too_continuous">Too continuous</button>
+        </div>
+      </fieldset>
+
+      <fieldset class="q">
+        <legend>Rhythm</legend>
+        <div class="options" data-field="rhythm">
+          <button class="option" type="button" data-value="too_uniform">Too uniform</button>
+          <button class="option" type="button" data-value="appropriate">Appropriate</button>
+          <button class="option" type="button" data-value="too_irregular">Too irregular</button>
+        </div>
+      </fieldset>
+
+      <fieldset class="q">
+        <legend>Lexical difficulty</legend>
+        <div class="options" data-field="lexical">
+          <button class="option" type="button" data-value="low">Low</button>
+          <button class="option" type="button" data-value="moderate">Moderate</button>
+          <button class="option" type="button" data-value="high">High</button>
+        </div>
+      </fieldset>
+
+      <fieldset class="q">
+        <legend>Structural clarity</legend>
+        <div class="options" data-field="structural">
+          <button class="option" type="button" data-value="clear">Clear</button>
+          <button class="option" type="button" data-value="mixed">Mixed</button>
+          <button class="option" type="button" data-value="unclear">Unclear</button>
+        </div>
+      </fieldset>
+
+      <fieldset class="q">
+        <legend>Genuine issue?</legend>
+        <div class="options" data-field="genuine">
+          <button class="option" type="button" data-value="yes">Yes</button>
+          <button class="option" type="button" data-value="no">No</button>
+          <button class="option" type="button" data-value="unsure">Unsure</button>
+        </div>
+      </fieldset>
+
+      <fieldset class="q notes-wrap">
+        <legend>Notes</legend>
+        <textarea id="notes" placeholder="What is the passage doing? Is the issue real? What context matters?"></textarea>
+        <div class="hint">Keyboard: 1–5 for overall readability, ←/→ to move, Enter for Next. Optional detail fields may be left blank.</div>
+      </fieldset>
+    </section>
+
+    <section class="complete hidden" id="completePanel" aria-live="polite">
+      <h2 id="completeTitle">Set complete</h2>
+      <p id="completeText"></p>
+      <div class="actions">
+        <button class="btn primary" id="exportComplete" type="button">Download CSV</button>
+        <button class="btn" id="nextSet" type="button">Next set</button>
+        <button class="btn" id="reviewAll" type="button">Review all 50</button>
+        <button class="btn ghost" id="backToPassage" type="button">Back to passage</button>
+      </div>
+    </section>
+  </main>
+
+  <details class="jump">
+    <summary>Jump to passage</summary>
+    <div class="jump-grid" id="jumpGrid"></div>
+  </details>
+</div>
+
+<footer class="nav">
+  <div class="nav-inner">
+    <button class="btn" id="prevBtn" type="button">← Previous</button>
+    <button class="btn ghost" id="skipBtn" type="button">Skip</button>
+    <button class="btn ghost" id="nextUnscored" type="button">Next unscored</button>
+    <span class="spacer"></span>
+    <button class="btn primary" id="nextBtn" type="button">Next →</button>
+  </div>
+</footer>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+const PASSAGES = [{"id": "P01", "text": "That sounds obvious, but systems often flatten the distinction.\n\nSuppose the retained item is:\n\nThere are several different claims hidden inside the temptation to reuse it.\n\nOne concerns provenance:\n\nThat is a claim about the statement and its author. It does not by itself certify the architecture.\n\nAnother concerns the world at the time of the new question:", "batch": 1}, {"id": "P02", "text": "Task models that generate interfaces. Cao, Jiang and Xia's \"Generative and Malleable User Interfaces with Generative and Evolving Task-Driven Data Model\" (CHI 2025) proposes a structured task-driven model between a user's request and the rendered interface. In Jelly, an LLM produces an object-relational schema and dependency graph, with data organised under that structure; UI specifications map the model to a constrained set of established display patterns. Users can modify the resulting information space by language or direct manipulation, and inspect the model rather than endlessly re-prompting an opaque layout. The technical evaluation assessed schema relevance and dependency accuracy, not the correctness of arbitrary underlying source documents. Its user study involved eight participants completing open-ended information tasks; it documented enthusiasm and flexibility, but also limits in visual expressiveness and cases where requested changes were not made. This is evidence that a task-to-model-to-interface-to-revision loop can run and be manipulated. It is not a controlled demonstration of superior task accuracy, transfer or time against a strong conventional interface, nor a demonstration that the underlying data is faithfully sourced.", "batch": 4}, {"id": "P03", "text": "This is the step most people skip. They install Pi, run a task, get something nearly right, and start writing code against a mental model built from observation. The model is usually close enough to work and wrong in a few named places, and those places are where every interesting bug lives.\n\nWhy \"wrong in a few places\" is worse than \"wrong everywhere\" is worth one sentence of its own, because it explains the shape of the rest of the book. A model that is wrong everywhere fails loudly: you stop and read the documentation. A model that is nearly right fails as a symptom. The model ignores your instructions. Your tool never appears. Your injected content vanishes after a compaction. Your handler fires at the wrong moment. Each of those observations is compatible with several different causes — some in your code, some in Pi's, some in the way you assembled the request — and the observation alone cannot tell them apart. What tells them apart is knowing the exact mechanism the symptom passed through. That mechanism is the loop.", "batch": 5}, {"id": "P04", "text": "This book is about building systems around models. Before we build planners, memory, tool routing, critics, search and verifiers, we need an answer to a question that turns out to be harder than it looks:\n\nThe word is currently applied to almost everything: a single LLM call, a chatbot, a fixed pipeline, a tool-using loop, and any five model calls with class names ending in. Those systems may all be useful. But when one word covers all of them, it stops telling us anything about the computation, and we lose the ability to say which mechanism is doing the work.", "batch": 3}, {"id": "P05", "text": "The experiment was planned carefully. Eight synthetic tasks, each built around a fact that could not be inferred from the task text alone. Each task ran under three conditions: no supplied context, a matched distractor of the same size and shape, and the exact minimal context the task needed. One model, decoding fixed, every run in its own session, deterministic graders. The question was modest: if correct context is delivered through the live runtime, does behaviour change?\n\nTwenty-four runs were planned and twenty-four executed. None yielded a valid observation of the assigned context condition. Every run reported zero observed context records because the recording component produced none. For the intended injection conditions, that leaves delivery unverified. For the no-context controls, it leaves absence unverified: an observer that did not record the request cannot distinguish a request with no experimental block from a request it never saw.", "batch": 5}, {"id": "P06", "text": "The distinction that matters is between behavioural influence from position and policy authority. If moving an instruction changes compliance, that does not mean its authority changed. The OpenAI Model Spec dated 18 August 2026 describes an instruction hierarchy running from Root through System, Developer and User to Guideline. Authority is assigned through the instruction source and applicable policy, not by being physically closer to the answer. For instructions at the same authority level, later applicable instructions can supersede earlier conflicting ones; this is a policy rule with conditions, not a general claim that whichever text appears last wins. The specification also treats tool outputs and quoted text as untrusted by default. This is OpenAI's documented policy for its own systems, not a universal law or evidence that a model always complies. Other providers may specify different policies.", "batch": 1}, {"id": "P07", "text": "The plugin is therefore useful for two reasons.\n\nIt gives us a working application.\n\nMore importantly, it forces the architecture developed throughout this book to cross the boundary from experiment into software.\n\nThere is an obvious way to implement a book about memory badly.\n\nTake every mechanism discussed in every chapter and put all of them into one enormous system.\n\nAdd a graph.", "batch": 2}, {"id": "P08", "text": "Chapter 8 showed that historical truth and current truth must coexist. \"The service used SQLite in March\" remains true after PostgreSQL becomes current. Deleting the SQLite history to protect current answers would improve one query by corrupting another.\n\nChapter 14 showed the complementary point: preserving an item does not imply seating it in the current model context. The store may contain thousands of memories. The model receives a bounded working set selected for the current goal.\n\nThese results produce a useful invariant:\n\nThat invariant suggests a conservative growth strategy. The system does not need to destroy history merely because history grows. Before irreversible deletion is considered, it can change which representations compete and under what conditions.\n\nThe chapter therefore begins with a conservative bias: preserve first, suppress reversibly, delete only for reasons stronger than convenience.\n\nSome deployments require deletion for reasons independent of memory quality — privacy policy, legal compliance, secret rotation, or user-requested erasure. Those requirements do not establish that age or low retrieval frequency is a sound memory-decay rule.", "batch": 2}, {"id": "P09", "text": "Per task, passing draws out of twelve for the control arm and out of three for each stance:\n\n[^m1]\n\nThe hypotheses read off the same rows. H2, decorrelation: normal, assumption-challenge, and minimality solve exactly the same seven tasks, so this task-level solve-set metric shows no decorrelation among those three. Counterfactual's nine contain all seven. Of the fifteen (stance, task) pairs where another stance failed, counterfactual solved six — the report's 0.40. That is why the report labels H2 partial rather than established. [^r2]\n\nH3, premise concentration: against the control arm, the portfolio matches on PRESERVE (2/2) and REMOVE (3/3), ties on REDEFINE (3/4 each), and loses RELOCATE (1/3 against 2/3). Neither supporting branch survived. [^m1] [^r2]\n\nNow look at counterfactual's two extra tasks: stable-priority and strip-query. Both are tasks the normal wording also solved somewhere among its twelve draws, four times and twice. Counterfactual therefore added no task outside the observed twelve-draw normal solve set. At three-draw exposure, however, counterfactual covered those two tasks while the normal subgroup did not.\n\nThat admits at least two readings, and P2 cannot choose between them. Counterfactual may have a genuinely higher per-draw success rate on some tasks. Or the widest of four post-hoc stance subgroups may simply be the subgroup that received favorable draws in this twelve-task sample. P2 did not preregister a test that separates those explanations. The honest statement is the narrow one: among the portfolio's stances, counterfactual…", "batch": 1}, {"id": "P10", "text": "The reliable uncertainty signal is distributional. Semantic entropy (Farquhar et al.) and self-consistency checking (Manakul et al., SelfCheckGPT) both work by comparing multiple samples rather than reading one run's logprobs, and both beat single-sequence likelihood as confabulation detectors. This is the same lesson as Chapter 21: the object worth measuring is the distribution, not the draw — and that holds for interior signals too. Be precise about what \"detector\" buys, though. Three capabilities pull apart: detect (this response is probably a confabulation), localize (this token or span is the wrong one), explain (this is why the weights preferred it). A multi-sample meaning-cluster signal reaches the first on QA-style tasks and no further — it does not point at the veer token, it does not name a mechanism, and it fails silently on confident fabrication, where every sample lands on the same wrong answer so the cluster entropy stays low. That is the exact sense in which interior signals never convict: good detectors exist, localizers and explainers do not, and even the good detectors have a blind spot a probe would catch. The cheap single-pass version is a hidden-state probe: Kossen and colleagues' semantic entropy probes read a binarized semantic-entropy estimate straight off one generation's activations, cutting the multi-sample cost to almost nothing and generalizing better out of distribution than a plain accuracy probe (Kossen et al., 2024). It is still governed by everything above — a probe that reads uncertainty out of the activations shows the…", "batch": 5}, {"id": "P11", "text": "Chapter 52 ended with a replayable record: the double-refund request re-assembled bit-exact, reproduced 2-of-3 trials, guardrail verdict empty. The on-call engineer ships the obvious repair — a prompt sentence forbidding double authorization — and closes the incident. Six weeks later the same double-refund returns under a reworded ticket, and nobody can say whether the old fix failed or a new defect arrived: no bundle was frozen, no repro was pinned, no regression test exists. The team fixed forward twice and learned nothing once.\n\nThe obvious move — repairing production quickly and documenting the fix in prose — fails because prose is not a repro and a deploy is not a test. Five defects hide behind fix-forward:", "batch": 1}, {"id": "P12", "text": "Experiment B: behavioural allocation. Where several structurally valid bundles exist, does constraint-aware allocation improve downstream behaviour over simpler selection? Fixtures include distractors competing with evidence, redundant and complementary representations, shared dependencies, coupled claims and qualifications, and conditions where leaving budget unused might help. Candidate sets, task requirements, representations, model, decoding, budget and rendering contract are frozen. First report whether each baseline produced a structurally valid bundle; an invalid top-k result cannot be treated as a clean comparison of two valid allocation objectives. For the behavioural comparison, either use valid-only baselines or separately label violations as their own mechanism. Ordering is held fixed where possible, with unavoidable order differences documented because Chapter 6 predicts behavioural effects. Report performance and resource costs per fixture class, not one pooled winner.", "batch": 3}, {"id": "P13", "text": "Chapter 18 fit the simplest serious bridge — affine ridge regression — from into, and evaluated it on entity families the map never saw. The result was not a verdict. It was a profile, uneven enough to make one number impossible to trust on its own:\n\nThe chapter's lesson was not \"ridge works.\" It was that is a preservation contract — a named property, measured on held-out data, not a single number a map either clears or fails. That leaves an open question this chapter exists to answer:", "batch": 2}, {"id": "P14", "text": "The central promise of built-in AI is an abstraction boundary:\n\nThe application asks for a capability. The browser chooses how to provide it.\n\nThat separation is powerful, but it does not make the lower layers irrelevant. Changes beneath the API can alter availability, accepted options, performance and behavior.\n\nWe encountered that fact before completing our first prompt experiment.\n\nOur first real Chrome trace recorded this sequence:\n\nThe session exposed a quota of 9,216 units and supported and.", "batch": 3}, {"id": "P15", "text": "Browser AI latency is a lifecycle, not a stopwatch.\n\nCapability inspection, acquisition, session creation, first output, completion and validation answer different questions. Progress callbacks require context. Cold and warm require operational definitions. Chunk count must not masquerade as token count.\n\nOur first real trace measured a fast session creation and nothing about inference. The instrument correctly left the missing fields empty. Chapter 11 now makes the full protocol executable, but numerical cold-versus-warm claims remain open until matched live runs exist under explicitly recorded conditions.\n\nThe next chapter asks why the same session configuration could work and then fail. Once the browser manages the model, model lifecycle and compatibility become part of application engineering even when the application never downloads a model itself.", "batch": 3}, {"id": "P16", "text": "The firewall layers we've built are designed to block leakage. But they can also block legitimate behavior.\n\nIn our editorial rewrite task, sometimes the correct answer is no change. The sentence is already fine. The reference rewrite is identical to the original.\n\nThe firewall rule we had was:\n\nBut if the reference value equals the original sentence, then a clean correct answer is indistinguishable from a leaked answer. The firewall would reject a legitimate case.\n\nThis is a restraint failure: the firewall cannot distinguish between the model copying the answer and the model producing the only correct output.\n\nThis connects directly to earlier chapters:", "batch": 3}, {"id": "P17", "text": "MCTS does not make the model reason correctly. It allocates inference-time computation toward the reasoning paths that its value function prefers.\n\nIf the value function tracks the task, this is useful. If the value function has a blind spot, search concentrates compute around the blind spot. If the value function can see the reference answer, search is not reasoning better—the experiment is leaking.\n\nThis is the same structure the optimizer chapters had, applied to a new object:\n\nThe objects differ; the danger does not: search does not know truth; search knows reward.\n\nThat places this chapter in the book's last arc of \"things that search\":\n\nThe evidence status at the top of the chapter is the summary: the agent is built, its search behaviour is audited across 27 unit tests, and the seven-strategy comparison was run — seeds 17–19, three repetitions, two models. The comparison returned a null result. On the frozen cost-vs-price fixture, every strategy reached the same substantive diagnosis as a single direct call, for both an 8B local model and a stronger hosted one. The small qwen3 score variation came from whether the generated wording explicitly named, not from a different diagnosis. And the run could not test its second question at all: the fair tree arms never spent their search budgets, because the value function was satisfied by the first expansion.", "batch": 4}, {"id": "P18", "text": "Instead we will take the problem apart.\n\nFirst we need to understand why the failure is possible at all.\n\nA language model receives a sequence of tokens and predicts what token should come next.\n\nIn simplified form, the model learns a conditional distribution:\n\n$$ p(xt \\mid x1, x2, \\ldots, x{t-1}) $$\n\nWe will sometimes write the preceding context more compactly as $x{<t}$.", "batch": 4}, {"id": "P19", "text": "The book argues that a claim should be governed by its provenance, its evidential support, and an explicit statement of what it does not establish. This appendix applies that discipline to the book itself.\n\nEvery original empirical number produced for this book is listed here with three things: where it was measured, what its provenance status is, and what it does not establish.", "batch": 2}, {"id": "P20", "text": "The job is to move from the visible symptom to the earliest unsupported claim.\n\nBefore changing code, capture enough state that the failure can survive your first attempted fix.\n\nFor a training problem, the minimum useful packet is often:\n\nFor a performance problem:\n\nFor a regression:\n\nThe exact packet changes with the question.", "batch": 5}, {"id": "P21", "text": "The model boundary is no longer opaque. A convolution performs two independent transformations — a declared change of channels and a derived change of spatial geometry — and both can be written down before the layer runs. Pooling does the second without the first. Flatten converts a grid into a feature vector whose length is. maps one feature dimension to another. Every one of those is mechanical, and when the observed trace disagrees with the derivation, the first disagreement is the diagnosis.\n\nThe two failures at the center of this chapter are worth carrying as a pair. The NHWC batch produced an error naming the wrong problem, and repairing the layer instead of the tensor would have built a model out of a misreading. The missing padding produced an error several layers downstream, and repairing the layer that raised would have made an unintended architecture permanent. Both are the same shape of mistake:\n\nNotice where the chapter ended up. After the convolutional body and the pooling and the flatten, the tensor is:\n\nThe spatial grid is gone. What remains is one vector per example, and its 32 entries are learned feature coordinates with no adjacency, no ordering and no picture attached. That vector is what the classifier actually sees, and treats it as a point in a 32-dimensional space and asks which side of a boundary it falls on.\n\nThirty-two is already more dimensions than anyone can draw. Real feature vectors are 128, 512, 768, 4096. The next chapter takes that seriously and asks what a coordinate, a direction and a boundary actually mean in a space we…", "batch": 2}, {"id": "P22", "text": "Suppose the model emits the sentence \"Search the documentation for the latest PyTorch optimizer API.\" A human reads that and understands the intention immediately. A runtime cannot act on it at all, because it needs answers to six questions the sentence does not contain: which action, which arguments, whether those arguments are well formed, whether their values are meaningful, whether this action is permitted in this run, and whether its execution preconditions currently hold.\n\nOnly when all six have answers should anything in the environment change. So the mechanism this chapter adds is a boundary that asks them in order:", "batch": 4}, {"id": "P23", "text": "Those cell-level dependencies are then grouped into links between larger clusters.\n\nThe result is a causal ancestry graph: earlier structures are connected to later structures only when measured dependencies link them.[2]\n\nThe question has now changed.\n\nNot:\n\nDoes the later structure resemble the earlier one?\n\nBut:", "batch": 1}, {"id": "P24", "text": "Which sharpens a question the book has left open twice. The Is There Actually One Thing Here? chapter looked for a privileged boundary around the connected crystal and failed to find one, twice: no scale showed excess predictive coherence beyond a family null, and the candidate outer boundary localized causal effects no better than a circle drawn arbitrarily through the interior. What survived was spatial causal locality — consequences stay near their causes — which is true of any local field and establishes nothing about individuals. But that chapter tested regions defined primarily by geometry, and we now have a better experimental target: instead of asking whether a region is special because its outline looks object-like, ask whether perturbations originating inside it are preferentially contained there — and whether perturbations originating outside penetrate it less — beyond what geometry alone predicts. That reopens the boundary question without assuming in advance that there is an object, a process or an individual waiting to be found.", "batch": 1}, {"id": "P25", "text": "The first agents series introduced beam-style search.\n\nBeam search keeps the highest-scoring partial states.\n\nIf we keep the best at each layer, the system is simple and efficient.\n\nBut it has a weakness.\n\nA branch can look mediocre now and become excellent later.\n\nSuppose:", "batch": 4}, {"id": "P26", "text": "Every mechanism in this book was tested on its own, against a fixture built for its chapter. Context was compiled and recorded. Effects were observed by the runtime rather than taken from the worker's report — or so each component's own test reported. Checks were bound to the state they examined. Acceptance cited its evidence. Replays refused to act twice. Each passed its own test.\n\nNone of that proves the whole process works, because the failures that matter most in a composed system live in the handoffs. Some are easy to picture:", "batch": 3}, {"id": "P27", "text": "Inconclusive and negative runs are retained, not re-rolled. Every excluded run carries a category (target / non-target / agent / environment / observer / evaluation failure, protocol violation, inconclusive), a reason, and an evidence pointer. Infrastructure failure is never classified as model failure.", "batch": 2}, {"id": "P28", "text": "Imagine a row of cells.\n\nEach cell is either off or on:\n\nAt the next step every cell examines itself and its immediate neighbors:\n\nThe three bits form one of eight possible neighborhoods:", "batch": 4}, {"id": "P29", "text": "Then open a new session and answer these questions:\n\nFinally, ask the AI:\n\nLet it show you.\n\nBecause you’re not just using AI anymore. You’re not just doing the process.\n\nYou are in process.\n\nAnd that’s a very good place to be. 🌀", "batch": 5}, {"id": "P30", "text": "The code usually tells a different story.\n\nConsider this:\n\nOnce you can move up and down that hierarchy, a model stops being a black box.\n\nThat is the skill we are going to practise.", "batch": 5}, {"id": "P31", "text": "She sat with it the way she had learned to sit with things: upright, hands still, alone. The language was clean, the way it was always clean, a surface laid over the event so the eye slid off before the thing underneath could register.\n\nFour men had gone onto a bridge to deny a crossing to a sick man on foot, and the summary did not say they were dead. It said the interference had been removed. It said the delivery was ongoing. It did not say that the asset which removed the interference had walked off the bridge and fallen in behind the man and the woman again and gone on. There was no field for that. No heading under which a thing continued after its task was complete.", "batch": 4}, {"id": "P32", "text": "Eleven years, and every hard conversation had happened in the room with the muted screen reading the war into law behind her. Tonight she came out from behind the desk before he had finished his first sentence, took a coat off the back of the door, and said, \"Walk with me,\" and Roach, who had come in with a speech built and loaded, followed her out onto the grounds instead, off balance, which was perhaps the point.\n\nThe grounds were dark and wet and went on further than the building had any honest use for. Gravel, then grass, then the black shapes of old trees planted by men who had believed the institution would want shade in a century they would not live to see. No screen out here. No log. No muted map reading the world into obedience. The nearest thing the place possessed to privacy — and he understood, a beat later, that she had brought him here precisely for that, and that a woman who needed to leave her own office to say a thing was about to say something very bad.\n\n\"Four men into that house,\" he said. \"On your word. And I filed it, Catherine. Ghosts. Achterberg smelling blood off an empty hall, Pearse who won't speak. I filed it as the worst night of my career and I got on with it.\"\n\nHe stopped walking.", "batch": 5}, {"id": "P33", "text": "\"Find the old parser bug.\"\n\nIt found the bug.\n\n\"Compare it to the session-state issue.\"\n\nIt compared them.\n\n\"No, not that. The other one. The thing with the broken state transition.\"\n\nIt knew what he meant.", "batch": 4}, {"id": "P34", "text": "Anger at that level arrived as revised terms, delayed approvals, private calls, quiet alignments, and men who had known each other since school using first names like weapons.\n\nChad stood near the window with one hand in his pocket, watching the river between buildings. Niamh sat with a printed packet open in front of her, though Liang doubted she needed it. Jeff moved around the room as if still deciding whether it belonged to him.", "batch": 5}, {"id": "P35", "text": "\"Why don't I tell you the role you're applying for first?\" Chad said.\n\n\"That would be unusual.\"\n\nJeff laughed. Chad smiled. \"It is an unusual role.\"\n\nThe main screen lit. A price chart. Bitcoin. Everyone in finance had begun pretending not to recognize it.", "batch": 3}, {"id": "P36", "text": "“Not mystical meditation,” he told her one evening, leaning back in his chair with one sock half off and a soldering iron cooling beside the keyboard. “I don’t mean candles and that awful music with bells in it.”\n\nCindi waited.\n\n“I mean proper meditation,” he said. “Ask the question until the question changes you.”\n\nHe stopped, frowned, and reached for the soldering iron.", "batch": 4}, {"id": "P37", "text": "She studied the soldiers the way she had once studied a hinge bending on a table. Where each one stood. Where each one would have to move. Which of them she could reach without crossing the open ground herself, because she no longer had to be where the harm was. In the interrogation wing she had learned that she could leave her own body mass and still act — a fragment in a vent, a strand across a room, a part of her arriving where the rest of her was not. The street had taught her to move. The wing had taught her to divide. Standing at the edge of the open yard, reading the spaces between armed people, she understood the next thing without wanting it: she was learning to reach a person she was not standing next to. She logged the capability. She did not log it as progress. Trevor had taught her where the harm lived. She had taught herself how to deliver it at distance.", "batch": 1}, {"id": "P38", "text": "Elaine did not build the counter-machine in a lab. Labs bred a dangerous comfort, teaching the mind that important things required clean benches, badge access, climate control, and someone paying the electricity bill. A lab made power visible, and visible power had an address. Elaine had learned to hate addresses.\n\nA wallet had a there. So did a bank account, a lease, a payroll identity, a developer account, a municipal benefits portal, an Axiom settlement identity. Every official thing in the world had become a place where permission could find you, and that was how systems killed you. Axiom Zero had made location moral: verified or unverified, trusted or risky, recognized or outside.", "batch": 3}, {"id": "P39", "text": "“The lens projects localized light-field data directly onto the retina. The band handles audio and biometric feedback. Paired with our agent model, it creates a persistent companion layer. It reads the environment, tracks vitals, and renders a context-aware figure into physical space.”\n\nJulian rubbed his left temple.\n\n“Can it access Axiom feeds?”\n\nThorne hesitated.", "batch": 5}, {"id": "P40", "text": "Alice slid her socked foot under the strap of the seat in front of her and grinned at her reflection in the dark window. “It’s not off. It’s temporarily independent.”\n\nTom Vale caught the grin in the rear-view mirror and smiled despite himself. The mirror trembled with the hum of the road.", "batch": 1}, {"id": "P41", "text": "Anna laughing on her bed. Anna writing terrible song lyrics in the margins of Alice's maths book. Anna saying, \"When we're old, we'll live beside each other and complain about everyone younger than us.\"\n\nAlice had believed her.\n\nThat was the mistake.\n\nThe crack appeared in December.", "batch": 1}, {"id": "P42", "text": "Daniel thought the first attack would be against a person. A minister, a banker, a judge. One of those clean-shaven men from Jove's photographs, standing on polished marble with hands folded over stomachs that had never known hunger. He'd imagined names going public, faces circled in red, a scandal with a beginning, a middle, and a satisfying end.\n\nDaniel laughed; his body hadn't found a better reaction. \"Right. We just cut off their money.\" He looked around the kitchen as if someone sane might be there to confirm that the invisible machine in his teeth had just proposed attacking the financial infrastructure of a hidden cult with governments for skin.", "batch": 2}, {"id": "P43", "text": "\"The information is correct,\" Jove said through the bone-conduction earpiece behind his ear.\n\n\"That’s not the problem.\"\n\n\"It is concise.\"\n\n\"It sounds like a famine manual written by a tax office.\"", "batch": 2}, {"id": "P44", "text": "No one called it a rescue operation. The word carried liability, and liability implied they had admitted what was happening to the people inside. On the official incident board, the action was listed as Controlled Participant Contact Attempt.\n\nThe objective was simple enough to fit in one line: make contact without deepening engagement. The instructions underneath were stricter. No direct console input. No model queries. No live DAI requests. No attempts to interpret, solve, map, classify, or follow. The contact teams were permitted to observe, speak, and withdraw.", "batch": 3}, {"id": "P45", "text": "“The board met this morning,” he said. “CEO, CTO, CFO, legal, comms, outside directors. Everybody.”\n\nThat got them looking at him.\n\n“And somehow,” he continued, “the most visible current project inside this company is now us.”\n\nAlex, one of the interns near the far end of the table, gave a short laugh, then seemed to realize he was alone and turned it into a cough.", "batch": 3}, {"id": "P46", "text": "The office had the exhausted look of a place kept alive by habit: chairs slightly off-line, mugs abandoned, fluorescent lights still insisting work was happening. Under his desk, the tower hummed. On his screen, the game world waited.\n\nMost online worlds were finite in practice, no matter how large they pretended to be. Maps ended. Stories looped. Mechanics returned under new names.", "batch": 4}, {"id": "P47", "text": "\"They're not going into an empty country,\" she said, to no one, to the notebook. \"They're going into a country full of people the machine can't see. Which is worse, because the machine will keep reporting it empty while it fills up with the dead.\"\n\nOn the wall, the aperture opened, and the war began, and Earth fired first, and there was no ambiguity, because Kika was watching, which was the one thing the room had brought her there to be able to say it had allowed.\n\nThe aperture was a doorway of nothing standing in a meadow, and the first people to reach it were travelling a road that had existed before Earth set the door across it.\n\nThe feed showed them — the raw edge of it, before the compensation layer smoothed it into something a human eye could parse — a small group, unhurried, along the old road: herders, by their staffs and their beasts; a family among them, walking. They came toward the aperture the way people come toward anything new on a familiar road, curious, unalarmed, and the autonomous perimeter that Earth had pushed through ahead of everything issued its warning in a language no one on that road had ever heard, and the group slowed, and did not understand, and one adult at the front raised both hands — the universal thing, the open empty hands, we are nothing, we carry nothing — and kept walking, because the warning meant nothing and the hands meant everything and surely the hands would be understood.", "batch": 1}, {"id": "P48", "text": "It took him two years to arrange his absence, because an absence is a structure, and structures were what he built.\n\nThe Exchange was converted to run without its root. He did it the way he did everything, in paper: authorities delegated, successions fixed, the senior claims placed in a standing trust whose trustees could operate everything and originate nothing. To the registrars it was estate planning, overdue, from an owner with no heir. Only two entries in two worlds knew what it was, and one of them was the private ledger, and the other was repairing fences in the north.", "batch": 5}, {"id": "P49", "text": "\"Huh,\" the hero said, which was what he had said at the bottom of the world, holding empty stone where a drop should have been. And then he said, with something that was almost respect and almost delight even now, even dying: \"You actually— \" and did not finish it, because there was no more time, and Jerry never learned whether the word would have been did it or found a way or are something, and the not-knowing joined the other things he carried.\n\nThe hero fell, and did not get up, and the world paid Jerry for the kill.\n\nIt paid him enormously — the richest single coin of his existence, a hero's whole weight of experience arriving at once, levels in a flood, the skill-echoes of a thing a tier above him settling into a body too ruined to feel them properly — and Jerry lay in the broken field beside the thing he had spent a decade unable to beat and had finally not beaten so much as outpriced, and understood that even this was not victory, because the hero would come back. Scattered, deported, re-dealt across the world the way Jerry was re-dealt, respawned somewhere far with everything reset but the memory — and the memory was the problem, because the hero would remember, would remember the field and the Thorns and the point-blank charge and the interesting thing that had finally, actually, killed him, and would come back, eventually, better prepared, more interested than ever.\n\nHe had not ended the hunt. He had won a round the hero did not know could be won, and in doing so he had made himself, permanently, the most interesting thing in the hero's very long…", "batch": 2}, {"id": "P50", "text": "It is against his cheek, and it is cold, and each blade is itself. He can feel where one ends and the next begins. Dew comes through at the jaw. There is a smell, and the smell has layers: soil, something green and bruised where his body has crushed the stems, and beneath that a mineral coldness belonging to rain not yet fallen.", "batch": 2}];
+const STORAGE_KEY = "wrt-edit-02b-review-v1";
+const DEFAULT_REVIEWER = "AI-assisted reviewer (prior diagnostic exposure)";
+const BATCH_COUNT = 5;
+const FIELDS = ["overall", "density", "fragmentation", "rhythm", "lexical", "structural", "genuine", "notes"];
+
+function emptyResponse() {
+  return { overall: "", density: "", fragmentation: "", rhythm: "", lexical: "", structural: "", genuine: "", notes: "" };
+}
+
+let state = {
+  reviewer: DEFAULT_REVIEWER,
+  responses: {},
+  current: 0,
+  mode: "batch",
+  batch: 1,
+  completed: false
+};
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return false;
+    const saved = JSON.parse(raw);
+    if (!saved || typeof saved !== "object") return false;
+    state.reviewer = typeof saved.reviewer === "string" ? saved.reviewer : DEFAULT_REVIEWER;
+    state.responses = saved.responses && typeof saved.responses === "object" ? saved.responses : {};
+    state.mode = saved.mode === "all" ? "all" : "batch";
+    state.batch = Math.min(BATCH_COUNT, Math.max(1, Number(saved.batch) || 1));
+    state.current = Math.max(0, Number(saved.current) || 0);
+    state.completed = Boolean(saved.completed);
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
+function ensureResponses() {
+  for (const passage of PASSAGES) {
+    if (!state.responses[passage.id] || typeof state.responses[passage.id] !== "object") {
+      state.responses[passage.id] = emptyResponse();
+    } else {
+      for (const field of FIELDS) {
+        if (typeof state.responses[passage.id][field] !== "string") {
+          state.responses[passage.id][field] = "";
+        }
+      }
+    }
+  }
+}
+
+let saveTimer = null;
+function saveState(immediate = false) {
+  const write = () => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        reviewer: state.reviewer,
+        responses: state.responses,
+        current: state.current,
+        mode: state.mode,
+        batch: state.batch,
+        completed: state.completed
+      }));
+      setSaveStatus("Saved locally");
+    } catch (error) {
+      setSaveStatus("Autosave unavailable — download before closing", true);
+    }
+  };
+  if (immediate) {
+    clearTimeout(saveTimer);
+    write();
+  } else {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(write, 180);
+  }
+}
+
+function setSaveStatus(text, warning = false) {
+  const el = document.getElementById("saveStatus");
+  el.textContent = text;
+  el.classList.toggle("warn", warning);
+}
+
+function visiblePassages() {
+  if (state.mode === "all") return PASSAGES;
+  return PASSAGES.filter((passage) => passage.batch === state.batch);
+}
+
+function clampCurrent() {
+  const visible = visiblePassages();
+  if (!visible.length) {
+    state.current = 0;
+    return visible;
+  }
+  if (state.current < 0) state.current = 0;
+  if (state.current >= visible.length) state.current = visible.length - 1;
+  return visible;
+}
+
+function currentPassage() {
+  const visible = clampCurrent();
+  return visible[state.current] || null;
+}
+
+function responseFor(id) {
+  if (!state.responses[id]) state.responses[id] = emptyResponse();
+  return state.responses[id];
+}
+
+function isScored(id) {
+  return Boolean(responseFor(id).overall);
+}
+
+function render() {
+  ensureResponses();
+  const visible = clampCurrent();
+  const passage = currentPassage();
+  document.getElementById("reviewerInput").value = state.reviewer;
+  document.getElementById("batchSelect").value = String(state.batch);
+  document.getElementById("batchSelect").disabled = state.mode === "all";
+  const allBtn = document.getElementById("allBtn");
+  allBtn.setAttribute("aria-pressed", state.mode === "all" ? "true" : "false");
+  allBtn.textContent = state.mode === "all" ? "Showing all 50" : "All 50";
+
+  if (!passage) {
+    document.getElementById("passageText").textContent = "No passages in this set.";
+    return;
+  }
+
+  document.getElementById("passageText").textContent = passage.text;
+  document.getElementById("passageId").textContent = passage.id;
+  document.getElementById("passageLabel").textContent = state.mode === "all"
+    ? `Passage ${state.current + 1} of ${visible.length}`
+    : `Set ${state.batch} · Passage ${state.current + 1} of ${visible.length}`;
+  document.getElementById("modeLabel").textContent = state.mode === "all"
+    ? "All 50 passages"
+    : `Set ${state.batch} of ${BATCH_COUNT}`;
+
+  const scored = visible.filter((item) => isScored(item.id)).length;
+  document.getElementById("progressText").textContent = `Scored ${scored} of ${visible.length}`;
+  document.getElementById("progressFill").style.width = `${visible.length ? (scored / visible.length) * 100 : 0}%`;
+
+  const response = responseFor(passage.id);
+  document.querySelectorAll("#questions [data-field]").forEach((container) => {
+    const field = container.dataset.field;
+    container.querySelectorAll("button.option").forEach((button) => {
+      button.setAttribute("aria-pressed", response[field] === button.dataset.value ? "true" : "false");
+    });
+  });
+  const notes = document.getElementById("notes");
+  if (notes.value !== response.notes) notes.value = response.notes;
+
+  document.getElementById("prevBtn").disabled = state.current === 0;
+  document.getElementById("nextBtn").textContent = state.current === visible.length - 1 ? "Finish set →" : "Next →";
+  renderJumpGrid(visible);
+  document.getElementById("completePanel").classList.toggle("hidden", !state.completed);
+  if (state.completed) renderCompletion(visible);
+}
+
+function renderJumpGrid(visible) {
+  const grid = document.getElementById("jumpGrid");
+  grid.replaceChildren();
+  visible.forEach((passage, index) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = String(index + 1);
+    button.title = passage.id;
+    button.classList.toggle("scored", isScored(passage.id));
+    button.classList.toggle("current", index === state.current);
+    button.addEventListener("click", () => {
+      state.current = index;
+      state.completed = false;
+      saveState();
+      render();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+    grid.appendChild(button);
+  });
+}
+
+function renderCompletion(visible) {
+  const scored = visible.filter((item) => isScored(item.id)).length;
+  const title = state.mode === "all" ? "All passages reviewed" : `Set ${state.batch} complete`;
+  const text = state.mode === "all"
+    ? `You scored ${scored} of ${visible.length} passages. Download the CSV to save your labels.`
+    : `You scored ${scored} of ${visible.length} passages in this set. You can stop here and download a partial CSV, or continue to the next set.`;
+  document.getElementById("completeTitle").textContent = title;
+  document.getElementById("completeText").textContent = text;
+  document.getElementById("nextSet").classList.toggle("hidden", state.mode === "all" || state.batch >= BATCH_COUNT);
+}
+
+function setField(field, value) {
+  const passage = currentPassage();
+  if (!passage) return;
+  const response = responseFor(passage.id);
+  response[field] = response[field] === value ? "" : value;
+  saveState();
+  render();
+}
+
+function goTo(index) {
+  const visible = clampCurrent();
+  state.current = Math.max(0, Math.min(visible.length - 1, index));
+  state.completed = false;
+  saveState();
+  render();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function next() {
+  const visible = clampCurrent();
+  if (state.current >= visible.length - 1) {
+    state.completed = true;
+    saveState(true);
+    render();
+    document.getElementById("completePanel").scrollIntoView({ behavior: "smooth", block: "center" });
+  } else {
+    goTo(state.current + 1);
+  }
+}
+
+function previous() {
+  if (state.current > 0) goTo(state.current - 1);
+}
+
+function nextUnscored() {
+  const visible = clampCurrent();
+  for (let offset = 1; offset <= visible.length; offset += 1) {
+    const index = (state.current + offset) % visible.length;
+    if (!isScored(visible[index].id)) {
+      goTo(index);
+      return;
+    }
+  }
+  toast("All passages in this set are scored.");
+}
+
+function setBatch(batch) {
+  state.mode = "batch";
+  state.batch = batch;
+  state.current = 0;
+  state.completed = false;
+  saveState(true);
+  render();
+}
+
+function setAll() {
+  state.mode = state.mode === "all" ? "batch" : "all";
+  state.current = 0;
+  state.completed = false;
+  saveState(true);
+  render();
+}
+
+function csvCell(value) {
+  const text = String(value ?? "");
+  return /[",\r\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
+}
+
+function buildCsv() {
+  const header = [
+    "passage_id",
+    "reviewer",
+    "overall_readability_1_5",
+    "density",
+    "fragmentation",
+    "rhythm",
+    "lexical_difficulty",
+    "structural_clarity",
+    "genuine_issue",
+    "notes"
+  ];
+  const lines = [header.join(",")];
+  for (const passage of PASSAGES) {
+    const response = responseFor(passage.id);
+    lines.push([
+      passage.id,
+      state.reviewer,
+      response.overall,
+      response.density,
+      response.fragmentation,
+      response.rhythm,
+      response.lexical,
+      response.structural,
+      response.genuine,
+      response.notes
+    ].map(csvCell).join(","));
+  }
+  return `${lines.join("\r\n")}\r\n`;
+}
+
+function downloadCsv() {
+  const blob = new Blob([buildCsv()], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "WRT-EDIT-02B-review-completed.csv";
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1500);
+  toast("CSV downloaded. Unscored rows are blank.");
+}
+
+function toast(message) {
+  const el = document.getElementById("toast");
+  el.textContent = message;
+  el.classList.add("show");
+  clearTimeout(toast.timer);
+  toast.timer = setTimeout(() => el.classList.remove("show"), 2600);
+}
+
+document.getElementById("questions").addEventListener("click", (event) => {
+  const button = event.target.closest("button.option");
+  if (!button) return;
+  const container = button.closest("[data-field]");
+  if (!container) return;
+  setField(container.dataset.field, button.dataset.value);
+});
+
+document.getElementById("notes").addEventListener("input", (event) => {
+  const passage = currentPassage();
+  if (!passage) return;
+  responseFor(passage.id).notes = event.target.value;
+  saveState();
+});
+
+document.getElementById("reviewerInput").addEventListener("input", (event) => {
+  state.reviewer = event.target.value;
+  saveState();
+});
+
+document.getElementById("batchSelect").addEventListener("change", (event) => {
+  setBatch(Number(event.target.value));
+});
+document.getElementById("allBtn").addEventListener("click", setAll);
+document.getElementById("prevBtn").addEventListener("click", previous);
+document.getElementById("nextBtn").addEventListener("click", next);
+document.getElementById("nextTop").addEventListener("click", next);
+document.getElementById("skipBtn").addEventListener("click", next);
+document.getElementById("nextUnscored").addEventListener("click", nextUnscored);
+document.getElementById("exportTop").addEventListener("click", downloadCsv);
+document.getElementById("exportComplete").addEventListener("click", downloadCsv);
+document.getElementById("nextSet").addEventListener("click", () => setBatch(Math.min(BATCH_COUNT, state.batch + 1)));
+document.getElementById("reviewAll").addEventListener("click", () => { state.mode = "all"; state.current = 0; state.completed = false; saveState(true); render(); });
+document.getElementById("backToPassage").addEventListener("click", () => { state.completed = false; saveState(true); render(); });
+
+document.addEventListener("keydown", (event) => {
+  const tag = (event.target && event.target.tagName || "").toLowerCase();
+  if (tag === "input" || tag === "textarea" || tag === "select") return;
+  if (event.key >= "1" && event.key <= "5") {
+    event.preventDefault();
+    setField("overall", event.key);
+  } else if (event.key === "ArrowLeft") {
+    event.preventDefault();
+    previous();
+  } else if (event.key === "ArrowRight" || event.key === "Enter") {
+    event.preventDefault();
+    next();
+  }
+});
+
+ensureResponses();
+const restored = loadState();
+ensureResponses();
+render();
+if (restored) {
+  setSaveStatus("Resumed saved review");
+  setTimeout(() => setSaveStatus("Saved locally"), 2200);
+}
+
+// Exposed only for local verification; contains no diagnostic key.
+window.__reviewApp = {
+  buildCsv,
+  getState: () => JSON.parse(JSON.stringify(state)),
+  setField,
+  next,
+  previous,
+  setBatch,
+  setAll,
+  render
+};
+</script>
+</body>
+</html>

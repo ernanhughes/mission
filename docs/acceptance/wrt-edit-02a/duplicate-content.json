@@ -1,0 +1,70 @@
+{
+  "schema": "wrt-edit-02a.duplicate-content.v1",
+  "groups": [
+    {
+      "projects": [
+        "digital-life",
+        "programmer_ie"
+      ],
+      "canonical": "digital-life",
+      "duplicate": "programmer_ie",
+      "reason": "The Digital Life manuscript is registered twice. The C:\\books copy is treated as canonical; programmer_ie is a legacy/publication copy with one extra chapter and a revised chapter 04.",
+      "identical_chapter_hashes": 17,
+      "digital_life_chapters": 18,
+      "programmer_ie_chapters": 19
+    }
+  ],
+  "pairs": [
+    {
+      "left": "digital-life",
+      "right": "programmer_ie",
+      "left_chapters": 18,
+      "right_chapters": 19,
+      "identical_chapter_hashes": 17,
+      "identical_share_of_smaller": 0.944
+    }
+  ],
+  "chapter_hashes": {
+    "digital-life": {
+      "01-how-to-read-this-book.md": "0ff3978e06a915fc3cb2c24c6ef7cdf0ac894dc410894701c9fcd8fb86aece80",
+      "02-what-would-digital-life-mean.md": "77bc26991663d3e3dafbad1b70b8b699307211afaf5f8f5ec0a9f569d0d80992",
+      "03-look-at-this-thing.md": "1b91442b9bdbd8dffcb54bac4bb0f3532b6e8fb01c2328cb6a0de41b314324e0",
+      "04-now-there-are-two.md": "a020202699ad636c6574d8da8705bedf67bdf93692e5be283c9cbbf7d0b14b03",
+      "05-so-we-built-the-wrong-thing-on-purpose.md": "ca074435cbdb1a22eb89d84b2107adacfe119c4bc44dc7312864b798bb52b765",
+      "06-it-looked-like-flocking.md": "a8594b90445fa2568245452b6530132b0737ef7afff9f70d8b92a716b01cada5",
+      "07-the-digital-crystal.md": "64f43905e3b1bf9bcfdf503c3fba2a2709689fda9d5b39a99a4fb15c7659e179",
+      "08-the-crystal-gets-a-past.md": "011b3ee44d6b6a06822c6e57a6ea02f2a516afc391aa77cf9d8f4d750f038d20",
+      "09-can-experience-change-the-material.md": "0da1ddec945a055fb441a89a311548ba9d645c894f45daa043a71024bca0bc62",
+      "10-what-survives-material-loss.md": "a85bf34392040f36dad482d11ee7afaf36a182f65288c8b11cfcecd1b97665fc",
+      "11-what-does-it-cost-to-stay.md": "5fbf7e2400cdeaa8566e3732a3ccc7ce95a39f754d0919ab57b88506df02cb94",
+      "12-is-there-actually-one-thing-here.md": "a1cee361d472be262ed1fcd8c51bd28bdf624c19e0c3bfc4699180890aa07472",
+      "13-what-does-one-attachment-cause.md": "f9c18ea15386cad344ee4a0bb64e0a4f40b7420c1a48bb940612fa8c17c694c8",
+      "14-can-finite-computation-couple-distant-events.md": "782a01bd17b4834b1d81349ed5a769dafca80ab31ea3690658e18ead0274f06c",
+      "15-can-the-past-redirect-the-future.md": "6b733de9e3fe8d6b91ad1ec2af9b3611170ceaf8bc1bedc0514cba9c7749a189",
+      "16-we-found-an-individual-then-we-didnt.md": "cd62f9fa79e7e5276fd1d454741fd79646d26a39bb52d3d70755acdfad33c8ae",
+      "17-how-to-fail-correctly.md": "c5d175e07393b242a047890c15e2018cf26305472cb5d4cd0f5aa3d10ee48df9",
+      "18-what-is-digital-life.md": "65b7c517ef85478b7ed73a845b8974959b03469fab2905fb211e59b57aba9295"
+    },
+    "programmer_ie": {
+      "01-how-to-read-this-book.md": "0ff3978e06a915fc3cb2c24c6ef7cdf0ac894dc410894701c9fcd8fb86aece80",
+      "02-what-is-digital-life.md": "8204621e50b8fc4bd5310f4a10b4ab4250531f898d9488e7527e15cc20dff60e",
+      "02-what-would-digital-life-mean.md": "77bc26991663d3e3dafbad1b70b8b699307211afaf5f8f5ec0a9f569d0d80992",
+      "03-look-at-this-thing.md": "1b91442b9bdbd8dffcb54bac4bb0f3532b6e8fb01c2328cb6a0de41b314324e0",
+      "04-now-there-are-two.md": "2d41cfabb7d4fd33c1c415a09b32266baac4b615f583e357826746197c207c9e",
+      "05-so-we-built-the-wrong-thing-on-purpose.md": "ca074435cbdb1a22eb89d84b2107adacfe119c4bc44dc7312864b798bb52b765",
+      "06-it-looked-like-flocking.md": "a8594b90445fa2568245452b6530132b0737ef7afff9f70d8b92a716b01cada5",
+      "07-the-digital-crystal.md": "64f43905e3b1bf9bcfdf503c3fba2a2709689fda9d5b39a99a4fb15c7659e179",
+      "08-the-crystal-gets-a-past.md": "011b3ee44d6b6a06822c6e57a6ea02f2a516afc391aa77cf9d8f4d750f038d20",
+      "09-can-experience-change-the-material.md": "0da1ddec945a055fb441a89a311548ba9d645c894f45daa043a71024bca0bc62",
+      "10-what-survives-material-loss.md": "a85bf34392040f36dad482d11ee7afaf36a182f65288c8b11cfcecd1b97665fc",
+      "11-what-does-it-cost-to-stay.md": "5fbf7e2400cdeaa8566e3732a3ccc7ce95a39f754d0919ab57b88506df02cb94",
+      "12-is-there-actually-one-thing-here.md": "a1cee361d472be262ed1fcd8c51bd28bdf624c19e0c3bfc4699180890aa07472",
+      "13-what-does-one-attachment-cause.md": "f9c18ea15386cad344ee4a0bb64e0a4f40b7420c1a48bb940612fa8c17c694c8",
+      "14-can-finite-computation-couple-distant-events.md": "782a01bd17b4834b1d81349ed5a769dafca80ab31ea3690658e18ead0274f06c",
+      "15-can-the-past-redirect-the-future.md": "6b733de9e3fe8d6b91ad1ec2af9b3611170ceaf8bc1bedc0514cba9c7749a189",
+      "16-we-found-an-individual-then-we-didnt.md": "cd62f9fa79e7e5276fd1d454741fd79646d26a39bb52d3d70755acdfad33c8ae",
+      "17-how-to-fail-correctly.md": "c5d175e07393b242a047890c15e2018cf26305472cb5d4cd0f5aa3d10ee48df9",
+      "18-what-is-digital-life.md": "65b7c517ef85478b7ed73a845b8974959b03469fab2905fb211e59b57aba9295"
+    }
+  }
+}

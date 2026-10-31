@@ -1,0 +1,227 @@
+{
+  "root": "C:\\books",
+  "directories": [
+    {
+      "name": "agent-runtimes",
+      "path": "C:\\books\\agent-runtimes",
+      "md_files": 146,
+      "scan_errors": 0
+    },
+    {
+      "name": "aibussin.com",
+      "path": "C:\\books\\aibussin.com",
+      "md_files": 2244,
+      "scan_errors": 0
+    },
+    {
+      "name": "applied-ai",
+      "path": "C:\\books\\applied-ai",
+      "md_files": 143,
+      "scan_errors": 0
+    },
+    {
+      "name": "axiom-zero",
+      "path": "C:\\books\\axiom-zero",
+      "md_files": 417,
+      "scan_errors": 0
+    },
+    {
+      "name": "becoming-alice",
+      "path": "C:\\books\\becoming-alice",
+      "md_files": 97,
+      "scan_errors": 0
+    },
+    {
+      "name": "browser-ai-from-first-principles",
+      "path": "C:\\books\\browser-ai-from-first-principles",
+      "md_files": 11,
+      "scan_errors": 0
+    },
+    {
+      "name": "coin",
+      "path": "C:\\books\\coin",
+      "md_files": 402,
+      "scan_errors": 0
+    },
+    {
+      "name": "collapse",
+      "path": "C:\\books\\collapse",
+      "md_files": 144,
+      "scan_errors": 0
+    },
+    {
+      "name": "context",
+      "path": "C:\\books\\context",
+      "md_files": 132,
+      "scan_errors": 0
+    },
+    {
+      "name": "controllers",
+      "path": "C:\\books\\controllers",
+      "md_files": 2,
+      "scan_errors": 0
+    },
+    {
+      "name": "digital-life",
+      "path": "C:\\books\\digital-life",
+      "md_files": 614,
+      "scan_errors": 0
+    },
+    {
+      "name": "digital-life-demo",
+      "path": "C:\\books\\digital-life-demo",
+      "md_files": 93,
+      "scan_errors": 0
+    },
+    {
+      "name": "freestyle-cognition",
+      "path": "C:\\books\\freestyle-cognition",
+      "md_files": 713,
+      "scan_errors": 0
+    },
+    {
+      "name": "goblins",
+      "path": "C:\\books\\goblins",
+      "md_files": 217,
+      "scan_errors": 0
+    },
+    {
+      "name": "hidden-hand",
+      "path": "C:\\books\\hidden-hand",
+      "md_files": 12,
+      "scan_errors": 0
+    },
+    {
+      "name": "hugo-bookkit",
+      "path": "C:\\books\\hugo-bookkit",
+      "md_files": 11,
+      "scan_errors": 0
+    },
+    {
+      "name": "inference",
+      "path": "C:\\books\\inference",
+      "md_files": 213,
+      "scan_errors": 0
+    },
+    {
+      "name": "jev",
+      "path": "C:\\books\\jev",
+      "md_files": 231,
+      "scan_errors": 0
+    },
+    {
+      "name": "language-original",
+      "path": "C:\\books\\language-original",
+      "md_files": 713,
+      "scan_errors": 0
+    },
+    {
+      "name": "language-rla",
+      "path": "C:\\books\\language-rla",
+      "md_files": 121,
+      "scan_errors": 0
+    },
+    {
+      "name": "latent",
+      "path": "C:\\books\\latent",
+      "md_files": 360,
+      "scan_errors": 0
+    },
+    {
+      "name": "memory",
+      "path": "C:\\books\\memory",
+      "md_files": 307,
+      "scan_errors": 0
+    },
+    {
+      "name": "new-books",
+      "path": "C:\\books\\new-books",
+      "md_files": 2207,
+      "scan_errors": 0
+    },
+    {
+      "name": "pi",
+      "path": "C:\\books\\pi",
+      "md_files": 1578,
+      "scan_errors": 0
+    },
+    {
+      "name": "pi-agents",
+      "path": "C:\\books\\pi-agents",
+      "md_files": 599,
+      "scan_errors": 0
+    },
+    {
+      "name": "pi-agents-old",
+      "path": "C:\\books\\pi-agents-old",
+      "md_files": 1112,
+      "scan_errors": 0
+    },
+    {
+      "name": "programmer.ie.notebooks",
+      "path": "C:\\books\\programmer.ie.notebooks",
+      "md_files": 21,
+      "scan_errors": 0
+    },
+    {
+      "name": "project-context",
+      "path": "C:\\books\\project-context",
+      "md_files": 751,
+      "scan_errors": 1
+    },
+    {
+      "name": "project-context-compiler",
+      "path": "C:\\books\\project-context-compiler",
+      "md_files": 561,
+      "scan_errors": 0
+    },
+    {
+      "name": "project-context-opencode",
+      "path": "C:\\books\\project-context-opencode",
+      "md_files": 559,
+      "scan_errors": 0
+    },
+    {
+      "name": "projection",
+      "path": "C:\\books\\projection",
+      "md_files": 81,
+      "scan_errors": 0
+    },
+    {
+      "name": "retrieval",
+      "path": "C:\\books\\retrieval",
+      "md_files": 511,
+      "scan_errors": 0
+    },
+    {
+      "name": "softwear",
+      "path": "C:\\books\\softwear",
+      "md_files": 135,
+      "scan_errors": 0
+    },
+    {
+      "name": "techno-prophet",
+      "path": "C:\\books\\techno-prophet",
+      "md_files": 161,
+      "scan_errors": 0
+    },
+    {
+      "name": "they-just-died",
+      "path": "C:\\books\\they-just-died",
+      "md_files": 5,
+      "scan_errors": 0
+    },
+    {
+      "name": "vessel",
+      "path": "C:\\books\\vessel",
+      "md_files": 78,
+      "scan_errors": 0
+    },
+    {
+      "name": "zeromodel.org",
+      "path": "C:\\books\\zeromodel.org",
+      "md_files": 19,
+      "scan_errors": 0
+    }
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "schema": "wrt-edit-02a.calibration-integrity.v2",
+  "passage_count": 50,
+  "strata": {
+    "high": 24,
+    "medium": 14,
+    "low": 12
+  },
+  "categories": {
+    "fragmented_sequence": 6,
+    "long_dense": 5,
+    "short_technical_explanation": 1,
+    "ordinary_prose": 6,
+    "structured_teaching": 7,
+    "lexical_difficulty": 2,
+    "code_adjacent": 2,
+    "uniform_cadence": 1,
+    "fiction_narrative": 8,
+    "fiction_dialogue": 9,
+    "fiction_fragmented": 1,
+    "fiction_dense": 2
+  },
+  "profiles": {
+    "technical": 30,
+    "fiction": 20
+  },
+  "books": {
+    "language": 2,
+    "pi": 1,
+    "agents-from-first-principles": 2,
+    "context": 3,
+    "memory": 2,
+    "applied-ai": 2,
+    "debugging-ai": 2,
+    "embeddings-from-first-principles": 1,
+    "browser-ai-from-first-principles": 2,
+    "dspy-from-first-principles": 2,
+    "hallucination-from-first-principles": 2,
+    "pytorch-from-first-principles": 2,
+    "digital-life": 2,
+    "advanced-agents-from-first-principles": 1,
+    "agent-architectures": 1,
+    "cellular-automata-from-first-principles": 1,
+    "freestyle-cognition": 1,
+    "models-from-first-principles": 1,
+    "latent": 3,
+    "coin": 2,
+    "softwear": 2,
+    "axiom_zero": 2,
+    "becoming_alice": 2,
+    "collapse": 2,
+    "goblins": 2,
+    "techno_prophet": 1,
+    "projection": 4
+  },
+  "passage_word_range": {
+    "min": 31,
+    "max": 351
+  },
+  "files": {
+    "calibration-passages.json": "b6508201eeb1c6089ce7bcae46a1d73e34617f33b27ede2147dc6fcd14f3fb36",
+    "calibration-blind-passages.csv": "f768eb800381105c80dcec432c4fc58387e90bf34322297bc1bd0bef8d8fee24",
+    "calibration-review-template.csv": "28830c74662da3080abe7ddf8a86197055698203dd93de2eafdb7a2bdb39e6df",
+    "WRT-EDIT-02A-CALIBRATION-SAMPLE.md": "dd26d9f17e1ed69a541c71984b203feb298d1e1dd69e9e9c3eafd335de29817e"
+  },
+  "checks": {
+    "passage_count_50": true,
+    "ids_contiguous": true,
+    "passage_text_nonempty": true,
+    "passage_text_unique": true,
+    "blind_csv_matches_json": true,
+    "template_rows_blank": true,
+    "markdown_map_matches_json": true,
+    "no_labels_present": true,
+    "distinct_books_27": true,
+    "duplicate_excluded": true
+  },
+  "labels_collected": false,
+  "thresholds_changed": false,
+  "duplicate_registration_excluded": "programmer_ie"
+}

@@ -1,0 +1,14 @@
+{
+  "language": {
+    "root": "C:\\Projects\\language\\content\\books\\language",
+    "sha256": "e17a5a301ed412da9061245fb73d955f3ec3c8820f8cc3658cf6829df32ebaeb",
+    "files": 39,
+    "errors": []
+  },
+  "programmer_ie_books": {
+    "root": "C:\\Projects\\programmer.ie\\content\\books",
+    "sha256": "e2c2706f92917ae5b5f63715362274f5cb288c160c7e241fa86d0c7775c3dd80",
+    "files": 656,
+    "errors": []
+  }
+}

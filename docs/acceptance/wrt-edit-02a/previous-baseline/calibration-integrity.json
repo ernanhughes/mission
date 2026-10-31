@@ -1,0 +1,50 @@
+{
+  "schema": "wrt-edit-02a.calibration-integrity.v1",
+  "passage_count": 44,
+  "strata": {
+    "high": 22,
+    "medium": 13,
+    "low": 9
+  },
+  "categories": {
+    "code_adjacent": 2,
+    "structured_teaching": 8,
+    "fragmented_sequence": 6,
+    "long_dense": 10,
+    "ordinary_prose": 12,
+    "uniform_cadence": 2,
+    "short_technical_explanation": 1,
+    "lexical_difficulty": 3
+  },
+  "books": {
+    "models-from-first-principles": 6,
+    "freestyle-cognition": 6,
+    "cellular-automata-from-first-principles": 6,
+    "advanced-agents-from-first-principles": 6,
+    "agent-architectures": 6,
+    "programmer_ie": 6,
+    "language": 8
+  },
+  "passage_word_range": {
+    "min": 18,
+    "max": 234
+  },
+  "files": {
+    "calibration-passages.json": "0887c6cc4bf7326461427bc93a74caa981c287078a8d2ab396ee7d374577bee2",
+    "calibration-blind-passages.csv": "21bdd4157d2515edb40c3219324ef92c7a741a9b65124e8f3e7f6df094e98738",
+    "calibration-review-template.csv": "5705ff3dc3b4b1564291df1c45caa2626f1a26a3b46d5ce027985065e63400d8",
+    "WRT-EDIT-02A-CALIBRATION-SAMPLE.md": "695014d479a5672b145119ea95bba090ce56de2e5fe394384bdc8d4e36b68bbc"
+  },
+  "checks": {
+    "passage_count_44": true,
+    "ids_contiguous": true,
+    "passage_text_nonempty": true,
+    "passage_text_unique": true,
+    "blind_csv_matches_json": true,
+    "template_rows_blank": true,
+    "markdown_map_matches_json": true,
+    "no_labels_present": true
+  },
+  "labels_collected": false,
+  "thresholds_changed": false
+}

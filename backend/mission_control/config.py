@@ -32,6 +32,25 @@ class RuntimeSettings:
     log_level: str = field(default_factory=lambda: os.environ.get("MISSION_CONTROL_LOG_LEVEL", "INFO"))
     seed_defaults: bool = field(default_factory=lambda: os.environ.get("MISSION_CONTROL_SEED", "1") != "0")
     start_monitor: bool = field(default_factory=lambda: os.environ.get("MISSION_CONTROL_MONITOR", "1") != "0")
+    # Workbench owns editorial decisions and the selected book. Mission Control
+    # reads those files read-only; it never writes them.
+    workbench_decisions_path: Path = field(
+        default_factory=lambda: _env_path(
+            "MISSION_CONTROL_WORKBENCH_DECISIONS",
+            Path(r"C:\Projects\workbench\.workbench\editorial-decisions.jsonl"),
+        )
+    )
+    workbench_preferences_path: Path = field(
+        default_factory=lambda: _env_path(
+            "MISSION_CONTROL_WORKBENCH_PREFERENCES",
+            Path(r"C:\Projects\workbench\.workbench\preferences.json"),
+        )
+    )
+    workbench_url: str = field(
+        default_factory=lambda: os.environ.get(
+            "MISSION_CONTROL_WORKBENCH_URL", "http://127.0.0.1:7420"
+        )
+    )
     dev_origins: tuple[str, ...] = (
         "http://127.0.0.1:5173",
         "http://localhost:5173",

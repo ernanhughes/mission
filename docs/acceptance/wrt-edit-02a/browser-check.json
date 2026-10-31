@@ -1,0 +1,14 @@
+{
+  "ok": true,
+  "url": "http://127.0.0.1:8790/writer",
+  "book_rows": 29,
+  "shows_28_audited": true,
+  "has_queue": true,
+  "has_needs_review": true,
+  "has_no_manuscript": true,
+  "has_blocked": false,
+  "blocked_rows": 0,
+  "no_manuscript_rows": 1,
+  "console_errors": [],
+  "page_errors": []
+}

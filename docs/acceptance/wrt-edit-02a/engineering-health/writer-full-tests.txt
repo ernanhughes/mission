@@ -1,0 +1,43 @@
+
+=================================== ERRORS ====================================
+__ ERROR collecting tests/runtime/domains/test_mri_semantic_adjudication.py ___
+venv\Lib\site-packages\_pytest\python.py:507: in importtestmodule
+    mod = import_path(
+venv\Lib\site-packages\_pytest\pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+C:\Users\ernan\AppData\Local\Programs\Python\Python311\Lib\importlib\__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1204: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1176: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1147: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:690: in _load_unlocked
+    ???
+venv\Lib\site-packages\_pytest\assertion\rewrite.py:188: in exec_module
+    source_stat, co = _rewrite_test(fn, self.config)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv\Lib\site-packages\_pytest\assertion\rewrite.py:357: in _rewrite_test
+    tree = ast.parse(source, filename=strfn)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\ernan\AppData\Local\Programs\Python\Python311\Lib\ast.py:50: in parse
+    return compile(source, filename, mode, flags,
+E     File "C:\Projects\writer\tests\runtime\domains\test_mri_semantic_adjudication.py", line 493
+E       from writer_runtime.domains.mri.services.book_alignment import (
+E   IndentationError: unexpected indent
+============================== warnings summary ===============================
+venv\Lib\site-packages\_pytest\config\__init__.py:1575
+  C:\Projects\writer\venv\Lib\site-packages\_pytest\config\__init__.py:1575: PytestConfigWarning: No files were found in testpaths; consider removing or adjusting your testpaths configuration. Searching recursively from the current directory instead.
+    self.args, self.args_source = self._decide_args(
+
+venv\Lib\site-packages\fastapi\testclient.py:1
+  C:\Projects\writer\venv\Lib\site-packages\fastapi\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+ERROR tests/runtime/domains/test_mri_semantic_adjudication.py
+!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+2294 deselected, 2 warnings, 1 error in 25.40s

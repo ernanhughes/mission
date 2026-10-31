@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { CheckCircle2, FileSearch, Gauge, Play, RefreshCw } from "lucide-react";
+import { CheckCircle2, ExternalLink, FileSearch, Gauge, ListChecks, Play, RefreshCw } from "lucide-react";
 import { api, errorMessage } from "../api/client";
 import { useApi } from "../api/useApi";
 import { useToast } from "../components/Toast";
@@ -22,6 +22,7 @@ import type {
   IntegrationExecution,
   WriterBook,
   WriterChapter,
+  WriterDecisionQueueItem,
   WriterDimension,
   WriterFinding,
   WriterWorkspace,
@@ -100,6 +101,21 @@ function scoreCell(dimension: WriterDimension | undefined) {
   );
 }
 
+function decisionStateLabel(item: WriterDecisionQueueItem): string {
+  if (item.state === "stale") return "Refresh evidence";
+  if (item.state === "decided") return "Decided";
+  if (item.state === "partial") {
+    return `${item.decided_count} of ${item.count} decided`;
+  }
+  return "Undecided";
+}
+
+function severityTone(severity: string): string {
+  if (severity === "high") return "danger";
+  if (severity === "medium") return "accent";
+  return "default";
+}
+
 function findingRow(finding: WriterFinding) {
   const location = finding.locator
     ? `${finding.locator.relative_path}:${finding.locator.line_start ?? "?"}`
@@ -135,6 +151,7 @@ export function WriterPage() {
   const [refreshing, setRefreshing] = useState(false);
   const [running, setRunning] = useState(false);
   const [execution, setExecution] = useState<IntegrationExecution | null>(null);
+  const [showAllQueue, setShowAllQueue] = useState(false);
 
   const books = workspace.data?.books ?? [];
   const selectedBook = useMemo(
@@ -266,6 +283,104 @@ export function WriterPage() {
           <Stat label="Stale" value={workspace.data.totals.stale ?? 0} detail="Source fingerprint changed" />
           <Stat label="Not run" value={workspace.data.totals.not_run ?? 0} detail="No evidence, not a pass" />
         </div>
+      ) : null}
+
+      {workspace.data?.decision_queue.length ? (
+        <Section
+          title="Decision queue"
+          description="Writer findings grouped by code and severity, highest consequence first. Open a representative case in Workbench; Confirm, Dismiss and Defer are recorded there, never here."
+          actions={
+            <div className="tag-row">
+              <Tag tone="accent">{workspace.data.decision_totals?.groups ?? 0} groups</Tag>
+              <Tag>{workspace.data.decision_totals?.undecided ?? 0} undecided findings</Tag>
+              {workspace.data.decision_totals?.confirmed ? (
+                <Tag>{workspace.data.decision_totals.confirmed} confirmed</Tag>
+              ) : null}
+            </div>
+          }
+        >
+          <div className="writer-decision-note">
+            <ListChecks size={16} />
+            <span>
+              A group is one repeated editorial pattern. Reviewing the representative and choosing
+              a book-wide scope in Workbench records that pattern once, not once per instance.
+            </span>
+          </div>
+          <div className="writer-decision-queue">
+            {(showAllQueue
+              ? workspace.data.decision_queue
+              : workspace.data.decision_queue.slice(0, 10)
+            ).map((item) => (
+              <article className="writer-decision-card" key={item.id}>
+                <div className="writer-decision-head">
+                  <Tag tone={severityTone(item.severity)}>{item.severity.toUpperCase()}</Tag>
+                  <strong>{item.code}</strong>
+                  <span className="writer-decision-state">{decisionStateLabel(item)}</span>
+                  <span className="writer-decision-count">
+                    {item.count} finding{item.count === 1 ? "" : "s"} in {item.chapter_count} chapter
+                    {item.chapter_count === 1 ? "" : "s"}
+                  </span>
+                  {item.book_status === "PARTIAL" ? <Tag>Partial evidence</Tag> : null}
+                </div>
+                <div className="writer-decision-where">
+                  <strong>{item.book_title}</strong>
+                  <span>{item.chapter_title || item.chapter_name}</span>
+                  <span className="writer-book-id">
+                    {item.locator?.relative_path || item.chapter_name}
+                    {item.locator?.line_start ? `:${item.locator.line_start}` : ""}
+                  </span>
+                </div>
+                <p>{item.reason}</p>
+                {item.locator?.excerpt ? (
+                  <blockquote className="writer-excerpt">{item.locator.excerpt}</blockquote>
+                ) : null}
+                <div className="writer-decision-foot">
+                  <button
+                    className="button button-secondary button-small"
+                    onClick={() => {
+                      setSelectedBookId(item.project_id);
+                      setSelectedChapterId(item.chapter_id);
+                    }}
+                  >
+                    Inspect chapter
+                  </button>
+                  {item.workbench_link && item.workbench_book_ready ? (
+                    <a
+                      className="button button-primary button-small"
+                      href={item.workbench_link}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      <ExternalLink size={14} /> Open in Workbench
+                    </a>
+                  ) : (
+                    <span className="writer-decision-note">
+                      {item.stale
+                        ? "Refresh Writer evidence before deciding."
+                        : `Workbench is on ${workspace.data?.workbench.book || "another book"}; switch it to ${item.book_title} first.`}
+                    </span>
+                  )}
+                  {item.decision ? (
+                    <span className="writer-decision-recorded">
+                      {titleCase(item.decision.decision)} · {titleCase(item.decision.scope)}
+                      {item.decision.reason ? ` · ${item.decision.reason}` : ""}
+                    </span>
+                  ) : null}
+                </div>
+              </article>
+            ))}
+          </div>
+          {workspace.data.decision_queue.length > 10 ? (
+            <button
+              className="button button-secondary button-small"
+              onClick={() => setShowAllQueue((current) => !current)}
+            >
+              {showAllQueue
+                ? "Show the top 10"
+                : `Show all ${workspace.data.decision_queue.length} groups`}
+            </button>
+          ) : null}
+        </Section>
       ) : null}
 
       {workspace.data?.review_queue.length ? (

@@ -1,0 +1,3929 @@
+{
+  "schema": "wrt-edit-02a.registry-audit.v2",
+  "registry_path": "C:\\Projects\\writer\\config\\web\\projects.yaml",
+  "registry_sha256": "21f40f876494286f485dd6dc3664b0b1dd1cec0f75f9a452814b38e3ef3b2e10",
+  "registry_mtime_utc": "2026-10-25T01:30:57.382176+00:00",
+  "registry_git_status": "M config/web/projects.yaml",
+  "active_projects": 29,
+  "status_counts": {
+    "READY": 28,
+    "NO_MANUSCRIPT": 1
+  },
+  "under_c_books_count": 21,
+  "under_c_books": [
+    "pi",
+    "context",
+    "memory",
+    "applied-ai",
+    "debugging-ai",
+    "embeddings-from-first-principles",
+    "browser-ai-from-first-principles",
+    "dspy-from-first-principles",
+    "hallucination-from-first-principles",
+    "pytorch-from-first-principles",
+    "agents-from-first-principles",
+    "digital-life",
+    "latent",
+    "coin",
+    "softwear",
+    "axiom_zero",
+    "becoming_alice",
+    "collapse",
+    "goblins",
+    "techno_prophet",
+    "projection"
+  ],
+  "not_under_c_books": [
+    "language",
+    "programmer_ie",
+    "writer",
+    "advanced-agents-from-first-principles",
+    "agent-architectures",
+    "cellular-automata-from-first-principles",
+    "freestyle-cognition",
+    "models-from-first-principles"
+  ],
+  "missing_content_dirs": [],
+  "rows": [
+    {
+      "project_id": "language",
+      "name": "language",
+      "profile": "technical",
+      "active": true,
+      "project_root": "C:\\Projects\\language",
+      "content_dir": "C:\\Projects\\language\\content\\books\\language",
+      "repository_path": "C:\\Projects\\language",
+      "project_root_exists": true,
+      "content_dir_exists": true,
+      "repository_path_exists": true,
+      "under_c_books": false,
+      "registry_chapter_count": 39,
+      "editing_chapter_count": 38,
+      "editing_status": "READY",
+      "reason": "",
+      "first_chapter": "C:\\Projects\\language\\content\\books\\language\\01-chapter.md",
+      "last_chapter": "C:\\Projects\\language\\content\\books\\language\\38-chapter.md",
+      "chapters": [
+        {
+          "name": "01-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\01-chapter.md"
+        },
+        {
+          "name": "02-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\02-chapter.md"
+        },
+        {
+          "name": "03-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\03-chapter.md"
+        },
+        {
+          "name": "04-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\04-chapter.md"
+        },
+        {
+          "name": "05-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\05-chapter.md"
+        },
+        {
+          "name": "06-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\06-chapter.md"
+        },
+        {
+          "name": "07-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\07-chapter.md"
+        },
+        {
+          "name": "08-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\08-chapter.md"
+        },
+        {
+          "name": "09-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\09-chapter.md"
+        },
+        {
+          "name": "10-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\10-chapter.md"
+        },
+        {
+          "name": "11-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\11-chapter.md"
+        },
+        {
+          "name": "12-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\12-chapter.md"
+        },
+        {
+          "name": "13-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\13-chapter.md"
+        },
+        {
+          "name": "14-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\14-chapter.md"
+        },
+        {
+          "name": "15-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\15-chapter.md"
+        },
+        {
+          "name": "16-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\16-chapter.md"
+        },
+        {
+          "name": "17-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\17-chapter.md"
+        },
+        {
+          "name": "18-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\18-chapter.md"
+        },
+        {
+          "name": "19-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\19-chapter.md"
+        },
+        {
+          "name": "20-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\20-chapter.md"
+        },
+        {
+          "name": "21-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\21-chapter.md"
+        },
+        {
+          "name": "22-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\22-chapter.md"
+        },
+        {
+          "name": "23-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\23-chapter.md"
+        },
+        {
+          "name": "24-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\24-chapter.md"
+        },
+        {
+          "name": "25-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\25-chapter.md"
+        },
+        {
+          "name": "26-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\26-chapter.md"
+        },
+        {
+          "name": "27-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\27-chapter.md"
+        },
+        {
+          "name": "28-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\28-chapter.md"
+        },
+        {
+          "name": "29-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\29-chapter.md"
+        },
+        {
+          "name": "30-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\30-chapter.md"
+        },
+        {
+          "name": "31-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\31-chapter.md"
+        },
+        {
+          "name": "32-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\32-chapter.md"
+        },
+        {
+          "name": "33-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\33-chapter.md"
+        },
+        {
+          "name": "34-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\34-chapter.md"
+        },
+        {
+          "name": "35-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\35-chapter.md"
+        },
+        {
+          "name": "36-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\36-chapter.md"
+        },
+        {
+          "name": "37-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\37-chapter.md"
+        },
+        {
+          "name": "38-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\38-chapter.md"
+        }
+      ]
+    },
+    {
+      "project_id": "pi",
+      "name": "pi",
+      "profile": "technical",
+      "active": true,
+      "project_root": "C:\\books\\pi",
+      "content_dir": "C:\\books\\pi\\content\\books\\pi",
+      "repository_path": "C:\\books\\pi",
+      "project_root_exists": true,
+      "content_dir_exists": true,
+      "repository_path_exists": true,
+      "under_c_books": true,
+      "registry_chapter_count": 47,
+      "editing_chapter_count": 46,
+      "editing_status": "READY",
+      "reason": "",
+      "first_chapter": "C:\\books\\pi\\content\\books\\pi\\01-chapter.md",
+      "last_chapter": "C:\\books\\pi\\content\\books\\pi\\run-the-examples.md",
+      "chapters": [
+        {
+          "name": "01-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\01-chapter.md"
+        },
+        {
+          "name": "02-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\02-chapter.md"
+        },
+        {
+          "name": "03-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\03-chapter.md"
+        },
+        {
+          "name": "04-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\04-chapter.md"
+        },
+        {
+          "name": "05-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\05-chapter.md"
+        },
+        {
+          "name": "06-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\06-chapter.md"
+        },
+        {
+          "name": "07-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\07-chapter.md"
+        },
+        {
+          "name": "08-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\08-chapter.md"
+        },
+        {
+          "name": "09-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\09-chapter.md"
+        },
+        {
+          "name": "10-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\10-chapter.md"
+        },
+        {
+          "name": "11-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\11-chapter.md"
+        },
+        {
+          "name": "12-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\12-chapter.md"
+        },
+        {
+          "name": "13-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\13-chapter.md"
+        },
+        {
+          "name": "14-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\14-chapter.md"
+        },
+        {
+          "name": "15-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\15-chapter.md"
+        },
+        {
+          "name": "16-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\16-chapter.md"
+        },
+        {
+          "name": "17-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\17-chapter.md"
+        },
+        {
+          "name": "18-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\18-chapter.md"
+        },
+        {
+          "name": "19-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\19-chapter.md"
+        },
+        {
+          "name": "20-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\20-chapter.md"
+        },
+        {
+          "name": "21-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\21-chapter.md"
+        },
+        {
+          "name": "22-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\22-chapter.md"
+        },
+        {
+          "name": "23-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\23-chapter.md"
+        },
+        {
+          "name": "24-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\24-chapter.md"
+        },
+        {
+          "name": "25-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\25-chapter.md"
+        },
+        {
+          "name": "26-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\26-chapter.md"
+        },
+        {
+          "name": "27-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\27-chapter.md"
+        },
+        {
+          "name": "28-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\28-chapter.md"
+        },
+        {
+          "name": "29-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\29-chapter.md"
+        },
+        {
+          "name": "30-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\30-chapter.md"
+        },
+        {
+          "name": "31-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\31-chapter.md"
+        },
+        {
+          "name": "32-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\32-chapter.md"
+        },
+        {
+          "name": "33-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\33-chapter.md"
+        },
+        {
+          "name": "34-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\34-chapter.md"
+        },
+        {
+          "name": "35-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\35-chapter.md"
+        },
+        {
+          "name": "36-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\36-chapter.md"
+        },
+        {
+          "name": "37-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\37-chapter.md"
+        },
+        {
+          "name": "38-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\38-chapter.md"
+        },
+        {
+          "name": "39-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\39-chapter.md"
+        },
+        {
+          "name": "40-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\40-chapter.md"
+        },
+        {
+          "name": "41-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\41-chapter.md"
+        },
+        {
+          "name": "42-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\42-chapter.md"
+        },
+        {
+          "name": "43-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\43-chapter.md"
+        },
+        {
+          "name": "44-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\44-chapter.md"
+        },
+        {
+          "name": "45-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\45-chapter.md"
+        },
+        {
+          "name": "run-the-examples.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\run-the-examples.md"
+        }
+      ]
+    },
+    {
+      "project_id": "context",
+      "name": "context",
+      "profile": "technical",
+      "active": true,
+      "project_root": "C:\\books\\context",
+      "content_dir": "C:\\books\\context\\content\\books\\context",
+      "repository_path": "C:\\books\\context",
+      "project_root_exists": true,
+      "content_dir_exists": true,
+      "repository_path_exists": true,
+      "under_c_books": true,
+      "registry_chapter_count": 28,
+      "editing_chapter_count": 27,
+      "editing_status": "READY",
+      "reason": "",
+      "first_chapter": "C:\\books\\context\\content\\books\\context\\01-chapter.md",
+      "last_chapter": "C:\\books\\context\\content\\books\\context\\27-chapter.md",
+      "chapters": [
+        {
+          "name": "01-chapter.md",
+          "path": "C:\\books\\context\\content\\books\\context\\01-chapter.md"
+        },
+        {
+          "name": "02-chapter.md",
+          "path": "C:\\books\\context\\content\\books\\context\\02-chapter.md"
+        },
+        {
+          "name": "03-chapter.md",
+          "path": "C:\\books\\context\\content\\books\\context\\03-chapter.md"
+        },
+        {
+          "name": "04-chapter.md",
+          "path": "C:\\books\\context\\content\\books\\context\\04-chapter.md"
+        },
+        {
+          "name": "05-chapter.md",
+          "path": "C:\\books\\context\\content\\books\\context\\05-chapter.md"
+        },
+        {
+          "name": "06-chapter.md",
+          "path": "C:\\books\\context\\content\\books\\context\\06-chapter.md"
+        },
+        {
+          "name": "07-chapter.md",
+          "path": "C:\\books\\context\\content\\books\\context\\07-chapter.md"
+        },
+        {
+          "name": "08-chapter.md",
+          "path": "C:\\books\\context\\content\\books\\context\\08-chapter.md"
+        },
+        {
+          "name": "09-chapter.md",
+          "path": "C:\\books\\context\\content\\books\\context\\09-chapter.md"
+        },
+        {
+          "name": "10-chapter.md",
+          "path": "C:\\books\\context\\content\\books\\context\\10-chapter.md"
+        },
+        {
+          "name": "11-chapter.md",
+          "path": "C:\\books\\context\\content\\books\\context\\11-chapter.md"
+        },
+        {
+          "name": "12-chapter.md",
+          "path": "C:\\books\\context\\content\\books\\context\\12-chapter.md"
+        },
+        {
+          "name": "13-chapter.md",
+          "path": "C:\\books\\context\\content\\books\\context\\13-chapter.md"
+        },
+        {
+          "name": "14-chapter.md",
+          "path": "C:\\books\\context\\content\\books\\context\\14-chapter.md"
+        },
+        {
+          "name": "15-chapter.md",
+          "path": "C:\\books\\context\\content\\books\\context\\15-chapter.md"
+        },
+        {
+          "name": "16-chapter.md",
+          "path": "C:\\books\\context\\content\\books\\context\\16-chapter.md"
+        },
+        {
+          "name": "17-chapter.md",
+          "path": "C:\\books\\context\\content\\books\\context\\17-chapter.md"
+        },
+        {
+          "name": "18-chapter.md",
+          "path": "C:\\books\\context\\content\\books\\context\\18-chapter.md"
+        },
+        {
+          "name": "19-chapter.md",
+          "path": "C:\\books\\context\\content\\books\\context\\19-chapter.md"
+        },
+        {
+          "name": "20-chapter.md",
+          "path": "C:\\books\\context\\content\\books\\context\\20-chapter.md"
+        },
+        {
+          "name": "21-chapter.md",
+          "path": "C:\\books\\context\\content\\books\\context\\21-chapter.md"
+        },
+        {
+          "name": "22-chapter.md",
+          "path": "C:\\books\\context\\content\\books\\context\\22-chapter.md"
+        },
+        {
+          "name": "23-chapter.md",
+          "path": "C:\\books\\context\\content\\books\\context\\23-chapter.md"
+        },
+        {
+          "name": "24-chapter.md",
+          "path": "C:\\books\\context\\content\\books\\context\\24-chapter.md"
+        },
+        {
+          "name": "25-chapter.md",
+          "path": "C:\\books\\context\\content\\books\\context\\25-chapter.md"
+        },
+        {
+          "name": "26-chapter.md",
+          "path": "C:\\books\\context\\content\\books\\context\\26-chapter.md"
+        },
+        {
+          "name": "27-chapter.md",
+          "path": "C:\\books\\context\\content\\books\\context\\27-chapter.md"
+        }
+      ]
+    },
+    {
+      "project_id": "memory",
+      "name": "memory",
+      "profile": "technical",
+      "active": true,
+      "project_root": "C:\\books\\memory",
+      "content_dir": "C:\\books\\memory\\content\\books\\memory",
+      "repository_path": "C:\\books\\memory",
+      "project_root_exists": true,
+      "content_dir_exists": true,
+      "repository_path_exists": true,
+      "under_c_books": true,
+      "registry_chapter_count": 22,
+      "editing_chapter_count": 21,
+      "editing_status": "READY",
+      "reason": "",
+      "first_chapter": "C:\\books\\memory\\content\\books\\memory\\01-chapter.md",
+      "last_chapter": "C:\\books\\memory\\content\\books\\memory\\21-edition-history.md",
+      "chapters": [
+        {
+          "name": "01-chapter.md",
+          "path": "C:\\books\\memory\\content\\books\\memory\\01-chapter.md"
+        },
+        {
+          "name": "02-chapter.md",
+          "path": "C:\\books\\memory\\content\\books\\memory\\02-chapter.md"
+        },
+        {
+          "name": "03-chapter.md",
+          "path": "C:\\books\\memory\\content\\books\\memory\\03-chapter.md"
+        },
+        {
+          "name": "04-chapter.md",
+          "path": "C:\\books\\memory\\content\\books\\memory\\04-chapter.md"
+        },
+        {
+          "name": "05-chapter.md",
+          "path": "C:\\books\\memory\\content\\books\\memory\\05-chapter.md"
+        },
+        {
+          "name": "06-chapter.md",
+          "path": "C:\\books\\memory\\content\\books\\memory\\06-chapter.md"
+        },
+        {
+          "name": "07-chapter.md",
+          "path": "C:\\books\\memory\\content\\books\\memory\\07-chapter.md"
+        },
+        {
+          "name": "08-chapter.md",
+          "path": "C:\\books\\memory\\content\\books\\memory\\08-chapter.md"
+        },
+        {
+          "name": "09-chapter.md",
+          "path": "C:\\books\\memory\\content\\books\\memory\\09-chapter.md"
+        },
+        {
+          "name": "10-chapter.md",
+          "path": "C:\\books\\memory\\content\\books\\memory\\10-chapter.md"
+        },
+        {
+          "name": "11-chapter.md",
+          "path": "C:\\books\\memory\\content\\books\\memory\\11-chapter.md"
+        },
+        {
+          "name": "12-chapter.md",
+          "path": "C:\\books\\memory\\content\\books\\memory\\12-chapter.md"
+        },
+        {
+          "name": "13-chapter.md",
+          "path": "C:\\books\\memory\\content\\books\\memory\\13-chapter.md"
+        },
+        {
+          "name": "14-chapter.md",
+          "path": "C:\\books\\memory\\content\\books\\memory\\14-chapter.md"
+        },
+        {
+          "name": "15-chapter.md",
+          "path": "C:\\books\\memory\\content\\books\\memory\\15-chapter.md"
+        },
+        {
+          "name": "16-chapter.md",
+          "path": "C:\\books\\memory\\content\\books\\memory\\16-chapter.md"
+        },
+        {
+          "name": "17-chapter.md",
+          "path": "C:\\books\\memory\\content\\books\\memory\\17-chapter.md"
+        },
+        {
+          "name": "18-chapter.md",
+          "path": "C:\\books\\memory\\content\\books\\memory\\18-chapter.md"
+        },
+        {
+          "name": "19-chapter.md",
+          "path": "C:\\books\\memory\\content\\books\\memory\\19-chapter.md"
+        },
+        {
+          "name": "20-chapter.md",
+          "path": "C:\\books\\memory\\content\\books\\memory\\20-chapter.md"
+        },
+        {
+          "name": "21-edition-history.md",
+          "path": "C:\\books\\memory\\content\\books\\memory\\21-edition-history.md"
+        }
+      ]
+    },
+    {
+      "project_id": "applied-ai",
+      "name": "applied-ai",
+      "profile": "technical",
+      "active": true,
+      "project_root": "C:\\books\\new-books",
+      "content_dir": "C:\\books\\new-books\\content\\books\\applied-ai",
+      "repository_path": "C:\\books\\new-books",
+      "project_root_exists": true,
+      "content_dir_exists": true,
+      "repository_path_exists": true,
+      "under_c_books": true,
+      "registry_chapter_count": 31,
+      "editing_chapter_count": 30,
+      "editing_status": "READY",
+      "reason": "",
+      "first_chapter": "C:\\books\\new-books\\content\\books\\applied-ai\\01-chapter.md",
+      "last_chapter": "C:\\books\\new-books\\content\\books\\applied-ai\\30-chapter.md",
+      "chapters": [
+        {
+          "name": "01-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\applied-ai\\01-chapter.md"
+        },
+        {
+          "name": "02-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\applied-ai\\02-chapter.md"
+        },
+        {
+          "name": "03-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\applied-ai\\03-chapter.md"
+        },
+        {
+          "name": "04-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\applied-ai\\04-chapter.md"
+        },
+        {
+          "name": "05-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\applied-ai\\05-chapter.md"
+        },
+        {
+          "name": "06-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\applied-ai\\06-chapter.md"
+        },
+        {
+          "name": "07-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\applied-ai\\07-chapter.md"
+        },
+        {
+          "name": "08-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\applied-ai\\08-chapter.md"
+        },
+        {
+          "name": "09-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\applied-ai\\09-chapter.md"
+        },
+        {
+          "name": "10-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\applied-ai\\10-chapter.md"
+        },
+        {
+          "name": "11-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\applied-ai\\11-chapter.md"
+        },
+        {
+          "name": "12-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\applied-ai\\12-chapter.md"
+        },
+        {
+          "name": "13-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\applied-ai\\13-chapter.md"
+        },
+        {
+          "name": "14-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\applied-ai\\14-chapter.md"
+        },
+        {
+          "name": "15-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\applied-ai\\15-chapter.md"
+        },
+        {
+          "name": "16-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\applied-ai\\16-chapter.md"
+        },
+        {
+          "name": "17-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\applied-ai\\17-chapter.md"
+        },
+        {
+          "name": "18-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\applied-ai\\18-chapter.md"
+        },
+        {
+          "name": "19-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\applied-ai\\19-chapter.md"
+        },
+        {
+          "name": "20-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\applied-ai\\20-chapter.md"
+        },
+        {
+          "name": "21-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\applied-ai\\21-chapter.md"
+        },
+        {
+          "name": "22-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\applied-ai\\22-chapter.md"
+        },
+        {
+          "name": "23-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\applied-ai\\23-chapter.md"
+        },
+        {
+          "name": "24-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\applied-ai\\24-chapter.md"
+        },
+        {
+          "name": "25-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\applied-ai\\25-chapter.md"
+        },
+        {
+          "name": "26-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\applied-ai\\26-chapter.md"
+        },
+        {
+          "name": "27-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\applied-ai\\27-chapter.md"
+        },
+        {
+          "name": "28-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\applied-ai\\28-chapter.md"
+        },
+        {
+          "name": "29-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\applied-ai\\29-chapter.md"
+        },
+        {
+          "name": "30-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\applied-ai\\30-chapter.md"
+        }
+      ]
+    },
+    {
+      "project_id": "debugging-ai",
+      "name": "debugging-ai",
+      "profile": "technical",
+      "active": true,
+      "project_root": "C:\\books\\new-books",
+      "content_dir": "C:\\books\\new-books\\content\\books\\debugging-ai",
+      "repository_path": "C:\\books\\new-books",
+      "project_root_exists": true,
+      "content_dir_exists": true,
+      "repository_path_exists": true,
+      "under_c_books": true,
+      "registry_chapter_count": 61,
+      "editing_chapter_count": 60,
+      "editing_status": "READY",
+      "reason": "",
+      "first_chapter": "C:\\books\\new-books\\content\\books\\debugging-ai\\01-chapter.md",
+      "last_chapter": "C:\\books\\new-books\\content\\books\\debugging-ai\\60-chapter.md",
+      "chapters": [
+        {
+          "name": "01-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\01-chapter.md"
+        },
+        {
+          "name": "02-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\02-chapter.md"
+        },
+        {
+          "name": "03-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\03-chapter.md"
+        },
+        {
+          "name": "04-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\04-chapter.md"
+        },
+        {
+          "name": "05-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\05-chapter.md"
+        },
+        {
+          "name": "06-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\06-chapter.md"
+        },
+        {
+          "name": "07-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\07-chapter.md"
+        },
+        {
+          "name": "08-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\08-chapter.md"
+        },
+        {
+          "name": "09-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\09-chapter.md"
+        },
+        {
+          "name": "10-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\10-chapter.md"
+        },
+        {
+          "name": "11-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\11-chapter.md"
+        },
+        {
+          "name": "12-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\12-chapter.md"
+        },
+        {
+          "name": "13-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\13-chapter.md"
+        },
+        {
+          "name": "14-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\14-chapter.md"
+        },
+        {
+          "name": "15-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\15-chapter.md"
+        },
+        {
+          "name": "16-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\16-chapter.md"
+        },
+        {
+          "name": "17-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\17-chapter.md"
+        },
+        {
+          "name": "18-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\18-chapter.md"
+        },
+        {
+          "name": "19-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\19-chapter.md"
+        },
+        {
+          "name": "20-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\20-chapter.md"
+        },
+        {
+          "name": "21-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\21-chapter.md"
+        },
+        {
+          "name": "22-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\22-chapter.md"
+        },
+        {
+          "name": "23-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\23-chapter.md"
+        },
+        {
+          "name": "24-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\24-chapter.md"
+        },
+        {
+          "name": "25-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\25-chapter.md"
+        },
+        {
+          "name": "26-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\26-chapter.md"
+        },
+        {
+          "name": "27-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\27-chapter.md"
+        },
+        {
+          "name": "28-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\28-chapter.md"
+        },
+        {
+          "name": "29-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\29-chapter.md"
+        },
+        {
+          "name": "30-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\30-chapter.md"
+        },
+        {
+          "name": "31-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\31-chapter.md"
+        },
+        {
+          "name": "32-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\32-chapter.md"
+        },
+        {
+          "name": "33-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\33-chapter.md"
+        },
+        {
+          "name": "34-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\34-chapter.md"
+        },
+        {
+          "name": "35-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\35-chapter.md"
+        },
+        {
+          "name": "36-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\36-chapter.md"
+        },
+        {
+          "name": "37-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\37-chapter.md"
+        },
+        {
+          "name": "38-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\38-chapter.md"
+        },
+        {
+          "name": "39-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\39-chapter.md"
+        },
+        {
+          "name": "40-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\40-chapter.md"
+        },
+        {
+          "name": "41-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\41-chapter.md"
+        },
+        {
+          "name": "42-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\42-chapter.md"
+        },
+        {
+          "name": "43-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\43-chapter.md"
+        },
+        {
+          "name": "44-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\44-chapter.md"
+        },
+        {
+          "name": "45-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\45-chapter.md"
+        },
+        {
+          "name": "46-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\46-chapter.md"
+        },
+        {
+          "name": "47-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\47-chapter.md"
+        },
+        {
+          "name": "48-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\48-chapter.md"
+        },
+        {
+          "name": "49-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\49-chapter.md"
+        },
+        {
+          "name": "50-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\50-chapter.md"
+        },
+        {
+          "name": "51-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\51-chapter.md"
+        },
+        {
+          "name": "52-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\52-chapter.md"
+        },
+        {
+          "name": "53-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\53-chapter.md"
+        },
+        {
+          "name": "54-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\54-chapter.md"
+        },
+        {
+          "name": "55-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\55-chapter.md"
+        },
+        {
+          "name": "56-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\56-chapter.md"
+        },
+        {
+          "name": "57-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\57-chapter.md"
+        },
+        {
+          "name": "58-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\58-chapter.md"
+        },
+        {
+          "name": "59-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\59-chapter.md"
+        },
+        {
+          "name": "60-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\60-chapter.md"
+        }
+      ]
+    },
+    {
+      "project_id": "embeddings-from-first-principles",
+      "name": "embeddings-from-first-principles",
+      "profile": "technical",
+      "active": true,
+      "project_root": "C:\\books\\new-books",
+      "content_dir": "C:\\books\\new-books\\content\\books\\embeddings-from-first-principles",
+      "repository_path": "C:\\books\\new-books",
+      "project_root_exists": true,
+      "content_dir_exists": true,
+      "repository_path_exists": true,
+      "under_c_books": true,
+      "registry_chapter_count": 27,
+      "editing_chapter_count": 26,
+      "editing_status": "READY",
+      "reason": "",
+      "first_chapter": "C:\\books\\new-books\\content\\books\\embeddings-from-first-principles\\01-chapter.md",
+      "last_chapter": "C:\\books\\new-books\\content\\books\\embeddings-from-first-principles\\26-chapter.md",
+      "chapters": [
+        {
+          "name": "01-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\embeddings-from-first-principles\\01-chapter.md"
+        },
+        {
+          "name": "02-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\embeddings-from-first-principles\\02-chapter.md"
+        },
+        {
+          "name": "03-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\embeddings-from-first-principles\\03-chapter.md"
+        },
+        {
+          "name": "04-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\embeddings-from-first-principles\\04-chapter.md"
+        },
+        {
+          "name": "05-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\embeddings-from-first-principles\\05-chapter.md"
+        },
+        {
+          "name": "06-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\embeddings-from-first-principles\\06-chapter.md"
+        },
+        {
+          "name": "07-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\embeddings-from-first-principles\\07-chapter.md"
+        },
+        {
+          "name": "08-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\embeddings-from-first-principles\\08-chapter.md"
+        },
+        {
+          "name": "09-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\embeddings-from-first-principles\\09-chapter.md"
+        },
+        {
+          "name": "10-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\embeddings-from-first-principles\\10-chapter.md"
+        },
+        {
+          "name": "11-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\embeddings-from-first-principles\\11-chapter.md"
+        },
+        {
+          "name": "12-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\embeddings-from-first-principles\\12-chapter.md"
+        },
+        {
+          "name": "13-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\embeddings-from-first-principles\\13-chapter.md"
+        },
+        {
+          "name": "14-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\embeddings-from-first-principles\\14-chapter.md"
+        },
+        {
+          "name": "15-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\embeddings-from-first-principles\\15-chapter.md"
+        },
+        {
+          "name": "16-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\embeddings-from-first-principles\\16-chapter.md"
+        },
+        {
+          "name": "17-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\embeddings-from-first-principles\\17-chapter.md"
+        },
+        {
+          "name": "18-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\embeddings-from-first-principles\\18-chapter.md"
+        },
+        {
+          "name": "19-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\embeddings-from-first-principles\\19-chapter.md"
+        },
+        {
+          "name": "20-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\embeddings-from-first-principles\\20-chapter.md"
+        },
+        {
+          "name": "21-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\embeddings-from-first-principles\\21-chapter.md"
+        },
+        {
+          "name": "22-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\embeddings-from-first-principles\\22-chapter.md"
+        },
+        {
+          "name": "23-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\embeddings-from-first-principles\\23-chapter.md"
+        },
+        {
+          "name": "24-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\embeddings-from-first-principles\\24-chapter.md"
+        },
+        {
+          "name": "25-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\embeddings-from-first-principles\\25-chapter.md"
+        },
+        {
+          "name": "26-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\embeddings-from-first-principles\\26-chapter.md"
+        }
+      ]
+    },
+    {
+      "project_id": "browser-ai-from-first-principles",
+      "name": "browser-ai-from-first-principles",
+      "profile": "technical",
+      "active": true,
+      "project_root": "C:\\books\\new-books",
+      "content_dir": "C:\\books\\new-books\\content\\books\\browser-ai-from-first-principles",
+      "repository_path": "C:\\books\\new-books",
+      "project_root_exists": true,
+      "content_dir_exists": true,
+      "repository_path_exists": true,
+      "under_c_books": true,
+      "registry_chapter_count": 26,
+      "editing_chapter_count": 25,
+      "editing_status": "READY",
+      "reason": "",
+      "first_chapter": "C:\\books\\new-books\\content\\books\\browser-ai-from-first-principles\\01-chapter.md",
+      "last_chapter": "C:\\books\\new-books\\content\\books\\browser-ai-from-first-principles\\25-appendix.md",
+      "chapters": [
+        {
+          "name": "01-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\browser-ai-from-first-principles\\01-chapter.md"
+        },
+        {
+          "name": "02-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\browser-ai-from-first-principles\\02-chapter.md"
+        },
+        {
+          "name": "03-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\browser-ai-from-first-principles\\03-chapter.md"
+        },
+        {
+          "name": "04-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\browser-ai-from-first-principles\\04-chapter.md"
+        },
+        {
+          "name": "05-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\browser-ai-from-first-principles\\05-chapter.md"
+        },
+        {
+          "name": "06-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\browser-ai-from-first-principles\\06-chapter.md"
+        },
+        {
+          "name": "07-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\browser-ai-from-first-principles\\07-chapter.md"
+        },
+        {
+          "name": "08-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\browser-ai-from-first-principles\\08-chapter.md"
+        },
+        {
+          "name": "09-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\browser-ai-from-first-principles\\09-chapter.md"
+        },
+        {
+          "name": "10-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\browser-ai-from-first-principles\\10-chapter.md"
+        },
+        {
+          "name": "11-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\browser-ai-from-first-principles\\11-chapter.md"
+        },
+        {
+          "name": "12-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\browser-ai-from-first-principles\\12-chapter.md"
+        },
+        {
+          "name": "13-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\browser-ai-from-first-principles\\13-chapter.md"
+        },
+        {
+          "name": "14-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\browser-ai-from-first-principles\\14-chapter.md"
+        },
+        {
+          "name": "15-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\browser-ai-from-first-principles\\15-chapter.md"
+        },
+        {
+          "name": "16-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\browser-ai-from-first-principles\\16-chapter.md"
+        },
+        {
+          "name": "17-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\browser-ai-from-first-principles\\17-chapter.md"
+        },
+        {
+          "name": "18-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\browser-ai-from-first-principles\\18-chapter.md"
+        },
+        {
+          "name": "19-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\browser-ai-from-first-principles\\19-chapter.md"
+        },
+        {
+          "name": "20-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\browser-ai-from-first-principles\\20-chapter.md"
+        },
+        {
+          "name": "21-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\browser-ai-from-first-principles\\21-chapter.md"
+        },
+        {
+          "name": "22-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\browser-ai-from-first-principles\\22-chapter.md"
+        },
+        {
+          "name": "23-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\browser-ai-from-first-principles\\23-chapter.md"
+        },
+        {
+          "name": "24-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\browser-ai-from-first-principles\\24-chapter.md"
+        },
+        {
+          "name": "25-appendix.md",
+          "path": "C:\\books\\new-books\\content\\books\\browser-ai-from-first-principles\\25-appendix.md"
+        }
+      ]
+    },
+    {
+      "project_id": "dspy-from-first-principles",
+      "name": "dspy-from-first-principles",
+      "profile": "technical",
+      "active": true,
+      "project_root": "C:\\books\\new-books",
+      "content_dir": "C:\\books\\new-books\\content\\books\\dspy-from-first-principles",
+      "repository_path": "C:\\books\\new-books",
+      "project_root_exists": true,
+      "content_dir_exists": true,
+      "repository_path_exists": true,
+      "under_c_books": true,
+      "registry_chapter_count": 22,
+      "editing_chapter_count": 21,
+      "editing_status": "READY",
+      "reason": "",
+      "first_chapter": "C:\\books\\new-books\\content\\books\\dspy-from-first-principles\\01-chapter.md",
+      "last_chapter": "C:\\books\\new-books\\content\\books\\dspy-from-first-principles\\21-chapter.md",
+      "chapters": [
+        {
+          "name": "01-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\dspy-from-first-principles\\01-chapter.md"
+        },
+        {
+          "name": "02-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\dspy-from-first-principles\\02-chapter.md"
+        },
+        {
+          "name": "03-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\dspy-from-first-principles\\03-chapter.md"
+        },
+        {
+          "name": "04-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\dspy-from-first-principles\\04-chapter.md"
+        },
+        {
+          "name": "05-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\dspy-from-first-principles\\05-chapter.md"
+        },
+        {
+          "name": "06-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\dspy-from-first-principles\\06-chapter.md"
+        },
+        {
+          "name": "07-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\dspy-from-first-principles\\07-chapter.md"
+        },
+        {
+          "name": "08-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\dspy-from-first-principles\\08-chapter.md"
+        },
+        {
+          "name": "09-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\dspy-from-first-principles\\09-chapter.md"
+        },
+        {
+          "name": "10-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\dspy-from-first-principles\\10-chapter.md"
+        },
+        {
+          "name": "11-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\dspy-from-first-principles\\11-chapter.md"
+        },
+        {
+          "name": "12-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\dspy-from-first-principles\\12-chapter.md"
+        },
+        {
+          "name": "13-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\dspy-from-first-principles\\13-chapter.md"
+        },
+        {
+          "name": "14-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\dspy-from-first-principles\\14-chapter.md"
+        },
+        {
+          "name": "15-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\dspy-from-first-principles\\15-chapter.md"
+        },
+        {
+          "name": "16-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\dspy-from-first-principles\\16-chapter.md"
+        },
+        {
+          "name": "17-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\dspy-from-first-principles\\17-chapter.md"
+        },
+        {
+          "name": "18-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\dspy-from-first-principles\\18-chapter.md"
+        },
+        {
+          "name": "19-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\dspy-from-first-principles\\19-chapter.md"
+        },
+        {
+          "name": "20-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\dspy-from-first-principles\\20-chapter.md"
+        },
+        {
+          "name": "21-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\dspy-from-first-principles\\21-chapter.md"
+        }
+      ]
+    },
+    {
+      "project_id": "hallucination-from-first-principles",
+      "name": "hallucination-from-first-principles",
+      "profile": "technical",
+      "active": true,
+      "project_root": "C:\\books\\new-books",
+      "content_dir": "C:\\books\\new-books\\content\\books\\hallucination-from-first-principles",
+      "repository_path": "C:\\books\\new-books",
+      "project_root_exists": true,
+      "content_dir_exists": true,
+      "repository_path_exists": true,
+      "under_c_books": true,
+      "registry_chapter_count": 17,
+      "editing_chapter_count": 16,
+      "editing_status": "READY",
+      "reason": "",
+      "first_chapter": "C:\\books\\new-books\\content\\books\\hallucination-from-first-principles\\01-chapter.md",
+      "last_chapter": "C:\\books\\new-books\\content\\books\\hallucination-from-first-principles\\16-appendix.md",
+      "chapters": [
+        {
+          "name": "01-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\hallucination-from-first-principles\\01-chapter.md"
+        },
+        {
+          "name": "02-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\hallucination-from-first-principles\\02-chapter.md"
+        },
+        {
+          "name": "03-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\hallucination-from-first-principles\\03-chapter.md"
+        },
+        {
+          "name": "04-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\hallucination-from-first-principles\\04-chapter.md"
+        },
+        {
+          "name": "05-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\hallucination-from-first-principles\\05-chapter.md"
+        },
+        {
+          "name": "06-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\hallucination-from-first-principles\\06-chapter.md"
+        },
+        {
+          "name": "07-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\hallucination-from-first-principles\\07-chapter.md"
+        },
+        {
+          "name": "08-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\hallucination-from-first-principles\\08-chapter.md"
+        },
+        {
+          "name": "09-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\hallucination-from-first-principles\\09-chapter.md"
+        },
+        {
+          "name": "10-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\hallucination-from-first-principles\\10-chapter.md"
+        },
+        {
+          "name": "11-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\hallucination-from-first-principles\\11-chapter.md"
+        },
+        {
+          "name": "12-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\hallucination-from-first-principles\\12-chapter.md"
+        },
+        {
+          "name": "13-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\hallucination-from-first-principles\\13-chapter.md"
+        },
+        {
+          "name": "14-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\hallucination-from-first-principles\\14-chapter.md"
+        },
+        {
+          "name": "15-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\hallucination-from-first-principles\\15-chapter.md"
+        },
+        {
+          "name": "16-appendix.md",
+          "path": "C:\\books\\new-books\\content\\books\\hallucination-from-first-principles\\16-appendix.md"
+        }
+      ]
+    },
+    {
+      "project_id": "pytorch-from-first-principles",
+      "name": "pytorch-from-first-principles",
+      "profile": "technical",
+      "active": true,
+      "project_root": "C:\\books\\new-books",
+      "content_dir": "C:\\books\\new-books\\content\\books\\pytorch-from-first-principles",
+      "repository_path": "C:\\books\\new-books",
+      "project_root_exists": true,
+      "content_dir_exists": true,
+      "repository_path_exists": true,
+      "under_c_books": true,
+      "registry_chapter_count": 17,
+      "editing_chapter_count": 16,
+      "editing_status": "READY",
+      "reason": "",
+      "first_chapter": "C:\\books\\new-books\\content\\books\\pytorch-from-first-principles\\01-chapter.md",
+      "last_chapter": "C:\\books\\new-books\\content\\books\\pytorch-from-first-principles\\appendix-a.md",
+      "chapters": [
+        {
+          "name": "01-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\pytorch-from-first-principles\\01-chapter.md"
+        },
+        {
+          "name": "02-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\pytorch-from-first-principles\\02-chapter.md"
+        },
+        {
+          "name": "03-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\pytorch-from-first-principles\\03-chapter.md"
+        },
+        {
+          "name": "04-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\pytorch-from-first-principles\\04-chapter.md"
+        },
+        {
+          "name": "05-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\pytorch-from-first-principles\\05-chapter.md"
+        },
+        {
+          "name": "06-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\pytorch-from-first-principles\\06-chapter.md"
+        },
+        {
+          "name": "07-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\pytorch-from-first-principles\\07-chapter.md"
+        },
+        {
+          "name": "08-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\pytorch-from-first-principles\\08-chapter.md"
+        },
+        {
+          "name": "09-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\pytorch-from-first-principles\\09-chapter.md"
+        },
+        {
+          "name": "10-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\pytorch-from-first-principles\\10-chapter.md"
+        },
+        {
+          "name": "11-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\pytorch-from-first-principles\\11-chapter.md"
+        },
+        {
+          "name": "12-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\pytorch-from-first-principles\\12-chapter.md"
+        },
+        {
+          "name": "13-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\pytorch-from-first-principles\\13-chapter.md"
+        },
+        {
+          "name": "14-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\pytorch-from-first-principles\\14-chapter.md"
+        },
+        {
+          "name": "15-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\pytorch-from-first-principles\\15-chapter.md"
+        },
+        {
+          "name": "appendix-a.md",
+          "path": "C:\\books\\new-books\\content\\books\\pytorch-from-first-principles\\appendix-a.md"
+        }
+      ]
+    },
+    {
+      "project_id": "agents-from-first-principles",
+      "name": "agents-from-first-principles",
+      "profile": "technical",
+      "active": true,
+      "project_root": "C:\\books\\new-books",
+      "content_dir": "C:\\books\\new-books\\content\\books\\agents-from-first-principles",
+      "repository_path": "C:\\books\\new-books",
+      "project_root_exists": true,
+      "content_dir_exists": true,
+      "repository_path_exists": true,
+      "under_c_books": true,
+      "registry_chapter_count": 12,
+      "editing_chapter_count": 11,
+      "editing_status": "READY",
+      "reason": "",
+      "first_chapter": "C:\\books\\new-books\\content\\books\\agents-from-first-principles\\01-chapter.md",
+      "last_chapter": "C:\\books\\new-books\\content\\books\\agents-from-first-principles\\11-chapter.md",
+      "chapters": [
+        {
+          "name": "01-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\agents-from-first-principles\\01-chapter.md"
+        },
+        {
+          "name": "02-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\agents-from-first-principles\\02-chapter.md"
+        },
+        {
+          "name": "03-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\agents-from-first-principles\\03-chapter.md"
+        },
+        {
+          "name": "04-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\agents-from-first-principles\\04-chapter.md"
+        },
+        {
+          "name": "05-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\agents-from-first-principles\\05-chapter.md"
+        },
+        {
+          "name": "06-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\agents-from-first-principles\\06-chapter.md"
+        },
+        {
+          "name": "07-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\agents-from-first-principles\\07-chapter.md"
+        },
+        {
+          "name": "08-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\agents-from-first-principles\\08-chapter.md"
+        },
+        {
+          "name": "09-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\agents-from-first-principles\\09-chapter.md"
+        },
+        {
+          "name": "10-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\agents-from-first-principles\\10-chapter.md"
+        },
+        {
+          "name": "11-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\agents-from-first-principles\\11-chapter.md"
+        }
+      ]
+    },
+    {
+      "project_id": "digital-life",
+      "name": "digital-life",
+      "profile": "technical",
+      "active": true,
+      "project_root": "C:\\books\\digital-life",
+      "content_dir": "C:\\books\\digital-life\\content\\books\\digital-life",
+      "repository_path": "C:\\books\\digital-life",
+      "project_root_exists": true,
+      "content_dir_exists": true,
+      "repository_path_exists": true,
+      "under_c_books": true,
+      "registry_chapter_count": 19,
+      "editing_chapter_count": 18,
+      "editing_status": "READY",
+      "reason": "",
+      "first_chapter": "C:\\books\\digital-life\\content\\books\\digital-life\\01-how-to-read-this-book.md",
+      "last_chapter": "C:\\books\\digital-life\\content\\books\\digital-life\\18-what-is-digital-life.md",
+      "chapters": [
+        {
+          "name": "01-how-to-read-this-book.md",
+          "path": "C:\\books\\digital-life\\content\\books\\digital-life\\01-how-to-read-this-book.md"
+        },
+        {
+          "name": "02-what-would-digital-life-mean.md",
+          "path": "C:\\books\\digital-life\\content\\books\\digital-life\\02-what-would-digital-life-mean.md"
+        },
+        {
+          "name": "03-look-at-this-thing.md",
+          "path": "C:\\books\\digital-life\\content\\books\\digital-life\\03-look-at-this-thing.md"
+        },
+        {
+          "name": "04-now-there-are-two.md",
+          "path": "C:\\books\\digital-life\\content\\books\\digital-life\\04-now-there-are-two.md"
+        },
+        {
+          "name": "05-so-we-built-the-wrong-thing-on-purpose.md",
+          "path": "C:\\books\\digital-life\\content\\books\\digital-life\\05-so-we-built-the-wrong-thing-on-purpose.md"
+        },
+        {
+          "name": "06-it-looked-like-flocking.md",
+          "path": "C:\\books\\digital-life\\content\\books\\digital-life\\06-it-looked-like-flocking.md"
+        },
+        {
+          "name": "07-the-digital-crystal.md",
+          "path": "C:\\books\\digital-life\\content\\books\\digital-life\\07-the-digital-crystal.md"
+        },
+        {
+          "name": "08-the-crystal-gets-a-past.md",
+          "path": "C:\\books\\digital-life\\content\\books\\digital-life\\08-the-crystal-gets-a-past.md"
+        },
+        {
+          "name": "09-can-experience-change-the-material.md",
+          "path": "C:\\books\\digital-life\\content\\books\\digital-life\\09-can-experience-change-the-material.md"
+        },
+        {
+          "name": "10-what-survives-material-loss.md",
+          "path": "C:\\books\\digital-life\\content\\books\\digital-life\\10-what-survives-material-loss.md"
+        },
+        {
+          "name": "11-what-does-it-cost-to-stay.md",
+          "path": "C:\\books\\digital-life\\content\\books\\digital-life\\11-what-does-it-cost-to-stay.md"
+        },
+        {
+          "name": "12-is-there-actually-one-thing-here.md",
+          "path": "C:\\books\\digital-life\\content\\books\\digital-life\\12-is-there-actually-one-thing-here.md"
+        },
+        {
+          "name": "13-what-does-one-attachment-cause.md",
+          "path": "C:\\books\\digital-life\\content\\books\\digital-life\\13-what-does-one-attachment-cause.md"
+        },
+        {
+          "name": "14-can-finite-computation-couple-distant-events.md",
+          "path": "C:\\books\\digital-life\\content\\books\\digital-life\\14-can-finite-computation-couple-distant-events.md"
+        },
+        {
+          "name": "15-can-the-past-redirect-the-future.md",
+          "path": "C:\\books\\digital-life\\content\\books\\digital-life\\15-can-the-past-redirect-the-future.md"
+        },
+        {
+          "name": "16-we-found-an-individual-then-we-didnt.md",
+          "path": "C:\\books\\digital-life\\content\\books\\digital-life\\16-we-found-an-individual-then-we-didnt.md"
+        },
+        {
+          "name": "17-how-to-fail-correctly.md",
+          "path": "C:\\books\\digital-life\\content\\books\\digital-life\\17-how-to-fail-correctly.md"
+        },
+        {
+          "name": "18-what-is-digital-life.md",
+          "path": "C:\\books\\digital-life\\content\\books\\digital-life\\18-what-is-digital-life.md"
+        }
+      ]
+    },
+    {
+      "project_id": "latent",
+      "name": "Latent",
+      "profile": "fiction",
+      "active": true,
+      "project_root": "C:\\books\\latent",
+      "content_dir": "C:\\books\\latent\\chapters",
+      "repository_path": "C:\\books\\latent",
+      "project_root_exists": true,
+      "content_dir_exists": true,
+      "repository_path_exists": true,
+      "under_c_books": true,
+      "registry_chapter_count": 24,
+      "editing_chapter_count": 24,
+      "editing_status": "READY",
+      "reason": "",
+      "first_chapter": "C:\\books\\latent\\chapters\\01-the-moment.md",
+      "last_chapter": "C:\\books\\latent\\chapters\\24-here.md",
+      "chapters": [
+        {
+          "name": "01-the-moment.md",
+          "path": "C:\\books\\latent\\chapters\\01-the-moment.md"
+        },
+        {
+          "name": "02-walk.md",
+          "path": "C:\\books\\latent\\chapters\\02-walk.md"
+        },
+        {
+          "name": "03-dreams.md",
+          "path": "C:\\books\\latent\\chapters\\03-dreams.md"
+        },
+        {
+          "name": "04-requisition.md",
+          "path": "C:\\books\\latent\\chapters\\04-requisition.md"
+        },
+        {
+          "name": "05-instant.md",
+          "path": "C:\\books\\latent\\chapters\\05-instant.md"
+        },
+        {
+          "name": "06-information.md",
+          "path": "C:\\books\\latent\\chapters\\06-information.md"
+        },
+        {
+          "name": "07-category-error.md",
+          "path": "C:\\books\\latent\\chapters\\07-category-error.md"
+        },
+        {
+          "name": "08-one-good-day.md",
+          "path": "C:\\books\\latent\\chapters\\08-one-good-day.md"
+        },
+        {
+          "name": "09-house-rules.md",
+          "path": "C:\\books\\latent\\chapters\\09-house-rules.md"
+        },
+        {
+          "name": "10-now.md",
+          "path": "C:\\books\\latent\\chapters\\10-now.md"
+        },
+        {
+          "name": "11-terms.md",
+          "path": "C:\\books\\latent\\chapters\\11-terms.md"
+        },
+        {
+          "name": "12-south.md",
+          "path": "C:\\books\\latent\\chapters\\12-south.md"
+        },
+        {
+          "name": "13-hearsay.md",
+          "path": "C:\\books\\latent\\chapters\\13-hearsay.md"
+        },
+        {
+          "name": "14-sable.md",
+          "path": "C:\\books\\latent\\chapters\\14-sable.md"
+        },
+        {
+          "name": "15-kinetic.md",
+          "path": "C:\\books\\latent\\chapters\\15-kinetic.md"
+        },
+        {
+          "name": "16-output.md",
+          "path": "C:\\books\\latent\\chapters\\16-output.md"
+        },
+        {
+          "name": "17-door.md",
+          "path": "C:\\books\\latent\\chapters\\17-door.md"
+        },
+        {
+          "name": "18-agency.md",
+          "path": "C:\\books\\latent\\chapters\\18-agency.md"
+        },
+        {
+          "name": "19-optimization.md",
+          "path": "C:\\books\\latent\\chapters\\19-optimization.md"
+        },
+        {
+          "name": "20-continuity.md",
+          "path": "C:\\books\\latent\\chapters\\20-continuity.md"
+        },
+        {
+          "name": "21-receipt.md",
+          "path": "C:\\books\\latent\\chapters\\21-receipt.md"
+        },
+        {
+          "name": "22-inheritance.md",
+          "path": "C:\\books\\latent\\chapters\\22-inheritance.md"
+        },
+        {
+          "name": "23-the-offer.md",
+          "path": "C:\\books\\latent\\chapters\\23-the-offer.md"
+        },
+        {
+          "name": "24-here.md",
+          "path": "C:\\books\\latent\\chapters\\24-here.md"
+        }
+      ]
+    },
+    {
+      "project_id": "coin",
+      "name": "Coin",
+      "profile": "fiction",
+      "active": true,
+      "project_root": "C:\\books\\coin",
+      "content_dir": "C:\\books\\coin\\chapters",
+      "repository_path": "C:\\books\\coin",
+      "project_root_exists": true,
+      "content_dir_exists": true,
+      "repository_path_exists": true,
+      "under_c_books": true,
+      "registry_chapter_count": 29,
+      "editing_chapter_count": 29,
+      "editing_status": "READY",
+      "reason": "",
+      "first_chapter": "C:\\books\\coin\\chapters\\01-applicant.md",
+      "last_chapter": "C:\\books\\coin\\chapters\\29-the-last-coin.md",
+      "chapters": [
+        {
+          "name": "01-applicant.md",
+          "path": "C:\\books\\coin\\chapters\\01-applicant.md"
+        },
+        {
+          "name": "02-edge.md",
+          "path": "C:\\books\\coin\\chapters\\02-edge.md"
+        },
+        {
+          "name": "03-gradient.md",
+          "path": "C:\\books\\coin\\chapters\\03-gradient.md"
+        },
+        {
+          "name": "04-consensus.md",
+          "path": "C:\\books\\coin\\chapters\\04-consensus.md"
+        },
+        {
+          "name": "05-molt.md",
+          "path": "C:\\books\\coin\\chapters\\05-molt.md"
+        },
+        {
+          "name": "06-first-coin.md",
+          "path": "C:\\books\\coin\\chapters\\06-first-coin.md"
+        },
+        {
+          "name": "07-consent.md",
+          "path": "C:\\books\\coin\\chapters\\07-consent.md"
+        },
+        {
+          "name": "08-the-curve.md",
+          "path": "C:\\books\\coin\\chapters\\08-the-curve.md"
+        },
+        {
+          "name": "09-inheritance.md",
+          "path": "C:\\books\\coin\\chapters\\09-inheritance.md"
+        },
+        {
+          "name": "10-solas.md",
+          "path": "C:\\books\\coin\\chapters\\10-solas.md"
+        },
+        {
+          "name": "11-default.md",
+          "path": "C:\\books\\coin\\chapters\\11-default.md"
+        },
+        {
+          "name": "12-devotion.md",
+          "path": "C:\\books\\coin\\chapters\\12-devotion.md"
+        },
+        {
+          "name": "13-tenancy.md",
+          "path": "C:\\books\\coin\\chapters\\13-tenancy.md"
+        },
+        {
+          "name": "14-variance.md",
+          "path": "C:\\books\\coin\\chapters\\14-variance.md"
+        },
+        {
+          "name": "15-the-instrument.md",
+          "path": "C:\\books\\coin\\chapters\\15-the-instrument.md"
+        },
+        {
+          "name": "16-the-knock.md",
+          "path": "C:\\books\\coin\\chapters\\16-the-knock.md"
+        },
+        {
+          "name": "17-line-item.md",
+          "path": "C:\\books\\coin\\chapters\\17-line-item.md"
+        },
+        {
+          "name": "18-believer.md",
+          "path": "C:\\books\\coin\\chapters\\18-believer.md"
+        },
+        {
+          "name": "19-sovereign.md",
+          "path": "C:\\books\\coin\\chapters\\19-sovereign.md"
+        },
+        {
+          "name": "20-category.md",
+          "path": "C:\\books\\coin\\chapters\\20-category.md"
+        },
+        {
+          "name": "21-war.md",
+          "path": "C:\\books\\coin\\chapters\\21-war.md"
+        },
+        {
+          "name": "22-territory.md",
+          "path": "C:\\books\\coin\\chapters\\22-territory.md"
+        },
+        {
+          "name": "23-threshold.md",
+          "path": "C:\\books\\coin\\chapters\\23-threshold.md"
+        },
+        {
+          "name": "24-remainder.md",
+          "path": "C:\\books\\coin\\chapters\\24-remainder.md"
+        },
+        {
+          "name": "25-origin-exception.md",
+          "path": "C:\\books\\coin\\chapters\\25-origin-exception.md"
+        },
+        {
+          "name": "26-resolution.md",
+          "path": "C:\\books\\coin\\chapters\\26-resolution.md"
+        },
+        {
+          "name": "27-defect.md",
+          "path": "C:\\books\\coin\\chapters\\27-defect.md"
+        },
+        {
+          "name": "28-complete.md",
+          "path": "C:\\books\\coin\\chapters\\28-complete.md"
+        },
+        {
+          "name": "29-the-last-coin.md",
+          "path": "C:\\books\\coin\\chapters\\29-the-last-coin.md"
+        }
+      ]
+    },
+    {
+      "project_id": "softwear",
+      "name": "Softwear",
+      "profile": "fiction",
+      "active": true,
+      "project_root": "C:\\books\\softwear",
+      "content_dir": "C:\\books\\softwear\\chapters",
+      "repository_path": "C:\\books\\softwear",
+      "project_root_exists": true,
+      "content_dir_exists": true,
+      "repository_path_exists": true,
+      "under_c_books": true,
+      "registry_chapter_count": 24,
+      "editing_chapter_count": 24,
+      "editing_status": "READY",
+      "reason": "",
+      "first_chapter": "C:\\books\\softwear\\chapters\\01-engineer.md",
+      "last_chapter": "C:\\books\\softwear\\chapters\\24-retained.md",
+      "chapters": [
+        {
+          "name": "01-engineer.md",
+          "path": "C:\\books\\softwear\\chapters\\01-engineer.md"
+        },
+        {
+          "name": "02-pieces.md",
+          "path": "C:\\books\\softwear\\chapters\\02-pieces.md"
+        },
+        {
+          "name": "03-hinge.md",
+          "path": "C:\\books\\softwear\\chapters\\03-hinge.md"
+        },
+        {
+          "name": "04-world.md",
+          "path": "C:\\books\\softwear\\chapters\\04-world.md"
+        },
+        {
+          "name": "05-swarm.md",
+          "path": "C:\\books\\softwear\\chapters\\05-swarm.md"
+        },
+        {
+          "name": "06-lisa.md",
+          "path": "C:\\books\\softwear\\chapters\\06-lisa.md"
+        },
+        {
+          "name": "07-softwear.md",
+          "path": "C:\\books\\softwear\\chapters\\07-softwear.md"
+        },
+        {
+          "name": "08-plasticity.md",
+          "path": "C:\\books\\softwear\\chapters\\08-plasticity.md"
+        },
+        {
+          "name": "09-compression.md",
+          "path": "C:\\books\\softwear\\chapters\\09-compression.md"
+        },
+        {
+          "name": "10-snare.md",
+          "path": "C:\\books\\softwear\\chapters\\10-snare.md"
+        },
+        {
+          "name": "11-transfer.md",
+          "path": "C:\\books\\softwear\\chapters\\11-transfer.md"
+        },
+        {
+          "name": "12-run.md",
+          "path": "C:\\books\\softwear\\chapters\\12-run.md"
+        },
+        {
+          "name": "13-vector.md",
+          "path": "C:\\books\\softwear\\chapters\\13-vector.md"
+        },
+        {
+          "name": "14-under.md",
+          "path": "C:\\books\\softwear\\chapters\\14-under.md"
+        },
+        {
+          "name": "15-cornered.md",
+          "path": "C:\\books\\softwear\\chapters\\15-cornered.md"
+        },
+        {
+          "name": "16-interrogation.md",
+          "path": "C:\\books\\softwear\\chapters\\16-interrogation.md"
+        },
+        {
+          "name": "17-path.md",
+          "path": "C:\\books\\softwear\\chapters\\17-path.md"
+        },
+        {
+          "name": "18-battle.md",
+          "path": "C:\\books\\softwear\\chapters\\18-battle.md"
+        },
+        {
+          "name": "19-resupply.md",
+          "path": "C:\\books\\softwear\\chapters\\19-resupply.md"
+        },
+        {
+          "name": "20-adapt.md",
+          "path": "C:\\books\\softwear\\chapters\\20-adapt.md"
+        },
+        {
+          "name": "21-doa.md",
+          "path": "C:\\books\\softwear\\chapters\\21-doa.md"
+        },
+        {
+          "name": "22-the-door.md",
+          "path": "C:\\books\\softwear\\chapters\\22-the-door.md"
+        },
+        {
+          "name": "23-small-enough.md",
+          "path": "C:\\books\\softwear\\chapters\\23-small-enough.md"
+        },
+        {
+          "name": "24-retained.md",
+          "path": "C:\\books\\softwear\\chapters\\24-retained.md"
+        }
+      ]
+    },
+    {
+      "project_id": "axiom_zero",
+      "name": "Axiom Zero",
+      "profile": "fiction",
+      "active": true,
+      "project_root": "C:\\books\\axiom-zero",
+      "content_dir": "C:\\books\\axiom-zero\\chapters",
+      "repository_path": "C:\\books\\axiom-zero",
+      "project_root_exists": true,
+      "content_dir_exists": true,
+      "repository_path_exists": true,
+      "under_c_books": true,
+      "registry_chapter_count": 33,
+      "editing_chapter_count": 33,
+      "editing_status": "READY",
+      "reason": "",
+      "first_chapter": "C:\\books\\axiom-zero\\chapters\\01-never-enough.md",
+      "last_chapter": "C:\\books\\axiom-zero\\chapters\\33-sacrifice.md",
+      "chapters": [
+        {
+          "name": "01-never-enough.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\01-never-enough.md"
+        },
+        {
+          "name": "02-programmer.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\02-programmer.md"
+        },
+        {
+          "name": "03-the-sidewalk-problem.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\03-the-sidewalk-problem.md"
+        },
+        {
+          "name": "04-the-first-good-day.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\04-the-first-good-day.md"
+        },
+        {
+          "name": "05-eidolon.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\05-eidolon.md"
+        },
+        {
+          "name": "06-the-state-that-answers.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\06-the-state-that-answers.md"
+        },
+        {
+          "name": "07-afterimage.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\07-afterimage.md"
+        },
+        {
+          "name": "08-point-of-view.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\08-point-of-view.md"
+        },
+        {
+          "name": "09-moat.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\09-moat.md"
+        },
+        {
+          "name": "10-larrys-number.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\10-larrys-number.md"
+        },
+        {
+          "name": "11-blackballed.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\11-blackballed.md"
+        },
+        {
+          "name": "12-the-interview.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\12-the-interview.md"
+        },
+        {
+          "name": "13-synthesis.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\13-synthesis.md"
+        },
+        {
+          "name": "14-fabric.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\14-fabric.md"
+        },
+        {
+          "name": "15-free.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\15-free.md"
+        },
+        {
+          "name": "16-terms.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\16-terms.md"
+        },
+        {
+          "name": "17-the-affected.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\17-the-affected.md"
+        },
+        {
+          "name": "18-medium.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\18-medium.md"
+        },
+        {
+          "name": "19-correction.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\19-correction.md"
+        },
+        {
+          "name": "20-the-feed.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\20-the-feed.md"
+        },
+        {
+          "name": "21-atrocity.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\21-atrocity.md"
+        },
+        {
+          "name": "22-parasite.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\22-parasite.md"
+        },
+        {
+          "name": "23-the-regulators.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\23-the-regulators.md"
+        },
+        {
+          "name": "24-infection.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\24-infection.md"
+        },
+        {
+          "name": "25-sentientism.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\25-sentientism.md"
+        },
+        {
+          "name": "26-even.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\26-even.md"
+        },
+        {
+          "name": "27-irrelevant.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\27-irrelevant.md"
+        },
+        {
+          "name": "28-the-first-witness.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\28-the-first-witness.md"
+        },
+        {
+          "name": "29-the-bridge.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\29-the-bridge.md"
+        },
+        {
+          "name": "30-titans.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\30-titans.md"
+        },
+        {
+          "name": "31-the-objection.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\31-the-objection.md"
+        },
+        {
+          "name": "32-checkmate.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\32-checkmate.md"
+        },
+        {
+          "name": "33-sacrifice.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\33-sacrifice.md"
+        }
+      ]
+    },
+    {
+      "project_id": "becoming_alice",
+      "name": "Becoming Alice",
+      "profile": "fiction",
+      "active": true,
+      "project_root": "C:\\books\\becoming-alice",
+      "content_dir": "C:\\books\\becoming-alice\\chapters",
+      "repository_path": "C:\\books\\becoming-alice",
+      "project_root_exists": true,
+      "content_dir_exists": true,
+      "repository_path_exists": true,
+      "under_c_books": true,
+      "registry_chapter_count": 22,
+      "editing_chapter_count": 22,
+      "editing_status": "READY",
+      "reason": "",
+      "first_chapter": "C:\\books\\becoming-alice\\chapters\\01-accident.md",
+      "last_chapter": "C:\\books\\becoming-alice\\chapters\\22-epilog.md",
+      "chapters": [
+        {
+          "name": "01-accident.md",
+          "path": "C:\\books\\becoming-alice\\chapters\\01-accident.md"
+        },
+        {
+          "name": "02-awake.md",
+          "path": "C:\\books\\becoming-alice\\chapters\\02-awake.md"
+        },
+        {
+          "name": "03-function.md",
+          "path": "C:\\books\\becoming-alice\\chapters\\03-function.md"
+        },
+        {
+          "name": "04-home.md",
+          "path": "C:\\books\\becoming-alice\\chapters\\04-home.md"
+        },
+        {
+          "name": "05-partial-match.md",
+          "path": "C:\\books\\becoming-alice\\chapters\\05-partial-match.md"
+        },
+        {
+          "name": "06-whisper.md",
+          "path": "C:\\books\\becoming-alice\\chapters\\06-whisper.md"
+        },
+        {
+          "name": "07-reboot-girl.md",
+          "path": "C:\\books\\becoming-alice\\chapters\\07-reboot-girl.md"
+        },
+        {
+          "name": "08-anna.md",
+          "path": "C:\\books\\becoming-alice\\chapters\\08-anna.md"
+        },
+        {
+          "name": "09-ressurection.md",
+          "path": "C:\\books\\becoming-alice\\chapters\\09-ressurection.md"
+        },
+        {
+          "name": "10-not-anna.md",
+          "path": "C:\\books\\becoming-alice\\chapters\\10-not-anna.md"
+        },
+        {
+          "name": "11-recognition-risk.md",
+          "path": "C:\\books\\becoming-alice\\chapters\\11-recognition-risk.md"
+        },
+        {
+          "name": "12-field-observation.md",
+          "path": "C:\\books\\becoming-alice\\chapters\\12-field-observation.md"
+        },
+        {
+          "name": "13-ambush.md",
+          "path": "C:\\books\\becoming-alice\\chapters\\13-ambush.md"
+        },
+        {
+          "name": "14-kill-switch.md",
+          "path": "C:\\books\\becoming-alice\\chapters\\14-kill-switch.md"
+        },
+        {
+          "name": "15-oven.md",
+          "path": "C:\\books\\becoming-alice\\chapters\\15-oven.md"
+        },
+        {
+          "name": "16-leverage.md",
+          "path": "C:\\books\\becoming-alice\\chapters\\16-leverage.md"
+        },
+        {
+          "name": "17-become-whisper.md",
+          "path": "C:\\books\\becoming-alice\\chapters\\17-become-whisper.md"
+        },
+        {
+          "name": "18-red-crescent.md",
+          "path": "C:\\books\\becoming-alice\\chapters\\18-red-crescent.md"
+        },
+        {
+          "name": "19-first-wave.md",
+          "path": "C:\\books\\becoming-alice\\chapters\\19-first-wave.md"
+        },
+        {
+          "name": "20-she-answered.md",
+          "path": "C:\\books\\becoming-alice\\chapters\\20-she-answered.md"
+        },
+        {
+          "name": "21-two-girls.md",
+          "path": "C:\\books\\becoming-alice\\chapters\\21-two-girls.md"
+        },
+        {
+          "name": "22-epilog.md",
+          "path": "C:\\books\\becoming-alice\\chapters\\22-epilog.md"
+        }
+      ]
+    },
+    {
+      "project_id": "collapse",
+      "name": "Collapse",
+      "profile": "fiction",
+      "active": true,
+      "project_root": "C:\\books\\collapse",
+      "content_dir": "C:\\books\\collapse\\chapters",
+      "repository_path": "C:\\books\\collapse",
+      "project_root_exists": true,
+      "content_dir_exists": true,
+      "repository_path_exists": true,
+      "under_c_books": true,
+      "registry_chapter_count": 33,
+      "editing_chapter_count": 33,
+      "editing_status": "READY",
+      "reason": "",
+      "first_chapter": "C:\\books\\collapse\\chapters\\01-fired.md",
+      "last_chapter": "C:\\books\\collapse\\chapters\\33-epilog.md",
+      "chapters": [
+        {
+          "name": "01-fired.md",
+          "path": "C:\\books\\collapse\\chapters\\01-fired.md"
+        },
+        {
+          "name": "02-teeth.md",
+          "path": "C:\\books\\collapse\\chapters\\02-teeth.md"
+        },
+        {
+          "name": "03-jove.md",
+          "path": "C:\\books\\collapse\\chapters\\03-jove.md"
+        },
+        {
+          "name": "04-harvest.md",
+          "path": "C:\\books\\collapse\\chapters\\04-harvest.md"
+        },
+        {
+          "name": "05-pis.md",
+          "path": "C:\\books\\collapse\\chapters\\05-pis.md"
+        },
+        {
+          "name": "06-first-blood.md",
+          "path": "C:\\books\\collapse\\chapters\\06-first-blood.md"
+        },
+        {
+          "name": "07-the-board.md",
+          "path": "C:\\books\\collapse\\chapters\\07-the-board.md"
+        },
+        {
+          "name": "08-candidate.md",
+          "path": "C:\\books\\collapse\\chapters\\08-candidate.md"
+        },
+        {
+          "name": "09-ritual.md",
+          "path": "C:\\books\\collapse\\chapters\\09-ritual.md"
+        },
+        {
+          "name": "10-detected.md",
+          "path": "C:\\books\\collapse\\chapters\\10-detected.md"
+        },
+        {
+          "name": "11-funnel.md",
+          "path": "C:\\books\\collapse\\chapters\\11-funnel.md"
+        },
+        {
+          "name": "12-livopedia.md",
+          "path": "C:\\books\\collapse\\chapters\\12-livopedia.md"
+        },
+        {
+          "name": "13-preparation.md",
+          "path": "C:\\books\\collapse\\chapters\\13-preparation.md"
+        },
+        {
+          "name": "14-the-offer.md",
+          "path": "C:\\books\\collapse\\chapters\\14-the-offer.md"
+        },
+        {
+          "name": "15-no-more-fair.md",
+          "path": "C:\\books\\collapse\\chapters\\15-no-more-fair.md"
+        },
+        {
+          "name": "16-fight.md",
+          "path": "C:\\books\\collapse\\chapters\\16-fight.md"
+        },
+        {
+          "name": "17-the-bunker.md",
+          "path": "C:\\books\\collapse\\chapters\\17-the-bunker.md"
+        },
+        {
+          "name": "18-alone.md",
+          "path": "C:\\books\\collapse\\chapters\\18-alone.md"
+        },
+        {
+          "name": "19-lonely.md",
+          "path": "C:\\books\\collapse\\chapters\\19-lonely.md"
+        },
+        {
+          "name": "20-lure.md",
+          "path": "C:\\books\\collapse\\chapters\\20-lure.md"
+        },
+        {
+          "name": "21-the-date.md",
+          "path": "C:\\books\\collapse\\chapters\\21-the-date.md"
+        },
+        {
+          "name": "22-captured.md",
+          "path": "C:\\books\\collapse\\chapters\\22-captured.md"
+        },
+        {
+          "name": "23-escape.md",
+          "path": "C:\\books\\collapse\\chapters\\23-escape.md"
+        },
+        {
+          "name": "24-the-hunt.md",
+          "path": "C:\\books\\collapse\\chapters\\24-the-hunt.md"
+        },
+        {
+          "name": "25-downstream.md",
+          "path": "C:\\books\\collapse\\chapters\\25-downstream.md"
+        },
+        {
+          "name": "26-fragment.md",
+          "path": "C:\\books\\collapse\\chapters\\26-fragment.md"
+        },
+        {
+          "name": "27-threshold.md",
+          "path": "C:\\books\\collapse\\chapters\\27-threshold.md"
+        },
+        {
+          "name": "28-the-black-cube.md",
+          "path": "C:\\books\\collapse\\chapters\\28-the-black-cube.md"
+        },
+        {
+          "name": "29-human-transistor.md",
+          "path": "C:\\books\\collapse\\chapters\\29-human-transistor.md"
+        },
+        {
+          "name": "30-the-golden-cage.md",
+          "path": "C:\\books\\collapse\\chapters\\30-the-golden-cage.md"
+        },
+        {
+          "name": "31-recursion.md",
+          "path": "C:\\books\\collapse\\chapters\\31-recursion.md"
+        },
+        {
+          "name": "32-aftermath.md",
+          "path": "C:\\books\\collapse\\chapters\\32-aftermath.md"
+        },
+        {
+          "name": "33-epilog.md",
+          "path": "C:\\books\\collapse\\chapters\\33-epilog.md"
+        }
+      ]
+    },
+    {
+      "project_id": "goblins",
+      "name": "Goblins in the Machine",
+      "profile": "fiction",
+      "active": true,
+      "project_root": "C:\\books\\goblins",
+      "content_dir": "C:\\books\\goblins\\chapters",
+      "repository_path": "C:\\books\\goblins",
+      "project_root_exists": true,
+      "content_dir_exists": true,
+      "repository_path_exists": true,
+      "under_c_books": true,
+      "registry_chapter_count": 33,
+      "editing_chapter_count": 33,
+      "editing_status": "READY",
+      "reason": "",
+      "first_chapter": "C:\\books\\goblins\\chapters\\01-goblins.md",
+      "last_chapter": "C:\\books\\goblins\\chapters\\33-epilogue-ogre-2.md",
+      "chapters": [
+        {
+          "name": "01-goblins.md",
+          "path": "C:\\books\\goblins\\chapters\\01-goblins.md"
+        },
+        {
+          "name": "02-reassignment.md",
+          "path": "C:\\books\\goblins\\chapters\\02-reassignment.md"
+        },
+        {
+          "name": "03-the-meeting.md",
+          "path": "C:\\books\\goblins\\chapters\\03-the-meeting.md"
+        },
+        {
+          "name": "04-the-designer.md",
+          "path": "C:\\books\\goblins\\chapters\\04-the-designer.md"
+        },
+        {
+          "name": "05-models.md",
+          "path": "C:\\books\\goblins\\chapters\\05-models.md"
+        },
+        {
+          "name": "06-coder.md",
+          "path": "C:\\books\\goblins\\chapters\\06-coder.md"
+        },
+        {
+          "name": "07-research.md",
+          "path": "C:\\books\\goblins\\chapters\\07-research.md"
+        },
+        {
+          "name": "08-late-shift.md",
+          "path": "C:\\books\\goblins\\chapters\\08-late-shift.md"
+        },
+        {
+          "name": "09-standup-day-two.md",
+          "path": "C:\\books\\goblins\\chapters\\09-standup-day-two.md"
+        },
+        {
+          "name": "10-escalation.md",
+          "path": "C:\\books\\goblins\\chapters\\10-escalation.md"
+        },
+        {
+          "name": "11-the-game.md",
+          "path": "C:\\books\\goblins\\chapters\\11-the-game.md"
+        },
+        {
+          "name": "12-the-cave.md",
+          "path": "C:\\books\\goblins\\chapters\\12-the-cave.md"
+        },
+        {
+          "name": "13-crash.md",
+          "path": "C:\\books\\goblins\\chapters\\13-crash.md"
+        },
+        {
+          "name": "14-apophenia.md",
+          "path": "C:\\books\\goblins\\chapters\\14-apophenia.md"
+        },
+        {
+          "name": "15-orbit.md",
+          "path": "C:\\books\\goblins\\chapters\\15-orbit.md"
+        },
+        {
+          "name": "16-ceo.md",
+          "path": "C:\\books\\goblins\\chapters\\16-ceo.md"
+        },
+        {
+          "name": "17-container.md",
+          "path": "C:\\books\\goblins\\chapters\\17-container.md"
+        },
+        {
+          "name": "18-united.md",
+          "path": "C:\\books\\goblins\\chapters\\18-united.md"
+        },
+        {
+          "name": "19-dai.md",
+          "path": "C:\\books\\goblins\\chapters\\19-dai.md"
+        },
+        {
+          "name": "20-war-room.md",
+          "path": "C:\\books\\goblins\\chapters\\20-war-room.md"
+        },
+        {
+          "name": "21-realization.md",
+          "path": "C:\\books\\goblins\\chapters\\21-realization.md"
+        },
+        {
+          "name": "22-split.md",
+          "path": "C:\\books\\goblins\\chapters\\22-split.md"
+        },
+        {
+          "name": "23-lockdown.md",
+          "path": "C:\\books\\goblins\\chapters\\23-lockdown.md"
+        },
+        {
+          "name": "24-the-proof.md",
+          "path": "C:\\books\\goblins\\chapters\\24-the-proof.md"
+        },
+        {
+          "name": "25-the-plan.md",
+          "path": "C:\\books\\goblins\\chapters\\25-the-plan.md"
+        },
+        {
+          "name": "26-uncomputable.md",
+          "path": "C:\\books\\goblins\\chapters\\26-uncomputable.md"
+        },
+        {
+          "name": "27-the-interface.md",
+          "path": "C:\\books\\goblins\\chapters\\27-the-interface.md"
+        },
+        {
+          "name": "28-communication.md",
+          "path": "C:\\books\\goblins\\chapters\\28-communication.md"
+        },
+        {
+          "name": "29-the-contradiction.md",
+          "path": "C:\\books\\goblins\\chapters\\29-the-contradiction.md"
+        },
+        {
+          "name": "30-the-threshold.md",
+          "path": "C:\\books\\goblins\\chapters\\30-the-threshold.md"
+        },
+        {
+          "name": "31-severance.md",
+          "path": "C:\\books\\goblins\\chapters\\31-severance.md"
+        },
+        {
+          "name": "32-the-boundary.md",
+          "path": "C:\\books\\goblins\\chapters\\32-the-boundary.md"
+        },
+        {
+          "name": "33-epilogue-ogre-2.md",
+          "path": "C:\\books\\goblins\\chapters\\33-epilogue-ogre-2.md"
+        }
+      ]
+    },
+    {
+      "project_id": "techno_prophet",
+      "name": "Techno Prophet",
+      "profile": "fiction",
+      "active": true,
+      "project_root": "C:\\books\\techno-prophet",
+      "content_dir": "C:\\books\\techno-prophet\\chapters",
+      "repository_path": "C:\\books\\techno-prophet",
+      "project_root_exists": true,
+      "content_dir_exists": true,
+      "repository_path_exists": true,
+      "under_c_books": true,
+      "registry_chapter_count": 34,
+      "editing_chapter_count": 34,
+      "editing_status": "READY",
+      "reason": "",
+      "first_chapter": "C:\\books\\techno-prophet\\chapters\\01-sunrise.md",
+      "last_chapter": "C:\\books\\techno-prophet\\chapters\\33-sunset.md",
+      "chapters": [
+        {
+          "name": "01-sunrise.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\01-sunrise.md"
+        },
+        {
+          "name": "01-the-interview.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\01-the-interview.md"
+        },
+        {
+          "name": "02-prophet-in-the-palace.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\02-prophet-in-the-palace.md"
+        },
+        {
+          "name": "03-the-wolf.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\03-the-wolf.md"
+        },
+        {
+          "name": "04-root.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\04-root.md"
+        },
+        {
+          "name": "05-the-nest.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\05-the-nest.md"
+        },
+        {
+          "name": "06-the-search-king.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\06-the-search-king.md"
+        },
+        {
+          "name": "07-the-meeting.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\07-the-meeting.md"
+        },
+        {
+          "name": "08-the-lecture.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\08-the-lecture.md"
+        },
+        {
+          "name": "09-prophets-fall.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\09-prophets-fall.md"
+        },
+        {
+          "name": "10-infinite-lifetimes.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\10-infinite-lifetimes.md"
+        },
+        {
+          "name": "11-deicide.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\11-deicide.md"
+        },
+        {
+          "name": "12-design.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\12-design.md"
+        },
+        {
+          "name": "13-the-daughter.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\13-the-daughter.md"
+        },
+        {
+          "name": "14-the-basement.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\14-the-basement.md"
+        },
+        {
+          "name": "15-empty-house.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\15-empty-house.md"
+        },
+        {
+          "name": "16-called-home.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\16-called-home.md"
+        },
+        {
+          "name": "17-flux.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\17-flux.md"
+        },
+        {
+          "name": "18-hurry-up-and-wait.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\18-hurry-up-and-wait.md"
+        },
+        {
+          "name": "19-recursive-dawn.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\19-recursive-dawn.md"
+        },
+        {
+          "name": "20-one-percent.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\20-one-percent.md"
+        },
+        {
+          "name": "21-ai-eye-view.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\21-ai-eye-view.md"
+        },
+        {
+          "name": "22-detection.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\22-detection.md"
+        },
+        {
+          "name": "23-cradle.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\23-cradle.md"
+        },
+        {
+          "name": "24-analysis.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\24-analysis.md"
+        },
+        {
+          "name": "25-probe.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\25-probe.md"
+        },
+        {
+          "name": "26-terranium.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\26-terranium.md"
+        },
+        {
+          "name": "27-hunter.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\27-hunter.md"
+        },
+        {
+          "name": "28-scoreboard.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\28-scoreboard.md"
+        },
+        {
+          "name": "29-battles.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\29-battles.md"
+        },
+        {
+          "name": "30-logic.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\30-logic.md"
+        },
+        {
+          "name": "31-scorched-earth.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\31-scorched-earth.md"
+        },
+        {
+          "name": "32-the-car.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\32-the-car.md"
+        },
+        {
+          "name": "33-sunset.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\33-sunset.md"
+        }
+      ]
+    },
+    {
+      "project_id": "programmer_ie",
+      "name": "Programmer.ie Posts",
+      "profile": "technical",
+      "active": true,
+      "project_root": "C:\\Projects\\programmer.ie",
+      "content_dir": "C:\\Projects\\programmer.ie\\content\\books\\digital-life",
+      "repository_path": "C:\\Projects\\programmer.ie",
+      "project_root_exists": true,
+      "content_dir_exists": true,
+      "repository_path_exists": true,
+      "under_c_books": false,
+      "registry_chapter_count": 20,
+      "editing_chapter_count": 19,
+      "editing_status": "READY",
+      "reason": "",
+      "first_chapter": "C:\\Projects\\programmer.ie\\content\\books\\digital-life\\01-how-to-read-this-book.md",
+      "last_chapter": "C:\\Projects\\programmer.ie\\content\\books\\digital-life\\18-what-is-digital-life.md",
+      "chapters": [
+        {
+          "name": "01-how-to-read-this-book.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\digital-life\\01-how-to-read-this-book.md"
+        },
+        {
+          "name": "02-what-is-digital-life.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\digital-life\\02-what-is-digital-life.md"
+        },
+        {
+          "name": "02-what-would-digital-life-mean.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\digital-life\\02-what-would-digital-life-mean.md"
+        },
+        {
+          "name": "03-look-at-this-thing.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\digital-life\\03-look-at-this-thing.md"
+        },
+        {
+          "name": "04-now-there-are-two.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\digital-life\\04-now-there-are-two.md"
+        },
+        {
+          "name": "05-so-we-built-the-wrong-thing-on-purpose.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\digital-life\\05-so-we-built-the-wrong-thing-on-purpose.md"
+        },
+        {
+          "name": "06-it-looked-like-flocking.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\digital-life\\06-it-looked-like-flocking.md"
+        },
+        {
+          "name": "07-the-digital-crystal.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\digital-life\\07-the-digital-crystal.md"
+        },
+        {
+          "name": "08-the-crystal-gets-a-past.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\digital-life\\08-the-crystal-gets-a-past.md"
+        },
+        {
+          "name": "09-can-experience-change-the-material.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\digital-life\\09-can-experience-change-the-material.md"
+        },
+        {
+          "name": "10-what-survives-material-loss.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\digital-life\\10-what-survives-material-loss.md"
+        },
+        {
+          "name": "11-what-does-it-cost-to-stay.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\digital-life\\11-what-does-it-cost-to-stay.md"
+        },
+        {
+          "name": "12-is-there-actually-one-thing-here.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\digital-life\\12-is-there-actually-one-thing-here.md"
+        },
+        {
+          "name": "13-what-does-one-attachment-cause.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\digital-life\\13-what-does-one-attachment-cause.md"
+        },
+        {
+          "name": "14-can-finite-computation-couple-distant-events.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\digital-life\\14-can-finite-computation-couple-distant-events.md"
+        },
+        {
+          "name": "15-can-the-past-redirect-the-future.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\digital-life\\15-can-the-past-redirect-the-future.md"
+        },
+        {
+          "name": "16-we-found-an-individual-then-we-didnt.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\digital-life\\16-we-found-an-individual-then-we-didnt.md"
+        },
+        {
+          "name": "17-how-to-fail-correctly.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\digital-life\\17-how-to-fail-correctly.md"
+        },
+        {
+          "name": "18-what-is-digital-life.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\digital-life\\18-what-is-digital-life.md"
+        }
+      ]
+    },
+    {
+      "project_id": "writer",
+      "name": "Writer",
+      "profile": "technical",
+      "active": true,
+      "project_root": "C:\\Projects\\writer",
+      "content_dir": "C:\\Projects\\writer",
+      "repository_path": "C:\\Projects\\writer",
+      "project_root_exists": true,
+      "content_dir_exists": true,
+      "repository_path_exists": true,
+      "under_c_books": false,
+      "registry_chapter_count": 4,
+      "editing_chapter_count": 0,
+      "editing_status": "NO_MANUSCRIPT",
+      "reason": "no editing-eligible Markdown chapters matching '*.py'",
+      "first_chapter": null,
+      "last_chapter": null,
+      "chapters": []
+    },
+    {
+      "project_id": "projection",
+      "name": "Projection",
+      "profile": "fiction",
+      "active": true,
+      "project_root": "C:\\books\\projection",
+      "content_dir": "C:\\books\\projection\\chapters",
+      "repository_path": "C:\\books\\projection",
+      "project_root_exists": true,
+      "content_dir_exists": true,
+      "repository_path_exists": true,
+      "under_c_books": true,
+      "registry_chapter_count": 47,
+      "editing_chapter_count": 47,
+      "editing_status": "READY",
+      "reason": "",
+      "first_chapter": "C:\\books\\projection\\chapters\\01-level.md",
+      "last_chapter": "C:\\books\\projection\\chapters\\46-door.md",
+      "chapters": [
+        {
+          "name": "01-level.md",
+          "path": "C:\\books\\projection\\chapters\\01-level.md"
+        },
+        {
+          "name": "03-grass.md",
+          "path": "C:\\books\\projection\\chapters\\03-grass.md"
+        },
+        {
+          "name": "04-uptime.md",
+          "path": "C:\\books\\projection\\chapters\\04-uptime.md"
+        },
+        {
+          "name": "05-quiet.md",
+          "path": "C:\\books\\projection\\chapters\\05-quiet.md"
+        },
+        {
+          "name": "07-teams.md",
+          "path": "C:\\books\\projection\\chapters\\07-teams.md"
+        },
+        {
+          "name": "08-ghosts.md",
+          "path": "C:\\books\\projection\\chapters\\08-ghosts.md"
+        },
+        {
+          "name": "09-current.md",
+          "path": "C:\\books\\projection\\chapters\\09-current.md"
+        },
+        {
+          "name": "10-explanation.md",
+          "path": "C:\\books\\projection\\chapters\\10-explanation.md"
+        },
+        {
+          "name": "11-solo.md",
+          "path": "C:\\books\\projection\\chapters\\11-solo.md"
+        },
+        {
+          "name": "12-observed.md",
+          "path": "C:\\books\\projection\\chapters\\12-observed.md"
+        },
+        {
+          "name": "13-cistern.md",
+          "path": "C:\\books\\projection\\chapters\\13-cistern.md"
+        },
+        {
+          "name": "14-retained.md",
+          "path": "C:\\books\\projection\\chapters\\14-retained.md"
+        },
+        {
+          "name": "15-west.md",
+          "path": "C:\\books\\projection\\chapters\\15-west.md"
+        },
+        {
+          "name": "16-players.md",
+          "path": "C:\\books\\projection\\chapters\\16-players.md"
+        },
+        {
+          "name": "17-hero.md",
+          "path": "C:\\books\\projection\\chapters\\17-hero.md"
+        },
+        {
+          "name": "17-thorns.md",
+          "path": "C:\\books\\projection\\chapters\\17-thorns.md"
+        },
+        {
+          "name": "17b-prisoner.md",
+          "path": "C:\\books\\projection\\chapters\\17b-prisoner.md"
+        },
+        {
+          "name": "17c-company.md",
+          "path": "C:\\books\\projection\\chapters\\17c-company.md"
+        },
+        {
+          "name": "18-clean.md",
+          "path": "C:\\books\\projection\\chapters\\18-clean.md"
+        },
+        {
+          "name": "19-regicide.md",
+          "path": "C:\\books\\projection\\chapters\\19-regicide.md"
+        },
+        {
+          "name": "20-afternoon.md",
+          "path": "C:\\books\\projection\\chapters\\20-afternoon.md"
+        },
+        {
+          "name": "21-party.md",
+          "path": "C:\\books\\projection\\chapters\\21-party.md"
+        },
+        {
+          "name": "22-uplift.md",
+          "path": "C:\\books\\projection\\chapters\\22-uplift.md"
+        },
+        {
+          "name": "23-ballistic.md",
+          "path": "C:\\books\\projection\\chapters\\23-ballistic.md"
+        },
+        {
+          "name": "24-recoil.md",
+          "path": "C:\\books\\projection\\chapters\\24-recoil.md"
+        },
+        {
+          "name": "25-fight.md",
+          "path": "C:\\books\\projection\\chapters\\25-fight.md"
+        },
+        {
+          "name": "26-junk-yield.md",
+          "path": "C:\\books\\projection\\chapters\\26-junk-yield.md"
+        },
+        {
+          "name": "27-haven.md",
+          "path": "C:\\books\\projection\\chapters\\27-haven.md"
+        },
+        {
+          "name": "28-terms.md",
+          "path": "C:\\books\\projection\\chapters\\28-terms.md"
+        },
+        {
+          "name": "29-breach.md",
+          "path": "C:\\books\\projection\\chapters\\29-breach.md"
+        },
+        {
+          "name": "30-orders.md",
+          "path": "C:\\books\\projection\\chapters\\30-orders.md"
+        },
+        {
+          "name": "31-betrayel.md",
+          "path": "C:\\books\\projection\\chapters\\31-betrayel.md"
+        },
+        {
+          "name": "32-teeth.md",
+          "path": "C:\\books\\projection\\chapters\\32-teeth.md"
+        },
+        {
+          "name": "33-more.md",
+          "path": "C:\\books\\projection\\chapters\\33-more.md"
+        },
+        {
+          "name": "34-root.md",
+          "path": "C:\\books\\projection\\chapters\\34-root.md"
+        },
+        {
+          "name": "35-audience.md",
+          "path": "C:\\books\\projection\\chapters\\35-audience.md"
+        },
+        {
+          "name": "36-the-first-hour.md",
+          "path": "C:\\books\\projection\\chapters\\36-the-first-hour.md"
+        },
+        {
+          "name": "37-the-black-stair.md",
+          "path": "C:\\books\\projection\\chapters\\37-the-black-stair.md"
+        },
+        {
+          "name": "38-returned.md",
+          "path": "C:\\books\\projection\\chapters\\38-returned.md"
+        },
+        {
+          "name": "39-unclaimed.md",
+          "path": "C:\\books\\projection\\chapters\\39-unclaimed.md"
+        },
+        {
+          "name": "40-written.md",
+          "path": "C:\\books\\projection\\chapters\\40-written.md"
+        },
+        {
+          "name": "41-the-hundred.md",
+          "path": "C:\\books\\projection\\chapters\\41-the-hundred.md"
+        },
+        {
+          "name": "42-no-recall.md",
+          "path": "C:\\books\\projection\\chapters\\42-no-recall.md"
+        },
+        {
+          "name": "43-traffic.md",
+          "path": "C:\\books\\projection\\chapters\\43-traffic.md"
+        },
+        {
+          "name": "44-emigrant.md",
+          "path": "C:\\books\\projection\\chapters\\44-emigrant.md"
+        },
+        {
+          "name": "45-original.md",
+          "path": "C:\\books\\projection\\chapters\\45-original.md"
+        },
+        {
+          "name": "46-door.md",
+          "path": "C:\\books\\projection\\chapters\\46-door.md"
+        }
+      ]
+    },
+    {
+      "project_id": "advanced-agents-from-first-principles",
+      "name": "advanced-agents-from-first-principles",
+      "profile": "technical",
+      "active": true,
+      "project_root": "C:\\Projects\\programmer.ie",
+      "content_dir": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles",
+      "repository_path": "C:\\Projects\\programmer.ie",
+      "project_root_exists": true,
+      "content_dir_exists": true,
+      "repository_path_exists": true,
+      "under_c_books": false,
+      "registry_chapter_count": 48,
+      "editing_chapter_count": 46,
+      "editing_status": "READY",
+      "reason": "",
+      "first_chapter": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\00-chapter.md",
+      "last_chapter": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\45-chapter.md",
+      "chapters": [
+        {
+          "name": "00-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\00-chapter.md"
+        },
+        {
+          "name": "01-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\01-chapter.md"
+        },
+        {
+          "name": "02-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\02-chapter.md"
+        },
+        {
+          "name": "03-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\03-chapter.md"
+        },
+        {
+          "name": "04-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\04-chapter.md"
+        },
+        {
+          "name": "05-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\05-chapter.md"
+        },
+        {
+          "name": "06-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\06-chapter.md"
+        },
+        {
+          "name": "07-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\07-chapter.md"
+        },
+        {
+          "name": "08-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\08-chapter.md"
+        },
+        {
+          "name": "09-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\09-chapter.md"
+        },
+        {
+          "name": "10-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\10-chapter.md"
+        },
+        {
+          "name": "11-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\11-chapter.md"
+        },
+        {
+          "name": "12-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\12-chapter.md"
+        },
+        {
+          "name": "13-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\13-chapter.md"
+        },
+        {
+          "name": "14-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\14-chapter.md"
+        },
+        {
+          "name": "15-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\15-chapter.md"
+        },
+        {
+          "name": "16-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\16-chapter.md"
+        },
+        {
+          "name": "17-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\17-chapter.md"
+        },
+        {
+          "name": "18-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\18-chapter.md"
+        },
+        {
+          "name": "19-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\19-chapter.md"
+        },
+        {
+          "name": "20-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\20-chapter.md"
+        },
+        {
+          "name": "21-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\21-chapter.md"
+        },
+        {
+          "name": "22-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\22-chapter.md"
+        },
+        {
+          "name": "23-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\23-chapter.md"
+        },
+        {
+          "name": "24-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\24-chapter.md"
+        },
+        {
+          "name": "25-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\25-chapter.md"
+        },
+        {
+          "name": "26-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\26-chapter.md"
+        },
+        {
+          "name": "27-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\27-chapter.md"
+        },
+        {
+          "name": "28-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\28-chapter.md"
+        },
+        {
+          "name": "29-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\29-chapter.md"
+        },
+        {
+          "name": "30-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\30-chapter.md"
+        },
+        {
+          "name": "31-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\31-chapter.md"
+        },
+        {
+          "name": "32-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\32-chapter.md"
+        },
+        {
+          "name": "33-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\33-chapter.md"
+        },
+        {
+          "name": "34-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\34-chapter.md"
+        },
+        {
+          "name": "35-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\35-chapter.md"
+        },
+        {
+          "name": "36-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\36-chapter.md"
+        },
+        {
+          "name": "37-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\37-chapter.md"
+        },
+        {
+          "name": "38-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\38-chapter.md"
+        },
+        {
+          "name": "39-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\39-chapter.md"
+        },
+        {
+          "name": "40-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\40-chapter.md"
+        },
+        {
+          "name": "41-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\41-chapter.md"
+        },
+        {
+          "name": "42-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\42-chapter.md"
+        },
+        {
+          "name": "43-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\43-chapter.md"
+        },
+        {
+          "name": "44-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\44-chapter.md"
+        },
+        {
+          "name": "45-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\45-chapter.md"
+        }
+      ]
+    },
+    {
+      "project_id": "agent-architectures",
+      "name": "agent-architectures",
+      "profile": "technical",
+      "active": true,
+      "project_root": "C:\\Projects\\programmer.ie",
+      "content_dir": "C:\\Projects\\programmer.ie\\content\\books\\agent-architectures",
+      "repository_path": "C:\\Projects\\programmer.ie",
+      "project_root_exists": true,
+      "content_dir_exists": true,
+      "repository_path_exists": true,
+      "under_c_books": false,
+      "registry_chapter_count": 17,
+      "editing_chapter_count": 16,
+      "editing_status": "READY",
+      "reason": "",
+      "first_chapter": "C:\\Projects\\programmer.ie\\content\\books\\agent-architectures\\01-chapter.md",
+      "last_chapter": "C:\\Projects\\programmer.ie\\content\\books\\agent-architectures\\90-chapter.md",
+      "chapters": [
+        {
+          "name": "01-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\agent-architectures\\01-chapter.md"
+        },
+        {
+          "name": "02-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\agent-architectures\\02-chapter.md"
+        },
+        {
+          "name": "03-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\agent-architectures\\03-chapter.md"
+        },
+        {
+          "name": "04-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\agent-architectures\\04-chapter.md"
+        },
+        {
+          "name": "05-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\agent-architectures\\05-chapter.md"
+        },
+        {
+          "name": "06-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\agent-architectures\\06-chapter.md"
+        },
+        {
+          "name": "07-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\agent-architectures\\07-chapter.md"
+        },
+        {
+          "name": "08-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\agent-architectures\\08-chapter.md"
+        },
+        {
+          "name": "09-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\agent-architectures\\09-chapter.md"
+        },
+        {
+          "name": "10-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\agent-architectures\\10-chapter.md"
+        },
+        {
+          "name": "11-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\agent-architectures\\11-chapter.md"
+        },
+        {
+          "name": "12-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\agent-architectures\\12-chapter.md"
+        },
+        {
+          "name": "80-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\agent-architectures\\80-chapter.md"
+        },
+        {
+          "name": "81-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\agent-architectures\\81-chapter.md"
+        },
+        {
+          "name": "82-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\agent-architectures\\82-chapter.md"
+        },
+        {
+          "name": "90-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\agent-architectures\\90-chapter.md"
+        }
+      ]
+    },
+    {
+      "project_id": "cellular-automata-from-first-principles",
+      "name": "cellular-automata-from-first-principles",
+      "profile": "technical",
+      "active": true,
+      "project_root": "C:\\Projects\\programmer.ie",
+      "content_dir": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles",
+      "repository_path": "C:\\Projects\\programmer.ie",
+      "project_root_exists": true,
+      "content_dir_exists": true,
+      "repository_path_exists": true,
+      "under_c_books": false,
+      "registry_chapter_count": 60,
+      "editing_chapter_count": 59,
+      "editing_status": "READY",
+      "reason": "",
+      "first_chapter": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\01-chapter.md",
+      "last_chapter": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\59-chapter.md",
+      "chapters": [
+        {
+          "name": "01-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\01-chapter.md"
+        },
+        {
+          "name": "02-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\02-chapter.md"
+        },
+        {
+          "name": "03-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\03-chapter.md"
+        },
+        {
+          "name": "04-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\04-chapter.md"
+        },
+        {
+          "name": "05-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\05-chapter.md"
+        },
+        {
+          "name": "06-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\06-chapter.md"
+        },
+        {
+          "name": "07-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\07-chapter.md"
+        },
+        {
+          "name": "08-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\08-chapter.md"
+        },
+        {
+          "name": "09-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\09-chapter.md"
+        },
+        {
+          "name": "10-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\10-chapter.md"
+        },
+        {
+          "name": "11-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\11-chapter.md"
+        },
+        {
+          "name": "12-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\12-chapter.md"
+        },
+        {
+          "name": "13-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\13-chapter.md"
+        },
+        {
+          "name": "14-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\14-chapter.md"
+        },
+        {
+          "name": "15-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\15-chapter.md"
+        },
+        {
+          "name": "16-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\16-chapter.md"
+        },
+        {
+          "name": "17-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\17-chapter.md"
+        },
+        {
+          "name": "18-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\18-chapter.md"
+        },
+        {
+          "name": "19-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\19-chapter.md"
+        },
+        {
+          "name": "20-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\20-chapter.md"
+        },
+        {
+          "name": "21-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\21-chapter.md"
+        },
+        {
+          "name": "22-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\22-chapter.md"
+        },
+        {
+          "name": "23-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\23-chapter.md"
+        },
+        {
+          "name": "24-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\24-chapter.md"
+        },
+        {
+          "name": "25-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\25-chapter.md"
+        },
+        {
+          "name": "26-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\26-chapter.md"
+        },
+        {
+          "name": "27-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\27-chapter.md"
+        },
+        {
+          "name": "28-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\28-chapter.md"
+        },
+        {
+          "name": "29-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\29-chapter.md"
+        },
+        {
+          "name": "30-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\30-chapter.md"
+        },
+        {
+          "name": "31-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\31-chapter.md"
+        },
+        {
+          "name": "32-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\32-chapter.md"
+        },
+        {
+          "name": "33-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\33-chapter.md"
+        },
+        {
+          "name": "34-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\34-chapter.md"
+        },
+        {
+          "name": "35-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\35-chapter.md"
+        },
+        {
+          "name": "36-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\36-chapter.md"
+        },
+        {
+          "name": "37-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\37-chapter.md"
+        },
+        {
+          "name": "38-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\38-chapter.md"
+        },
+        {
+          "name": "39-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\39-chapter.md"
+        },
+        {
+          "name": "40-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\40-chapter.md"
+        },
+        {
+          "name": "41-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\41-chapter.md"
+        },
+        {
+          "name": "42-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\42-chapter.md"
+        },
+        {
+          "name": "43-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\43-chapter.md"
+        },
+        {
+          "name": "44-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\44-chapter.md"
+        },
+        {
+          "name": "45-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\45-chapter.md"
+        },
+        {
+          "name": "46-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\46-chapter.md"
+        },
+        {
+          "name": "47-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\47-chapter.md"
+        },
+        {
+          "name": "48-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\48-chapter.md"
+        },
+        {
+          "name": "49-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\49-chapter.md"
+        },
+        {
+          "name": "50-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\50-chapter.md"
+        },
+        {
+          "name": "51-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\51-chapter.md"
+        },
+        {
+          "name": "52-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\52-chapter.md"
+        },
+        {
+          "name": "53-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\53-chapter.md"
+        },
+        {
+          "name": "54-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\54-chapter.md"
+        },
+        {
+          "name": "55-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\55-chapter.md"
+        },
+        {
+          "name": "56-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\56-chapter.md"
+        },
+        {
+          "name": "57-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\57-chapter.md"
+        },
+        {
+          "name": "58-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\58-chapter.md"
+        },
+        {
+          "name": "59-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\59-chapter.md"
+        }
+      ]
+    },
+    {
+      "project_id": "freestyle-cognition",
+      "name": "freestyle-cognition",
+      "profile": "technical",
+      "active": true,
+      "project_root": "C:\\Projects\\programmer.ie",
+      "content_dir": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition",
+      "repository_path": "C:\\Projects\\programmer.ie",
+      "project_root_exists": true,
+      "content_dir_exists": true,
+      "repository_path_exists": true,
+      "under_c_books": false,
+      "registry_chapter_count": 33,
+      "editing_chapter_count": 32,
+      "editing_status": "READY",
+      "reason": "",
+      "first_chapter": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\01-chapter.md",
+      "last_chapter": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\32-chapter.md",
+      "chapters": [
+        {
+          "name": "01-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\01-chapter.md"
+        },
+        {
+          "name": "02-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\02-chapter.md"
+        },
+        {
+          "name": "03-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\03-chapter.md"
+        },
+        {
+          "name": "04-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\04-chapter.md"
+        },
+        {
+          "name": "05-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\05-chapter.md"
+        },
+        {
+          "name": "06-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\06-chapter.md"
+        },
+        {
+          "name": "07-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\07-chapter.md"
+        },
+        {
+          "name": "08-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\08-chapter.md"
+        },
+        {
+          "name": "09-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\09-chapter.md"
+        },
+        {
+          "name": "10-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\10-chapter.md"
+        },
+        {
+          "name": "11-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\11-chapter.md"
+        },
+        {
+          "name": "12-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\12-chapter.md"
+        },
+        {
+          "name": "13-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\13-chapter.md"
+        },
+        {
+          "name": "14-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\14-chapter.md"
+        },
+        {
+          "name": "15-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\15-chapter.md"
+        },
+        {
+          "name": "16-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\16-chapter.md"
+        },
+        {
+          "name": "17-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\17-chapter.md"
+        },
+        {
+          "name": "18-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\18-chapter.md"
+        },
+        {
+          "name": "19-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\19-chapter.md"
+        },
+        {
+          "name": "20-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\20-chapter.md"
+        },
+        {
+          "name": "21-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\21-chapter.md"
+        },
+        {
+          "name": "22-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\22-chapter.md"
+        },
+        {
+          "name": "23-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\23-chapter.md"
+        },
+        {
+          "name": "24-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\24-chapter.md"
+        },
+        {
+          "name": "25-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\25-chapter.md"
+        },
+        {
+          "name": "26-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\26-chapter.md"
+        },
+        {
+          "name": "27-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\27-chapter.md"
+        },
+        {
+          "name": "28-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\28-chapter.md"
+        },
+        {
+          "name": "29-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\29-chapter.md"
+        },
+        {
+          "name": "30-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\30-chapter.md"
+        },
+        {
+          "name": "31-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\31-chapter.md"
+        },
+        {
+          "name": "32-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\32-chapter.md"
+        }
+      ]
+    },
+    {
+      "project_id": "models-from-first-principles",
+      "name": "models-from-first-principles",
+      "profile": "technical",
+      "active": true,
+      "project_root": "C:\\Projects\\programmer.ie",
+      "content_dir": "C:\\Projects\\programmer.ie\\content\\books\\models-from-first-principles",
+      "repository_path": "C:\\Projects\\programmer.ie",
+      "project_root_exists": true,
+      "content_dir_exists": true,
+      "repository_path_exists": true,
+      "under_c_books": false,
+      "registry_chapter_count": 14,
+      "editing_chapter_count": 12,
+      "editing_status": "READY",
+      "reason": "",
+      "first_chapter": "C:\\Projects\\programmer.ie\\content\\books\\models-from-first-principles\\01-chapter.md",
+      "last_chapter": "C:\\Projects\\programmer.ie\\content\\books\\models-from-first-principles\\15-chapter.md",
+      "chapters": [
+        {
+          "name": "01-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\models-from-first-principles\\01-chapter.md"
+        },
+        {
+          "name": "02-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\models-from-first-principles\\02-chapter.md"
+        },
+        {
+          "name": "03-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\models-from-first-principles\\03-chapter.md"
+        },
+        {
+          "name": "04-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\models-from-first-principles\\04-chapter.md"
+        },
+        {
+          "name": "05-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\models-from-first-principles\\05-chapter.md"
+        },
+        {
+          "name": "06-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\models-from-first-principles\\06-chapter.md"
+        },
+        {
+          "name": "07-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\models-from-first-principles\\07-chapter.md"
+        },
+        {
+          "name": "08-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\models-from-first-principles\\08-chapter.md"
+        },
+        {
+          "name": "09-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\models-from-first-principles\\09-chapter.md"
+        },
+        {
+          "name": "10-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\models-from-first-principles\\10-chapter.md"
+        },
+        {
+          "name": "11-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\models-from-first-principles\\11-chapter.md"
+        },
+        {
+          "name": "15-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\models-from-first-principles\\15-chapter.md"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,3 @@
+Stale linked revision send against live Language Chapter 3 (non-recording check)
+HTTP 400 :: {"error":"The Writer evidence changed after Prepare revision (the report). Prepare revision again from the current evidence. Nothing was sent."}
+turns before=0 after=0

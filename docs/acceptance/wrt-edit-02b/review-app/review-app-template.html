@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WRT-EDIT-02B — Passage review</title>
+<style>
+  :root {
+    --bg: #f4f1ea;
+    --card: #fffdf8;
+    --ink: #1f1d18;
+    --muted: #6f695d;
+    --line: #d9d2c4;
+    --accent: #2f6f5e;
+    --accent-strong: #225446;
+    --accent-soft: #e7f0ec;
+    --warn: #8a5a1f;
+    --shadow: 0 8px 30px rgba(40, 34, 24, 0.08);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-bottom: 96px; }
+  body {
+    margin: 0;
+    background:
+      radial-gradient(1200px 600px at 10% -10%, #fffaf0 0%, transparent 55%),
+      radial-gradient(900px 500px at 110% 10%, #e9f2ee 0%, transparent 50%),
+      var(--bg);
+    color: var(--ink);
+    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.45;
+  }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 22px 20px 110px; }
+  header { display: flex; justify-content: space-between; gap: 18px; align-items: flex-start; flex-wrap: wrap; }
+  h1 { margin: 0 0 4px; font-size: clamp(1.3rem, 2.4vw, 1.8rem); letter-spacing: -0.02em; }
+  .sub { margin: 0; color: var(--muted); font-size: 0.95rem; max-width: 760px; }
+  .brand { color: var(--accent-strong); font-weight: 700; letter-spacing: 0.08em; font-size: 0.72rem; text-transform: uppercase; }
+  .top-actions { display: flex; gap: 8px; align-items: center; }
+  button { font: inherit; }
+  .btn {
+    border: 1px solid var(--line); background: var(--card); color: var(--ink);
+    border-radius: 9px; padding: 9px 14px; cursor: pointer;
+    transition: background 120ms ease, border-color 120ms ease, transform 80ms ease;
+  }
+  .btn:hover { border-color: #bfb6a5; background: #fff; }
+  .btn:active { transform: translateY(1px); }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: white; font-weight: 650; }
+  .btn.primary:hover { background: var(--accent-strong); border-color: var(--accent-strong); }
+  .btn.ghost { background: transparent; }
+  .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+  .toolbar {
+    margin-top: 18px; padding: 12px 14px; background: rgba(255,253,248,0.82);
+    border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow);
+    display: flex; gap: 14px; align-items: center; flex-wrap: wrap;
+  }
+  .toolbar label { display: flex; gap: 7px; align-items: center; color: var(--muted); font-size: 0.88rem; }
+  select, input[type="text"] {
+    font: inherit; color: var(--ink); background: white; border: 1px solid var(--line);
+    border-radius: 7px; padding: 7px 9px; min-height: 36px;
+  }
+  input[type="text"] { min-width: min(340px, 55vw); }
+  .save-status { margin-left: auto; color: var(--muted); font-size: 0.82rem; min-width: 112px; text-align: right; }
+  .progress-shell { margin-top: 14px; height: 7px; background: #e2dccf; border-radius: 999px; overflow: hidden; }
+  .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent), #4f9a82); transition: width 220ms ease; }
+  .progress-text { display: flex; justify-content: space-between; gap: 12px; margin-top: 7px; color: var(--muted); font-size: 0.84rem; }
+  .passage-card {
+    margin-top: 18px; background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+    box-shadow: var(--shadow); padding: 20px 22px;
+  }
+  .passage-meta { display: flex; justify-content: space-between; gap: 12px; color: var(--muted); font-size: 0.8rem; margin-bottom: 12px; }
+  .passage-id { font-variant-numeric: tabular-nums; letter-spacing: 0.05em; }
+  .passage-text {
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", Palatino, serif;
+    font-size: clamp(1.02rem, 1.4vw, 1.13rem);
+    line-height: 1.68;
+    white-space: pre-wrap;
+    max-height: 42vh;
+    overflow: auto;
+    padding-right: 8px;
+  }
+  .questions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-top: 16px; }
+  fieldset.q {
+    margin: 0; padding: 14px 14px 15px; scroll-margin-bottom: 96px; border: 1px solid var(--line); border-radius: 12px;
+    background: rgba(255,253,248,0.78); min-width: 0;
+  }
+  fieldset.q legend { padding: 0 6px; font-weight: 650; font-size: 0.9rem; }
+  .options { display: flex; flex-wrap: wrap; gap: 7px; }
+  .options.overall { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .option {
+    border: 1px solid var(--line); background: white; color: var(--ink);
+    border-radius: 8px; padding: 8px 11px; cursor: pointer; min-height: 38px;
+    transition: background 110ms ease, border-color 110ms ease, color 110ms ease;
+  }
+  .option:hover { border-color: #b7ae9d; }
+  .option[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: white; }
+  .option[aria-pressed="true"]:hover { background: var(--accent-strong); border-color: var(--accent-strong); }
+  .option.overall { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; padding: 8px 5px; }
+  .option.overall b { font-size: 1.15rem; line-height: 1; }
+  .option.overall span { font-size: 0.68rem; line-height: 1.15; opacity: 0.82; text-align: center; }
+  .notes-wrap { grid-column: 1 / -1; }
+  textarea {
+    width: 100%; min-height: 82px; resize: vertical; font: inherit; color: var(--ink);
+    border: 1px solid var(--line); border-radius: 9px; padding: 10px 11px; background: white;
+  }
+  .hint { color: var(--muted); font-size: 0.78rem; margin-top: 8px; }
+  .nav {
+    margin-top: 18px; border-top: 1px solid var(--line);
+    padding: 12px 0 calc(12px + env(safe-area-inset-bottom));
+  }
+  .nav-inner { max-width: 1120px; margin: 0 auto; padding: 0 20px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .nav .spacer { flex: 1; }
+  .complete {
+    margin-top: 16px; scroll-margin-bottom: 96px; padding: 18px; border: 1px solid #bcd6ca; border-radius: 14px;
+    background: var(--accent-soft); box-shadow: var(--shadow);
+  }
+  .complete h2 { margin: 0 0 6px; font-size: 1.1rem; }
+  .complete p { margin: 0 0 12px; color: #315449; }
+  .complete .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .hidden { display: none !important; }
+  details.jump { margin-top: 18px; color: var(--muted); }
+  details.jump summary { cursor: pointer; font-size: 0.86rem; }
+  .jump-grid { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 9px; }
+  .jump-grid button { min-width: 34px; padding: 5px 7px; border-radius: 7px; border: 1px solid var(--line); background: white; cursor: pointer; font-size: 0.78rem; }
+  .jump-grid button.scored { background: var(--accent-soft); border-color: #bcd6ca; color: var(--accent-strong); }
+  .jump-grid button.current { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .toast {
+    position: fixed; left: 50%; bottom: 92px; transform: translateX(-50%) translateY(10px);
+    background: #1f1d18; color: white; padding: 9px 14px; border-radius: 999px;
+    font-size: 0.84rem; opacity: 0; pointer-events: none; transition: opacity 160ms ease, transform 160ms ease;
+    z-index: 50; max-width: 90vw; text-align: center;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .warn { color: var(--warn); }
+  @media (max-width: 760px) {
+    .wrap { padding: 16px 12px 110px; }
+    .questions { grid-template-columns: 1fr; }
+    .options.overall { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+    .option.overall span { font-size: 0.6rem; }
+    .passage-card { padding: 15px 14px; }
+    .passage-text { max-height: 38vh; }
+    .save-status { width: 100%; text-align: left; margin-left: 0; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <div class="brand">WRT-EDIT-02B · human-grounded calibration</div>
+      <h1>Passage review</h1>
+      <p class="sub">Read the passage, click your judgements, then Next. Review in sets of 10 — you can stop after this set and download a partial CSV.</p>
+    </div>
+    <div class="top-actions">
+      <button class="btn primary" id="nextTop" type="button">Next →</button>
+      <button class="btn" id="exportTop" type="button">Download CSV</button>
+    </div>
+  </header>
+
+  <section class="toolbar" aria-label="Review settings">
+    <label>Set
+      <select id="batchSelect">
+        <option value="1">1 of 5</option>
+        <option value="2">2 of 5</option>
+        <option value="3">3 of 5</option>
+        <option value="4">4 of 5</option>
+        <option value="5">5 of 5</option>
+      </select>
+    </label>
+    <button class="btn ghost" id="allBtn" type="button" aria-pressed="false">All 50</button>
+    <label>Reviewer
+      <input id="reviewerInput" type="text" autocomplete="off" spellcheck="false" aria-label="Reviewer name">
+    </label>
+    <span class="save-status" id="saveStatus">Saved locally</span>
+  </section>
+
+  <div class="progress-shell" aria-hidden="true"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-text"><span id="progressText"></span><span id="modeLabel"></span></div>
+
+  <main>
+    <section class="passage-card" aria-label="Passage">
+      <div class="passage-meta">
+        <span id="passageLabel"></span>
+        <span class="passage-id" id="passageId"></span>
+      </div>
+      <div class="passage-text" id="passageText"></div>
+    </section>
+
+    <section class="questions" id="questions" aria-label="Assessment">
+      <fieldset class="q">
+        <legend>Overall readability</legend>
+        <div class="options overall" data-field="overall">
+          <button class="option overall" type="button" data-value="1"><b>1</b><span>Very hard</span></button>
+          <button class="option overall" type="button" data-value="2"><b>2</b><span>Hard</span></button>
+          <button class="option overall" type="button" data-value="3"><b>3</b><span>Mixed</span></button>
+          <button class="option overall" type="button" data-value="4"><b>4</b><span>Easy</span></button>
+          <button class="option overall" type="button" data-value="5"><b>5</b><span>Very easy</span></button>
+        </div>
+      </fieldset>
+
+      <fieldset class="q">
+        <legend>Density</legend>
+        <div class="options" data-field="density">
+          <button class="option" type="button" data-value="too_dense">Too dense</button>
+          <button class="option" type="button" data-value="appropriate">Appropriate</button>
+          <button class="option" type="button" data-value="too_sparse">Too sparse</button>
+        </div>
+      </fieldset>
+
+      <fieldset class="q">
+        <legend>Fragmentation</legend>
+        <div class="options" data-field="fragmentation">
+          <button class="option" type="button" data-value="too_fragmented">Too fragmented</button>
+          <button class="option" type="button" data-value="appropriate">Appropriate</button>
+          <button class="option" type="button" data-value="too_continuous">Too continuous</button>
+        </div>
+      </fieldset>
+
+      <fieldset class="q">
+        <legend>Rhythm</legend>
+        <div class="options" data-field="rhythm">
+          <button class="option" type="button" data-value="too_uniform">Too uniform</button>
+          <button class="option" type="button" data-value="appropriate">Appropriate</button>
+          <button class="option" type="button" data-value="too_irregular">Too irregular</button>
+        </div>
+      </fieldset>
+
+      <fieldset class="q">
+        <legend>Lexical difficulty</legend>
+        <div class="options" data-field="lexical">
+          <button class="option" type="button" data-value="low">Low</button>
+          <button class="option" type="button" data-value="moderate">Moderate</button>
+          <button class="option" type="button" data-value="high">High</button>
+        </div>
+      </fieldset>
+
+      <fieldset class="q">
+        <legend>Structural clarity</legend>
+        <div class="options" data-field="structural">
+          <button class="option" type="button" data-value="clear">Clear</button>
+          <button class="option" type="button" data-value="mixed">Mixed</button>
+          <button class="option" type="button" data-value="unclear">Unclear</button>
+        </div>
+      </fieldset>
+
+      <fieldset class="q">
+        <legend>Genuine issue?</legend>
+        <div class="options" data-field="genuine">
+          <button class="option" type="button" data-value="yes">Yes</button>
+          <button class="option" type="button" data-value="no">No</button>
+          <button class="option" type="button" data-value="unsure">Unsure</button>
+        </div>
+      </fieldset>
+
+      <fieldset class="q notes-wrap">
+        <legend>Notes</legend>
+        <textarea id="notes" placeholder="What is the passage doing? Is the issue real? What context matters?"></textarea>
+        <div class="hint">Keyboard: 1–5 for overall readability, ←/→ to move, Enter for Next. Optional detail fields may be left blank.</div>
+      </fieldset>
+    </section>
+
+    <section class="complete hidden" id="completePanel" aria-live="polite">
+      <h2 id="completeTitle">Set complete</h2>
+      <p id="completeText"></p>
+      <div class="actions">
+        <button class="btn primary" id="exportComplete" type="button">Download CSV</button>
+        <button class="btn" id="nextSet" type="button">Next set</button>
+        <button class="btn" id="reviewAll" type="button">Review all 50</button>
+        <button class="btn ghost" id="backToPassage" type="button">Back to passage</button>
+      </div>
+    </section>
+  </main>
+
+  <details class="jump">
+    <summary>Jump to passage</summary>
+    <div class="jump-grid" id="jumpGrid"></div>
+  </details>
+</div>
+
+<footer class="nav">
+  <div class="nav-inner">
+    <button class="btn" id="prevBtn" type="button">← Previous</button>
+    <button class="btn ghost" id="skipBtn" type="button">Skip</button>
+    <button class="btn ghost" id="nextUnscored" type="button">Next unscored</button>
+    <span class="spacer"></span>
+    <button class="btn primary" id="nextBtn" type="button">Next →</button>
+  </div>
+</footer>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+const PASSAGES = __PASSAGES_JSON__;
+const STORAGE_KEY = "wrt-edit-02b-review-v1";
+const DEFAULT_REVIEWER = "AI-assisted reviewer (prior diagnostic exposure)";
+const BATCH_COUNT = 5;
+const FIELDS = ["overall", "density", "fragmentation", "rhythm", "lexical", "structural", "genuine", "notes"];
+
+function emptyResponse() {
+  return { overall: "", density: "", fragmentation: "", rhythm: "", lexical: "", structural: "", genuine: "", notes: "" };
+}
+
+let state = {
+  reviewer: DEFAULT_REVIEWER,
+  responses: {},
+  current: 0,
+  mode: "batch",
+  batch: 1,
+  completed: false
+};
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return false;
+    const saved = JSON.parse(raw);
+    if (!saved || typeof saved !== "object") return false;
+    state.reviewer = typeof saved.reviewer === "string" ? saved.reviewer : DEFAULT_REVIEWER;
+    state.responses = saved.responses && typeof saved.responses === "object" ? saved.responses : {};
+    state.mode = saved.mode === "all" ? "all" : "batch";
+    state.batch = Math.min(BATCH_COUNT, Math.max(1, Number(saved.batch) || 1));
+    state.current = Math.max(0, Number(saved.current) || 0);
+    state.completed = Boolean(saved.completed);
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
+function ensureResponses() {
+  for (const passage of PASSAGES) {
+    if (!state.responses[passage.id] || typeof state.responses[passage.id] !== "object") {
+      state.responses[passage.id] = emptyResponse();
+    } else {
+      for (const field of FIELDS) {
+        if (typeof state.responses[passage.id][field] !== "string") {
+          state.responses[passage.id][field] = "";
+        }
+      }
+    }
+  }
+}
+
+let saveTimer = null;
+function saveState(immediate = false) {
+  const write = () => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        reviewer: state.reviewer,
+        responses: state.responses,
+        current: state.current,
+        mode: state.mode,
+        batch: state.batch,
+        completed: state.completed
+      }));
+      setSaveStatus("Saved locally");
+    } catch (error) {
+      setSaveStatus("Autosave unavailable — download before closing", true);
+    }
+  };
+  if (immediate) {
+    clearTimeout(saveTimer);
+    write();
+  } else {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(write, 180);
+  }
+}
+
+function setSaveStatus(text, warning = false) {
+  const el = document.getElementById("saveStatus");
+  el.textContent = text;
+  el.classList.toggle("warn", warning);
+}
+
+function visiblePassages() {
+  if (state.mode === "all") return PASSAGES;
+  return PASSAGES.filter((passage) => passage.batch === state.batch);
+}
+
+function clampCurrent() {
+  const visible = visiblePassages();
+  if (!visible.length) {
+    state.current = 0;
+    return visible;
+  }
+  if (state.current < 0) state.current = 0;
+  if (state.current >= visible.length) state.current = visible.length - 1;
+  return visible;
+}
+
+function currentPassage() {
+  const visible = clampCurrent();
+  return visible[state.current] || null;
+}
+
+function responseFor(id) {
+  if (!state.responses[id]) state.responses[id] = emptyResponse();
+  return state.responses[id];
+}
+
+function isScored(id) {
+  return Boolean(responseFor(id).overall);
+}
+
+function render() {
+  ensureResponses();
+  const visible = clampCurrent();
+  const passage = currentPassage();
+  document.getElementById("reviewerInput").value = state.reviewer;
+  document.getElementById("batchSelect").value = String(state.batch);
+  document.getElementById("batchSelect").disabled = state.mode === "all";
+  const allBtn = document.getElementById("allBtn");
+  allBtn.setAttribute("aria-pressed", state.mode === "all" ? "true" : "false");
+  allBtn.textContent = state.mode === "all" ? "Showing all 50" : "All 50";
+
+  if (!passage) {
+    document.getElementById("passageText").textContent = "No passages in this set.";
+    return;
+  }
+
+  document.getElementById("passageText").textContent = passage.text;
+  document.getElementById("passageId").textContent = passage.id;
+  document.getElementById("passageLabel").textContent = state.mode === "all"
+    ? `Passage ${state.current + 1} of ${visible.length}`
+    : `Set ${state.batch} · Passage ${state.current + 1} of ${visible.length}`;
+  document.getElementById("modeLabel").textContent = state.mode === "all"
+    ? "All 50 passages"
+    : `Set ${state.batch} of ${BATCH_COUNT}`;
+
+  const scored = visible.filter((item) => isScored(item.id)).length;
+  document.getElementById("progressText").textContent = `Scored ${scored} of ${visible.length}`;
+  document.getElementById("progressFill").style.width = `${visible.length ? (scored / visible.length) * 100 : 0}%`;
+
+  const response = responseFor(passage.id);
+  document.querySelectorAll("#questions [data-field]").forEach((container) => {
+    const field = container.dataset.field;
+    container.querySelectorAll("button.option").forEach((button) => {
+      button.setAttribute("aria-pressed", response[field] === button.dataset.value ? "true" : "false");
+    });
+  });
+  const notes = document.getElementById("notes");
+  if (notes.value !== response.notes) notes.value = response.notes;
+
+  document.getElementById("prevBtn").disabled = state.current === 0;
+  document.getElementById("nextBtn").textContent = state.current === visible.length - 1 ? "Finish set →" : "Next →";
+  renderJumpGrid(visible);
+  document.getElementById("completePanel").classList.toggle("hidden", !state.completed);
+  if (state.completed) renderCompletion(visible);
+}
+
+function renderJumpGrid(visible) {
+  const grid = document.getElementById("jumpGrid");
+  grid.replaceChildren();
+  visible.forEach((passage, index) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = String(index + 1);
+    button.title = passage.id;
+    button.classList.toggle("scored", isScored(passage.id));
+    button.classList.toggle("current", index === state.current);
+    button.addEventListener("click", () => {
+      state.current = index;
+      state.completed = false;
+      saveState();
+      render();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+    grid.appendChild(button);
+  });
+}
+
+function renderCompletion(visible) {
+  const scored = visible.filter((item) => isScored(item.id)).length;
+  const title = state.mode === "all" ? "All passages reviewed" : `Set ${state.batch} complete`;
+  const text = state.mode === "all"
+    ? `You scored ${scored} of ${visible.length} passages. Download the CSV to save your labels.`
+    : `You scored ${scored} of ${visible.length} passages in this set. You can stop here and download a partial CSV, or continue to the next set.`;
+  document.getElementById("completeTitle").textContent = title;
+  document.getElementById("completeText").textContent = text;
+  document.getElementById("nextSet").classList.toggle("hidden", state.mode === "all" || state.batch >= BATCH_COUNT);
+}
+
+function setField(field, value) {
+  const passage = currentPassage();
+  if (!passage) return;
+  const response = responseFor(passage.id);
+  response[field] = response[field] === value ? "" : value;
+  saveState();
+  render();
+}
+
+function goTo(index) {
+  const visible = clampCurrent();
+  state.current = Math.max(0, Math.min(visible.length - 1, index));
+  state.completed = false;
+  saveState();
+  render();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function next() {
+  const visible = clampCurrent();
+  if (state.current >= visible.length - 1) {
+    state.completed = true;
+    saveState(true);
+    render();
+    document.getElementById("completePanel").scrollIntoView({ behavior: "smooth", block: "center" });
+  } else {
+    goTo(state.current + 1);
+  }
+}
+
+function previous() {
+  if (state.current > 0) goTo(state.current - 1);
+}
+
+function nextUnscored() {
+  const visible = clampCurrent();
+  for (let offset = 1; offset <= visible.length; offset += 1) {
+    const index = (state.current + offset) % visible.length;
+    if (!isScored(visible[index].id)) {
+      goTo(index);
+      return;
+    }
+  }
+  toast("All passages in this set are scored.");
+}
+
+function setBatch(batch) {
+  state.mode = "batch";
+  state.batch = batch;
+  state.current = 0;
+  state.completed = false;
+  saveState(true);
+  render();
+}
+
+function setAll() {
+  state.mode = state.mode === "all" ? "batch" : "all";
+  state.current = 0;
+  state.completed = false;
+  saveState(true);
+  render();
+}
+
+function csvCell(value) {
+  const text = String(value ?? "");
+  return /[",\r\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
+}
+
+function buildCsv() {
+  const header = [
+    "passage_id",
+    "reviewer",
+    "overall_readability_1_5",
+    "density",
+    "fragmentation",
+    "rhythm",
+    "lexical_difficulty",
+    "structural_clarity",
+    "genuine_issue",
+    "notes"
+  ];
+  const lines = [header.join(",")];
+  for (const passage of PASSAGES) {
+    const response = responseFor(passage.id);
+    lines.push([
+      passage.id,
+      state.reviewer,
+      response.overall,
+      response.density,
+      response.fragmentation,
+      response.rhythm,
+      response.lexical,
+      response.structural,
+      response.genuine,
+      response.notes
+    ].map(csvCell).join(","));
+  }
+  return `${lines.join("\r\n")}\r\n`;
+}
+
+function downloadCsv() {
+  const blob = new Blob([buildCsv()], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "WRT-EDIT-02B-review-completed.csv";
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1500);
+  toast("CSV downloaded. Unscored rows are blank.");
+}
+
+function toast(message) {
+  const el = document.getElementById("toast");
+  el.textContent = message;
+  el.classList.add("show");
+  clearTimeout(toast.timer);
+  toast.timer = setTimeout(() => el.classList.remove("show"), 2600);
+}
+
+document.getElementById("questions").addEventListener("click", (event) => {
+  const button = event.target.closest("button.option");
+  if (!button) return;
+  const container = button.closest("[data-field]");
+  if (!container) return;
+  setField(container.dataset.field, button.dataset.value);
+});
+
+document.getElementById("notes").addEventListener("input", (event) => {
+  const passage = currentPassage();
+  if (!passage) return;
+  responseFor(passage.id).notes = event.target.value;
+  saveState();
+});
+
+document.getElementById("reviewerInput").addEventListener("input", (event) => {
+  state.reviewer = event.target.value;
+  saveState();
+});
+
+document.getElementById("batchSelect").addEventListener("change", (event) => {
+  setBatch(Number(event.target.value));
+});
+document.getElementById("allBtn").addEventListener("click", setAll);
+document.getElementById("prevBtn").addEventListener("click", previous);
+document.getElementById("nextBtn").addEventListener("click", next);
+document.getElementById("nextTop").addEventListener("click", next);
+document.getElementById("skipBtn").addEventListener("click", next);
+document.getElementById("nextUnscored").addEventListener("click", nextUnscored);
+document.getElementById("exportTop").addEventListener("click", downloadCsv);
+document.getElementById("exportComplete").addEventListener("click", downloadCsv);
+document.getElementById("nextSet").addEventListener("click", () => setBatch(Math.min(BATCH_COUNT, state.batch + 1)));
+document.getElementById("reviewAll").addEventListener("click", () => { state.mode = "all"; state.current = 0; state.completed = false; saveState(true); render(); });
+document.getElementById("backToPassage").addEventListener("click", () => { state.completed = false; saveState(true); render(); });
+
+document.addEventListener("keydown", (event) => {
+  const tag = (event.target && event.target.tagName || "").toLowerCase();
+  if (tag === "input" || tag === "textarea" || tag === "select") return;
+  if (event.key >= "1" && event.key <= "5") {
+    event.preventDefault();
+    setField("overall", event.key);
+  } else if (event.key === "ArrowLeft") {
+    event.preventDefault();
+    previous();
+  } else if (event.key === "ArrowRight" || event.key === "Enter") {
+    event.preventDefault();
+    next();
+  }
+});
+
+ensureResponses();
+const restored = loadState();
+ensureResponses();
+render();
+if (restored) {
+  setSaveStatus("Resumed saved review");
+  setTimeout(() => setSaveStatus("Saved locally"), 2200);
+}
+
+// Exposed only for local verification; contains no diagnostic key.
+window.__reviewApp = {
+  buildCsv,
+  getState: () => JSON.parse(JSON.stringify(state)),
+  setField,
+  next,
+  previous,
+  setBatch,
+  setAll,
+  render
+};
+</script>
+</body>
+</html>

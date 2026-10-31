@@ -1,0 +1,139 @@
+passage_id,text
+P01,"Consider this:
+
+Once you can move up and down that hierarchy, a model stops being a black box."
+P02,"This is where terminology can become misleading.
+
+The architecture outputs a scalar called.
+
+That name does not magically make it reinforcement learning."
+P03,"That architecture is useful because it is brutally simple:
+
+But one scalar eventually becomes restrictive.
+
+Suppose the model predicts that a candidate response has quality."
+P04,"We can continue descending inside the GRU if we want to understand reset/update gates, but for the architecture-level discussion this is already a useful boundary."
+P05,"So far in Models From First Principles, we have changed several different things and called all of them model design.
+
+We changed what a model predicts.
+
+MR.Q produced one learned quality score."
+P06,"In the previous post, we built a compact recursive model around one idea:
+
+That architecture looked more sophisticated than MR.Q, EBT or SICQL because it introduced recurrence."
+P07,"Just like that, the job that felt heavy five minutes ago was already halfway done.
+
+That’s amplified creation.
+
+Let’s break it down:"
+P08,"You’ve learned how to:
+
+That’s it. That’s the whole thing.
+
+Now it’s about doing.
+
+Pick something real. A problem. A decision. A blank page."
+P09,"Chapter 7 we did some research into this. Following is the actual session with ChatGPT for chapter 7
+
+You:
+
+I want you to analyze the following question using the full Freestyle Cognition process:"
+P10,"This is a sample transcript of a full CRITIC loop — using the AI as a coach, critic, and journal. Use it as a reference or template for your own sessions.
+
+AI: What's the most valuable thing you could accomplish in this session? User: I want to clearly explain the CRITIC framework in a way that sticks with readers."
+P11,"Full Name: Structured Session Format Acronym Breakdown (SESSION):
+
+Purpose: To wrap interaction in a container that includes intent, role, outcome, and reflection. Use Case: Use when guiding a user (yourself or others) through a repeatable process—e.g., daily review, therapy, or planning. Can Combine With: All of the above.
+
+These techniques are modular. You don't need to memorize them. You learn them by using them."
+P12,"Would you like me to bundle all these files into a zip for you, or help create a to accompany it?
+
+You:
+
+yes please"
+P13,"Imagine a row of cells.
+
+Each cell is either off or on:
+
+At the next step every cell examines itself and its immediate neighbors:"
+P14,"In the previous chapter we reduced a cellular automaton to four things:
+
+Now we are going to build one."
+P15,"The full-flip world (alternating all-zeros/all-ones, change rate exactly 1.0) holds entropy at zero: maximum activity, minimum uncertainty. Rule 30 and independent random bits are indistinguishable on this axis. High entropy marks both — so whatever distinguishes them must come from the other observables, not from entropy itself. (Verified: Rule 30 from a single cell holds tail entropy ≈ 0.99 over 200 generations.)"
+P16,"The hidden channels have no labels. We do not tell the model that channel 8 means ""distance from the center"" or channel 11 means ""grow east"". If useful internal signals exist, training must discover them.
+
+The same identity and gradient filters can be applied independently to all channels. A 16-channel state with three perception filters becomes 48 local features per cell."
+P17,"This broadens the states from which the rule must return toward the target. The full damage protocol as a loop — note what gets damaged (all channels) and what gets compared (visible trajectory):
+
+(Verified: the harness executes end to end. On an untrained identity baseline the curve is flat — no recovery, as it should be. A falling curve is therefore evidence about training, not about the harness.)"
+P18,"Separate observation from interpretation.
+
+The example below shows the shape of the sentences. Its numbers are placeholders, not results from this book's experiments:
+
+Observation"
+P19,"The first agents series introduced beam-style search.
+
+Beam search keeps the highest-scoring partial states.
+
+If we keep the best at each layer, the system is simple and efficient."
+P20,"The next step is to stop looking at mechanisms one at a time and evaluate the system as a whole: how do you benchmark an advanced agent architecture without letting demos, model judges or cherry-picked tasks fool you?"
+P21,"A single model can plan, execute and critique.
+
+That does not mean it should.
+
+Role separation helps when different stages need different context or incentives."
+P22,"An advanced agent platform can be working perfectly and still collapse.
+
+Not because the planner became confused.
+
+Not because the router chose the wrong model."
+P23,"If every production capability depends on one retrieval index, one verifier service, one browser pool, one policy engine, or one state-capture mechanism, then a defect in that component can degrade the entire portfolio at once."
+P24,"Over the previous forty-five steps, we built almost every major mechanism you might need in a serious agent platform.
+
+Search."
+P25,"An LLM agent is a software system built around a language model that can pursue a goal through context, state, tool use, feedback, and repeated interaction.
+
+The model is important, but it is not the whole agent. The larger system supplies the prompt, chooses what context the model sees, exposes tools, records state, retrieves memory, validates actions, handles errors, and decides when the work is finished. Two distinctions run through this book. First, the prompt — roughly, what was typed — is only part of the context: everything actually made available to the model for one computation, including retrieved memory, tool results, and runtime instructions. Second, when people say that an agent ""remembers,"" ""plans,"" or ""uses a tool,"" the precise mechanism usually belongs to this surrounding runtime, not to the model by itself."
+P26,"Storage is also an architectural decision, not a default. In a second check, eight small question-answering stores were each loaded with current, superseded, stale, unsupported, conflicting, and irrelevant notes, and a small local model (qwen2.5:0.5b, 0.5 billion parameters) answered with either raw retrieval or an answer-blind admission gate (admit current, flag conflicting as disputed, drop the rest). The gate read each note's ground-truth tag from the fixture:"
+P27,"The minimum trace that lets you answer later: who decided, from which state, using what evidence, and what changed?"
+P28,"Inconclusive and negative runs are retained, not re-rolled. Every excluded run carries a category (target / non-target / agent / environment / observer / evaluation failure, protocol violation, inconclusive), a reason, and an evidence pointer. Infrastructure failure is never classified as model failure."
+P29,"All protocols, fixtures, seeds, runners, and frozen results live in the book's research companion (). Each family has a spec frozen before its run, a frozen result file, and explicit allowed/forbidden claims. All model-backed runs used small local models, identified below by their recorded names (parameter counts from the local model registry). Summary:
+
+Deterministic families rerun exactly (,,, ). Model-backed families record model identity, temperature, seeds, token counts, budgets, and — from v2 on — raw outputs. Frozen files are never overwritten; new protocol versions get new files."
+P30,"This book began with a simple shift: an LLM agent is not just a model response. It is a system built around a model, shaped by roles, context, tools, memory, feedback, coordination, and human direction.
+
+Across the chapters, that system grew. Stochasticity became useful variation. A small role-based workflow became a reflective process. Reflection led to versioning, versioning led to coordination, coordination led to natural-language interfaces, and persistent interfaces led to companions, digital lenses, and freestyle cognition."
+P31,"Something is moving. It appears to have a boundary. Different parts of it seem to behave differently: an edge that ripples, an interior that stays denser, a leading region that seems to pull the rest along. Its shape changes as it travels, and yet some larger organization survives those changes. Watch it for thirty seconds and you will start predicting what it is about to do.
+
+Notice how fast that happened, and notice how little was required to trigger it. Nothing in the simulation announced. Nothing marked where the supposed body begins or ends. Nothing certified that the pattern visible at one moment is the same individual as the pattern visible several moments later."
+P32,"Here the computational substrate gives us something experimentally unusual: an exact executable branch point. From one saved state we can construct alternative futures directly rather than search the world for approximately matched cases. This is the single most valuable thing the checkpoint gives us, and everything in the second half of this chapter depends on it. The branch point gives us control, but stochasticity immediately adds a warning. Two futures can diverge even when we do not manipulate the mechanism we care about. So from this point onward, every measure of counterfactual divergence needs a stochastic baseline. That problem will become considerably more important later in the chapter."
+P33,"As material, an occupied cell has carried almost no internal distinction beyond the fact that it exists.
+
+So the question that ends the previous chapter is the question that opens this one:
+
+Which sounds almost too easy. Of course software can change a variable. We could write:"
+P34,"The last chapter ended with a mechanism and a constraint. Experience could write a persistent local change into the material of the crystal, and that change could bias what got built nearby — but only while it remained inside the moving causal aperture.
+
+Growth advanced outward, the aperture advanced with it, and material left behind stayed perfectly preserved and perfectly irrelevant. Every attempt to fix that was an attempt to keep the trace near the surface."
+P35,"Which sharpens a question the book has left open twice. The Is There Actually One Thing Here? chapter looked for a privileged boundary around the connected crystal and failed to find one, twice: no scale showed excess predictive coherence beyond a family null, and the candidate outer boundary localized causal effects no better than a circle drawn arbitrarily through the interior. What survived was spatial causal locality — consequences stay near their causes — which is true of any local field and establishes nothing about individuals. But that chapter tested regions defined primarily by geometry, and we now have a better experimental target: instead of asking whether a region is special because its outline looks object-like, ask whether perturbations originating inside it are preferentially contained there — and whether perturbations originating outside penetrate it less — beyond what geometry alone predicts. That reopens the boundary question without assuming in advance that there is an object, a process or an individual waiting to be found."
+P36,"The two numbers come from different runs. V1 measured raw causal containment on seed. V2 regenerated the selected regions on fresh seed, reproduced the raw score at, and then asked the stronger question: did those regions exceed same-checkpoint matched controls?
+
+Many of the safeguards we had learned to trust were satisfied. The number was large. The interval was narrow. The intervention was correct. The region selection was outcome-blind. The raw phenomenon appeared again on a fresh seed."
+P37,"Read that way, the past teaches something narrower—and more useful—than a grand story of progress, and narrower than technological determinism in either direction. Writing can preserve a formulation while losing tone and immediate context. Print can make editions comparable while multiplying errors as well as corrections. Electronic media can carry voice and image while introducing new forms of selection and distortion. Each is a change in what can travel, how it can be inspected, and what a receiver must supply. None makes communication automatically faithful. The historical lesson, stated at the resolution the evidence actually supports, is that a medium changes the conditions of reconstruction; the outcome still depends on people, purposes and institutions. Held that loosely, the past is a check on one-sided claims—an argument that a richer channel is automatically better, or that a new channel is automatically worse—and not a prediction about the present."
+P38,"Senders, for their part, tend to overestimate how much of their intent has crossed. Keysar and Henly (2002) found that speakers believed their ambiguous statements had been understood more often than they were, because the speaker's own knowledge of what they meant fills the ambiguity automatically. A well-known demonstration, from a doctoral study by Elizabeth Newton (1990), asked people to tap out the rhythm of a famous song for a listener to identify. In Newton's tapping study, participants expected listeners to identify roughly half the tunes. The dissertation's results section and Table 1 report just three correct identifications in 120 attempts (2.5%). The dissertation is internally inconsistent about the precise count, however: its abstract reports two in 150, and its later discussion reports three in 150. For the tapper the song plays in their head. For the listener there is only knocking. The tapper has access to a richer experienced whole than the tapping carries. Speakers are in a similar position: they may begin with an image, a relation, a direction or a partly formed thought, not a finished inner sentence, and the words they choose carry only some of it. The gap between what the sender has and what the representation carries is part of what the receiver has to rebuild across; no general theory of wordless thought is needed to see that."
+P39,"A reader may prefer a polished illustration, animation or interactive view while performing no better on the intended task. The reverse can also occur. Ease of reading, confidence in understanding, immediate recall and successful transfer are different outcomes. This chapter does not establish how often they diverge. A preference rating alone cannot tell us whether a representation helped.
+
+Evaluate preference and task performance separately, including time and errors, and preserve disagreement between the measures. A view readers love but cannot use needs revision. A demanding view that improves transfer may be worth retaining, while still needing work on accessibility and effort. Averaging the measures into one impression would hide precisely the difference a designer needs to understand.
+
+Nor does a preferred form establish a fixed learning style. Clinton-Lisell and Litzinger's 2024 meta-analysis examined 21 eligible studies and 101 effect sizes. It found a small pooled matched-instruction advantage (g = 0.31). Only 26% of learning-outcome measures, however, showed the crossover pattern needed to support the stronger claim: that different self-identified groups learn best from their own matched form.
+
+The studies were generally of low quality, and the authors judged the benefits too inconsistent to justify widespread matching. This limits the case for turning fixed style labels into instruction policy; it does not show that representation choice never matters. A system should attend to the task, material, goals and observed needs rather than assign supposed person types."
+P40,"Task models that generate interfaces. Cao, Jiang and Xia's ""Generative and Malleable User Interfaces with Generative and Evolving Task-Driven Data Model"" (CHI 2025) proposes a structured task-driven model between a user's request and the rendered interface. In Jelly, an LLM produces an object-relational schema and dependency graph, with data organised under that structure; UI specifications map the model to a constrained set of established display patterns. Users can modify the resulting information space by language or direct manipulation, and inspect the model rather than endlessly re-prompting an opaque layout. The technical evaluation assessed schema relevance and dependency accuracy, not the correctness of arbitrary underlying source documents. Its user study involved eight participants completing open-ended information tasks; it documented enthusiasm and flexibility, but also limits in visual expressiveness and cases where requested changes were not made. This is evidence that a task-to-model-to-interface-to-revision loop can run and be manipulated. It is not a controlled demonstration of superior task accuracy, transfer or time against a strong conventional interface, nor a demonstration that the underlying data is faithfully sourced."
+P41,"Iris opens the system on her phone before an architecture review and says: I have five minutes before the meeting. Just tell me what can break. She is asking for a different first view, not withdrawing her interest in the implementation or authorising the system to guess what she can safely ignore. Five minutes is her stated budget for this encounter, not a measurement of her attention span or a standing preference for brevity.
+
+Her standing policy asks for implementation detail and equations when they affect the decision. Yesterday, at her desk, that meant a full account of the recovery path. Today, showing the same account first might exhaust the time she has. But a short answer that omits the condition under which recovery can duplicate a write would be worse: she could leave the meeting with a fluent answer and a false assurance. Brevity is useful only within what the decision requires her to know."
+P42,"At the start of an evening study session, Iris says: For this session, I want to finish this paper first. Remind me before I open another one. Twenty minutes later, a new result appears through her semantic subscription. The alert is a candidate for her attention, not an instruction to abandon the paper; Chapter 20's delivery rules still govern whether it should interrupt. When Iris encounters the result in the reading tool and chooses to open it, a second question arises: may the interface put a reminder in the path of that action?
+
+The channel shows a line beside the action: You asked for a reminder before opening another paper during this session. Beside it are two equally clear choices: Continue current paper and Open new paper now. Iris can take either without a second confirmation, and the source remains accessible. The reminder adds a moment for her earlier intention to be considered; it does not decide on her behalf."
+P43,"Freeze a set of source-grounded architecture-review tasks, including one with an easily missed qualification, one with a changed standing instruction, one with a stale inference, one with a temporary overlay, and one with an unsupported remote boundary. Independent reviewers should identify the evidence and permitted effects for each task before examining system outputs. Test at least four conditions: a generic task-aware interface with manual controls; the same interface with applicable declared policy; declared policy plus optional authorised observation/inference; and the full composed layer including temporary and cross-service controls. Use matched sources, task budgets and models, and repeat with held-out cases and changed conditions. This is a proposed design; no such comparison has been run for this book."
+P44,"Iris asks her proxy to look for someone with whom she could investigate a difficult result. Imagine that she and another person have independently authorised a private search using selected, limited views of their work. The system proposes a connection for an unexpected reason. Both repeatedly ask for the qualification behind a headline. Both reject a polished answer when its evidence cannot be traced. Both turn to a counterexample before accepting a general rule. Their subjects are different, and neither has written those habits into an interest list. The proxy offers Iris a reason to consider a possible collaborator without naming the other person, exposing their history or claiming that the affinity has been established. The other person's identity and participation remain subject to a separate decision."

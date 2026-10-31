@@ -1,0 +1,559 @@
+diff --git a/config/web/projects.yaml b/config/web/projects.yaml
+index 67600dba5..9e290dbba 100644
+--- a/config/web/projects.yaml
++++ b/config/web/projects.yaml
+@@ -181,11 +181,11 @@ projects:
+     name: pi
+     active: true
+ 
+-    project_root: C:\Projects\pi\
+-    content_dir: C:\Projects\pi\content
+-    chat_dir: C:\Projects\pi\content\chat
+-    metadata_dir: C:\Projects\pi\metadata
+-    status_dir: C:\Projects\pi\content\config\artifact_status
++    project_root: C:\books\pi\
++    content_dir: C:\books\pi\content
++    chat_dir: C:\books\pi\content\chat
++    metadata_dir: C:\books\pi\metadata
++    status_dir: C:\books\pi\content\config\artifact_status
+ 
+     profile: technical
+     formatter:
+@@ -201,7 +201,7 @@ projects:
+     repo:
+       provider: github
+       url: https://github.com/ernanhughes/pi.git
+-      local_path: C:\Projects\pi\
++      local_path: C:\books\pi\
+       default_branch: main
+ 
+     training:
+@@ -328,11 +328,11 @@ projects:
+     name: context
+     active: true
+ 
+-    project_root: C:\Projects\context\
+-    content_dir: C:\Projects\context\content
+-    chat_dir: C:\Projects\context\content\chat
+-    metadata_dir: C:\Projects\context\metadata
+-    status_dir: C:\Projects\context\content\config\artifact_status
++    project_root: C:\books\context\
++    content_dir: C:\books\context\content
++    chat_dir: C:\books\context\content\chat
++    metadata_dir: C:\books\context\metadata
++    status_dir: C:\books\context\content\config\artifact_status
+ 
+     profile: technical
+     formatter:
+@@ -348,7 +348,7 @@ projects:
+     repo:
+       provider: github
+       url: https://github.com/ernanhughes/context.git
+-      local_path: C:\Projects\context\
++      local_path: C:\books\context\
+       default_branch: main
+ 
+     training:
+@@ -475,11 +475,11 @@ projects:
+     name: memory
+     active: true
+ 
+-    project_root: C:\Projects\memory\
+-    content_dir: C:\Projects\memory\content
+-    chat_dir: C:\Projects\memory\content\chat
+-    metadata_dir: C:\Projects\memory\metadata
+-    status_dir: C:\Projects\memory\content\config\artifact_status
++    project_root: C:\books\memory\
++    content_dir: C:\books\memory\content
++    chat_dir: C:\books\memory\content\chat
++    metadata_dir: C:\books\memory\metadata
++    status_dir: C:\books\memory\content\config\artifact_status
+ 
+     profile: technical
+     formatter:
+@@ -495,7 +495,7 @@ projects:
+     repo:
+       provider: github
+       url: https://github.com/ernanhughes/memory.git
+-      local_path: C:\Projects\memory\
++      local_path: C:\books\memory\
+       default_branch: main
+ 
+     training:
+@@ -622,11 +622,11 @@ projects:
+     name: applied-ai
+     active: true
+ 
+-    project_root: C:\Projects\new-books\
+-    content_dir: C:\Projects\new-books\content\books\applied-ai
+-    chat_dir: C:\Projects\new-books\content\books\applied-ai\chat
+-    metadata_dir: C:\Projects\new-books\metadata\applied-ai
+-    status_dir: C:\Projects\new-books\content\books\applied-ai\config\artifact_status
++    project_root: C:\books\new-books\
++    content_dir: C:\books\new-books\content\books\applied-ai
++    chat_dir: C:\books\new-books\content\books\applied-ai\chat
++    metadata_dir: C:\books\new-books\metadata\applied-ai
++    status_dir: C:\books\new-books\content\books\applied-ai\config\artifact_status
+ 
+     profile: technical
+     formatter:
+@@ -642,7 +642,7 @@ projects:
+     repo:
+       provider: github
+       url: https://github.com/ernanhughes/next-books.git
+-      local_path: C:\Projects\new-books\
++      local_path: C:\books\new-books\
+       default_branch: main
+ 
+     training:
+@@ -675,7 +675,7 @@ projects:
+       publication_status: published
+ 
+     # R16: per-book bibliography owned by the book (shared repo
+-    # C:\Projects\new-books\: the path stays book-scoped so neighbouring
++    # C:\books\new-books\: the path stays book-scoped so neighbouring
+     # books in the same repo never mix).
+     research:
+       bibliography: content/books/applied-ai/research/bibliography.yaml
+@@ -770,11 +770,11 @@ projects:
+     name: debugging-ai
+     active: true
+ 
+-    project_root: C:\Projects\new-books\
+-    content_dir: C:\Projects\new-books\content\books\debugging-ai
+-    chat_dir: C:\Projects\new-books\content\books\debugging-ai\chat
+-    metadata_dir: C:\Projects\new-books\metadata\debugging-ai
+-    status_dir: C:\Projects\new-books\content\books\debugging-ai\config\artifact_status
++    project_root: C:\books\new-books\
++    content_dir: C:\books\new-books\content\books\debugging-ai
++    chat_dir: C:\books\new-books\content\books\debugging-ai\chat
++    metadata_dir: C:\books\new-books\metadata\debugging-ai
++    status_dir: C:\books\new-books\content\books\debugging-ai\config\artifact_status
+ 
+     profile: technical
+     formatter:
+@@ -790,7 +790,7 @@ projects:
+     repo:
+       provider: github
+       url: https://github.com/ernanhughes/next-books.git
+-      local_path: C:\Projects\new-books\
++      local_path: C:\books\new-books\
+       default_branch: main
+ 
+     training:
+@@ -891,11 +891,11 @@ projects:
+     name: embeddings-from-first-principles
+     active: true
+ 
+-    project_root: C:\Projects\new-books\
+-    content_dir: C:\Projects\new-books\content\books\embeddings-from-first-principles
+-    chat_dir: C:\Projects\new-books\content\books\embeddings-from-first-principles\chat
+-    metadata_dir: C:\Projects\new-books\metadata\embeddings-from-first-principles
+-    status_dir: C:\Projects\new-books\content\books\embeddings-from-first-principles\config\artifact_status
++    project_root: C:\books\new-books\
++    content_dir: C:\books\new-books\content\books\embeddings-from-first-principles
++    chat_dir: C:\books\new-books\content\books\embeddings-from-first-principles\chat
++    metadata_dir: C:\books\new-books\metadata\embeddings-from-first-principles
++    status_dir: C:\books\new-books\content\books\embeddings-from-first-principles\config\artifact_status
+ 
+     profile: technical
+     formatter:
+@@ -911,7 +911,7 @@ projects:
+     repo:
+       provider: github
+       url: https://github.com/ernanhughes/next-books.git
+-      local_path: C:\Projects\new-books\
++      local_path: C:\books\new-books\
+       default_branch: main
+ 
+     training:
+@@ -1013,11 +1013,11 @@ projects:
+     name: browser-ai-from-first-principles
+     active: true
+ 
+-    project_root: C:\Projects\new-books\
+-    content_dir: C:\Projects\new-books\content\books\browser-ai-from-first-principles
+-    chat_dir: C:\Projects\new-books\content\books\browser-ai-from-first-principles\chat
+-    metadata_dir: C:\Projects\new-books\metadata\browser-ai-from-first-principles
+-    status_dir: C:\Projects\new-books\content\books\browser-ai-from-first-principles\config\artifact_status
++    project_root: C:\books\new-books\
++    content_dir: C:\books\new-books\content\books\browser-ai-from-first-principles
++    chat_dir: C:\books\new-books\content\books\browser-ai-from-first-principles\chat
++    metadata_dir: C:\books\new-books\metadata\browser-ai-from-first-principles
++    status_dir: C:\books\new-books\content\books\browser-ai-from-first-principles\config\artifact_status
+ 
+     profile: technical
+     formatter:
+@@ -1033,7 +1033,7 @@ projects:
+     repo:
+       provider: github
+       url: https://github.com/ernanhughes/next-books.git
+-      local_path: C:\Projects\new-books\
++      local_path: C:\books\new-books\
+       default_branch: main
+ 
+     training:
+@@ -1134,11 +1134,11 @@ projects:
+     name: dspy-from-first-principles
+     active: true
+ 
+-    project_root: C:\Projects\new-books\
+-    content_dir: C:\Projects\new-books\content\books\dspy-from-first-principles
+-    chat_dir: C:\Projects\new-books\content\books\dspy-from-first-principles\chat
+-    metadata_dir: C:\Projects\new-books\metadata\dspy-from-first-principles
+-    status_dir: C:\Projects\new-books\content\books\dspy-from-first-principles\config\artifact_status
++    project_root: C:\books\new-books\
++    content_dir: C:\books\new-books\content\books\dspy-from-first-principles
++    chat_dir: C:\books\new-books\content\books\dspy-from-first-principles\chat
++    metadata_dir: C:\books\new-books\metadata\dspy-from-first-principles
++    status_dir: C:\books\new-books\content\books\dspy-from-first-principles\config\artifact_status
+ 
+     profile: technical
+     formatter:
+@@ -1154,7 +1154,7 @@ projects:
+     repo:
+       provider: github
+       url: https://github.com/ernanhughes/next-books.git
+-      local_path: C:\Projects\new-books\
++      local_path: C:\books\new-books\
+       default_branch: main
+ 
+     training:
+@@ -1255,11 +1255,11 @@ projects:
+     name: hallucination-from-first-principles
+     active: true
+ 
+-    project_root: C:\Projects\new-books\
+-    content_dir: C:\Projects\new-books\content\books\hallucination-from-first-principles
+-    chat_dir: C:\Projects\new-books\content\books\hallucination-from-first-principles\chat
+-    metadata_dir: C:\Projects\new-books\metadata\hallucination-from-first-principles
+-    status_dir: C:\Projects\new-books\content\books\hallucination-from-first-principles\config\artifact_status
++    project_root: C:\books\new-books\
++    content_dir: C:\books\new-books\content\books\hallucination-from-first-principles
++    chat_dir: C:\books\new-books\content\books\hallucination-from-first-principles\chat
++    metadata_dir: C:\books\new-books\metadata\hallucination-from-first-principles
++    status_dir: C:\books\new-books\content\books\hallucination-from-first-principles\config\artifact_status
+ 
+     profile: technical
+     formatter:
+@@ -1275,7 +1275,7 @@ projects:
+     repo:
+       provider: github
+       url: https://github.com/ernanhughes/next-books.git
+-      local_path: C:\Projects\new-books\
++      local_path: C:\books\new-books\
+       default_branch: main
+ 
+     training:
+@@ -1376,11 +1376,11 @@ projects:
+     name: pytorch-from-first-principles
+     active: true
+ 
+-    project_root: C:\Projects\new-books\
+-    content_dir: C:\Projects\new-books\content\books\pytorch-from-first-principles
+-    chat_dir: C:\Projects\new-books\content\books\pytorch-from-first-principles\chat
+-    metadata_dir: C:\Projects\new-books\metadata\pytorch-from-first-principles
+-    status_dir: C:\Projects\new-books\content\books\pytorch-from-first-principles\config\artifact_status
++    project_root: C:\books\new-books\
++    content_dir: C:\books\new-books\content\books\pytorch-from-first-principles
++    chat_dir: C:\books\new-books\content\books\pytorch-from-first-principles\chat
++    metadata_dir: C:\books\new-books\metadata\pytorch-from-first-principles
++    status_dir: C:\books\new-books\content\books\pytorch-from-first-principles\config\artifact_status
+ 
+     profile: technical
+     formatter:
+@@ -1396,7 +1396,7 @@ projects:
+     repo:
+       provider: github
+       url: https://github.com/ernanhughes/next-books.git
+-      local_path: C:\Projects\new-books\
++      local_path: C:\books\new-books\
+       default_branch: main
+ 
+     training:
+@@ -1497,11 +1497,11 @@ projects:
+     name: agents-from-first-principles
+     active: true
+ 
+-    project_root: C:\Projects\new-books\
+-    content_dir: C:\Projects\new-books\content\books\agents-from-first-principles
+-    chat_dir: C:\Projects\new-books\content\books\agents-from-first-principles\chat
+-    metadata_dir: C:\Projects\new-books\metadata\agents-from-first-principles
+-    status_dir: C:\Projects\new-books\content\books\agents-from-first-principles\config\artifact_status
++    project_root: C:\books\new-books\
++    content_dir: C:\books\new-books\content\books\agents-from-first-principles
++    chat_dir: C:\books\new-books\content\books\agents-from-first-principles\chat
++    metadata_dir: C:\books\new-books\metadata\agents-from-first-principles
++    status_dir: C:\books\new-books\content\books\agents-from-first-principles\config\artifact_status
+ 
+     profile: technical
+     formatter:
+@@ -1517,7 +1517,7 @@ projects:
+     repo:
+       provider: github
+       url: https://github.com/ernanhughes/next-books.git
+-      local_path: C:\Projects\new-books\
++      local_path: C:\books\new-books\
+       default_branch: main
+ 
+     training:
+@@ -1618,11 +1618,11 @@ projects:
+     name: digital-life
+     active: true
+ 
+-    project_root: C:\Projects\digital-life
+-    content_dir: C:\Projects\digital-life\content\books\digital-life
+-    chat_dir: C:\Projects\digital-life\chat
+-    metadata_dir: C:\Projects\digital-life\metadata\books\digital-life
+-    status_dir: C:\Projects\digital-life\config\artifact_status
++    project_root: C:\books\digital-life
++    content_dir: C:\books\digital-life\content\books\digital-life
++    chat_dir: C:\books\digital-life\chat
++    metadata_dir: C:\books\digital-life\metadata\books\digital-life
++    status_dir: C:\books\digital-life\config\artifact_status
+ 
+     profile: technical
+     formatter:
+@@ -1638,7 +1638,7 @@ projects:
+     repo:
+       provider: github
+       url: https://github.com/ernanhughes/digital-life.git
+-      local_path: C:\Projects\digital-life
++      local_path: C:\books\digital-life
+       default_branch: main
+ 
+     training:
+@@ -1737,11 +1737,11 @@ projects:
+     name: Latent
+     active: true
+ 
+-    project_root: C:\Projects\latent
+-    content_dir: C:\Projects\latent\chapters
+-    chat_dir: C:\Projects\latent\chat
+-    metadata_dir: C:\Projects\latent\metadata
+-    status_dir: C:\Projects\latent\config\artifact_status
++    project_root: C:\books\latent
++    content_dir: C:\books\latent\chapters
++    chat_dir: C:\books\latent\chat
++    metadata_dir: C:\books\latent\metadata
++    status_dir: C:\books\latent\config\artifact_status
+ 
+     profile: fiction
+     formatter:
+@@ -1758,7 +1758,7 @@ projects:
+     repo:
+       provider: github
+       url: https://github.com/ernanhughes/latent.git
+-      local_path: C:\Projects\latent
++      local_path: C:\books\latent
+       default_branch: main
+ 
+     training:
+@@ -1803,11 +1803,11 @@ projects:
+     name: Coin
+     active: true
+ 
+-    project_root: C:\Projects\coin
+-    content_dir: C:\Projects\coin\chapters
+-    chat_dir: C:\Projects\coin\chat
+-    metadata_dir: C:\Projects\coin\metadata
+-    status_dir: C:\Projects\coin\config\artifact_status
++    project_root: C:\books\coin
++    content_dir: C:\books\coin\chapters
++    chat_dir: C:\books\coin\chat
++    metadata_dir: C:\books\coin\metadata
++    status_dir: C:\books\coin\config\artifact_status
+ 
+     profile: fiction
+     formatter:
+@@ -1824,7 +1824,7 @@ projects:
+     repo:
+       provider: github
+       url: https://github.com/ernanhughes/coin.git
+-      local_path: C:\Projects\coin
++      local_path: C:\books\coin
+       default_branch: main
+ 
+     training:
+@@ -1869,11 +1869,11 @@ projects:
+     name: Softwear
+     active: true
+ 
+-    project_root: C:\Projects\softwear
+-    content_dir: C:\Projects\softwear\chapters
+-    chat_dir: C:\Projects\softwear\chat
+-    metadata_dir: C:\Projects\softwear\metadata
+-    status_dir: C:\Projects\softwear\config\artifact_status
++    project_root: C:\books\softwear
++    content_dir: C:\books\softwear\chapters
++    chat_dir: C:\books\softwear\chat
++    metadata_dir: C:\books\softwear\metadata
++    status_dir: C:\books\softwear\config\artifact_status
+ 
+     profile: fiction
+     formatter:
+@@ -1890,7 +1890,7 @@ projects:
+     repo:
+       provider: github
+       url: https://github.com/ernanhughes/softwear.git
+-      local_path: C:\Projects\softwear
++      local_path: C:\books\softwear
+       default_branch: main
+ 
+     training:
+@@ -1938,11 +1938,11 @@ projects:
+     # --------------------------------------------------------------------------
+     # Local Writer project paths
+     # --------------------------------------------------------------------------
+-    project_root: C:\Projects\axiom-zero
+-    content_dir: C:\Projects\axiom-zero\chapters
+-    chat_dir: C:\Projects\axiom-zero\chat
+-    metadata_dir: C:\Projects\axiom-zero\metadata
+-    status_dir: C:\Projects\axiom-zero\config\artifact_status
++    project_root: C:\books\axiom-zero
++    content_dir: C:\books\axiom-zero\chapters
++    chat_dir: C:\books\axiom-zero\chat
++    metadata_dir: C:\books\axiom-zero\metadata
++    status_dir: C:\books\axiom-zero\config\artifact_status
+ 
+     # --------------------------------------------------------------------------
+     # Project classification
+@@ -1965,7 +1965,7 @@ projects:
+     repo:
+       provider: github
+       url: https://github.com/ernanhughes/axiom-zero.git
+-      local_path: C:\Projects\axiom-zero
++      local_path: C:\books\axiom-zero
+       default_branch: main
+ 
+     # --------------------------------------------------------------------------
+@@ -2025,11 +2025,11 @@ projects:
+     # `project_root` should normally be the local Git repo root.
+     # `content_dir` points to the chapter markdown folder used by Writer Web,
+     # artifact review, sentence review, and import tooling.
+-    project_root: C:\Projects\becoming-alice
+-    content_dir: C:\Projects\becoming-alice\chapters
+-    chat_dir: C:\Projects\becoming-alice\chat
+-    metadata_dir: C:\Projects\becoming-alice\metadata
+-    status_dir: C:\Projects\becoming-alice\config\artifact_status
++    project_root: C:\books\becoming-alice
++    content_dir: C:\books\becoming-alice\chapters
++    chat_dir: C:\books\becoming-alice\chat
++    metadata_dir: C:\books\becoming-alice\metadata
++    status_dir: C:\books\becoming-alice\config\artifact_status
+ 
+     # --------------------------------------------------------------------------
+     # Project classification
+@@ -2053,7 +2053,7 @@ projects:
+     repo:
+       provider: github
+       url: https://github.com/ernanhughes/becoming-alice.git
+-      local_path: C:\Projects\becoming-alice
++      local_path: C:\books\becoming-alice
+       default_branch: main
+ 
+     # --------------------------------------------------------------------------
+@@ -2119,11 +2119,11 @@ projects:
+     # --------------------------------------------------------------------------
+     # Local Writer project paths
+     # --------------------------------------------------------------------------
+-    project_root: C:\Projects\collapse
+-    content_dir: C:\Projects\collapse\chapters
+-    chat_dir: C:\Projects\collapse\chat
+-    metadata_dir: C:\Projects\collapse\metadata
+-    status_dir: C:\Projects\collapse\config\artifact_status
++    project_root: C:\books\collapse
++    content_dir: C:\books\collapse\chapters
++    chat_dir: C:\books\collapse\chat
++    metadata_dir: C:\books\collapse\metadata
++    status_dir: C:\books\collapse\config\artifact_status
+ 
+     # --------------------------------------------------------------------------
+     # Project classification
+@@ -2143,7 +2143,7 @@ projects:
+     repo:
+       provider: github
+       url: https://github.com/ernanhughes/collapse.git
+-      local_path: C:\Projects\collapse
++      local_path: C:\books\collapse
+       default_branch: main
+ 
+     # --------------------------------------------------------------------------
+@@ -2201,11 +2201,11 @@ projects:
+     # --------------------------------------------------------------------------
+     # Local Writer project paths
+     # --------------------------------------------------------------------------
+-    project_root: C:\Projects\goblins
+-    content_dir: C:\Projects\goblins\chapters
+-    chat_dir: C:\Projects\goblins\chat
+-    metadata_dir: C:\Projects\goblins\metadata
+-    status_dir: C:\Projects\goblins\config\artifact_status
++    project_root: C:\books\goblins
++    content_dir: C:\books\goblins\chapters
++    chat_dir: C:\books\goblins\chat
++    metadata_dir: C:\books\goblins\metadata
++    status_dir: C:\books\goblins\config\artifact_status
+ 
+     # --------------------------------------------------------------------------
+     # Project classification
+@@ -2225,7 +2225,7 @@ projects:
+     repo:
+       provider: github
+       url: https://github.com/ernanhughes/goblins.git
+-      local_path: C:\Projects\goblins
++      local_path: C:\books\goblins
+       default_branch: main
+ 
+     # --------------------------------------------------------------------------
+@@ -2283,11 +2283,11 @@ projects:
+     # --------------------------------------------------------------------------
+     # Local Writer project paths
+     # --------------------------------------------------------------------------
+-    project_root: C:\Projects\techno-prophet
+-    content_dir: C:\Projects\techno-prophet\chapters
+-    chat_dir: C:\Projects\techno-prophet\chat
+-    metadata_dir: C:\Projects\techno-prophet\metadata
+-    status_dir: C:\Projects\techno-prophet\config\artifact_status
++    project_root: C:\books\techno-prophet
++    content_dir: C:\books\techno-prophet\chapters
++    chat_dir: C:\books\techno-prophet\chat
++    metadata_dir: C:\books\techno-prophet\metadata
++    status_dir: C:\books\techno-prophet\config\artifact_status
+ 
+     # --------------------------------------------------------------------------
+     # Project classification
+@@ -2307,7 +2307,7 @@ projects:
+     repo:
+       provider: github
+       url: https://github.com/ernanhughes/techno-prophet.git
+-      local_path: C:\Projects\techno-prophet
++      local_path: C:\books\techno-prophet
+       default_branch: main
+ 
+     # --------------------------------------------------------------------------
+@@ -2487,11 +2487,11 @@ projects:
+     name: Projection
+     active: true
+ 
+-    project_root: C:\Projects\projection
+-    content_dir: C:\Projects\projection\chapters
+-    chat_dir: C:\Projects\projection\chat
+-    metadata_dir: C:\Projects\projection\metadata
+-    status_dir: C:\Projects\projection\config\artifact_status
++    project_root: C:\books\projection
++    content_dir: C:\books\projection\chapters
++    chat_dir: C:\books\projection\chat
++    metadata_dir: C:\books\projection\metadata
++    status_dir: C:\books\projection\config\artifact_status
+ 
+     profile: fiction
+     formatter:
+@@ -2508,7 +2508,7 @@ projects:
+     repo:
+       provider: github
+       url: https://github.com/ernanhughes/projection.git
+-      local_path: C:\Projects\projection
++      local_path: C:\books\projection
+       default_branch: main
+ 
+     training:

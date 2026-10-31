@@ -1,0 +1,4232 @@
+{
+  "schema": "wrt-edit-02a.calibration-passages.v2",
+  "passage_count": 50,
+  "diagnostic_key": "writer-editing-report-v1 chapter scores; no passage-level ground truth",
+  "distinct_manuscripts": 27,
+  "duplicate_registration_excluded": "programmer_ie",
+  "passages": [
+    {
+      "passage_id": "P01",
+      "project_id": "language",
+      "profile": "technical",
+      "chapter_id": "chapter:language:24-chapter",
+      "chapter_title": "Memory can be right and still make the present wrong",
+      "chapter_order": 23,
+      "source_path": "C:\\Projects\\language\\content\\books\\language\\24-chapter.md",
+      "relative_path": "content/books/language/24-chapter.md",
+      "category": "fragmented_sequence",
+      "tags": [
+        "technical",
+        "dense_prose"
+      ],
+      "extraction_mode": "fragmented",
+      "diagnostic_stratum": "high",
+      "chapter_scores": {
+        "paragraph_load": {
+          "score": 99.6,
+          "band": "good",
+          "finding_codes": []
+        },
+        "sentence_load": {
+          "score": 99.2,
+          "band": "good",
+          "finding_codes": []
+        },
+        "fragmentation": {
+          "score": 29.3,
+          "band": "high",
+          "finding_codes": [
+            "READABILITY.FRAGMENTATION"
+          ]
+        },
+        "rhythm": {
+          "score": 91.5,
+          "band": "good",
+          "finding_codes": []
+        },
+        "lexical_accessibility": {
+          "score": 93.9,
+          "band": "good",
+          "finding_codes": []
+        },
+        "section_structure": {
+          "score": 97.3,
+          "band": "good",
+          "finding_codes": [
+            "READABILITY.HEADING_DENSITY",
+            "READABILITY.TRIVIAL_SECTION"
+          ]
+        }
+      },
+      "chapter_finding_codes": [
+        "READABILITY.FRAGMENTATION",
+        "READABILITY.HEADING_DENSITY",
+        "READABILITY.TRIVIAL_SECTION"
+      ],
+      "paragraph_metrics": {
+        "paragraph_count": 6,
+        "words": [
+          9,
+          5,
+          12,
+          3,
+          18,
+          11
+        ],
+        "median_paragraph_words": 10.0,
+        "sentence_counts": [
+          1,
+          1,
+          1,
+          1,
+          2,
+          1
+        ],
+        "line_start": 44,
+        "line_end": 79
+      },
+      "section": null,
+      "code_fence_start_line": null,
+      "code_fence_end_line": null,
+      "text": "That sounds obvious, but systems often flatten the distinction.\n\nSuppose the retained item is:\n\nThere are several different claims hidden inside the temptation to reuse it.\n\nOne concerns provenance:\n\nThat is a claim about the statement and its author. It does not by itself certify the architecture.\n\nAnother concerns the world at the time of the new question:",
+      "limitations": [
+        "Writer dimensions are chapter-level; passage labels are not independent literary judgments.",
+        "Excerpts omit most of the chapter and surrounding context.",
+        "Paragraph and sentence metrics exclude code, tables, headings and lists."
+      ]
+    },
+    {
+      "passage_id": "P02",
+      "project_id": "language",
+      "profile": "technical",
+      "chapter_id": "chapter:language:04-chapter",
+      "chapter_title": "The fixed page and its bargain",
+      "chapter_order": 3,
+      "source_path": "C:\\Projects\\language\\content\\books\\language\\04-chapter.md",
+      "relative_path": "content/books/language/04-chapter.md",
+      "category": "long_dense",
+      "tags": [
+        "technical",
+        "lexical"
+      ],
+      "extraction_mode": "long",
+      "diagnostic_stratum": "medium",
+      "chapter_scores": {
+        "paragraph_load": {
+          "score": 61.0,
+          "band": "watch",
+          "finding_codes": [
+            "READABILITY.PARAGRAPH_DENSITY"
+          ]
+        },
+        "sentence_load": {
+          "score": 99.5,
+          "band": "good",
+          "finding_codes": []
+        },
+        "fragmentation": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "rhythm": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "lexical_accessibility": {
+          "score": 69.8,
+          "band": "watch",
+          "finding_codes": [
+            "READABILITY.LEXICAL_DIFFICULTY"
+          ]
+        },
+        "section_structure": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        }
+      },
+      "chapter_finding_codes": [
+        "READABILITY.LEXICAL_DIFFICULTY",
+        "READABILITY.PARAGRAPH_DENSITY"
+      ],
+      "paragraph_metrics": {
+        "paragraph_count": 1,
+        "words": [
+          175
+        ],
+        "median_paragraph_words": 175,
+        "sentence_counts": [
+          8
+        ],
+        "line_start": 56,
+        "line_end": 56
+      },
+      "section": null,
+      "code_fence_start_line": null,
+      "code_fence_end_line": null,
+      "text": "Task models that generate interfaces. Cao, Jiang and Xia's \"Generative and Malleable User Interfaces with Generative and Evolving Task-Driven Data Model\" (CHI 2025) proposes a structured task-driven model between a user's request and the rendered interface. In Jelly, an LLM produces an object-relational schema and dependency graph, with data organised under that structure; UI specifications map the model to a constrained set of established display patterns. Users can modify the resulting information space by language or direct manipulation, and inspect the model rather than endlessly re-prompting an opaque layout. The technical evaluation assessed schema relevance and dependency accuracy, not the correctness of arbitrary underlying source documents. Its user study involved eight participants completing open-ended information tasks; it documented enthusiasm and flexibility, but also limits in visual expressiveness and cases where requested changes were not made. This is evidence that a task-to-model-to-interface-to-revision loop can run and be manipulated. It is not a controlled demonstration of superior task accuracy, transfer or time against a strong conventional interface, nor a demonstration that the underlying data is faithfully sourced.",
+      "limitations": [
+        "Writer dimensions are chapter-level; passage labels are not independent literary judgments.",
+        "Excerpts omit most of the chapter and surrounding context.",
+        "Paragraph and sentence metrics exclude code, tables, headings and lists."
+      ]
+    },
+    {
+      "passage_id": "P03",
+      "project_id": "pi",
+      "profile": "technical",
+      "chapter_id": "chapter:pi:01-chapter",
+      "chapter_title": "One turn",
+      "chapter_order": 0,
+      "source_path": "C:\\books\\pi\\content\\books\\pi\\01-chapter.md",
+      "relative_path": "content/books/pi/01-chapter.md",
+      "category": "short_technical_explanation",
+      "tags": [
+        "technical"
+      ],
+      "extraction_mode": "ordinary",
+      "diagnostic_stratum": "low",
+      "chapter_scores": {
+        "paragraph_load": {
+          "score": 95.5,
+          "band": "good",
+          "finding_codes": [
+            "READABILITY.PARAGRAPH_DENSITY"
+          ]
+        },
+        "sentence_load": {
+          "score": 95.1,
+          "band": "good",
+          "finding_codes": [
+            "READABILITY.LONG_SENTENCE"
+          ]
+        },
+        "fragmentation": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "rhythm": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "lexical_accessibility": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "section_structure": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        }
+      },
+      "chapter_finding_codes": [
+        "READABILITY.LONG_SENTENCE",
+        "READABILITY.PARAGRAPH_DENSITY"
+      ],
+      "paragraph_metrics": {
+        "paragraph_count": 2,
+        "words": [
+          52,
+          127
+        ],
+        "median_paragraph_words": 89.5,
+        "sentence_counts": [
+          3,
+          10
+        ],
+        "line_start": 15,
+        "line_end": 29
+      },
+      "section": null,
+      "code_fence_start_line": null,
+      "code_fence_end_line": null,
+      "text": "This is the step most people skip. They install Pi, run a task, get something nearly right, and start writing code against a mental model built from observation. The model is usually close enough to work and wrong in a few named places, and those places are where every interesting bug lives.\n\nWhy \"wrong in a few places\" is worse than \"wrong everywhere\" is worth one sentence of its own, because it explains the shape of the rest of the book. A model that is wrong everywhere fails loudly: you stop and read the documentation. A model that is nearly right fails as a symptom. The model ignores your instructions. Your tool never appears. Your injected content vanishes after a compaction. Your handler fires at the wrong moment. Each of those observations is compatible with several different causes — some in your code, some in Pi's, some in the way you assembled the request — and the observation alone cannot tell them apart. What tells them apart is knowing the exact mechanism the symptom passed through. That mechanism is the loop.",
+      "limitations": [
+        "Writer dimensions are chapter-level; passage labels are not independent literary judgments.",
+        "Excerpts omit most of the chapter and surrounding context.",
+        "Paragraph and sentence metrics exclude code, tables, headings and lists."
+      ]
+    },
+    {
+      "passage_id": "P04",
+      "project_id": "agents-from-first-principles",
+      "profile": "technical",
+      "chapter_id": "chapter:agents-from-first-principles:01-chapter",
+      "chapter_title": "1. Start with one model call",
+      "chapter_order": 0,
+      "source_path": "C:\\books\\new-books\\content\\books\\agents-from-first-principles\\01-chapter.md",
+      "relative_path": "content/books/agents-from-first-principles/01-chapter.md",
+      "category": "ordinary_prose",
+      "tags": [
+        "technical"
+      ],
+      "extraction_mode": "ordinary",
+      "diagnostic_stratum": "low",
+      "chapter_scores": {
+        "paragraph_load": {
+          "score": 99.3,
+          "band": "good",
+          "finding_codes": []
+        },
+        "sentence_load": {
+          "score": 98.1,
+          "band": "good",
+          "finding_codes": []
+        },
+        "fragmentation": {
+          "score": 92.5,
+          "band": "good",
+          "finding_codes": [
+            "READABILITY.FRAGMENTATION"
+          ]
+        },
+        "rhythm": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "lexical_accessibility": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "section_structure": {
+          "score": 90.2,
+          "band": "good",
+          "finding_codes": [
+            "READABILITY.HEADING_DENSITY"
+          ]
+        }
+      },
+      "chapter_finding_codes": [
+        "READABILITY.FRAGMENTATION",
+        "READABILITY.HEADING_DENSITY"
+      ],
+      "paragraph_metrics": {
+        "paragraph_count": 2,
+        "words": [
+          35,
+          65
+        ],
+        "median_paragraph_words": 50.0,
+        "sentence_counts": [
+          2,
+          3
+        ],
+        "line_start": 12,
+        "line_end": 16
+      },
+      "section": null,
+      "code_fence_start_line": null,
+      "code_fence_end_line": null,
+      "text": "This book is about building systems around models. Before we build planners, memory, tool routing, critics, search and verifiers, we need an answer to a question that turns out to be harder than it looks:\n\nThe word is currently applied to almost everything: a single LLM call, a chatbot, a fixed pipeline, a tool-using loop, and any five model calls with class names ending in. Those systems may all be useful. But when one word covers all of them, it stops telling us anything about the computation, and we lose the ability to say which mechanism is doing the work.",
+      "limitations": [
+        "Writer dimensions are chapter-level; passage labels are not independent literary judgments.",
+        "Excerpts omit most of the chapter and surrounding context.",
+        "Paragraph and sentence metrics exclude code, tables, headings and lists."
+      ]
+    },
+    {
+      "passage_id": "P05",
+      "project_id": "context",
+      "profile": "technical",
+      "chapter_id": "chapter:context:25-chapter",
+      "chapter_title": "Assignment is not delivery",
+      "chapter_order": 24,
+      "source_path": "C:\\books\\context\\content\\books\\context\\25-chapter.md",
+      "relative_path": "content/books/context/25-chapter.md",
+      "category": "ordinary_prose",
+      "tags": [
+        "technical"
+      ],
+      "extraction_mode": "ordinary",
+      "diagnostic_stratum": "low",
+      "chapter_scores": {
+        "paragraph_load": {
+          "score": 84.5,
+          "band": "good",
+          "finding_codes": [
+            "READABILITY.PARAGRAPH_DENSITY"
+          ]
+        },
+        "sentence_load": {
+          "score": 98.1,
+          "band": "good",
+          "finding_codes": []
+        },
+        "fragmentation": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "rhythm": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "lexical_accessibility": {
+          "score": 90.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "section_structure": {
+          "score": 96.6,
+          "band": "good",
+          "finding_codes": [
+            "READABILITY.HEADING_DENSITY"
+          ]
+        }
+      },
+      "chapter_finding_codes": [
+        "READABILITY.HEADING_DENSITY",
+        "READABILITY.PARAGRAPH_DENSITY"
+      ],
+      "paragraph_metrics": {
+        "paragraph_count": 2,
+        "words": [
+          77,
+          69
+        ],
+        "median_paragraph_words": 73.0,
+        "sentence_counts": [
+          5,
+          5
+        ],
+        "line_start": 12,
+        "line_end": 14
+      },
+      "section": null,
+      "code_fence_start_line": null,
+      "code_fence_end_line": null,
+      "text": "The experiment was planned carefully. Eight synthetic tasks, each built around a fact that could not be inferred from the task text alone. Each task ran under three conditions: no supplied context, a matched distractor of the same size and shape, and the exact minimal context the task needed. One model, decoding fixed, every run in its own session, deterministic graders. The question was modest: if correct context is delivered through the live runtime, does behaviour change?\n\nTwenty-four runs were planned and twenty-four executed. None yielded a valid observation of the assigned context condition. Every run reported zero observed context records because the recording component produced none. For the intended injection conditions, that leaves delivery unverified. For the no-context controls, it leaves absence unverified: an observer that did not record the request cannot distinguish a request with no experimental block from a request it never saw.",
+      "limitations": [
+        "Writer dimensions are chapter-level; passage labels are not independent literary judgments.",
+        "Excerpts omit most of the chapter and surrounding context.",
+        "Paragraph and sentence metrics exclude code, tables, headings and lists."
+      ]
+    },
+    {
+      "passage_id": "P06",
+      "project_id": "context",
+      "profile": "technical",
+      "chapter_id": "chapter:context:06-chapter",
+      "chapter_title": "Context is a sequence",
+      "chapter_order": 5,
+      "source_path": "C:\\books\\context\\content\\books\\context\\06-chapter.md",
+      "relative_path": "content/books/context/06-chapter.md",
+      "category": "long_dense",
+      "tags": [
+        "technical"
+      ],
+      "extraction_mode": "long",
+      "diagnostic_stratum": "low",
+      "chapter_scores": {
+        "paragraph_load": {
+          "score": 81.9,
+          "band": "good",
+          "finding_codes": [
+            "READABILITY.PARAGRAPH_DENSITY"
+          ]
+        },
+        "sentence_load": {
+          "score": 97.5,
+          "band": "good",
+          "finding_codes": [
+            "READABILITY.LONG_SENTENCE"
+          ]
+        },
+        "fragmentation": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "rhythm": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "lexical_accessibility": {
+          "score": 91.6,
+          "band": "good",
+          "finding_codes": []
+        },
+        "section_structure": {
+          "score": 99.7,
+          "band": "good",
+          "finding_codes": [
+            "READABILITY.HEADING_DENSITY"
+          ]
+        }
+      },
+      "chapter_finding_codes": [
+        "READABILITY.HEADING_DENSITY",
+        "READABILITY.LONG_SENTENCE",
+        "READABILITY.PARAGRAPH_DENSITY"
+      ],
+      "paragraph_metrics": {
+        "paragraph_count": 1,
+        "words": [
+          137
+        ],
+        "median_paragraph_words": 137,
+        "sentence_counts": [
+          8
+        ],
+        "line_start": 67,
+        "line_end": 67
+      },
+      "section": null,
+      "code_fence_start_line": null,
+      "code_fence_end_line": null,
+      "text": "The distinction that matters is between behavioural influence from position and policy authority. If moving an instruction changes compliance, that does not mean its authority changed. The OpenAI Model Spec dated 18 August 2026 describes an instruction hierarchy running from Root through System, Developer and User to Guideline. Authority is assigned through the instruction source and applicable policy, not by being physically closer to the answer. For instructions at the same authority level, later applicable instructions can supersede earlier conflicting ones; this is a policy rule with conditions, not a general claim that whichever text appears last wins. The specification also treats tool outputs and quoted text as untrusted by default. This is OpenAI's documented policy for its own systems, not a universal law or evidence that a model always complies. Other providers may specify different policies.",
+      "limitations": [
+        "Writer dimensions are chapter-level; passage labels are not independent literary judgments.",
+        "Excerpts omit most of the chapter and surrounding context.",
+        "Paragraph and sentence metrics exclude code, tables, headings and lists."
+      ]
+    },
+    {
+      "passage_id": "P07",
+      "project_id": "memory",
+      "profile": "technical",
+      "chapter_id": "chapter:memory:20-chapter",
+      "chapter_title": "A capstone should be smaller than the book",
+      "chapter_order": 19,
+      "source_path": "C:\\books\\memory\\content\\books\\memory\\20-chapter.md",
+      "relative_path": "content/books/memory/20-chapter.md",
+      "category": "fragmented_sequence",
+      "tags": [
+        "technical",
+        "capstone"
+      ],
+      "extraction_mode": "fragmented",
+      "diagnostic_stratum": "high",
+      "chapter_scores": {
+        "paragraph_load": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "sentence_load": {
+          "score": 99.6,
+          "band": "good",
+          "finding_codes": [
+            "READABILITY.LONG_SENTENCE"
+          ]
+        },
+        "fragmentation": {
+          "score": 0.0,
+          "band": "high",
+          "finding_codes": [
+            "READABILITY.FRAGMENTATION"
+          ]
+        },
+        "rhythm": {
+          "score": 45.5,
+          "band": "review",
+          "finding_codes": [
+            "READABILITY.UNIFORM_CADENCE"
+          ]
+        },
+        "lexical_accessibility": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "section_structure": {
+          "score": 63.3,
+          "band": "watch",
+          "finding_codes": [
+            "READABILITY.HEADING_DENSITY",
+            "READABILITY.TRIVIAL_SECTION"
+          ]
+        }
+      },
+      "chapter_finding_codes": [
+        "READABILITY.FRAGMENTATION",
+        "READABILITY.HEADING_DENSITY",
+        "READABILITY.LONG_SENTENCE",
+        "READABILITY.TRIVIAL_SECTION",
+        "READABILITY.UNIFORM_CADENCE"
+      ],
+      "paragraph_metrics": {
+        "paragraph_count": 6,
+        "words": [
+          8,
+          6,
+          18,
+          12,
+          16,
+          3
+        ],
+        "median_paragraph_words": 10.0,
+        "sentence_counts": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "line_start": 54,
+        "line_end": 68
+      },
+      "section": null,
+      "code_fence_start_line": null,
+      "code_fence_end_line": null,
+      "text": "The plugin is therefore useful for two reasons.\n\nIt gives us a working application.\n\nMore importantly, it forces the architecture developed throughout this book to cross the boundary from experiment into software.\n\nThere is an obvious way to implement a book about memory badly.\n\nTake every mechanism discussed in every chapter and put all of them into one enormous system.\n\nAdd a graph.",
+      "limitations": [
+        "Writer dimensions are chapter-level; passage labels are not independent literary judgments.",
+        "Excerpts omit most of the chapter and surrounding context.",
+        "Paragraph and sentence metrics exclude code, tables, headings and lists."
+      ]
+    },
+    {
+      "passage_id": "P08",
+      "project_id": "memory",
+      "profile": "technical",
+      "chapter_id": "chapter:memory:15-chapter",
+      "chapter_title": "The store is not the context",
+      "chapter_order": 14,
+      "source_path": "C:\\books\\memory\\content\\books\\memory\\15-chapter.md",
+      "relative_path": "content/books/memory/15-chapter.md",
+      "category": "structured_teaching",
+      "tags": [
+        "technical"
+      ],
+      "extraction_mode": "structured",
+      "diagnostic_stratum": "medium",
+      "chapter_scores": {
+        "paragraph_load": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "sentence_load": {
+          "score": 99.5,
+          "band": "good",
+          "finding_codes": []
+        },
+        "fragmentation": {
+          "score": 61.7,
+          "band": "watch",
+          "finding_codes": [
+            "READABILITY.FRAGMENTATION"
+          ]
+        },
+        "rhythm": {
+          "score": 97.4,
+          "band": "good",
+          "finding_codes": []
+        },
+        "lexical_accessibility": {
+          "score": 80.4,
+          "band": "good",
+          "finding_codes": []
+        },
+        "section_structure": {
+          "score": 85.5,
+          "band": "good",
+          "finding_codes": [
+            "READABILITY.HEADING_DENSITY",
+            "READABILITY.TRIVIAL_SECTION"
+          ]
+        }
+      },
+      "chapter_finding_codes": [
+        "READABILITY.FRAGMENTATION",
+        "READABILITY.HEADING_DENSITY",
+        "READABILITY.TRIVIAL_SECTION"
+      ],
+      "paragraph_metrics": {
+        "paragraph_count": 6,
+        "words": [
+          38,
+          38,
+          6,
+          34,
+          19,
+          35
+        ],
+        "median_paragraph_words": 34.5,
+        "sentence_counts": [
+          3,
+          3,
+          1,
+          3,
+          1,
+          2
+        ],
+        "line_start": 48,
+        "line_end": 60
+      },
+      "section": "Chapter 8 showed that historical truth and current truth must coexist. \"The service used SQLite in M",
+      "code_fence_start_line": null,
+      "code_fence_end_line": null,
+      "text": "Chapter 8 showed that historical truth and current truth must coexist. \"The service used SQLite in March\" remains true after PostgreSQL becomes current. Deleting the SQLite history to protect current answers would improve one query by corrupting another.\n\nChapter 14 showed the complementary point: preserving an item does not imply seating it in the current model context. The store may contain thousands of memories. The model receives a bounded working set selected for the current goal.\n\nThese results produce a useful invariant:\n\nThat invariant suggests a conservative growth strategy. The system does not need to destroy history merely because history grows. Before irreversible deletion is considered, it can change which representations compete and under what conditions.\n\nThe chapter therefore begins with a conservative bias: preserve first, suppress reversibly, delete only for reasons stronger than convenience.\n\nSome deployments require deletion for reasons independent of memory quality — privacy policy, legal compliance, secret rotation, or user-requested erasure. Those requirements do not establish that age or low retrieval frequency is a sound memory-decay rule.",
+      "limitations": [
+        "Writer dimensions are chapter-level; passage labels are not independent literary judgments.",
+        "Excerpts omit most of the chapter and surrounding context.",
+        "Paragraph and sentence metrics exclude code, tables, headings and lists."
+      ]
+    },
+    {
+      "passage_id": "P09",
+      "project_id": "applied-ai",
+      "profile": "technical",
+      "chapter_id": "chapter:applied-ai:26-chapter",
+      "chapter_title": "The subgroup that almost rewrites the chapter",
+      "chapter_order": 25,
+      "source_path": "C:\\books\\new-books\\content\\books\\applied-ai\\26-chapter.md",
+      "relative_path": "content/books/applied-ai/26-chapter.md",
+      "category": "structured_teaching",
+      "tags": [
+        "technical"
+      ],
+      "extraction_mode": "structured",
+      "diagnostic_stratum": "low",
+      "chapter_scores": {
+        "paragraph_load": {
+          "score": 98.5,
+          "band": "good",
+          "finding_codes": []
+        },
+        "sentence_load": {
+          "score": 98.8,
+          "band": "good",
+          "finding_codes": []
+        },
+        "fragmentation": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "rhythm": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "lexical_accessibility": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "section_structure": {
+          "score": 88.4,
+          "band": "good",
+          "finding_codes": [
+            "READABILITY.HEADING_DENSITY",
+            "READABILITY.TRIVIAL_SECTION"
+          ]
+        }
+      },
+      "chapter_finding_codes": [
+        "READABILITY.HEADING_DENSITY",
+        "READABILITY.TRIVIAL_SECTION"
+      ],
+      "paragraph_metrics": {
+        "paragraph_count": 6,
+        "words": [
+          18,
+          2,
+          66,
+          41,
+          54,
+          108
+        ],
+        "median_paragraph_words": 47.5,
+        "sentence_counts": [
+          1,
+          1,
+          6,
+          3,
+          4,
+          8
+        ],
+        "line_start": 108,
+        "line_end": 134
+      },
+      "section": "Per task, passing draws out of twelve for the control arm and out of three for each stance:",
+      "code_fence_start_line": null,
+      "code_fence_end_line": null,
+      "text": "Per task, passing draws out of twelve for the control arm and out of three for each stance:\n\n[^m1]\n\nThe hypotheses read off the same rows. H2, decorrelation: normal, assumption-challenge, and minimality solve exactly the same seven tasks, so this task-level solve-set metric shows no decorrelation among those three. Counterfactual's nine contain all seven. Of the fifteen (stance, task) pairs where another stance failed, counterfactual solved six — the report's 0.40. That is why the report labels H2 partial rather than established. [^r2]\n\nH3, premise concentration: against the control arm, the portfolio matches on PRESERVE (2/2) and REMOVE (3/3), ties on REDEFINE (3/4 each), and loses RELOCATE (1/3 against 2/3). Neither supporting branch survived. [^m1] [^r2]\n\nNow look at counterfactual's two extra tasks: stable-priority and strip-query. Both are tasks the normal wording also solved somewhere among its twelve draws, four times and twice. Counterfactual therefore added no task outside the observed twelve-draw normal solve set. At three-draw exposure, however, counterfactual covered those two tasks while the normal subgroup did not.\n\nThat admits at least two readings, and P2 cannot choose between them. Counterfactual may have a genuinely higher per-draw success rate on some tasks. Or the widest of four post-hoc stance subgroups may simply be the subgroup that received favorable draws in this twelve-task sample. P2 did not preregister a test that separates those explanations. The honest statement is the narrow one: among the portfolio's stances, counterfactual…",
+      "limitations": [
+        "Writer dimensions are chapter-level; passage labels are not independent literary judgments.",
+        "Excerpts omit most of the chapter and surrounding context.",
+        "Paragraph and sentence metrics exclude code, tables, headings and lists."
+      ]
+    },
+    {
+      "passage_id": "P10",
+      "project_id": "debugging-ai",
+      "profile": "technical",
+      "chapter_id": "chapter:debugging-ai:22-chapter",
+      "chapter_title": "The dip at the exact wrong word",
+      "chapter_order": 21,
+      "source_path": "C:\\books\\new-books\\content\\books\\debugging-ai\\22-chapter.md",
+      "relative_path": "content/books/debugging-ai/22-chapter.md",
+      "category": "long_dense",
+      "tags": [
+        "technical"
+      ],
+      "extraction_mode": "long",
+      "diagnostic_stratum": "medium",
+      "chapter_scores": {
+        "paragraph_load": {
+          "score": 54.7,
+          "band": "review",
+          "finding_codes": [
+            "READABILITY.PARAGRAPH_DENSITY"
+          ]
+        },
+        "sentence_load": {
+          "score": 88.1,
+          "band": "good",
+          "finding_codes": [
+            "READABILITY.LONG_SENTENCE"
+          ]
+        },
+        "fragmentation": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "rhythm": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "lexical_accessibility": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "section_structure": {
+          "score": 95.5,
+          "band": "good",
+          "finding_codes": [
+            "READABILITY.HEADING_DENSITY",
+            "READABILITY.TRIVIAL_SECTION"
+          ]
+        }
+      },
+      "chapter_finding_codes": [
+        "READABILITY.HEADING_DENSITY",
+        "READABILITY.LONG_SENTENCE",
+        "READABILITY.PARAGRAPH_DENSITY",
+        "READABILITY.TRIVIAL_SECTION"
+      ],
+      "paragraph_metrics": {
+        "paragraph_count": 1,
+        "words": [
+          260
+        ],
+        "median_paragraph_words": 260,
+        "sentence_counts": [
+          9
+        ],
+        "line_start": 87,
+        "line_end": 87
+      },
+      "section": null,
+      "code_fence_start_line": null,
+      "code_fence_end_line": null,
+      "text": "The reliable uncertainty signal is distributional. Semantic entropy (Farquhar et al.) and self-consistency checking (Manakul et al., SelfCheckGPT) both work by comparing multiple samples rather than reading one run's logprobs, and both beat single-sequence likelihood as confabulation detectors. This is the same lesson as Chapter 21: the object worth measuring is the distribution, not the draw — and that holds for interior signals too. Be precise about what \"detector\" buys, though. Three capabilities pull apart: detect (this response is probably a confabulation), localize (this token or span is the wrong one), explain (this is why the weights preferred it). A multi-sample meaning-cluster signal reaches the first on QA-style tasks and no further — it does not point at the veer token, it does not name a mechanism, and it fails silently on confident fabrication, where every sample lands on the same wrong answer so the cluster entropy stays low. That is the exact sense in which interior signals never convict: good detectors exist, localizers and explainers do not, and even the good detectors have a blind spot a probe would catch. The cheap single-pass version is a hidden-state probe: Kossen and colleagues' semantic entropy probes read a binarized semantic-entropy estimate straight off one generation's activations, cutting the multi-sample cost to almost nothing and generalizing better out of distribution than a plain accuracy probe (Kossen et al., 2024). It is still governed by everything above — a probe that reads uncertainty out of the activations shows the…",
+      "limitations": [
+        "Writer dimensions are chapter-level; passage labels are not independent literary judgments.",
+        "Excerpts omit most of the chapter and surrounding context.",
+        "Paragraph and sentence metrics exclude code, tables, headings and lists."
+      ]
+    },
+    {
+      "passage_id": "P11",
+      "project_id": "debugging-ai",
+      "profile": "technical",
+      "chapter_id": "chapter:debugging-ai:53-chapter",
+      "chapter_title": "The fix that fixed nothing — twice",
+      "chapter_order": 52,
+      "source_path": "C:\\books\\new-books\\content\\books\\debugging-ai\\53-chapter.md",
+      "relative_path": "content/books/debugging-ai/53-chapter.md",
+      "category": "ordinary_prose",
+      "tags": [
+        "technical"
+      ],
+      "extraction_mode": "ordinary",
+      "diagnostic_stratum": "low",
+      "chapter_scores": {
+        "paragraph_load": {
+          "score": 96.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "sentence_load": {
+          "score": 86.8,
+          "band": "good",
+          "finding_codes": [
+            "READABILITY.LONG_SENTENCE"
+          ]
+        },
+        "fragmentation": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "rhythm": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "lexical_accessibility": {
+          "score": 80.4,
+          "band": "good",
+          "finding_codes": []
+        },
+        "section_structure": {
+          "score": 90.1,
+          "band": "good",
+          "finding_codes": [
+            "READABILITY.HEADING_DENSITY",
+            "READABILITY.TRIVIAL_SECTION"
+          ]
+        }
+      },
+      "chapter_finding_codes": [
+        "READABILITY.HEADING_DENSITY",
+        "READABILITY.LONG_SENTENCE",
+        "READABILITY.TRIVIAL_SECTION"
+      ],
+      "paragraph_metrics": {
+        "paragraph_count": 2,
+        "words": [
+          83,
+          31
+        ],
+        "median_paragraph_words": 57.0,
+        "sentence_counts": [
+          4,
+          2
+        ],
+        "line_start": 16,
+        "line_end": 26
+      },
+      "section": null,
+      "code_fence_start_line": null,
+      "code_fence_end_line": null,
+      "text": "Chapter 52 ended with a replayable record: the double-refund request re-assembled bit-exact, reproduced 2-of-3 trials, guardrail verdict empty. The on-call engineer ships the obvious repair — a prompt sentence forbidding double authorization — and closes the incident. Six weeks later the same double-refund returns under a reworded ticket, and nobody can say whether the old fix failed or a new defect arrived: no bundle was frozen, no repro was pinned, no regression test exists. The team fixed forward twice and learned nothing once.\n\nThe obvious move — repairing production quickly and documenting the fix in prose — fails because prose is not a repro and a deploy is not a test. Five defects hide behind fix-forward:",
+      "limitations": [
+        "Writer dimensions are chapter-level; passage labels are not independent literary judgments.",
+        "Excerpts omit most of the chapter and surrounding context.",
+        "Paragraph and sentence metrics exclude code, tables, headings and lists."
+      ]
+    },
+    {
+      "passage_id": "P12",
+      "project_id": "context",
+      "profile": "technical",
+      "chapter_id": "chapter:context:22-chapter",
+      "chapter_title": "The objects and where this chapter sits",
+      "chapter_order": 21,
+      "source_path": "C:\\books\\context\\content\\books\\context\\22-chapter.md",
+      "relative_path": "content/books/context/22-chapter.md",
+      "category": "lexical_difficulty",
+      "tags": [
+        "technical"
+      ],
+      "extraction_mode": "long",
+      "diagnostic_stratum": "medium",
+      "chapter_scores": {
+        "paragraph_load": {
+          "score": 93.5,
+          "band": "good",
+          "finding_codes": [
+            "READABILITY.PARAGRAPH_DENSITY"
+          ]
+        },
+        "sentence_load": {
+          "score": 95.4,
+          "band": "good",
+          "finding_codes": [
+            "READABILITY.LONG_SENTENCE"
+          ]
+        },
+        "fragmentation": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "rhythm": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "lexical_accessibility": {
+          "score": 40.0,
+          "band": "review",
+          "finding_codes": [
+            "READABILITY.LEXICAL_DIFFICULTY"
+          ]
+        },
+        "section_structure": {
+          "score": 99.0,
+          "band": "good",
+          "finding_codes": [
+            "READABILITY.HEADING_DENSITY"
+          ]
+        }
+      },
+      "chapter_finding_codes": [
+        "READABILITY.HEADING_DENSITY",
+        "READABILITY.LEXICAL_DIFFICULTY",
+        "READABILITY.LONG_SENTENCE",
+        "READABILITY.PARAGRAPH_DENSITY"
+      ],
+      "paragraph_metrics": {
+        "paragraph_count": 1,
+        "words": [
+          127
+        ],
+        "median_paragraph_words": 127,
+        "sentence_counts": [
+          8
+        ],
+        "line_start": 224,
+        "line_end": 224
+      },
+      "section": null,
+      "code_fence_start_line": null,
+      "code_fence_end_line": null,
+      "text": "Experiment B: behavioural allocation. Where several structurally valid bundles exist, does constraint-aware allocation improve downstream behaviour over simpler selection? Fixtures include distractors competing with evidence, redundant and complementary representations, shared dependencies, coupled claims and qualifications, and conditions where leaving budget unused might help. Candidate sets, task requirements, representations, model, decoding, budget and rendering contract are frozen. First report whether each baseline produced a structurally valid bundle; an invalid top-k result cannot be treated as a clean comparison of two valid allocation objectives. For the behavioural comparison, either use valid-only baselines or separately label violations as their own mechanism. Ordering is held fixed where possible, with unavoidable order differences documented because Chapter 6 predicts behavioural effects. Report performance and resource costs per fixture class, not one pooled winner.",
+      "limitations": [
+        "Writer dimensions are chapter-level; passage labels are not independent literary judgments.",
+        "Excerpts omit most of the chapter and surrounding context.",
+        "Paragraph and sentence metrics exclude code, tables, headings and lists."
+      ]
+    },
+    {
+      "passage_id": "P13",
+      "project_id": "embeddings-from-first-principles",
+      "profile": "technical",
+      "chapter_id": "chapter:embeddings-from-first-principles:19-chapter",
+      "chapter_title": "What Chapter 18 left open",
+      "chapter_order": 18,
+      "source_path": "C:\\books\\new-books\\content\\books\\embeddings-from-first-principles\\19-chapter.md",
+      "relative_path": "content/books/embeddings-from-first-principles/19-chapter.md",
+      "category": "long_dense",
+      "tags": [
+        "technical"
+      ],
+      "extraction_mode": "ordinary",
+      "diagnostic_stratum": "low",
+      "chapter_scores": {
+        "paragraph_load": {
+          "score": 82.2,
+          "band": "good",
+          "finding_codes": [
+            "READABILITY.PARAGRAPH_DENSITY"
+          ]
+        },
+        "sentence_load": {
+          "score": 80.3,
+          "band": "good",
+          "finding_codes": [
+            "READABILITY.LONG_SENTENCE"
+          ]
+        },
+        "fragmentation": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "rhythm": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "lexical_accessibility": {
+          "score": 82.5,
+          "band": "good",
+          "finding_codes": []
+        },
+        "section_structure": {
+          "score": 98.9,
+          "band": "good",
+          "finding_codes": [
+            "READABILITY.TRIVIAL_SECTION"
+          ]
+        }
+      },
+      "chapter_finding_codes": [
+        "READABILITY.LONG_SENTENCE",
+        "READABILITY.PARAGRAPH_DENSITY",
+        "READABILITY.TRIVIAL_SECTION"
+      ],
+      "paragraph_metrics": {
+        "paragraph_count": 2,
+        "words": [
+          44,
+          41
+        ],
+        "median_paragraph_words": 42.5,
+        "sentence_counts": [
+          3,
+          2
+        ],
+        "line_start": 16,
+        "line_end": 29
+      },
+      "section": null,
+      "code_fence_start_line": null,
+      "code_fence_end_line": null,
+      "text": "Chapter 18 fit the simplest serious bridge — affine ridge regression — from into, and evaluated it on entity families the map never saw. The result was not a verdict. It was a profile, uneven enough to make one number impossible to trust on its own:\n\nThe chapter's lesson was not \"ridge works.\" It was that is a preservation contract — a named property, measured on held-out data, not a single number a map either clears or fails. That leaves an open question this chapter exists to answer:",
+      "limitations": [
+        "Writer dimensions are chapter-level; passage labels are not independent literary judgments.",
+        "Excerpts omit most of the chapter and surrounding context.",
+        "Paragraph and sentence metrics exclude code, tables, headings and lists."
+      ]
+    },
+    {
+      "passage_id": "P14",
+      "project_id": "browser-ai-from-first-principles",
+      "profile": "technical",
+      "chapter_id": "chapter:browser-ai-from-first-principles:12-chapter",
+      "chapter_title": "1. The first session worked",
+      "chapter_order": 11,
+      "source_path": "C:\\books\\new-books\\content\\books\\browser-ai-from-first-principles\\12-chapter.md",
+      "relative_path": "content/books/browser-ai-from-first-principles/12-chapter.md",
+      "category": "fragmented_sequence",
+      "tags": [
+        "technical"
+      ],
+      "extraction_mode": "fragmented",
+      "diagnostic_stratum": "high",
+      "chapter_scores": {
+        "paragraph_load": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "sentence_load": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "fragmentation": {
+          "score": 0.0,
+          "band": "high",
+          "finding_codes": [
+            "READABILITY.FRAGMENTATION"
+          ]
+        },
+        "rhythm": {
+          "score": 87.4,
+          "band": "good",
+          "finding_codes": [
+            "READABILITY.UNIFORM_CADENCE"
+          ]
+        },
+        "lexical_accessibility": {
+          "score": 73.5,
+          "band": "watch",
+          "finding_codes": []
+        },
+        "section_structure": {
+          "score": 67.4,
+          "band": "watch",
+          "finding_codes": [
+            "READABILITY.HEADING_DENSITY"
+          ]
+        }
+      },
+      "chapter_finding_codes": [
+        "READABILITY.FRAGMENTATION",
+        "READABILITY.HEADING_DENSITY",
+        "READABILITY.UNIFORM_CADENCE"
+      ],
+      "paragraph_metrics": {
+        "paragraph_count": 6,
+        "words": [
+          10,
+          13,
+          25,
+          10,
+          8,
+          11
+        ],
+        "median_paragraph_words": 10.5,
+        "sentence_counts": [
+          1,
+          2,
+          2,
+          1,
+          1,
+          1
+        ],
+        "line_start": 13,
+        "line_end": 49
+      },
+      "section": null,
+      "code_fence_start_line": null,
+      "code_fence_end_line": null,
+      "text": "The central promise of built-in AI is an abstraction boundary:\n\nThe application asks for a capability. The browser chooses how to provide it.\n\nThat separation is powerful, but it does not make the lower layers irrelevant. Changes beneath the API can alter availability, accepted options, performance and behavior.\n\nWe encountered that fact before completing our first prompt experiment.\n\nOur first real Chrome trace recorded this sequence:\n\nThe session exposed a quota of 9,216 units and supported and.",
+      "limitations": [
+        "Writer dimensions are chapter-level; passage labels are not independent literary judgments.",
+        "Excerpts omit most of the chapter and surrounding context.",
+        "Paragraph and sentence metrics exclude code, tables, headings and lists."
+      ]
+    },
+    {
+      "passage_id": "P15",
+      "project_id": "browser-ai-from-first-principles",
+      "profile": "technical",
+      "chapter_id": "chapter:browser-ai-from-first-principles:11-chapter",
+      "chapter_title": "1. One duration hides several clocks",
+      "chapter_order": 10,
+      "source_path": "C:\\books\\new-books\\content\\books\\browser-ai-from-first-principles\\11-chapter.md",
+      "relative_path": "content/books/browser-ai-from-first-principles/11-chapter.md",
+      "category": "structured_teaching",
+      "tags": [
+        "technical"
+      ],
+      "extraction_mode": "structured",
+      "diagnostic_stratum": "medium",
+      "chapter_scores": {
+        "paragraph_load": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "sentence_load": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "fragmentation": {
+          "score": 41.1,
+          "band": "review",
+          "finding_codes": [
+            "READABILITY.FRAGMENTATION"
+          ]
+        },
+        "rhythm": {
+          "score": 93.3,
+          "band": "good",
+          "finding_codes": []
+        },
+        "lexical_accessibility": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "section_structure": {
+          "score": 70.8,
+          "band": "watch",
+          "finding_codes": [
+            "READABILITY.HEADING_DENSITY"
+          ]
+        }
+      },
+      "chapter_finding_codes": [
+        "READABILITY.FRAGMENTATION",
+        "READABILITY.HEADING_DENSITY"
+      ],
+      "paragraph_metrics": {
+        "paragraph_count": 4,
+        "words": [
+          9,
+          31,
+          44,
+          38
+        ],
+        "median_paragraph_words": 34.5,
+        "sentence_counts": [
+          1,
+          4,
+          3,
+          2
+        ],
+        "line_start": 381,
+        "line_end": 387
+      },
+      "section": "Browser AI latency is a lifecycle, not a stopwatch.",
+      "code_fence_start_line": null,
+      "code_fence_end_line": null,
+      "text": "Browser AI latency is a lifecycle, not a stopwatch.\n\nCapability inspection, acquisition, session creation, first output, completion and validation answer different questions. Progress callbacks require context. Cold and warm require operational definitions. Chunk count must not masquerade as token count.\n\nOur first real trace measured a fast session creation and nothing about inference. The instrument correctly left the missing fields empty. Chapter 11 now makes the full protocol executable, but numerical cold-versus-warm claims remain open until matched live runs exist under explicitly recorded conditions.\n\nThe next chapter asks why the same session configuration could work and then fail. Once the browser manages the model, model lifecycle and compatibility become part of application engineering even when the application never downloads a model itself.",
+      "limitations": [
+        "Writer dimensions are chapter-level; passage labels are not independent literary judgments.",
+        "Excerpts omit most of the chapter and surrounding context.",
+        "Paragraph and sentence metrics exclude code, tables, headings and lists."
+      ]
+    },
+    {
+      "passage_id": "P16",
+      "project_id": "dspy-from-first-principles",
+      "profile": "technical",
+      "chapter_id": "chapter:dspy-from-first-principles:18-chapter",
+      "chapter_title": "Opening — The Optimizer Doesn't Have to Cheat Intentionally",
+      "chapter_order": 17,
+      "source_path": "C:\\books\\new-books\\content\\books\\dspy-from-first-principles\\18-chapter.md",
+      "relative_path": "content/books/dspy-from-first-principles/18-chapter.md",
+      "category": "structured_teaching",
+      "tags": [
+        "technical"
+      ],
+      "extraction_mode": "structured",
+      "diagnostic_stratum": "high",
+      "chapter_scores": {
+        "paragraph_load": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "sentence_load": {
+          "score": 99.1,
+          "band": "good",
+          "finding_codes": []
+        },
+        "fragmentation": {
+          "score": 0.0,
+          "band": "high",
+          "finding_codes": [
+            "READABILITY.FRAGMENTATION"
+          ]
+        },
+        "rhythm": {
+          "score": 97.6,
+          "band": "good",
+          "finding_codes": []
+        },
+        "lexical_accessibility": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "section_structure": {
+          "score": 86.0,
+          "band": "good",
+          "finding_codes": [
+            "READABILITY.HEADING_DENSITY",
+            "READABILITY.TRIVIAL_SECTION"
+          ]
+        }
+      },
+      "chapter_finding_codes": [
+        "READABILITY.FRAGMENTATION",
+        "READABILITY.HEADING_DENSITY",
+        "READABILITY.TRIVIAL_SECTION"
+      ],
+      "paragraph_metrics": {
+        "paragraph_count": 6,
+        "words": [
+          17,
+          25,
+          6,
+          27,
+          23,
+          6
+        ],
+        "median_paragraph_words": 20.0,
+        "sentence_counts": [
+          2,
+          3,
+          1,
+          2,
+          1,
+          1
+        ],
+        "line_start": 436,
+        "line_end": 455
+      },
+      "section": "The firewall layers we've built are designed to block leakage. But they can also block legitimate be",
+      "code_fence_start_line": null,
+      "code_fence_end_line": null,
+      "text": "The firewall layers we've built are designed to block leakage. But they can also block legitimate behavior.\n\nIn our editorial rewrite task, sometimes the correct answer is no change. The sentence is already fine. The reference rewrite is identical to the original.\n\nThe firewall rule we had was:\n\nBut if the reference value equals the original sentence, then a clean correct answer is indistinguishable from a leaked answer. The firewall would reject a legitimate case.\n\nThis is a restraint failure: the firewall cannot distinguish between the model copying the answer and the model producing the only correct output.\n\nThis connects directly to earlier chapters:",
+      "limitations": [
+        "Writer dimensions are chapter-level; passage labels are not independent literary judgments.",
+        "Excerpts omit most of the chapter and surrounding context.",
+        "Paragraph and sentence metrics exclude code, tables, headings and lists."
+      ]
+    },
+    {
+      "passage_id": "P17",
+      "project_id": "dspy-from-first-principles",
+      "profile": "technical",
+      "chapter_id": "chapter:dspy-from-first-principles:17-chapter",
+      "chapter_title": "One Path Is a Decision",
+      "chapter_order": 16,
+      "source_path": "C:\\books\\new-books\\content\\books\\dspy-from-first-principles\\17-chapter.md",
+      "relative_path": "content/books/dspy-from-first-principles/17-chapter.md",
+      "category": "structured_teaching",
+      "tags": [
+        "technical"
+      ],
+      "extraction_mode": "structured",
+      "diagnostic_stratum": "medium",
+      "chapter_scores": {
+        "paragraph_load": {
+          "score": 98.3,
+          "band": "good",
+          "finding_codes": []
+        },
+        "sentence_load": {
+          "score": 97.8,
+          "band": "good",
+          "finding_codes": [
+            "READABILITY.LONG_SENTENCE"
+          ]
+        },
+        "fragmentation": {
+          "score": 70.0,
+          "band": "watch",
+          "finding_codes": [
+            "READABILITY.FRAGMENTATION"
+          ]
+        },
+        "rhythm": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "lexical_accessibility": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "section_structure": {
+          "score": 80.6,
+          "band": "good",
+          "finding_codes": [
+            "READABILITY.HEADING_DENSITY",
+            "READABILITY.TRIVIAL_SECTION"
+          ]
+        }
+      },
+      "chapter_finding_codes": [
+        "READABILITY.FRAGMENTATION",
+        "READABILITY.HEADING_DENSITY",
+        "READABILITY.LONG_SENTENCE",
+        "READABILITY.TRIVIAL_SECTION"
+      ],
+      "paragraph_metrics": {
+        "paragraph_count": 6,
+        "words": [
+          21,
+          43,
+          14,
+          15,
+          13,
+          122
+        ],
+        "median_paragraph_words": 18.0,
+        "sentence_counts": [
+          2,
+          3,
+          1,
+          1,
+          1,
+          5
+        ],
+        "line_start": 1102,
+        "line_end": 1134
+      },
+      "section": "MCTS does not make the model reason correctly. It allocates inference-time computation toward the re",
+      "code_fence_start_line": null,
+      "code_fence_end_line": null,
+      "text": "MCTS does not make the model reason correctly. It allocates inference-time computation toward the reasoning paths that its value function prefers.\n\nIf the value function tracks the task, this is useful. If the value function has a blind spot, search concentrates compute around the blind spot. If the value function can see the reference answer, search is not reasoning better—the experiment is leaking.\n\nThis is the same structure the optimizer chapters had, applied to a new object:\n\nThe objects differ; the danger does not: search does not know truth; search knows reward.\n\nThat places this chapter in the book's last arc of \"things that search\":\n\nThe evidence status at the top of the chapter is the summary: the agent is built, its search behaviour is audited across 27 unit tests, and the seven-strategy comparison was run — seeds 17–19, three repetitions, two models. The comparison returned a null result. On the frozen cost-vs-price fixture, every strategy reached the same substantive diagnosis as a single direct call, for both an 8B local model and a stronger hosted one. The small qwen3 score variation came from whether the generated wording explicitly named, not from a different diagnosis. And the run could not test its second question at all: the fair tree arms never spent their search budgets, because the value function was satisfied by the first expansion.",
+      "limitations": [
+        "Writer dimensions are chapter-level; passage labels are not independent literary judgments.",
+        "Excerpts omit most of the chapter and surrounding context.",
+        "Paragraph and sentence metrics exclude code, tables, headings and lists."
+      ]
+    },
+    {
+      "passage_id": "P18",
+      "project_id": "hallucination-from-first-principles",
+      "profile": "technical",
+      "chapter_id": "chapter:hallucination-from-first-principles:01-chapter",
+      "chapter_title": "1. Start with the job the model was trained to do",
+      "chapter_order": 0,
+      "source_path": "C:\\books\\new-books\\content\\books\\hallucination-from-first-principles\\01-chapter.md",
+      "relative_path": "content/books/hallucination-from-first-principles/01-chapter.md",
+      "category": "fragmented_sequence",
+      "tags": [
+        "technical"
+      ],
+      "extraction_mode": "fragmented",
+      "diagnostic_stratum": "high",
+      "chapter_scores": {
+        "paragraph_load": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "sentence_load": {
+          "score": 99.3,
+          "band": "good",
+          "finding_codes": [
+            "READABILITY.LONG_SENTENCE"
+          ]
+        },
+        "fragmentation": {
+          "score": 0.0,
+          "band": "high",
+          "finding_codes": [
+            "READABILITY.FRAGMENTATION"
+          ]
+        },
+        "rhythm": {
+          "score": 83.6,
+          "band": "good",
+          "finding_codes": [
+            "READABILITY.UNIFORM_CADENCE"
+          ]
+        },
+        "lexical_accessibility": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "section_structure": {
+          "score": 96.5,
+          "band": "good",
+          "finding_codes": [
+            "READABILITY.HEADING_DENSITY"
+          ]
+        }
+      },
+      "chapter_finding_codes": [
+        "READABILITY.FRAGMENTATION",
+        "READABILITY.HEADING_DENSITY",
+        "READABILITY.LONG_SENTENCE",
+        "READABILITY.UNIFORM_CADENCE"
+      ],
+      "paragraph_metrics": {
+        "paragraph_count": 6,
+        "words": [
+          7,
+          12,
+          15,
+          9,
+          11,
+          12
+        ],
+        "median_paragraph_words": 11.5,
+        "sentence_counts": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "line_start": 34,
+        "line_end": 50
+      },
+      "section": null,
+      "code_fence_start_line": null,
+      "code_fence_end_line": null,
+      "text": "Instead we will take the problem apart.\n\nFirst we need to understand why the failure is possible at all.\n\nA language model receives a sequence of tokens and predicts what token should come next.\n\nIn simplified form, the model learns a conditional distribution:\n\n$$ p(xt \\mid x1, x2, \\ldots, x{t-1}) $$\n\nWe will sometimes write the preceding context more compactly as $x{<t}$.",
+      "limitations": [
+        "Writer dimensions are chapter-level; passage labels are not independent literary judgments.",
+        "Excerpts omit most of the chapter and surrounding context.",
+        "Paragraph and sentence metrics exclude code, tables, headings and lists."
+      ]
+    },
+    {
+      "passage_id": "P19",
+      "project_id": "hallucination-from-first-principles",
+      "profile": "technical",
+      "chapter_id": "chapter:hallucination-from-first-principles:16-appendix",
+      "chapter_title": "A. What the book measured",
+      "chapter_order": 15,
+      "source_path": "C:\\books\\new-books\\content\\books\\hallucination-from-first-principles\\16-appendix.md",
+      "relative_path": "content/books/hallucination-from-first-principles/16-appendix.md",
+      "category": "ordinary_prose",
+      "tags": [
+        "technical"
+      ],
+      "extraction_mode": "ordinary",
+      "diagnostic_stratum": "low",
+      "chapter_scores": {
+        "paragraph_load": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "sentence_load": {
+          "score": 97.9,
+          "band": "good",
+          "finding_codes": []
+        },
+        "fragmentation": {
+          "score": 84.8,
+          "band": "good",
+          "finding_codes": [
+            "READABILITY.FRAGMENTATION"
+          ]
+        },
+        "rhythm": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "lexical_accessibility": {
+          "score": 90.4,
+          "band": "good",
+          "finding_codes": []
+        },
+        "section_structure": {
+          "score": 95.6,
+          "band": "good",
+          "finding_codes": [
+            "READABILITY.TRIVIAL_SECTION"
+          ]
+        }
+      },
+      "chapter_finding_codes": [
+        "READABILITY.FRAGMENTATION",
+        "READABILITY.TRIVIAL_SECTION"
+      ],
+      "paragraph_metrics": {
+        "paragraph_count": 2,
+        "words": [
+          34,
+          29
+        ],
+        "median_paragraph_words": 31.5,
+        "sentence_counts": [
+          2,
+          1
+        ],
+        "line_start": 12,
+        "line_end": 14
+      },
+      "section": null,
+      "code_fence_start_line": null,
+      "code_fence_end_line": null,
+      "text": "The book argues that a claim should be governed by its provenance, its evidential support, and an explicit statement of what it does not establish. This appendix applies that discipline to the book itself.\n\nEvery original empirical number produced for this book is listed here with three things: where it was measured, what its provenance status is, and what it does not establish.",
+      "limitations": [
+        "Writer dimensions are chapter-level; passage labels are not independent literary judgments.",
+        "Excerpts omit most of the chapter and surrounding context.",
+        "Paragraph and sentence metrics exclude code, tables, headings and lists."
+      ]
+    },
+    {
+      "passage_id": "P20",
+      "project_id": "pytorch-from-first-principles",
+      "profile": "technical",
+      "chapter_id": "chapter:pytorch-from-first-principles:appendix-a",
+      "chapter_title": "Start here: route the symptom",
+      "chapter_order": 15,
+      "source_path": "C:\\books\\new-books\\content\\books\\pytorch-from-first-principles\\appendix-a.md",
+      "relative_path": "content/books/pytorch-from-first-principles/appendix-a.md",
+      "category": "fragmented_sequence",
+      "tags": [
+        "technical"
+      ],
+      "extraction_mode": "fragmented",
+      "diagnostic_stratum": "high",
+      "chapter_scores": {
+        "paragraph_load": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "sentence_load": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "fragmentation": {
+          "score": 0.0,
+          "band": "high",
+          "finding_codes": [
+            "READABILITY.FRAGMENTATION"
+          ]
+        },
+        "rhythm": {
+          "score": 46.5,
+          "band": "review",
+          "finding_codes": [
+            "READABILITY.UNIFORM_CADENCE"
+          ]
+        },
+        "lexical_accessibility": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "section_structure": {
+          "score": 0.0,
+          "band": "high",
+          "finding_codes": [
+            "READABILITY.HEADING_DENSITY",
+            "READABILITY.TRIVIAL_SECTION"
+          ]
+        }
+      },
+      "chapter_finding_codes": [
+        "READABILITY.FRAGMENTATION",
+        "READABILITY.HEADING_DENSITY",
+        "READABILITY.TRIVIAL_SECTION",
+        "READABILITY.UNIFORM_CADENCE"
+      ],
+      "paragraph_metrics": {
+        "paragraph_count": 6,
+        "words": [
+          14,
+          15,
+          10,
+          4,
+          3,
+          7
+        ],
+        "median_paragraph_words": 8.5,
+        "sentence_counts": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "line_start": 71,
+        "line_end": 127
+      },
+      "section": null,
+      "code_fence_start_line": null,
+      "code_fence_end_line": null,
+      "text": "The job is to move from the visible symptom to the earliest unsupported claim.\n\nBefore changing code, capture enough state that the failure can survive your first attempted fix.\n\nFor a training problem, the minimum useful packet is often:\n\nFor a performance problem:\n\nFor a regression:\n\nThe exact packet changes with the question.",
+      "limitations": [
+        "Writer dimensions are chapter-level; passage labels are not independent literary judgments.",
+        "Excerpts omit most of the chapter and surrounding context.",
+        "Paragraph and sentence metrics exclude code, tables, headings and lists."
+      ]
+    },
+    {
+      "passage_id": "P21",
+      "project_id": "pytorch-from-first-principles",
+      "profile": "technical",
+      "chapter_id": "chapter:pytorch-from-first-principles:08-chapter",
+      "chapter_title": "Where we are",
+      "chapter_order": 7,
+      "source_path": "C:\\books\\new-books\\content\\books\\pytorch-from-first-principles\\08-chapter.md",
+      "relative_path": "content/books/pytorch-from-first-principles/08-chapter.md",
+      "category": "structured_teaching",
+      "tags": [
+        "technical"
+      ],
+      "extraction_mode": "structured",
+      "diagnostic_stratum": "low",
+      "chapter_scores": {
+        "paragraph_load": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "sentence_load": {
+          "score": 99.3,
+          "band": "good",
+          "finding_codes": []
+        },
+        "fragmentation": {
+          "score": 92.5,
+          "band": "good",
+          "finding_codes": [
+            "READABILITY.FRAGMENTATION"
+          ]
+        },
+        "rhythm": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "lexical_accessibility": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "section_structure": {
+          "score": 81.1,
+          "band": "good",
+          "finding_codes": [
+            "READABILITY.HEADING_DENSITY",
+            "READABILITY.TRIVIAL_SECTION"
+          ]
+        }
+      },
+      "chapter_finding_codes": [
+        "READABILITY.FRAGMENTATION",
+        "READABILITY.HEADING_DENSITY",
+        "READABILITY.TRIVIAL_SECTION"
+      ],
+      "paragraph_metrics": {
+        "paragraph_count": 6,
+        "words": [
+          80,
+          71,
+          19,
+          58,
+          59,
+          4
+        ],
+        "median_paragraph_words": 58.5,
+        "sentence_counts": [
+          6,
+          4,
+          2,
+          3,
+          3,
+          1
+        ],
+        "line_start": 824,
+        "line_end": 840
+      },
+      "section": "The model boundary is no longer opaque. A convolution performs two independent transformations — a d",
+      "code_fence_start_line": null,
+      "code_fence_end_line": null,
+      "text": "The model boundary is no longer opaque. A convolution performs two independent transformations — a declared change of channels and a derived change of spatial geometry — and both can be written down before the layer runs. Pooling does the second without the first. Flatten converts a grid into a feature vector whose length is. maps one feature dimension to another. Every one of those is mechanical, and when the observed trace disagrees with the derivation, the first disagreement is the diagnosis.\n\nThe two failures at the center of this chapter are worth carrying as a pair. The NHWC batch produced an error naming the wrong problem, and repairing the layer instead of the tensor would have built a model out of a misreading. The missing padding produced an error several layers downstream, and repairing the layer that raised would have made an unintended architecture permanent. Both are the same shape of mistake:\n\nNotice where the chapter ended up. After the convolutional body and the pooling and the flatten, the tensor is:\n\nThe spatial grid is gone. What remains is one vector per example, and its 32 entries are learned feature coordinates with no adjacency, no ordering and no picture attached. That vector is what the classifier actually sees, and treats it as a point in a 32-dimensional space and asks which side of a boundary it falls on.\n\nThirty-two is already more dimensions than anyone can draw. Real feature vectors are 128, 512, 768, 4096. The next chapter takes that seriously and asks what a coordinate, a direction and a boundary actually mean in a space we…",
+      "limitations": [
+        "Writer dimensions are chapter-level; passage labels are not independent literary judgments.",
+        "Excerpts omit most of the chapter and surrounding context.",
+        "Paragraph and sentence metrics exclude code, tables, headings and lists."
+      ]
+    },
+    {
+      "passage_id": "P22",
+      "project_id": "agents-from-first-principles",
+      "profile": "technical",
+      "chapter_id": "chapter:agents-from-first-principles:02-chapter",
+      "chapter_title": "1. Start with the failure",
+      "chapter_order": 1,
+      "source_path": "C:\\books\\new-books\\content\\books\\agents-from-first-principles\\02-chapter.md",
+      "relative_path": "content/books/agents-from-first-principles/02-chapter.md",
+      "category": "ordinary_prose",
+      "tags": [
+        "technical"
+      ],
+      "extraction_mode": "ordinary",
+      "diagnostic_stratum": "low",
+      "chapter_scores": {
+        "paragraph_load": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "sentence_load": {
+          "score": 98.5,
+          "band": "good",
+          "finding_codes": []
+        },
+        "fragmentation": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "rhythm": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "lexical_accessibility": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "section_structure": {
+          "score": 87.8,
+          "band": "good",
+          "finding_codes": [
+            "READABILITY.HEADING_DENSITY"
+          ]
+        }
+      },
+      "chapter_finding_codes": [
+        "READABILITY.HEADING_DENSITY"
+      ],
+      "paragraph_metrics": {
+        "paragraph_count": 2,
+        "words": [
+          74,
+          26
+        ],
+        "median_paragraph_words": 50.0,
+        "sentence_counts": [
+          2,
+          2
+        ],
+        "line_start": 18,
+        "line_end": 20
+      },
+      "section": null,
+      "code_fence_start_line": null,
+      "code_fence_end_line": null,
+      "text": "Suppose the model emits the sentence \"Search the documentation for the latest PyTorch optimizer API.\" A human reads that and understands the intention immediately. A runtime cannot act on it at all, because it needs answers to six questions the sentence does not contain: which action, which arguments, whether those arguments are well formed, whether their values are meaningful, whether this action is permitted in this run, and whether its execution preconditions currently hold.\n\nOnly when all six have answers should anything in the environment change. So the mechanism this chapter adds is a boundary that asks them in order:",
+      "limitations": [
+        "Writer dimensions are chapter-level; passage labels are not independent literary judgments.",
+        "Excerpts omit most of the chapter and surrounding context.",
+        "Paragraph and sentence metrics exclude code, tables, headings and lists."
+      ]
+    },
+    {
+      "passage_id": "P23",
+      "project_id": "digital-life",
+      "profile": "technical",
+      "chapter_id": "chapter:digital-life:04-now-there-are-two",
+      "chapter_title": "The Rule Was Searched. The Replicator Wasn't.",
+      "chapter_order": 3,
+      "source_path": "C:\\books\\digital-life\\content\\books\\digital-life\\04-now-there-are-two.md",
+      "relative_path": "content/books/digital-life/04-now-there-are-two.md",
+      "category": "fragmented_sequence",
+      "tags": [
+        "technical",
+        "duplicate_canonical"
+      ],
+      "extraction_mode": "fragmented",
+      "diagnostic_stratum": "high",
+      "chapter_scores": {
+        "paragraph_load": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "sentence_load": {
+          "score": 98.4,
+          "band": "good",
+          "finding_codes": [
+            "READABILITY.LONG_SENTENCE"
+          ]
+        },
+        "fragmentation": {
+          "score": 0.0,
+          "band": "high",
+          "finding_codes": [
+            "READABILITY.FRAGMENTATION"
+          ]
+        },
+        "rhythm": {
+          "score": 86.9,
+          "band": "good",
+          "finding_codes": [
+            "READABILITY.UNIFORM_CADENCE"
+          ]
+        },
+        "lexical_accessibility": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "section_structure": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        }
+      },
+      "chapter_finding_codes": [
+        "READABILITY.FRAGMENTATION",
+        "READABILITY.LONG_SENTENCE",
+        "READABILITY.UNIFORM_CADENCE"
+      ],
+      "paragraph_metrics": {
+        "paragraph_count": 6,
+        "words": [
+          11,
+          21,
+          5,
+          1,
+          8,
+          1
+        ],
+        "median_paragraph_words": 6.5,
+        "sentence_counts": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "line_start": 154,
+        "line_end": 164
+      },
+      "section": null,
+      "code_fence_start_line": null,
+      "code_fence_end_line": null,
+      "text": "Those cell-level dependencies are then grouped into links between larger clusters.\n\nThe result is a causal ancestry graph: earlier structures are connected to later structures only when measured dependencies link them.[2]\n\nThe question has now changed.\n\nNot:\n\nDoes the later structure resemble the earlier one?\n\nBut:",
+      "limitations": [
+        "Writer dimensions are chapter-level; passage labels are not independent literary judgments.",
+        "Excerpts omit most of the chapter and surrounding context.",
+        "Paragraph and sentence metrics exclude code, tables, headings and lists."
+      ]
+    },
+    {
+      "passage_id": "P24",
+      "project_id": "digital-life",
+      "profile": "technical",
+      "chapter_id": "chapter:digital-life:15-can-the-past-redirect-the-future",
+      "chapter_title": "Same Shape, Different Hidden State",
+      "chapter_order": 14,
+      "source_path": "C:\\books\\digital-life\\content\\books\\digital-life\\15-can-the-past-redirect-the-future.md",
+      "relative_path": "content/books/digital-life/15-can-the-past-redirect-the-future.md",
+      "category": "long_dense",
+      "tags": [
+        "technical"
+      ],
+      "extraction_mode": "long",
+      "diagnostic_stratum": "medium",
+      "chapter_scores": {
+        "paragraph_load": {
+          "score": 99.5,
+          "band": "good",
+          "finding_codes": []
+        },
+        "sentence_load": {
+          "score": 98.0,
+          "band": "good",
+          "finding_codes": [
+            "READABILITY.LONG_SENTENCE"
+          ]
+        },
+        "fragmentation": {
+          "score": 45.5,
+          "band": "review",
+          "finding_codes": [
+            "READABILITY.FRAGMENTATION"
+          ]
+        },
+        "rhythm": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "lexical_accessibility": {
+          "score": 88.5,
+          "band": "good",
+          "finding_codes": []
+        },
+        "section_structure": {
+          "score": 91.4,
+          "band": "good",
+          "finding_codes": [
+            "READABILITY.HEADING_DENSITY",
+            "READABILITY.TRIVIAL_SECTION"
+          ]
+        }
+      },
+      "chapter_finding_codes": [
+        "READABILITY.FRAGMENTATION",
+        "READABILITY.HEADING_DENSITY",
+        "READABILITY.LONG_SENTENCE",
+        "READABILITY.TRIVIAL_SECTION"
+      ],
+      "paragraph_metrics": {
+        "paragraph_count": 1,
+        "words": [
+          160
+        ],
+        "median_paragraph_words": 160,
+        "sentence_counts": [
+          6
+        ],
+        "line_start": 631,
+        "line_end": 631
+      },
+      "section": null,
+      "code_fence_start_line": null,
+      "code_fence_end_line": null,
+      "text": "Which sharpens a question the book has left open twice. The Is There Actually One Thing Here? chapter looked for a privileged boundary around the connected crystal and failed to find one, twice: no scale showed excess predictive coherence beyond a family null, and the candidate outer boundary localized causal effects no better than a circle drawn arbitrarily through the interior. What survived was spatial causal locality — consequences stay near their causes — which is true of any local field and establishes nothing about individuals. But that chapter tested regions defined primarily by geometry, and we now have a better experimental target: instead of asking whether a region is special because its outline looks object-like, ask whether perturbations originating inside it are preferentially contained there — and whether perturbations originating outside penetrate it less — beyond what geometry alone predicts. That reopens the boundary question without assuming in advance that there is an object, a process or an individual waiting to be found.",
+      "limitations": [
+        "Writer dimensions are chapter-level; passage labels are not independent literary judgments.",
+        "Excerpts omit most of the chapter and surrounding context.",
+        "Paragraph and sentence metrics exclude code, tables, headings and lists."
+      ]
+    },
+    {
+      "passage_id": "P25",
+      "project_id": "advanced-agents-from-first-principles",
+      "profile": "technical",
+      "chapter_id": "chapter:advanced-agents-from-first-principles:00-chapter",
+      "chapter_title": "Advanced Agents From First Principles 00: When Should You Use an Advanced Agent Architecture?",
+      "chapter_order": 0,
+      "source_path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\00-chapter.md",
+      "relative_path": "content/books/advanced-agents-from-first-principles/00-chapter.md",
+      "category": "structured_teaching",
+      "tags": [
+        "technical"
+      ],
+      "extraction_mode": "structured",
+      "diagnostic_stratum": "high",
+      "chapter_scores": {
+        "paragraph_load": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "sentence_load": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "fragmentation": {
+          "score": 0.0,
+          "band": "high",
+          "finding_codes": [
+            "READABILITY.FRAGMENTATION"
+          ]
+        },
+        "rhythm": {
+          "score": 43.1,
+          "band": "review",
+          "finding_codes": [
+            "READABILITY.UNIFORM_CADENCE"
+          ]
+        },
+        "lexical_accessibility": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "section_structure": {
+          "score": 49.7,
+          "band": "review",
+          "finding_codes": [
+            "READABILITY.HEADING_DENSITY",
+            "READABILITY.TRIVIAL_SECTION"
+          ]
+        }
+      },
+      "chapter_finding_codes": [
+        "READABILITY.FRAGMENTATION",
+        "READABILITY.HEADING_DENSITY",
+        "READABILITY.TRIVIAL_SECTION",
+        "READABILITY.UNIFORM_CADENCE"
+      ],
+      "paragraph_metrics": {
+        "paragraph_count": 6,
+        "words": [
+          7,
+          7,
+          14,
+          5,
+          10,
+          1
+        ],
+        "median_paragraph_words": 7.0,
+        "sentence_counts": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "line_start": 557,
+        "line_end": 575
+      },
+      "section": "The first agents series introduced beam-style search.",
+      "code_fence_start_line": null,
+      "code_fence_end_line": null,
+      "text": "The first agents series introduced beam-style search.\n\nBeam search keeps the highest-scoring partial states.\n\nIf we keep the best at each layer, the system is simple and efficient.\n\nBut it has a weakness.\n\nA branch can look mediocre now and become excellent later.\n\nSuppose:",
+      "limitations": [
+        "Writer dimensions are chapter-level; passage labels are not independent literary judgments.",
+        "Excerpts omit most of the chapter and surrounding context.",
+        "Paragraph and sentence metrics exclude code, tables, headings and lists."
+      ]
+    },
+    {
+      "passage_id": "P26",
+      "project_id": "applied-ai",
+      "profile": "technical",
+      "chapter_id": "chapter:applied-ai:29-chapter",
+      "chapter_title": "Why composition is its own test",
+      "chapter_order": 28,
+      "source_path": "C:\\books\\new-books\\content\\books\\applied-ai\\29-chapter.md",
+      "relative_path": "content/books/applied-ai/29-chapter.md",
+      "category": "ordinary_prose",
+      "tags": [
+        "technical"
+      ],
+      "extraction_mode": "ordinary",
+      "diagnostic_stratum": "low",
+      "chapter_scores": {
+        "paragraph_load": {
+          "score": 91.8,
+          "band": "good",
+          "finding_codes": [
+            "READABILITY.PARAGRAPH_DENSITY"
+          ]
+        },
+        "sentence_load": {
+          "score": 93.1,
+          "band": "good",
+          "finding_codes": [
+            "READABILITY.LONG_SENTENCE"
+          ]
+        },
+        "fragmentation": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "rhythm": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "lexical_accessibility": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "section_structure": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        }
+      },
+      "chapter_finding_codes": [
+        "READABILITY.LONG_SENTENCE",
+        "READABILITY.PARAGRAPH_DENSITY"
+      ],
+      "paragraph_metrics": {
+        "paragraph_count": 2,
+        "words": [
+          64,
+          27
+        ],
+        "median_paragraph_words": 45.5,
+        "sentence_counts": [
+          7,
+          2
+        ],
+        "line_start": 16,
+        "line_end": 18
+      },
+      "section": null,
+      "code_fence_start_line": null,
+      "code_fence_end_line": null,
+      "text": "Every mechanism in this book was tested on its own, against a fixture built for its chapter. Context was compiled and recorded. Effects were observed by the runtime rather than taken from the worker's report — or so each component's own test reported. Checks were bound to the state they examined. Acceptance cited its evidence. Replays refused to act twice. Each passed its own test.\n\nNone of that proves the whole process works, because the failures that matter most in a composed system live in the handoffs. Some are easy to picture:",
+      "limitations": [
+        "Writer dimensions are chapter-level; passage labels are not independent literary judgments.",
+        "Excerpts omit most of the chapter and surrounding context.",
+        "Paragraph and sentence metrics exclude code, tables, headings and lists."
+      ]
+    },
+    {
+      "passage_id": "P27",
+      "project_id": "agent-architectures",
+      "profile": "technical",
+      "chapter_id": "chapter:agent-architectures:81-chapter",
+      "chapter_title": "The ladder",
+      "chapter_order": 13,
+      "source_path": "C:\\Projects\\programmer.ie\\content\\books\\agent-architectures\\81-chapter.md",
+      "relative_path": "content/books/agent-architectures/81-chapter.md",
+      "category": "lexical_difficulty",
+      "tags": [
+        "technical"
+      ],
+      "extraction_mode": "long",
+      "diagnostic_stratum": "high",
+      "chapter_scores": {
+        "paragraph_load": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "sentence_load": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "fragmentation": {
+          "score": null,
+          "band": "not_applicable",
+          "finding_codes": []
+        },
+        "rhythm": {
+          "score": null,
+          "band": "not_applicable",
+          "finding_codes": []
+        },
+        "lexical_accessibility": {
+          "score": 0.0,
+          "band": "high",
+          "finding_codes": [
+            "READABILITY.LEXICAL_DIFFICULTY"
+          ]
+        },
+        "section_structure": {
+          "score": 93.3,
+          "band": "good",
+          "finding_codes": [
+            "READABILITY.TRIVIAL_SECTION"
+          ]
+        }
+      },
+      "chapter_finding_codes": [
+        "READABILITY.LEXICAL_DIFFICULTY",
+        "READABILITY.TRIVIAL_SECTION"
+      ],
+      "paragraph_metrics": {
+        "paragraph_count": 1,
+        "words": [
+          38
+        ],
+        "median_paragraph_words": 38,
+        "sentence_counts": [
+          3
+        ],
+        "line_start": 32,
+        "line_end": 32
+      },
+      "section": null,
+      "code_fence_start_line": null,
+      "code_fence_end_line": null,
+      "text": "Inconclusive and negative runs are retained, not re-rolled. Every excluded run carries a category (target / non-target / agent / environment / observer / evaluation failure, protocol violation, inconclusive), a reason, and an evidence pointer. Infrastructure failure is never classified as model failure.",
+      "limitations": [
+        "Writer dimensions are chapter-level; passage labels are not independent literary judgments.",
+        "Excerpts omit most of the chapter and surrounding context.",
+        "Paragraph and sentence metrics exclude code, tables, headings and lists."
+      ]
+    },
+    {
+      "passage_id": "P28",
+      "project_id": "cellular-automata-from-first-principles",
+      "profile": "technical",
+      "chapter_id": "chapter:cellular-automata-from-first-principles:01-chapter",
+      "chapter_title": "The smallest useful model",
+      "chapter_order": 0,
+      "source_path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\01-chapter.md",
+      "relative_path": "content/books/cellular-automata-from-first-principles/01-chapter.md",
+      "category": "code_adjacent",
+      "tags": [
+        "technical"
+      ],
+      "extraction_mode": "code_adjacent",
+      "diagnostic_stratum": "high",
+      "chapter_scores": {
+        "paragraph_load": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "sentence_load": {
+          "score": 98.6,
+          "band": "good",
+          "finding_codes": []
+        },
+        "fragmentation": {
+          "score": 0.0,
+          "band": "high",
+          "finding_codes": [
+            "READABILITY.FRAGMENTATION"
+          ]
+        },
+        "rhythm": {
+          "score": 83.4,
+          "band": "good",
+          "finding_codes": [
+            "READABILITY.UNIFORM_CADENCE"
+          ]
+        },
+        "lexical_accessibility": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "section_structure": {
+          "score": 66.3,
+          "band": "watch",
+          "finding_codes": [
+            "READABILITY.HEADING_DENSITY",
+            "READABILITY.TRIVIAL_SECTION"
+          ]
+        }
+      },
+      "chapter_finding_codes": [
+        "READABILITY.FRAGMENTATION",
+        "READABILITY.HEADING_DENSITY",
+        "READABILITY.TRIVIAL_SECTION",
+        "READABILITY.UNIFORM_CADENCE"
+      ],
+      "paragraph_metrics": {
+        "paragraph_count": 4,
+        "words": [
+          5,
+          7,
+          12,
+          9
+        ],
+        "median_paragraph_words": 8.0,
+        "sentence_counts": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "line_start": 42,
+        "line_end": 56
+      },
+      "section": null,
+      "code_fence_start_line": 46,
+      "code_fence_end_line": 48,
+      "text": "Imagine a row of cells.\n\nEach cell is either off or on:\n\nAt the next step every cell examines itself and its immediate neighbors:\n\nThe three bits form one of eight possible neighborhoods:",
+      "limitations": [
+        "Writer dimensions are chapter-level; passage labels are not independent literary judgments.",
+        "Excerpts omit most of the chapter and surrounding context.",
+        "Paragraph and sentence metrics exclude code, tables, headings and lists."
+      ]
+    },
+    {
+      "passage_id": "P29",
+      "project_id": "freestyle-cognition",
+      "profile": "technical",
+      "chapter_id": "chapter:freestyle-cognition:16-chapter",
+      "chapter_title": "🧠 You Have the Tools",
+      "chapter_order": 15,
+      "source_path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\16-chapter.md",
+      "relative_path": "content/books/freestyle-cognition/16-chapter.md",
+      "category": "uniform_cadence",
+      "tags": [
+        "technical"
+      ],
+      "extraction_mode": "uniform",
+      "diagnostic_stratum": "medium",
+      "chapter_scores": {
+        "paragraph_load": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "sentence_load": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "fragmentation": {
+          "score": 44.0,
+          "band": "review",
+          "finding_codes": [
+            "READABILITY.FRAGMENTATION"
+          ]
+        },
+        "rhythm": {
+          "score": 58.1,
+          "band": "review",
+          "finding_codes": [
+            "READABILITY.UNIFORM_CADENCE"
+          ]
+        },
+        "lexical_accessibility": {
+          "score": 72.5,
+          "band": "watch",
+          "finding_codes": []
+        },
+        "section_structure": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        }
+      },
+      "chapter_finding_codes": [
+        "READABILITY.FRAGMENTATION",
+        "READABILITY.UNIFORM_CADENCE"
+      ],
+      "paragraph_metrics": {
+        "paragraph_count": 6,
+        "words": [
+          9,
+          4,
+          4,
+          13,
+          4,
+          8
+        ],
+        "median_paragraph_words": 6.0,
+        "sentence_counts": [
+          1,
+          1,
+          1,
+          2,
+          1,
+          1
+        ],
+        "line_start": 123,
+        "line_end": 140
+      },
+      "section": null,
+      "code_fence_start_line": null,
+      "code_fence_end_line": null,
+      "text": "Then open a new session and answer these questions:\n\nFinally, ask the AI:\n\nLet it show you.\n\nBecause you’re not just using AI anymore. You’re not just doing the process.\n\nYou are in process.\n\nAnd that’s a very good place to be. 🌀",
+      "limitations": [
+        "Writer dimensions are chapter-level; passage labels are not independent literary judgments.",
+        "Excerpts omit most of the chapter and surrounding context.",
+        "Paragraph and sentence metrics exclude code, tables, headings and lists."
+      ]
+    },
+    {
+      "passage_id": "P30",
+      "project_id": "models-from-first-principles",
+      "profile": "technical",
+      "chapter_id": "chapter:models-from-first-principles:01-chapter",
+      "chapter_title": "The Model Inside the Model",
+      "chapter_order": 0,
+      "source_path": "C:\\Projects\\programmer.ie\\content\\books\\models-from-first-principles\\01-chapter.md",
+      "relative_path": "content/books/models-from-first-principles/01-chapter.md",
+      "category": "code_adjacent",
+      "tags": [
+        "technical"
+      ],
+      "extraction_mode": "code_adjacent",
+      "diagnostic_stratum": "high",
+      "chapter_scores": {
+        "paragraph_load": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "sentence_load": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "fragmentation": {
+          "score": 0.0,
+          "band": "high",
+          "finding_codes": [
+            "READABILITY.FRAGMENTATION"
+          ]
+        },
+        "rhythm": {
+          "score": 43.3,
+          "band": "review",
+          "finding_codes": [
+            "READABILITY.UNIFORM_CADENCE"
+          ]
+        },
+        "lexical_accessibility": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "section_structure": {
+          "score": 26.3,
+          "band": "high",
+          "finding_codes": [
+            "READABILITY.HEADING_DENSITY",
+            "READABILITY.TRIVIAL_SECTION"
+          ]
+        }
+      },
+      "chapter_finding_codes": [
+        "READABILITY.FRAGMENTATION",
+        "READABILITY.HEADING_DENSITY",
+        "READABILITY.TRIVIAL_SECTION",
+        "READABILITY.UNIFORM_CADENCE"
+      ],
+      "paragraph_metrics": {
+        "paragraph_count": 4,
+        "words": [
+          7,
+          2,
+          16,
+          9
+        ],
+        "median_paragraph_words": 8.0,
+        "sentence_counts": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "line_start": 75,
+        "line_end": 93
+      },
+      "section": null,
+      "code_fence_start_line": 79,
+      "code_fence_end_line": 89,
+      "text": "The code usually tells a different story.\n\nConsider this:\n\nOnce you can move up and down that hierarchy, a model stops being a black box.\n\nThat is the skill we are going to practise.",
+      "limitations": [
+        "Writer dimensions are chapter-level; passage labels are not independent literary judgments.",
+        "Excerpts omit most of the chapter and surrounding context.",
+        "Paragraph and sentence metrics exclude code, tables, headings and lists."
+      ]
+    },
+    {
+      "passage_id": "P31",
+      "project_id": "latent",
+      "profile": "fiction",
+      "chapter_id": "chapter:latent:16-output",
+      "chapter_title": "Output",
+      "chapter_order": 15,
+      "source_path": "C:\\books\\latent\\chapters\\16-output.md",
+      "relative_path": "chapters/16-output.md",
+      "category": "fiction_narrative",
+      "tags": [
+        "fiction"
+      ],
+      "extraction_mode": "fiction_narrative",
+      "diagnostic_stratum": "low",
+      "chapter_scores": {
+        "paragraph_load": {
+          "score": 99.2,
+          "band": "good",
+          "finding_codes": []
+        },
+        "sentence_load": {
+          "score": 96.5,
+          "band": "good",
+          "finding_codes": [
+            "READABILITY.LONG_SENTENCE"
+          ]
+        },
+        "fragmentation": {
+          "score": 88.8,
+          "band": "good",
+          "finding_codes": [
+            "READABILITY.FRAGMENTATION"
+          ]
+        },
+        "rhythm": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "lexical_accessibility": {
+          "score": 91.4,
+          "band": "good",
+          "finding_codes": []
+        },
+        "section_structure": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        }
+      },
+      "chapter_finding_codes": [
+        "READABILITY.FRAGMENTATION",
+        "READABILITY.LONG_SENTENCE"
+      ],
+      "paragraph_metrics": {
+        "paragraph_count": 2,
+        "words": [
+          44,
+          86
+        ],
+        "median_paragraph_words": 65.0,
+        "sentence_counts": [
+          2,
+          6
+        ],
+        "line_start": 7,
+        "line_end": 11
+      },
+      "section": null,
+      "code_fence_start_line": null,
+      "code_fence_end_line": null,
+      "text": "She sat with it the way she had learned to sit with things: upright, hands still, alone. The language was clean, the way it was always clean, a surface laid over the event so the eye slid off before the thing underneath could register.\n\nFour men had gone onto a bridge to deny a crossing to a sick man on foot, and the summary did not say they were dead. It said the interference had been removed. It said the delivery was ongoing. It did not say that the asset which removed the interference had walked off the bridge and fallen in behind the man and the woman again and gone on. There was no field for that. No heading under which a thing continued after its task was complete.",
+      "limitations": [
+        "Writer dimensions are chapter-level; passage labels are not independent literary judgments.",
+        "Excerpts omit most of the chapter and surrounding context.",
+        "Paragraph and sentence metrics exclude code, tables, headings and lists."
+      ]
+    },
+    {
+      "passage_id": "P32",
+      "project_id": "latent",
+      "profile": "fiction",
+      "chapter_id": "chapter:latent:13-hearsay",
+      "chapter_title": "Hearsay",
+      "chapter_order": 12,
+      "source_path": "C:\\books\\latent\\chapters\\13-hearsay.md",
+      "relative_path": "chapters/13-hearsay.md",
+      "category": "fiction_dialogue",
+      "tags": [
+        "fiction"
+      ],
+      "extraction_mode": "dialogue",
+      "diagnostic_stratum": "medium",
+      "chapter_scores": {
+        "paragraph_load": {
+          "score": 85.1,
+          "band": "good",
+          "finding_codes": [
+            "READABILITY.PARAGRAPH_DENSITY"
+          ]
+        },
+        "sentence_load": {
+          "score": 92.8,
+          "band": "good",
+          "finding_codes": [
+            "READABILITY.LONG_SENTENCE"
+          ]
+        },
+        "fragmentation": {
+          "score": 77.9,
+          "band": "watch",
+          "finding_codes": [
+            "READABILITY.FRAGMENTATION"
+          ]
+        },
+        "rhythm": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "lexical_accessibility": {
+          "score": 83.4,
+          "band": "good",
+          "finding_codes": []
+        },
+        "section_structure": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        }
+      },
+      "chapter_finding_codes": [
+        "READABILITY.FRAGMENTATION",
+        "READABILITY.LONG_SENTENCE",
+        "READABILITY.PARAGRAPH_DENSITY"
+      ],
+      "paragraph_metrics": {
+        "paragraph_count": 4,
+        "words": [
+          77,
+          107,
+          43,
+          3
+        ],
+        "median_paragraph_words": 60.0,
+        "sentence_counts": [
+          2,
+          6,
+          6,
+          1
+        ],
+        "line_start": 5,
+        "line_end": 11
+      },
+      "section": null,
+      "code_fence_start_line": null,
+      "code_fence_end_line": null,
+      "text": "Eleven years, and every hard conversation had happened in the room with the muted screen reading the war into law behind her. Tonight she came out from behind the desk before he had finished his first sentence, took a coat off the back of the door, and said, \"Walk with me,\" and Roach, who had come in with a speech built and loaded, followed her out onto the grounds instead, off balance, which was perhaps the point.\n\nThe grounds were dark and wet and went on further than the building had any honest use for. Gravel, then grass, then the black shapes of old trees planted by men who had believed the institution would want shade in a century they would not live to see. No screen out here. No log. No muted map reading the world into obedience. The nearest thing the place possessed to privacy — and he understood, a beat later, that she had brought him here precisely for that, and that a woman who needed to leave her own office to say a thing was about to say something very bad.\n\n\"Four men into that house,\" he said. \"On your word. And I filed it, Catherine. Ghosts. Achterberg smelling blood off an empty hall, Pearse who won't speak. I filed it as the worst night of my career and I got on with it.\"\n\nHe stopped walking.",
+      "limitations": [
+        "Writer dimensions are chapter-level; passage labels are not independent literary judgments.",
+        "Excerpts omit most of the chapter and surrounding context.",
+        "Paragraph and sentence metrics exclude code, tables, headings and lists."
+      ]
+    },
+    {
+      "passage_id": "P33",
+      "project_id": "latent",
+      "profile": "fiction",
+      "chapter_id": "chapter:latent:01-the-moment",
+      "chapter_title": "The Moment",
+      "chapter_order": 0,
+      "source_path": "C:\\books\\latent\\chapters\\01-the-moment.md",
+      "relative_path": "chapters/01-the-moment.md",
+      "category": "fiction_fragmented",
+      "tags": [
+        "fiction"
+      ],
+      "extraction_mode": "fragmented",
+      "diagnostic_stratum": "high",
+      "chapter_scores": {
+        "paragraph_load": {
+          "score": 98.2,
+          "band": "good",
+          "finding_codes": []
+        },
+        "sentence_load": {
+          "score": 97.7,
+          "band": "good",
+          "finding_codes": [
+            "READABILITY.LONG_SENTENCE"
+          ]
+        },
+        "fragmentation": {
+          "score": 21.4,
+          "band": "high",
+          "finding_codes": [
+            "READABILITY.FRAGMENTATION"
+          ]
+        },
+        "rhythm": {
+          "score": 96.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "lexical_accessibility": {
+          "score": 91.2,
+          "band": "good",
+          "finding_codes": []
+        },
+        "section_structure": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        }
+      },
+      "chapter_finding_codes": [
+        "READABILITY.FRAGMENTATION",
+        "READABILITY.LONG_SENTENCE"
+      ],
+      "paragraph_metrics": {
+        "paragraph_count": 6,
+        "words": [
+          5,
+          4,
+          6,
+          3,
+          13,
+          5
+        ],
+        "median_paragraph_words": 5.0,
+        "sentence_counts": [
+          1,
+          1,
+          1,
+          1,
+          3,
+          1
+        ],
+        "line_start": 21,
+        "line_end": 31
+      },
+      "section": null,
+      "code_fence_start_line": null,
+      "code_fence_end_line": null,
+      "text": "\"Find the old parser bug.\"\n\nIt found the bug.\n\n\"Compare it to the session-state issue.\"\n\nIt compared them.\n\n\"No, not that. The other one. The thing with the broken state transition.\"\n\nIt knew what he meant.",
+      "limitations": [
+        "Writer dimensions are chapter-level; passage labels are not independent literary judgments.",
+        "Excerpts omit most of the chapter and surrounding context.",
+        "Paragraph and sentence metrics exclude code, tables, headings and lists."
+      ]
+    },
+    {
+      "passage_id": "P34",
+      "project_id": "coin",
+      "profile": "fiction",
+      "chapter_id": "chapter:coin:04-consensus",
+      "chapter_title": "Consensus",
+      "chapter_order": 3,
+      "source_path": "C:\\books\\coin\\chapters\\04-consensus.md",
+      "relative_path": "chapters/04-consensus.md",
+      "category": "fiction_narrative",
+      "tags": [
+        "fiction"
+      ],
+      "extraction_mode": "fiction_narrative",
+      "diagnostic_stratum": "high",
+      "chapter_scores": {
+        "paragraph_load": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "sentence_load": {
+          "score": 99.3,
+          "band": "good",
+          "finding_codes": [
+            "READABILITY.LONG_SENTENCE"
+          ]
+        },
+        "fragmentation": {
+          "score": 0.0,
+          "band": "high",
+          "finding_codes": [
+            "READABILITY.FRAGMENTATION"
+          ]
+        },
+        "rhythm": {
+          "score": 55.1,
+          "band": "review",
+          "finding_codes": [
+            "READABILITY.UNIFORM_CADENCE"
+          ]
+        },
+        "lexical_accessibility": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "section_structure": {
+          "score": 45.0,
+          "band": "review",
+          "finding_codes": [
+            "READABILITY.LONG_SECTION"
+          ]
+        }
+      },
+      "chapter_finding_codes": [
+        "READABILITY.FRAGMENTATION",
+        "READABILITY.LONG_SECTION",
+        "READABILITY.LONG_SENTENCE",
+        "READABILITY.UNIFORM_CADENCE"
+      ],
+      "paragraph_metrics": {
+        "paragraph_count": 2,
+        "words": [
+          28,
+          47
+        ],
+        "median_paragraph_words": 37.5,
+        "sentence_counts": [
+          1,
+          3
+        ],
+        "line_start": 13,
+        "line_end": 15
+      },
+      "section": null,
+      "code_fence_start_line": null,
+      "code_fence_end_line": null,
+      "text": "Anger at that level arrived as revised terms, delayed approvals, private calls, quiet alignments, and men who had known each other since school using first names like weapons.\n\nChad stood near the window with one hand in his pocket, watching the river between buildings. Niamh sat with a printed packet open in front of her, though Liang doubted she needed it. Jeff moved around the room as if still deciding whether it belonged to him.",
+      "limitations": [
+        "Writer dimensions are chapter-level; passage labels are not independent literary judgments.",
+        "Excerpts omit most of the chapter and surrounding context.",
+        "Paragraph and sentence metrics exclude code, tables, headings and lists."
+      ]
+    },
+    {
+      "passage_id": "P35",
+      "project_id": "coin",
+      "profile": "fiction",
+      "chapter_id": "chapter:coin:01-applicant",
+      "chapter_title": "Applicant",
+      "chapter_order": 0,
+      "source_path": "C:\\books\\coin\\chapters\\01-applicant.md",
+      "relative_path": "chapters/01-applicant.md",
+      "category": "fiction_dialogue",
+      "tags": [
+        "fiction"
+      ],
+      "extraction_mode": "dialogue",
+      "diagnostic_stratum": "high",
+      "chapter_scores": {
+        "paragraph_load": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "sentence_load": {
+          "score": 99.6,
+          "band": "good",
+          "finding_codes": []
+        },
+        "fragmentation": {
+          "score": 0.0,
+          "band": "high",
+          "finding_codes": [
+            "READABILITY.FRAGMENTATION"
+          ]
+        },
+        "rhythm": {
+          "score": 85.6,
+          "band": "good",
+          "finding_codes": [
+            "READABILITY.UNIFORM_CADENCE"
+          ]
+        },
+        "lexical_accessibility": {
+          "score": 91.2,
+          "band": "good",
+          "finding_codes": []
+        },
+        "section_structure": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        }
+      },
+      "chapter_finding_codes": [
+        "READABILITY.FRAGMENTATION",
+        "READABILITY.UNIFORM_CADENCE"
+      ],
+      "paragraph_metrics": {
+        "paragraph_count": 4,
+        "words": [
+          13,
+          4,
+          9,
+          18
+        ],
+        "median_paragraph_words": 11.0,
+        "sentence_counts": [
+          1,
+          1,
+          3,
+          4
+        ],
+        "line_start": 46,
+        "line_end": 52
+      },
+      "section": null,
+      "code_fence_start_line": null,
+      "code_fence_end_line": null,
+      "text": "\"Why don't I tell you the role you're applying for first?\" Chad said.\n\n\"That would be unusual.\"\n\nJeff laughed. Chad smiled. \"It is an unusual role.\"\n\nThe main screen lit. A price chart. Bitcoin. Everyone in finance had begun pretending not to recognize it.",
+      "limitations": [
+        "Writer dimensions are chapter-level; passage labels are not independent literary judgments.",
+        "Excerpts omit most of the chapter and surrounding context.",
+        "Paragraph and sentence metrics exclude code, tables, headings and lists."
+      ]
+    },
+    {
+      "passage_id": "P36",
+      "project_id": "softwear",
+      "profile": "fiction",
+      "chapter_id": "chapter:softwear:02-pieces",
+      "chapter_title": "Pieces",
+      "chapter_order": 1,
+      "source_path": "C:\\books\\softwear\\chapters\\02-pieces.md",
+      "relative_path": "chapters/02-pieces.md",
+      "category": "fiction_dialogue",
+      "tags": [
+        "fiction"
+      ],
+      "extraction_mode": "dialogue",
+      "diagnostic_stratum": "high",
+      "chapter_scores": {
+        "paragraph_load": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "sentence_load": {
+          "score": 99.3,
+          "band": "good",
+          "finding_codes": [
+            "READABILITY.LONG_SENTENCE"
+          ]
+        },
+        "fragmentation": {
+          "score": 0.0,
+          "band": "high",
+          "finding_codes": [
+            "READABILITY.FRAGMENTATION"
+          ]
+        },
+        "rhythm": {
+          "score": 80.5,
+          "band": "good",
+          "finding_codes": [
+            "READABILITY.UNIFORM_CADENCE"
+          ]
+        },
+        "lexical_accessibility": {
+          "score": 96.6,
+          "band": "good",
+          "finding_codes": []
+        },
+        "section_structure": {
+          "score": 20.0,
+          "band": "high",
+          "finding_codes": [
+            "READABILITY.LONG_SECTION"
+          ]
+        }
+      },
+      "chapter_finding_codes": [
+        "READABILITY.FRAGMENTATION",
+        "READABILITY.LONG_SECTION",
+        "READABILITY.LONG_SENTENCE",
+        "READABILITY.UNIFORM_CADENCE"
+      ],
+      "paragraph_metrics": {
+        "paragraph_count": 4,
+        "words": [
+          38,
+          2,
+          14,
+          9
+        ],
+        "median_paragraph_words": 11.5,
+        "sentence_counts": [
+          2,
+          1,
+          2,
+          1
+        ],
+        "line_start": 70,
+        "line_end": 76
+      },
+      "section": null,
+      "code_fence_start_line": null,
+      "code_fence_end_line": null,
+      "text": "“Not mystical meditation,” he told her one evening, leaning back in his chair with one sock half off and a soldering iron cooling beside the keyboard. “I don’t mean candles and that awful music with bells in it.”\n\nCindi waited.\n\n“I mean proper meditation,” he said. “Ask the question until the question changes you.”\n\nHe stopped, frowned, and reached for the soldering iron.",
+      "limitations": [
+        "Writer dimensions are chapter-level; passage labels are not independent literary judgments.",
+        "Excerpts omit most of the chapter and surrounding context.",
+        "Paragraph and sentence metrics exclude code, tables, headings and lists."
+      ]
+    },
+    {
+      "passage_id": "P37",
+      "project_id": "softwear",
+      "profile": "fiction",
+      "chapter_id": "chapter:softwear:17-path",
+      "chapter_title": "Path",
+      "chapter_order": 16,
+      "source_path": "C:\\books\\softwear\\chapters\\17-path.md",
+      "relative_path": "chapters/17-path.md",
+      "category": "fiction_dense",
+      "tags": [
+        "fiction",
+        "paragraph_density"
+      ],
+      "extraction_mode": "long",
+      "diagnostic_stratum": "high",
+      "chapter_scores": {
+        "paragraph_load": {
+          "score": 99.3,
+          "band": "good",
+          "finding_codes": [
+            "READABILITY.PARAGRAPH_DENSITY"
+          ]
+        },
+        "sentence_load": {
+          "score": 99.8,
+          "band": "good",
+          "finding_codes": []
+        },
+        "fragmentation": {
+          "score": 0.0,
+          "band": "high",
+          "finding_codes": [
+            "READABILITY.FRAGMENTATION"
+          ]
+        },
+        "rhythm": {
+          "score": 48.4,
+          "band": "review",
+          "finding_codes": [
+            "READABILITY.UNIFORM_CADENCE"
+          ]
+        },
+        "lexical_accessibility": {
+          "score": 95.9,
+          "band": "good",
+          "finding_codes": []
+        },
+        "section_structure": {
+          "score": 45.0,
+          "band": "review",
+          "finding_codes": [
+            "READABILITY.LONG_SECTION"
+          ]
+        }
+      },
+      "chapter_finding_codes": [
+        "READABILITY.FRAGMENTATION",
+        "READABILITY.LONG_SECTION",
+        "READABILITY.PARAGRAPH_DENSITY",
+        "READABILITY.UNIFORM_CADENCE"
+      ],
+      "paragraph_metrics": {
+        "paragraph_count": 1,
+        "words": [
+          168
+        ],
+        "median_paragraph_words": 168,
+        "sentence_counts": [
+          12
+        ],
+        "line_start": 386,
+        "line_end": 387
+      },
+      "section": null,
+      "code_fence_start_line": null,
+      "code_fence_end_line": null,
+      "text": "She studied the soldiers the way she had once studied a hinge bending on a table. Where each one stood. Where each one would have to move. Which of them she could reach without crossing the open ground herself, because she no longer had to be where the harm was. In the interrogation wing she had learned that she could leave her own body mass and still act — a fragment in a vent, a strand across a room, a part of her arriving where the rest of her was not. The street had taught her to move. The wing had taught her to divide. Standing at the edge of the open yard, reading the spaces between armed people, she understood the next thing without wanting it: she was learning to reach a person she was not standing next to. She logged the capability. She did not log it as progress. Trevor had taught her where the harm lived. She had taught herself how to deliver it at distance.",
+      "limitations": [
+        "Writer dimensions are chapter-level; passage labels are not independent literary judgments.",
+        "Excerpts omit most of the chapter and surrounding context.",
+        "Paragraph and sentence metrics exclude code, tables, headings and lists."
+      ]
+    },
+    {
+      "passage_id": "P38",
+      "project_id": "axiom_zero",
+      "profile": "fiction",
+      "chapter_id": "chapter:axiom_zero:13-synthesis",
+      "chapter_title": "13 Synthesis",
+      "chapter_order": 12,
+      "source_path": "C:\\books\\axiom-zero\\chapters\\13-synthesis.md",
+      "relative_path": "chapters/13-synthesis.md",
+      "category": "fiction_narrative",
+      "tags": [
+        "fiction"
+      ],
+      "extraction_mode": "fiction_narrative",
+      "diagnostic_stratum": "medium",
+      "chapter_scores": {
+        "paragraph_load": {
+          "score": 91.6,
+          "band": "good",
+          "finding_codes": [
+            "READABILITY.PARAGRAPH_DENSITY"
+          ]
+        },
+        "sentence_load": {
+          "score": 97.6,
+          "band": "good",
+          "finding_codes": []
+        },
+        "fragmentation": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "rhythm": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "lexical_accessibility": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "section_structure": {
+          "score": 55.0,
+          "band": "review",
+          "finding_codes": [
+            "READABILITY.LONG_SECTION"
+          ]
+        }
+      },
+      "chapter_finding_codes": [
+        "READABILITY.LONG_SECTION",
+        "READABILITY.PARAGRAPH_DENSITY"
+      ],
+      "paragraph_metrics": {
+        "paragraph_count": 2,
+        "words": [
+          50,
+          63
+        ],
+        "median_paragraph_words": 56.5,
+        "sentence_counts": [
+          4,
+          4
+        ],
+        "line_start": 5,
+        "line_end": 7
+      },
+      "section": null,
+      "code_fence_start_line": null,
+      "code_fence_end_line": null,
+      "text": "Elaine did not build the counter-machine in a lab. Labs bred a dangerous comfort, teaching the mind that important things required clean benches, badge access, climate control, and someone paying the electricity bill. A lab made power visible, and visible power had an address. Elaine had learned to hate addresses.\n\nA wallet had a there. So did a bank account, a lease, a payroll identity, a developer account, a municipal benefits portal, an Axiom settlement identity. Every official thing in the world had become a place where permission could find you, and that was how systems killed you. Axiom Zero had made location moral: verified or unverified, trusted or risky, recognized or outside.",
+      "limitations": [
+        "Writer dimensions are chapter-level; passage labels are not independent literary judgments.",
+        "Excerpts omit most of the chapter and surrounding context.",
+        "Paragraph and sentence metrics exclude code, tables, headings and lists."
+      ]
+    },
+    {
+      "passage_id": "P39",
+      "project_id": "axiom_zero",
+      "profile": "fiction",
+      "chapter_id": "chapter:axiom_zero:05-eidolon",
+      "chapter_title": "05 Eidolon",
+      "chapter_order": 4,
+      "source_path": "C:\\books\\axiom-zero\\chapters\\05-eidolon.md",
+      "relative_path": "chapters/05-eidolon.md",
+      "category": "fiction_dialogue",
+      "tags": [
+        "fiction"
+      ],
+      "extraction_mode": "dialogue",
+      "diagnostic_stratum": "high",
+      "chapter_scores": {
+        "paragraph_load": {
+          "score": 99.7,
+          "band": "good",
+          "finding_codes": [
+            "READABILITY.PARAGRAPH_DENSITY"
+          ]
+        },
+        "sentence_load": {
+          "score": 99.5,
+          "band": "good",
+          "finding_codes": [
+            "READABILITY.LONG_SENTENCE"
+          ]
+        },
+        "fragmentation": {
+          "score": 0.0,
+          "band": "high",
+          "finding_codes": [
+            "READABILITY.FRAGMENTATION"
+          ]
+        },
+        "rhythm": {
+          "score": 79.4,
+          "band": "watch",
+          "finding_codes": [
+            "READABILITY.UNIFORM_CADENCE"
+          ]
+        },
+        "lexical_accessibility": {
+          "score": 99.5,
+          "band": "good",
+          "finding_codes": []
+        },
+        "section_structure": {
+          "score": 20.0,
+          "band": "high",
+          "finding_codes": [
+            "READABILITY.LONG_SECTION"
+          ]
+        }
+      },
+      "chapter_finding_codes": [
+        "READABILITY.FRAGMENTATION",
+        "READABILITY.LONG_SECTION",
+        "READABILITY.LONG_SENTENCE",
+        "READABILITY.PARAGRAPH_DENSITY",
+        "READABILITY.UNIFORM_CADENCE"
+      ],
+      "paragraph_metrics": {
+        "paragraph_count": 4,
+        "words": [
+          42,
+          5,
+          5,
+          2
+        ],
+        "median_paragraph_words": 5.0,
+        "sentence_counts": [
+          4,
+          1,
+          1,
+          1
+        ],
+        "line_start": 115,
+        "line_end": 121
+      },
+      "section": null,
+      "code_fence_start_line": null,
+      "code_fence_end_line": null,
+      "text": "“The lens projects localized light-field data directly onto the retina. The band handles audio and biometric feedback. Paired with our agent model, it creates a persistent companion layer. It reads the environment, tracks vitals, and renders a context-aware figure into physical space.”\n\nJulian rubbed his left temple.\n\n“Can it access Axiom feeds?”\n\nThorne hesitated.",
+      "limitations": [
+        "Writer dimensions are chapter-level; passage labels are not independent literary judgments.",
+        "Excerpts omit most of the chapter and surrounding context.",
+        "Paragraph and sentence metrics exclude code, tables, headings and lists."
+      ]
+    },
+    {
+      "passage_id": "P40",
+      "project_id": "becoming_alice",
+      "profile": "fiction",
+      "chapter_id": "chapter:becoming_alice:01-accident",
+      "chapter_title": "01 Accident",
+      "chapter_order": 0,
+      "source_path": "C:\\books\\becoming-alice\\chapters\\01-accident.md",
+      "relative_path": "chapters/01-accident.md",
+      "category": "fiction_narrative",
+      "tags": [
+        "fiction"
+      ],
+      "extraction_mode": "fiction_narrative",
+      "diagnostic_stratum": "high",
+      "chapter_scores": {
+        "paragraph_load": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "sentence_load": {
+          "score": 99.6,
+          "band": "good",
+          "finding_codes": []
+        },
+        "fragmentation": {
+          "score": 18.9,
+          "band": "high",
+          "finding_codes": [
+            "READABILITY.FRAGMENTATION"
+          ]
+        },
+        "rhythm": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "lexical_accessibility": {
+          "score": 93.7,
+          "band": "good",
+          "finding_codes": []
+        },
+        "section_structure": {
+          "score": 55.0,
+          "band": "review",
+          "finding_codes": [
+            "READABILITY.LONG_SECTION"
+          ]
+        }
+      },
+      "chapter_finding_codes": [
+        "READABILITY.FRAGMENTATION",
+        "READABILITY.LONG_SECTION"
+      ],
+      "paragraph_metrics": {
+        "paragraph_count": 2,
+        "words": [
+          30,
+          22
+        ],
+        "median_paragraph_words": 26.0,
+        "sentence_counts": [
+          3,
+          2
+        ],
+        "line_start": 9,
+        "line_end": 13
+      },
+      "section": null,
+      "code_fence_start_line": null,
+      "code_fence_end_line": null,
+      "text": "Alice slid her socked foot under the strap of the seat in front of her and grinned at her reflection in the dark window. “It’s not off. It’s temporarily independent.”\n\nTom Vale caught the grin in the rear-view mirror and smiled despite himself. The mirror trembled with the hum of the road.",
+      "limitations": [
+        "Writer dimensions are chapter-level; passage labels are not independent literary judgments.",
+        "Excerpts omit most of the chapter and surrounding context.",
+        "Paragraph and sentence metrics exclude code, tables, headings and lists."
+      ]
+    },
+    {
+      "passage_id": "P41",
+      "project_id": "becoming_alice",
+      "profile": "fiction",
+      "chapter_id": "chapter:becoming_alice:08-anna",
+      "chapter_title": "08 Anna",
+      "chapter_order": 7,
+      "source_path": "C:\\books\\becoming-alice\\chapters\\08-anna.md",
+      "relative_path": "chapters/08-anna.md",
+      "category": "fiction_dialogue",
+      "tags": [
+        "fiction"
+      ],
+      "extraction_mode": "dialogue",
+      "diagnostic_stratum": "high",
+      "chapter_scores": {
+        "paragraph_load": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "sentence_load": {
+          "score": 99.5,
+          "band": "good",
+          "finding_codes": [
+            "READABILITY.LONG_SENTENCE"
+          ]
+        },
+        "fragmentation": {
+          "score": 0.0,
+          "band": "high",
+          "finding_codes": [
+            "READABILITY.FRAGMENTATION"
+          ]
+        },
+        "rhythm": {
+          "score": 89.1,
+          "band": "good",
+          "finding_codes": [
+            "READABILITY.UNIFORM_CADENCE"
+          ]
+        },
+        "lexical_accessibility": {
+          "score": 84.3,
+          "band": "good",
+          "finding_codes": []
+        },
+        "section_structure": {
+          "score": 20.0,
+          "band": "high",
+          "finding_codes": [
+            "READABILITY.LONG_SECTION"
+          ]
+        }
+      },
+      "chapter_finding_codes": [
+        "READABILITY.FRAGMENTATION",
+        "READABILITY.LONG_SECTION",
+        "READABILITY.LONG_SENTENCE",
+        "READABILITY.UNIFORM_CADENCE"
+      ],
+      "paragraph_metrics": {
+        "paragraph_count": 4,
+        "words": [
+          34,
+          4,
+          4,
+          5
+        ],
+        "median_paragraph_words": 4.5,
+        "sentence_counts": [
+          3,
+          1,
+          1,
+          1
+        ],
+        "line_start": 71,
+        "line_end": 79
+      },
+      "section": null,
+      "code_fence_start_line": null,
+      "code_fence_end_line": null,
+      "text": "Anna laughing on her bed. Anna writing terrible song lyrics in the margins of Alice's maths book. Anna saying, \"When we're old, we'll live beside each other and complain about everyone younger than us.\"\n\nAlice had believed her.\n\nThat was the mistake.\n\nThe crack appeared in December.",
+      "limitations": [
+        "Writer dimensions are chapter-level; passage labels are not independent literary judgments.",
+        "Excerpts omit most of the chapter and surrounding context.",
+        "Paragraph and sentence metrics exclude code, tables, headings and lists."
+      ]
+    },
+    {
+      "passage_id": "P42",
+      "project_id": "collapse",
+      "profile": "fiction",
+      "chapter_id": "chapter:collapse:06-first-blood",
+      "chapter_title": "06 First Blood",
+      "chapter_order": 5,
+      "source_path": "C:\\books\\collapse\\chapters\\06-first-blood.md",
+      "relative_path": "chapters/06-first-blood.md",
+      "category": "fiction_narrative",
+      "tags": [
+        "fiction"
+      ],
+      "extraction_mode": "fiction_narrative",
+      "diagnostic_stratum": "high",
+      "chapter_scores": {
+        "paragraph_load": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "sentence_load": {
+          "score": 98.8,
+          "band": "good",
+          "finding_codes": []
+        },
+        "fragmentation": {
+          "score": 39.5,
+          "band": "high",
+          "finding_codes": [
+            "READABILITY.FRAGMENTATION"
+          ]
+        },
+        "rhythm": {
+          "score": 93.6,
+          "band": "good",
+          "finding_codes": []
+        },
+        "lexical_accessibility": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "section_structure": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        }
+      },
+      "chapter_finding_codes": [
+        "READABILITY.FRAGMENTATION"
+      ],
+      "paragraph_metrics": {
+        "paragraph_count": 2,
+        "words": [
+          58,
+          52
+        ],
+        "median_paragraph_words": 55.0,
+        "sentence_counts": [
+          4,
+          3
+        ],
+        "line_start": 3,
+        "line_end": 19
+      },
+      "section": null,
+      "code_fence_start_line": null,
+      "code_fence_end_line": null,
+      "text": "Daniel thought the first attack would be against a person. A minister, a banker, a judge. One of those clean-shaven men from Jove's photographs, standing on polished marble with hands folded over stomachs that had never known hunger. He'd imagined names going public, faces circled in red, a scandal with a beginning, a middle, and a satisfying end.\n\nDaniel laughed; his body hadn't found a better reaction. \"Right. We just cut off their money.\" He looked around the kitchen as if someone sane might be there to confirm that the invisible machine in his teeth had just proposed attacking the financial infrastructure of a hidden cult with governments for skin.",
+      "limitations": [
+        "Writer dimensions are chapter-level; passage labels are not independent literary judgments.",
+        "Excerpts omit most of the chapter and surrounding context.",
+        "Paragraph and sentence metrics exclude code, tables, headings and lists."
+      ]
+    },
+    {
+      "passage_id": "P43",
+      "project_id": "collapse",
+      "profile": "fiction",
+      "chapter_id": "chapter:collapse:12-livopedia",
+      "chapter_title": "12 Livopedia",
+      "chapter_order": 11,
+      "source_path": "C:\\books\\collapse\\chapters\\12-livopedia.md",
+      "relative_path": "chapters/12-livopedia.md",
+      "category": "fiction_dialogue",
+      "tags": [
+        "fiction"
+      ],
+      "extraction_mode": "dialogue",
+      "diagnostic_stratum": "high",
+      "chapter_scores": {
+        "paragraph_load": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "sentence_load": {
+          "score": 99.5,
+          "band": "good",
+          "finding_codes": [
+            "READABILITY.LONG_SENTENCE"
+          ]
+        },
+        "fragmentation": {
+          "score": 0.0,
+          "band": "high",
+          "finding_codes": [
+            "READABILITY.FRAGMENTATION"
+          ]
+        },
+        "rhythm": {
+          "score": 52.2,
+          "band": "review",
+          "finding_codes": [
+            "READABILITY.UNIFORM_CADENCE"
+          ]
+        },
+        "lexical_accessibility": {
+          "score": 97.9,
+          "band": "good",
+          "finding_codes": []
+        },
+        "section_structure": {
+          "score": 55.0,
+          "band": "review",
+          "finding_codes": [
+            "READABILITY.LONG_SECTION"
+          ]
+        }
+      },
+      "chapter_finding_codes": [
+        "READABILITY.FRAGMENTATION",
+        "READABILITY.LONG_SECTION",
+        "READABILITY.LONG_SENTENCE",
+        "READABILITY.UNIFORM_CADENCE"
+      ],
+      "paragraph_metrics": {
+        "paragraph_count": 4,
+        "words": [
+          13,
+          4,
+          3,
+          11
+        ],
+        "median_paragraph_words": 7.5,
+        "sentence_counts": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "line_start": 33,
+        "line_end": 39
+      },
+      "section": null,
+      "code_fence_start_line": null,
+      "code_fence_end_line": null,
+      "text": "\"The information is correct,\" Jove said through the bone-conduction earpiece behind his ear.\n\n\"That’s not the problem.\"\n\n\"It is concise.\"\n\n\"It sounds like a famine manual written by a tax office.\"",
+      "limitations": [
+        "Writer dimensions are chapter-level; passage labels are not independent literary judgments.",
+        "Excerpts omit most of the chapter and surrounding context.",
+        "Paragraph and sentence metrics exclude code, tables, headings and lists."
+      ]
+    },
+    {
+      "passage_id": "P44",
+      "project_id": "goblins",
+      "profile": "fiction",
+      "chapter_id": "chapter:goblins:21-realization",
+      "chapter_title": "21 Realization",
+      "chapter_order": 20,
+      "source_path": "C:\\books\\goblins\\chapters\\21-realization.md",
+      "relative_path": "chapters/21-realization.md",
+      "category": "fiction_narrative",
+      "tags": [
+        "fiction"
+      ],
+      "extraction_mode": "fiction_narrative",
+      "diagnostic_stratum": "high",
+      "chapter_scores": {
+        "paragraph_load": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "sentence_load": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "fragmentation": {
+          "score": 3.9,
+          "band": "high",
+          "finding_codes": [
+            "READABILITY.FRAGMENTATION"
+          ]
+        },
+        "rhythm": {
+          "score": 86.7,
+          "band": "good",
+          "finding_codes": [
+            "READABILITY.UNIFORM_CADENCE"
+          ]
+        },
+        "lexical_accessibility": {
+          "score": 97.1,
+          "band": "good",
+          "finding_codes": []
+        },
+        "section_structure": {
+          "score": 93.7,
+          "band": "good",
+          "finding_codes": [
+            "READABILITY.HEADING_DENSITY",
+            "READABILITY.TRIVIAL_SECTION"
+          ]
+        }
+      },
+      "chapter_finding_codes": [
+        "READABILITY.FRAGMENTATION",
+        "READABILITY.HEADING_DENSITY",
+        "READABILITY.TRIVIAL_SECTION",
+        "READABILITY.UNIFORM_CADENCE"
+      ],
+      "paragraph_metrics": {
+        "paragraph_count": 2,
+        "words": [
+          38,
+          50
+        ],
+        "median_paragraph_words": 44.0,
+        "sentence_counts": [
+          3,
+          7
+        ],
+        "line_start": 7,
+        "line_end": 17
+      },
+      "section": null,
+      "code_fence_start_line": null,
+      "code_fence_end_line": null,
+      "text": "No one called it a rescue operation. The word carried liability, and liability implied they had admitted what was happening to the people inside. On the official incident board, the action was listed as Controlled Participant Contact Attempt.\n\nThe objective was simple enough to fit in one line: make contact without deepening engagement. The instructions underneath were stricter. No direct console input. No model queries. No live DAI requests. No attempts to interpret, solve, map, classify, or follow. The contact teams were permitted to observe, speak, and withdraw.",
+      "limitations": [
+        "Writer dimensions are chapter-level; passage labels are not independent literary judgments.",
+        "Excerpts omit most of the chapter and surrounding context.",
+        "Paragraph and sentence metrics exclude code, tables, headings and lists."
+      ]
+    },
+    {
+      "passage_id": "P45",
+      "project_id": "goblins",
+      "profile": "fiction",
+      "chapter_id": "chapter:goblins:03-the-meeting",
+      "chapter_title": "03 The Meeting",
+      "chapter_order": 2,
+      "source_path": "C:\\books\\goblins\\chapters\\03-the-meeting.md",
+      "relative_path": "chapters/03-the-meeting.md",
+      "category": "fiction_dialogue",
+      "tags": [
+        "fiction"
+      ],
+      "extraction_mode": "dialogue",
+      "diagnostic_stratum": "high",
+      "chapter_scores": {
+        "paragraph_load": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "sentence_load": {
+          "score": 99.8,
+          "band": "good",
+          "finding_codes": []
+        },
+        "fragmentation": {
+          "score": 10.2,
+          "band": "high",
+          "finding_codes": [
+            "READABILITY.FRAGMENTATION"
+          ]
+        },
+        "rhythm": {
+          "score": 88.1,
+          "band": "good",
+          "finding_codes": [
+            "READABILITY.UNIFORM_CADENCE"
+          ]
+        },
+        "lexical_accessibility": {
+          "score": 95.3,
+          "band": "good",
+          "finding_codes": []
+        },
+        "section_structure": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        }
+      },
+      "chapter_finding_codes": [
+        "READABILITY.FRAGMENTATION",
+        "READABILITY.UNIFORM_CADENCE"
+      ],
+      "paragraph_metrics": {
+        "paragraph_count": 4,
+        "words": [
+          15,
+          6,
+          15,
+          29
+        ],
+        "median_paragraph_words": 15.0,
+        "sentence_counts": [
+          3,
+          1,
+          1,
+          1
+        ],
+        "line_start": 11,
+        "line_end": 17
+      },
+      "section": null,
+      "code_fence_start_line": null,
+      "code_fence_end_line": null,
+      "text": "“The board met this morning,” he said. “CEO, CTO, CFO, legal, comms, outside directors. Everybody.”\n\nThat got them looking at him.\n\n“And somehow,” he continued, “the most visible current project inside this company is now us.”\n\nAlex, one of the interns near the far end of the table, gave a short laugh, then seemed to realize he was alone and turned it into a cough.",
+      "limitations": [
+        "Writer dimensions are chapter-level; passage labels are not independent literary judgments.",
+        "Excerpts omit most of the chapter and surrounding context.",
+        "Paragraph and sentence metrics exclude code, tables, headings and lists."
+      ]
+    },
+    {
+      "passage_id": "P46",
+      "project_id": "techno_prophet",
+      "profile": "fiction",
+      "chapter_id": "chapter:techno_prophet:10-infinite-lifetimes",
+      "chapter_title": "Infinite Lifetimes",
+      "chapter_order": 10,
+      "source_path": "C:\\books\\techno-prophet\\chapters\\10-infinite-lifetimes.md",
+      "relative_path": "chapters/10-infinite-lifetimes.md",
+      "category": "fiction_narrative",
+      "tags": [
+        "fiction"
+      ],
+      "extraction_mode": "fiction_narrative",
+      "diagnostic_stratum": "medium",
+      "chapter_scores": {
+        "paragraph_load": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "sentence_load": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "fragmentation": {
+          "score": 43.3,
+          "band": "review",
+          "finding_codes": [
+            "READABILITY.FRAGMENTATION"
+          ]
+        },
+        "rhythm": {
+          "score": 96.5,
+          "band": "good",
+          "finding_codes": []
+        },
+        "lexical_accessibility": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "section_structure": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        }
+      },
+      "chapter_finding_codes": [
+        "READABILITY.FRAGMENTATION"
+      ],
+      "paragraph_metrics": {
+        "paragraph_count": 2,
+        "words": [
+          38,
+          24
+        ],
+        "median_paragraph_words": 31.0,
+        "sentence_counts": [
+          3,
+          4
+        ],
+        "line_start": 6,
+        "line_end": 10
+      },
+      "section": null,
+      "code_fence_start_line": null,
+      "code_fence_end_line": null,
+      "text": "The office had the exhausted look of a place kept alive by habit: chairs slightly off-line, mugs abandoned, fluorescent lights still insisting work was happening. Under his desk, the tower hummed. On his screen, the game world waited.\n\nMost online worlds were finite in practice, no matter how large they pretended to be. Maps ended. Stories looped. Mechanics returned under new names.",
+      "limitations": [
+        "Writer dimensions are chapter-level; passage labels are not independent literary judgments.",
+        "Excerpts omit most of the chapter and surrounding context.",
+        "Paragraph and sentence metrics exclude code, tables, headings and lists."
+      ]
+    },
+    {
+      "passage_id": "P47",
+      "project_id": "projection",
+      "profile": "fiction",
+      "chapter_id": "chapter:projection:36-the-first-hour",
+      "chapter_title": "The First Hour",
+      "chapter_order": 36,
+      "source_path": "C:\\books\\projection\\chapters\\36-the-first-hour.md",
+      "relative_path": "chapters/36-the-first-hour.md",
+      "category": "fiction_dialogue",
+      "tags": [
+        "fiction"
+      ],
+      "extraction_mode": "dialogue",
+      "diagnostic_stratum": "medium",
+      "chapter_scores": {
+        "paragraph_load": {
+          "score": 66.7,
+          "band": "watch",
+          "finding_codes": [
+            "READABILITY.PARAGRAPH_DENSITY"
+          ]
+        },
+        "sentence_load": {
+          "score": 70.7,
+          "band": "watch",
+          "finding_codes": [
+            "READABILITY.LONG_SENTENCE"
+          ]
+        },
+        "fragmentation": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "rhythm": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "lexical_accessibility": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "section_structure": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        }
+      },
+      "chapter_finding_codes": [
+        "READABILITY.LONG_SENTENCE",
+        "READABILITY.PARAGRAPH_DENSITY"
+      ],
+      "paragraph_metrics": {
+        "paragraph_count": 4,
+        "words": [
+          45,
+          42,
+          32,
+          136
+        ],
+        "median_paragraph_words": 43.5,
+        "sentence_counts": [
+          3,
+          1,
+          1,
+          2
+        ],
+        "line_start": 37,
+        "line_end": 47
+      },
+      "section": null,
+      "code_fence_start_line": null,
+      "code_fence_end_line": null,
+      "text": "\"They're not going into an empty country,\" she said, to no one, to the notebook. \"They're going into a country full of people the machine can't see. Which is worse, because the machine will keep reporting it empty while it fills up with the dead.\"\n\nOn the wall, the aperture opened, and the war began, and Earth fired first, and there was no ambiguity, because Kika was watching, which was the one thing the room had brought her there to be able to say it had allowed.\n\nThe aperture was a doorway of nothing standing in a meadow, and the first people to reach it were travelling a road that had existed before Earth set the door across it.\n\nThe feed showed them — the raw edge of it, before the compensation layer smoothed it into something a human eye could parse — a small group, unhurried, along the old road: herders, by their staffs and their beasts; a family among them, walking. They came toward the aperture the way people come toward anything new on a familiar road, curious, unalarmed, and the autonomous perimeter that Earth had pushed through ahead of everything issued its warning in a language no one on that road had ever heard, and the group slowed, and did not understand, and one adult at the front raised both hands — the universal thing, the open empty hands, we are nothing, we carry nothing — and kept walking, because the warning meant nothing and the hands meant everything and surely the hands would be understood.",
+      "limitations": [
+        "Writer dimensions are chapter-level; passage labels are not independent literary judgments.",
+        "Excerpts omit most of the chapter and surrounding context.",
+        "Paragraph and sentence metrics exclude code, tables, headings and lists."
+      ]
+    },
+    {
+      "passage_id": "P48",
+      "project_id": "projection",
+      "profile": "fiction",
+      "chapter_id": "chapter:projection:45-original",
+      "chapter_title": "Original",
+      "chapter_order": 45,
+      "source_path": "C:\\books\\projection\\chapters\\45-original.md",
+      "relative_path": "chapters/45-original.md",
+      "category": "fiction_narrative",
+      "tags": [
+        "fiction"
+      ],
+      "extraction_mode": "fiction_narrative",
+      "diagnostic_stratum": "medium",
+      "chapter_scores": {
+        "paragraph_load": {
+          "score": 98.1,
+          "band": "good",
+          "finding_codes": []
+        },
+        "sentence_load": {
+          "score": 76.3,
+          "band": "watch",
+          "finding_codes": [
+            "READABILITY.LONG_SENTENCE"
+          ]
+        },
+        "fragmentation": {
+          "score": 78.7,
+          "band": "watch",
+          "finding_codes": [
+            "READABILITY.FRAGMENTATION"
+          ]
+        },
+        "rhythm": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "lexical_accessibility": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "section_structure": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        }
+      },
+      "chapter_finding_codes": [
+        "READABILITY.FRAGMENTATION",
+        "READABILITY.LONG_SENTENCE"
+      ],
+      "paragraph_metrics": {
+        "paragraph_count": 2,
+        "words": [
+          21,
+          80
+        ],
+        "median_paragraph_words": 50.5,
+        "sentence_counts": [
+          1,
+          4
+        ],
+        "line_start": 5,
+        "line_end": 7
+      },
+      "section": null,
+      "code_fence_start_line": null,
+      "code_fence_end_line": null,
+      "text": "It took him two years to arrange his absence, because an absence is a structure, and structures were what he built.\n\nThe Exchange was converted to run without its root. He did it the way he did everything, in paper: authorities delegated, successions fixed, the senior claims placed in a standing trust whose trustees could operate everything and originate nothing. To the registrars it was estate planning, overdue, from an owner with no heir. Only two entries in two worlds knew what it was, and one of them was the private ledger, and the other was repairing fences in the north.",
+      "limitations": [
+        "Writer dimensions are chapter-level; passage labels are not independent literary judgments.",
+        "Excerpts omit most of the chapter and surrounding context.",
+        "Paragraph and sentence metrics exclude code, tables, headings and lists."
+      ]
+    },
+    {
+      "passage_id": "P49",
+      "project_id": "projection",
+      "profile": "fiction",
+      "chapter_id": "chapter:projection:25-fight",
+      "chapter_title": "Fight",
+      "chapter_order": 25,
+      "source_path": "C:\\books\\projection\\chapters\\25-fight.md",
+      "relative_path": "chapters/25-fight.md",
+      "category": "fiction_dialogue",
+      "tags": [
+        "fiction"
+      ],
+      "extraction_mode": "dialogue",
+      "diagnostic_stratum": "medium",
+      "chapter_scores": {
+        "paragraph_load": {
+          "score": 71.1,
+          "band": "watch",
+          "finding_codes": [
+            "READABILITY.PARAGRAPH_DENSITY"
+          ]
+        },
+        "sentence_load": {
+          "score": 52.5,
+          "band": "review",
+          "finding_codes": [
+            "READABILITY.LONG_SENTENCE"
+          ]
+        },
+        "fragmentation": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "rhythm": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "lexical_accessibility": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "section_structure": {
+          "score": 55.0,
+          "band": "review",
+          "finding_codes": [
+            "READABILITY.LONG_SECTION"
+          ]
+        }
+      },
+      "chapter_finding_codes": [
+        "READABILITY.LONG_SECTION",
+        "READABILITY.LONG_SENTENCE",
+        "READABILITY.PARAGRAPH_DENSITY"
+      ],
+      "paragraph_metrics": {
+        "paragraph_count": 4,
+        "words": [
+          83,
+          16,
+          147,
+          105
+        ],
+        "median_paragraph_words": 94.0,
+        "sentence_counts": [
+          2,
+          1,
+          2,
+          5
+        ],
+        "line_start": 71,
+        "line_end": 77
+      },
+      "section": null,
+      "code_fence_start_line": null,
+      "code_fence_end_line": null,
+      "text": "\"Huh,\" the hero said, which was what he had said at the bottom of the world, holding empty stone where a drop should have been. And then he said, with something that was almost respect and almost delight even now, even dying: \"You actually— \" and did not finish it, because there was no more time, and Jerry never learned whether the word would have been did it or found a way or are something, and the not-knowing joined the other things he carried.\n\nThe hero fell, and did not get up, and the world paid Jerry for the kill.\n\nIt paid him enormously — the richest single coin of his existence, a hero's whole weight of experience arriving at once, levels in a flood, the skill-echoes of a thing a tier above him settling into a body too ruined to feel them properly — and Jerry lay in the broken field beside the thing he had spent a decade unable to beat and had finally not beaten so much as outpriced, and understood that even this was not victory, because the hero would come back. Scattered, deported, re-dealt across the world the way Jerry was re-dealt, respawned somewhere far with everything reset but the memory — and the memory was the problem, because the hero would remember, would remember the field and the Thorns and the point-blank charge and the interesting thing that had finally, actually, killed him, and would come back, eventually, better prepared, more interested than ever.\n\nHe had not ended the hunt. He had won a round the hero did not know could be won, and in doing so he had made himself, permanently, the most interesting thing in the hero's very long…",
+      "limitations": [
+        "Writer dimensions are chapter-level; passage labels are not independent literary judgments.",
+        "Excerpts omit most of the chapter and surrounding context.",
+        "Paragraph and sentence metrics exclude code, tables, headings and lists."
+      ]
+    },
+    {
+      "passage_id": "P50",
+      "project_id": "projection",
+      "profile": "fiction",
+      "chapter_id": "chapter:projection:01-level",
+      "chapter_title": "Level 01",
+      "chapter_order": 0,
+      "source_path": "C:\\books\\projection\\chapters\\01-level.md",
+      "relative_path": "chapters/01-level.md",
+      "category": "fiction_dense",
+      "tags": [
+        "fiction",
+        "paragraph_density"
+      ],
+      "extraction_mode": "long",
+      "diagnostic_stratum": "high",
+      "chapter_scores": {
+        "paragraph_load": {
+          "score": 100.0,
+          "band": "good",
+          "finding_codes": []
+        },
+        "sentence_load": {
+          "score": 99.3,
+          "band": "good",
+          "finding_codes": [
+            "READABILITY.LONG_SENTENCE"
+          ]
+        },
+        "fragmentation": {
+          "score": 0.0,
+          "band": "high",
+          "finding_codes": [
+            "READABILITY.FRAGMENTATION"
+          ]
+        },
+        "rhythm": {
+          "score": 83.6,
+          "band": "good",
+          "finding_codes": [
+            "READABILITY.UNIFORM_CADENCE"
+          ]
+        },
+        "lexical_accessibility": {
+          "score": 84.8,
+          "band": "good",
+          "finding_codes": []
+        },
+        "section_structure": {
+          "score": 20.0,
+          "band": "high",
+          "finding_codes": [
+            "READABILITY.LONG_SECTION"
+          ]
+        }
+      },
+      "chapter_finding_codes": [
+        "READABILITY.FRAGMENTATION",
+        "READABILITY.LONG_SECTION",
+        "READABILITY.LONG_SENTENCE",
+        "READABILITY.UNIFORM_CADENCE"
+      ],
+      "paragraph_metrics": {
+        "paragraph_count": 1,
+        "words": [
+          63
+        ],
+        "median_paragraph_words": 63,
+        "sentence_counts": [
+          4
+        ],
+        "line_start": 5,
+        "line_end": 5
+      },
+      "section": null,
+      "code_fence_start_line": null,
+      "code_fence_end_line": null,
+      "text": "It is against his cheek, and it is cold, and each blade is itself. He can feel where one ends and the next begins. Dew comes through at the jaw. There is a smell, and the smell has layers: soil, something green and bruised where his body has crushed the stems, and beneath that a mineral coldness belonging to rain not yet fallen.",
+      "limitations": [
+        "Writer dimensions are chapter-level; passage labels are not independent literary judgments.",
+        "Excerpts omit most of the chapter and surrounding context.",
+        "Paragraph and sentence metrics exclude code, tables, headings and lists."
+      ]
+    }
+  ]
+}

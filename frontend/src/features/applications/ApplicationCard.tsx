@@ -23,6 +23,7 @@ import {
 } from "../../components/ui";
 import { formatDateTime, timeAgo, titleCase } from "../../lib/format";
 import type { Application, LogData } from "../../types/api";
+import { applicationBrowserUrl, openApplicationUrl } from "./openApplicationUrl";
 
 export function ApplicationCard({
   app,
@@ -77,13 +78,8 @@ export function ApplicationCard({
     setBusy(true);
     setError(null);
     try {
-      const result = await api.post<{ url: string; opened_externally?: boolean }>(
-        `/api/applications/${app.id}/open-url`,
-      );
-      if (!result.opened_externally) {
-        window.open(result.url, "_blank", "noopener,noreferrer");
-      }
-      toast.push("info", "Opened web interface", result.url);
+      const url = await openApplicationUrl(app.id);
+      toast.push("info", "Opened web interface", url);
       onChanged();
     } catch (caught) {
       const message = errorMessage(caught);
@@ -98,6 +94,8 @@ export function ApplicationCard({
     app.status.state === "launch_failed" && app.last_failure_detail
       ? app.last_failure_detail
       : null;
+  const browserUrl = applicationBrowserUrl(app);
+  const running = app.status.state === "running";
 
   return (
     <article className={`app-card ${compact ? "app-card-compact" : ""}`}>
@@ -123,6 +121,15 @@ export function ApplicationCard({
         </div>
       ) : null}
 
+      {browserUrl ? (
+        <div className="app-url">
+          <ExternalLink size={12} aria-hidden="true" />
+          <a href={browserUrl} target="_blank" rel="noopener noreferrer">
+            {browserUrl}
+          </a>
+        </div>
+      ) : null}
+
       <InlineError message={error} />
       {failure ? (
         <div className="failure-note">
@@ -136,11 +143,20 @@ export function ApplicationCard({
         <ActionButton
           action={app.actions.launch}
           onClick={launch}
-          variant="primary"
+          variant={running ? "secondary" : "primary"}
           small
           icon={<Play size={14} />}
         >
           Launch
+        </ActionButton>
+        <ActionButton
+          action={app.actions.open_url}
+          onClick={() => void openUrl()}
+          variant={running ? "primary" : "secondary"}
+          small
+          icon={<ExternalLink size={14} />}
+        >
+          Open
         </ActionButton>
         <ActionButton
           action={app.actions.stop}
@@ -193,14 +209,6 @@ export function ApplicationCard({
           Docs
         </ActionButton>
         <ActionButton
-          action={app.actions.open_url}
-          onClick={() => void openUrl()}
-          small
-          icon={<ExternalLink size={14} />}
-        >
-          Open URL
-        </ActionButton>
-        <ActionButton
           action={app.actions.logs}
           onClick={() => setLogsOpen(true)}
           small
@@ -238,7 +246,7 @@ export function ApplicationCard({
           ["Restart", app.actions.restart],
           ["Repository", app.actions.open_repository],
           ["Documentation", app.actions.open_documentation],
-          ["URL", app.actions.open_url],
+          ["Open", app.actions.open_url],
           ["Logs", app.actions.logs],
         ]}
       />

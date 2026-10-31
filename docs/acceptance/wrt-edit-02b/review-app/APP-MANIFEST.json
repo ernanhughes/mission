@@ -1,0 +1,13 @@
+{
+  "schema": "wrt-edit-02b.review-app.v1",
+  "passage_count": 50,
+  "batch_count": 5,
+  "passages_per_batch": 10,
+  "diagnostic_key_included": false,
+  "labels_included": false,
+  "files": {
+    "WRT-EDIT-02B-review.html": "3844b69c0c96ca3b30d5ffd431eeb1d6e97b0b05ab015c5249bcafc21e495751",
+    "batch-assignment.csv": "1fa6516edcd88d426283ae2103257b2f0915265a79ac158d3d8bf1527867f42a",
+    "README-review-app.md": "e064b150c00c54dcf962774207dda5502421505690e700eda41f429b07216ac1"
+  }
+}

@@ -1,0 +1,293 @@
+passage_id,text
+P01,"That sounds obvious, but systems often flatten the distinction.
+
+Suppose the retained item is:
+
+There are several different claims hidden inside the temptation to reuse it.
+
+One concerns provenance:
+
+That is a claim about the statement and its author. It does not by itself certify the architecture.
+
+Another concerns the world at the time of the new question:"
+P02,"Task models that generate interfaces. Cao, Jiang and Xia's ""Generative and Malleable User Interfaces with Generative and Evolving Task-Driven Data Model"" (CHI 2025) proposes a structured task-driven model between a user's request and the rendered interface. In Jelly, an LLM produces an object-relational schema and dependency graph, with data organised under that structure; UI specifications map the model to a constrained set of established display patterns. Users can modify the resulting information space by language or direct manipulation, and inspect the model rather than endlessly re-prompting an opaque layout. The technical evaluation assessed schema relevance and dependency accuracy, not the correctness of arbitrary underlying source documents. Its user study involved eight participants completing open-ended information tasks; it documented enthusiasm and flexibility, but also limits in visual expressiveness and cases where requested changes were not made. This is evidence that a task-to-model-to-interface-to-revision loop can run and be manipulated. It is not a controlled demonstration of superior task accuracy, transfer or time against a strong conventional interface, nor a demonstration that the underlying data is faithfully sourced."
+P03,"This is the step most people skip. They install Pi, run a task, get something nearly right, and start writing code against a mental model built from observation. The model is usually close enough to work and wrong in a few named places, and those places are where every interesting bug lives.
+
+Why ""wrong in a few places"" is worse than ""wrong everywhere"" is worth one sentence of its own, because it explains the shape of the rest of the book. A model that is wrong everywhere fails loudly: you stop and read the documentation. A model that is nearly right fails as a symptom. The model ignores your instructions. Your tool never appears. Your injected content vanishes after a compaction. Your handler fires at the wrong moment. Each of those observations is compatible with several different causes — some in your code, some in Pi's, some in the way you assembled the request — and the observation alone cannot tell them apart. What tells them apart is knowing the exact mechanism the symptom passed through. That mechanism is the loop."
+P04,"This book is about building systems around models. Before we build planners, memory, tool routing, critics, search and verifiers, we need an answer to a question that turns out to be harder than it looks:
+
+The word is currently applied to almost everything: a single LLM call, a chatbot, a fixed pipeline, a tool-using loop, and any five model calls with class names ending in. Those systems may all be useful. But when one word covers all of them, it stops telling us anything about the computation, and we lose the ability to say which mechanism is doing the work."
+P05,"The experiment was planned carefully. Eight synthetic tasks, each built around a fact that could not be inferred from the task text alone. Each task ran under three conditions: no supplied context, a matched distractor of the same size and shape, and the exact minimal context the task needed. One model, decoding fixed, every run in its own session, deterministic graders. The question was modest: if correct context is delivered through the live runtime, does behaviour change?
+
+Twenty-four runs were planned and twenty-four executed. None yielded a valid observation of the assigned context condition. Every run reported zero observed context records because the recording component produced none. For the intended injection conditions, that leaves delivery unverified. For the no-context controls, it leaves absence unverified: an observer that did not record the request cannot distinguish a request with no experimental block from a request it never saw."
+P06,"The distinction that matters is between behavioural influence from position and policy authority. If moving an instruction changes compliance, that does not mean its authority changed. The OpenAI Model Spec dated 18 August 2026 describes an instruction hierarchy running from Root through System, Developer and User to Guideline. Authority is assigned through the instruction source and applicable policy, not by being physically closer to the answer. For instructions at the same authority level, later applicable instructions can supersede earlier conflicting ones; this is a policy rule with conditions, not a general claim that whichever text appears last wins. The specification also treats tool outputs and quoted text as untrusted by default. This is OpenAI's documented policy for its own systems, not a universal law or evidence that a model always complies. Other providers may specify different policies."
+P07,"The plugin is therefore useful for two reasons.
+
+It gives us a working application.
+
+More importantly, it forces the architecture developed throughout this book to cross the boundary from experiment into software.
+
+There is an obvious way to implement a book about memory badly.
+
+Take every mechanism discussed in every chapter and put all of them into one enormous system.
+
+Add a graph."
+P08,"Chapter 8 showed that historical truth and current truth must coexist. ""The service used SQLite in March"" remains true after PostgreSQL becomes current. Deleting the SQLite history to protect current answers would improve one query by corrupting another.
+
+Chapter 14 showed the complementary point: preserving an item does not imply seating it in the current model context. The store may contain thousands of memories. The model receives a bounded working set selected for the current goal.
+
+These results produce a useful invariant:
+
+That invariant suggests a conservative growth strategy. The system does not need to destroy history merely because history grows. Before irreversible deletion is considered, it can change which representations compete and under what conditions.
+
+The chapter therefore begins with a conservative bias: preserve first, suppress reversibly, delete only for reasons stronger than convenience.
+
+Some deployments require deletion for reasons independent of memory quality — privacy policy, legal compliance, secret rotation, or user-requested erasure. Those requirements do not establish that age or low retrieval frequency is a sound memory-decay rule."
+P09,"Per task, passing draws out of twelve for the control arm and out of three for each stance:
+
+[^m1]
+
+The hypotheses read off the same rows. H2, decorrelation: normal, assumption-challenge, and minimality solve exactly the same seven tasks, so this task-level solve-set metric shows no decorrelation among those three. Counterfactual's nine contain all seven. Of the fifteen (stance, task) pairs where another stance failed, counterfactual solved six — the report's 0.40. That is why the report labels H2 partial rather than established. [^r2]
+
+H3, premise concentration: against the control arm, the portfolio matches on PRESERVE (2/2) and REMOVE (3/3), ties on REDEFINE (3/4 each), and loses RELOCATE (1/3 against 2/3). Neither supporting branch survived. [^m1] [^r2]
+
+Now look at counterfactual's two extra tasks: stable-priority and strip-query. Both are tasks the normal wording also solved somewhere among its twelve draws, four times and twice. Counterfactual therefore added no task outside the observed twelve-draw normal solve set. At three-draw exposure, however, counterfactual covered those two tasks while the normal subgroup did not.
+
+That admits at least two readings, and P2 cannot choose between them. Counterfactual may have a genuinely higher per-draw success rate on some tasks. Or the widest of four post-hoc stance subgroups may simply be the subgroup that received favorable draws in this twelve-task sample. P2 did not preregister a test that separates those explanations. The honest statement is the narrow one: among the portfolio's stances, counterfactual…"
+P10,"The reliable uncertainty signal is distributional. Semantic entropy (Farquhar et al.) and self-consistency checking (Manakul et al., SelfCheckGPT) both work by comparing multiple samples rather than reading one run's logprobs, and both beat single-sequence likelihood as confabulation detectors. This is the same lesson as Chapter 21: the object worth measuring is the distribution, not the draw — and that holds for interior signals too. Be precise about what ""detector"" buys, though. Three capabilities pull apart: detect (this response is probably a confabulation), localize (this token or span is the wrong one), explain (this is why the weights preferred it). A multi-sample meaning-cluster signal reaches the first on QA-style tasks and no further — it does not point at the veer token, it does not name a mechanism, and it fails silently on confident fabrication, where every sample lands on the same wrong answer so the cluster entropy stays low. That is the exact sense in which interior signals never convict: good detectors exist, localizers and explainers do not, and even the good detectors have a blind spot a probe would catch. The cheap single-pass version is a hidden-state probe: Kossen and colleagues' semantic entropy probes read a binarized semantic-entropy estimate straight off one generation's activations, cutting the multi-sample cost to almost nothing and generalizing better out of distribution than a plain accuracy probe (Kossen et al., 2024). It is still governed by everything above — a probe that reads uncertainty out of the activations shows the…"
+P11,"Chapter 52 ended with a replayable record: the double-refund request re-assembled bit-exact, reproduced 2-of-3 trials, guardrail verdict empty. The on-call engineer ships the obvious repair — a prompt sentence forbidding double authorization — and closes the incident. Six weeks later the same double-refund returns under a reworded ticket, and nobody can say whether the old fix failed or a new defect arrived: no bundle was frozen, no repro was pinned, no regression test exists. The team fixed forward twice and learned nothing once.
+
+The obvious move — repairing production quickly and documenting the fix in prose — fails because prose is not a repro and a deploy is not a test. Five defects hide behind fix-forward:"
+P12,"Experiment B: behavioural allocation. Where several structurally valid bundles exist, does constraint-aware allocation improve downstream behaviour over simpler selection? Fixtures include distractors competing with evidence, redundant and complementary representations, shared dependencies, coupled claims and qualifications, and conditions where leaving budget unused might help. Candidate sets, task requirements, representations, model, decoding, budget and rendering contract are frozen. First report whether each baseline produced a structurally valid bundle; an invalid top-k result cannot be treated as a clean comparison of two valid allocation objectives. For the behavioural comparison, either use valid-only baselines or separately label violations as their own mechanism. Ordering is held fixed where possible, with unavoidable order differences documented because Chapter 6 predicts behavioural effects. Report performance and resource costs per fixture class, not one pooled winner."
+P13,"Chapter 18 fit the simplest serious bridge — affine ridge regression — from into, and evaluated it on entity families the map never saw. The result was not a verdict. It was a profile, uneven enough to make one number impossible to trust on its own:
+
+The chapter's lesson was not ""ridge works."" It was that is a preservation contract — a named property, measured on held-out data, not a single number a map either clears or fails. That leaves an open question this chapter exists to answer:"
+P14,"The central promise of built-in AI is an abstraction boundary:
+
+The application asks for a capability. The browser chooses how to provide it.
+
+That separation is powerful, but it does not make the lower layers irrelevant. Changes beneath the API can alter availability, accepted options, performance and behavior.
+
+We encountered that fact before completing our first prompt experiment.
+
+Our first real Chrome trace recorded this sequence:
+
+The session exposed a quota of 9,216 units and supported and."
+P15,"Browser AI latency is a lifecycle, not a stopwatch.
+
+Capability inspection, acquisition, session creation, first output, completion and validation answer different questions. Progress callbacks require context. Cold and warm require operational definitions. Chunk count must not masquerade as token count.
+
+Our first real trace measured a fast session creation and nothing about inference. The instrument correctly left the missing fields empty. Chapter 11 now makes the full protocol executable, but numerical cold-versus-warm claims remain open until matched live runs exist under explicitly recorded conditions.
+
+The next chapter asks why the same session configuration could work and then fail. Once the browser manages the model, model lifecycle and compatibility become part of application engineering even when the application never downloads a model itself."
+P16,"The firewall layers we've built are designed to block leakage. But they can also block legitimate behavior.
+
+In our editorial rewrite task, sometimes the correct answer is no change. The sentence is already fine. The reference rewrite is identical to the original.
+
+The firewall rule we had was:
+
+But if the reference value equals the original sentence, then a clean correct answer is indistinguishable from a leaked answer. The firewall would reject a legitimate case.
+
+This is a restraint failure: the firewall cannot distinguish between the model copying the answer and the model producing the only correct output.
+
+This connects directly to earlier chapters:"
+P17,"MCTS does not make the model reason correctly. It allocates inference-time computation toward the reasoning paths that its value function prefers.
+
+If the value function tracks the task, this is useful. If the value function has a blind spot, search concentrates compute around the blind spot. If the value function can see the reference answer, search is not reasoning better—the experiment is leaking.
+
+This is the same structure the optimizer chapters had, applied to a new object:
+
+The objects differ; the danger does not: search does not know truth; search knows reward.
+
+That places this chapter in the book's last arc of ""things that search"":
+
+The evidence status at the top of the chapter is the summary: the agent is built, its search behaviour is audited across 27 unit tests, and the seven-strategy comparison was run — seeds 17–19, three repetitions, two models. The comparison returned a null result. On the frozen cost-vs-price fixture, every strategy reached the same substantive diagnosis as a single direct call, for both an 8B local model and a stronger hosted one. The small qwen3 score variation came from whether the generated wording explicitly named, not from a different diagnosis. And the run could not test its second question at all: the fair tree arms never spent their search budgets, because the value function was satisfied by the first expansion."
+P18,"Instead we will take the problem apart.
+
+First we need to understand why the failure is possible at all.
+
+A language model receives a sequence of tokens and predicts what token should come next.
+
+In simplified form, the model learns a conditional distribution:
+
+$$ p(xt \mid x1, x2, \ldots, x{t-1}) $$
+
+We will sometimes write the preceding context more compactly as $x{<t}$."
+P19,"The book argues that a claim should be governed by its provenance, its evidential support, and an explicit statement of what it does not establish. This appendix applies that discipline to the book itself.
+
+Every original empirical number produced for this book is listed here with three things: where it was measured, what its provenance status is, and what it does not establish."
+P20,"The job is to move from the visible symptom to the earliest unsupported claim.
+
+Before changing code, capture enough state that the failure can survive your first attempted fix.
+
+For a training problem, the minimum useful packet is often:
+
+For a performance problem:
+
+For a regression:
+
+The exact packet changes with the question."
+P21,"The model boundary is no longer opaque. A convolution performs two independent transformations — a declared change of channels and a derived change of spatial geometry — and both can be written down before the layer runs. Pooling does the second without the first. Flatten converts a grid into a feature vector whose length is. maps one feature dimension to another. Every one of those is mechanical, and when the observed trace disagrees with the derivation, the first disagreement is the diagnosis.
+
+The two failures at the center of this chapter are worth carrying as a pair. The NHWC batch produced an error naming the wrong problem, and repairing the layer instead of the tensor would have built a model out of a misreading. The missing padding produced an error several layers downstream, and repairing the layer that raised would have made an unintended architecture permanent. Both are the same shape of mistake:
+
+Notice where the chapter ended up. After the convolutional body and the pooling and the flatten, the tensor is:
+
+The spatial grid is gone. What remains is one vector per example, and its 32 entries are learned feature coordinates with no adjacency, no ordering and no picture attached. That vector is what the classifier actually sees, and treats it as a point in a 32-dimensional space and asks which side of a boundary it falls on.
+
+Thirty-two is already more dimensions than anyone can draw. Real feature vectors are 128, 512, 768, 4096. The next chapter takes that seriously and asks what a coordinate, a direction and a boundary actually mean in a space we…"
+P22,"Suppose the model emits the sentence ""Search the documentation for the latest PyTorch optimizer API."" A human reads that and understands the intention immediately. A runtime cannot act on it at all, because it needs answers to six questions the sentence does not contain: which action, which arguments, whether those arguments are well formed, whether their values are meaningful, whether this action is permitted in this run, and whether its execution preconditions currently hold.
+
+Only when all six have answers should anything in the environment change. So the mechanism this chapter adds is a boundary that asks them in order:"
+P23,"Those cell-level dependencies are then grouped into links between larger clusters.
+
+The result is a causal ancestry graph: earlier structures are connected to later structures only when measured dependencies link them.[2]
+
+The question has now changed.
+
+Not:
+
+Does the later structure resemble the earlier one?
+
+But:"
+P24,"Which sharpens a question the book has left open twice. The Is There Actually One Thing Here? chapter looked for a privileged boundary around the connected crystal and failed to find one, twice: no scale showed excess predictive coherence beyond a family null, and the candidate outer boundary localized causal effects no better than a circle drawn arbitrarily through the interior. What survived was spatial causal locality — consequences stay near their causes — which is true of any local field and establishes nothing about individuals. But that chapter tested regions defined primarily by geometry, and we now have a better experimental target: instead of asking whether a region is special because its outline looks object-like, ask whether perturbations originating inside it are preferentially contained there — and whether perturbations originating outside penetrate it less — beyond what geometry alone predicts. That reopens the boundary question without assuming in advance that there is an object, a process or an individual waiting to be found."
+P25,"The first agents series introduced beam-style search.
+
+Beam search keeps the highest-scoring partial states.
+
+If we keep the best at each layer, the system is simple and efficient.
+
+But it has a weakness.
+
+A branch can look mediocre now and become excellent later.
+
+Suppose:"
+P26,"Every mechanism in this book was tested on its own, against a fixture built for its chapter. Context was compiled and recorded. Effects were observed by the runtime rather than taken from the worker's report — or so each component's own test reported. Checks were bound to the state they examined. Acceptance cited its evidence. Replays refused to act twice. Each passed its own test.
+
+None of that proves the whole process works, because the failures that matter most in a composed system live in the handoffs. Some are easy to picture:"
+P27,"Inconclusive and negative runs are retained, not re-rolled. Every excluded run carries a category (target / non-target / agent / environment / observer / evaluation failure, protocol violation, inconclusive), a reason, and an evidence pointer. Infrastructure failure is never classified as model failure."
+P28,"Imagine a row of cells.
+
+Each cell is either off or on:
+
+At the next step every cell examines itself and its immediate neighbors:
+
+The three bits form one of eight possible neighborhoods:"
+P29,"Then open a new session and answer these questions:
+
+Finally, ask the AI:
+
+Let it show you.
+
+Because you’re not just using AI anymore. You’re not just doing the process.
+
+You are in process.
+
+And that’s a very good place to be. 🌀"
+P30,"The code usually tells a different story.
+
+Consider this:
+
+Once you can move up and down that hierarchy, a model stops being a black box.
+
+That is the skill we are going to practise."
+P31,"She sat with it the way she had learned to sit with things: upright, hands still, alone. The language was clean, the way it was always clean, a surface laid over the event so the eye slid off before the thing underneath could register.
+
+Four men had gone onto a bridge to deny a crossing to a sick man on foot, and the summary did not say they were dead. It said the interference had been removed. It said the delivery was ongoing. It did not say that the asset which removed the interference had walked off the bridge and fallen in behind the man and the woman again and gone on. There was no field for that. No heading under which a thing continued after its task was complete."
+P32,"Eleven years, and every hard conversation had happened in the room with the muted screen reading the war into law behind her. Tonight she came out from behind the desk before he had finished his first sentence, took a coat off the back of the door, and said, ""Walk with me,"" and Roach, who had come in with a speech built and loaded, followed her out onto the grounds instead, off balance, which was perhaps the point.
+
+The grounds were dark and wet and went on further than the building had any honest use for. Gravel, then grass, then the black shapes of old trees planted by men who had believed the institution would want shade in a century they would not live to see. No screen out here. No log. No muted map reading the world into obedience. The nearest thing the place possessed to privacy — and he understood, a beat later, that she had brought him here precisely for that, and that a woman who needed to leave her own office to say a thing was about to say something very bad.
+
+""Four men into that house,"" he said. ""On your word. And I filed it, Catherine. Ghosts. Achterberg smelling blood off an empty hall, Pearse who won't speak. I filed it as the worst night of my career and I got on with it.""
+
+He stopped walking."
+P33,"""Find the old parser bug.""
+
+It found the bug.
+
+""Compare it to the session-state issue.""
+
+It compared them.
+
+""No, not that. The other one. The thing with the broken state transition.""
+
+It knew what he meant."
+P34,"Anger at that level arrived as revised terms, delayed approvals, private calls, quiet alignments, and men who had known each other since school using first names like weapons.
+
+Chad stood near the window with one hand in his pocket, watching the river between buildings. Niamh sat with a printed packet open in front of her, though Liang doubted she needed it. Jeff moved around the room as if still deciding whether it belonged to him."
+P35,"""Why don't I tell you the role you're applying for first?"" Chad said.
+
+""That would be unusual.""
+
+Jeff laughed. Chad smiled. ""It is an unusual role.""
+
+The main screen lit. A price chart. Bitcoin. Everyone in finance had begun pretending not to recognize it."
+P36,"“Not mystical meditation,” he told her one evening, leaning back in his chair with one sock half off and a soldering iron cooling beside the keyboard. “I don’t mean candles and that awful music with bells in it.”
+
+Cindi waited.
+
+“I mean proper meditation,” he said. “Ask the question until the question changes you.”
+
+He stopped, frowned, and reached for the soldering iron."
+P37,"She studied the soldiers the way she had once studied a hinge bending on a table. Where each one stood. Where each one would have to move. Which of them she could reach without crossing the open ground herself, because she no longer had to be where the harm was. In the interrogation wing she had learned that she could leave her own body mass and still act — a fragment in a vent, a strand across a room, a part of her arriving where the rest of her was not. The street had taught her to move. The wing had taught her to divide. Standing at the edge of the open yard, reading the spaces between armed people, she understood the next thing without wanting it: she was learning to reach a person she was not standing next to. She logged the capability. She did not log it as progress. Trevor had taught her where the harm lived. She had taught herself how to deliver it at distance."
+P38,"Elaine did not build the counter-machine in a lab. Labs bred a dangerous comfort, teaching the mind that important things required clean benches, badge access, climate control, and someone paying the electricity bill. A lab made power visible, and visible power had an address. Elaine had learned to hate addresses.
+
+A wallet had a there. So did a bank account, a lease, a payroll identity, a developer account, a municipal benefits portal, an Axiom settlement identity. Every official thing in the world had become a place where permission could find you, and that was how systems killed you. Axiom Zero had made location moral: verified or unverified, trusted or risky, recognized or outside."
+P39,"“The lens projects localized light-field data directly onto the retina. The band handles audio and biometric feedback. Paired with our agent model, it creates a persistent companion layer. It reads the environment, tracks vitals, and renders a context-aware figure into physical space.”
+
+Julian rubbed his left temple.
+
+“Can it access Axiom feeds?”
+
+Thorne hesitated."
+P40,"Alice slid her socked foot under the strap of the seat in front of her and grinned at her reflection in the dark window. “It’s not off. It’s temporarily independent.”
+
+Tom Vale caught the grin in the rear-view mirror and smiled despite himself. The mirror trembled with the hum of the road."
+P41,"Anna laughing on her bed. Anna writing terrible song lyrics in the margins of Alice's maths book. Anna saying, ""When we're old, we'll live beside each other and complain about everyone younger than us.""
+
+Alice had believed her.
+
+That was the mistake.
+
+The crack appeared in December."
+P42,"Daniel thought the first attack would be against a person. A minister, a banker, a judge. One of those clean-shaven men from Jove's photographs, standing on polished marble with hands folded over stomachs that had never known hunger. He'd imagined names going public, faces circled in red, a scandal with a beginning, a middle, and a satisfying end.
+
+Daniel laughed; his body hadn't found a better reaction. ""Right. We just cut off their money."" He looked around the kitchen as if someone sane might be there to confirm that the invisible machine in his teeth had just proposed attacking the financial infrastructure of a hidden cult with governments for skin."
+P43,"""The information is correct,"" Jove said through the bone-conduction earpiece behind his ear.
+
+""That’s not the problem.""
+
+""It is concise.""
+
+""It sounds like a famine manual written by a tax office."""
+P44,"No one called it a rescue operation. The word carried liability, and liability implied they had admitted what was happening to the people inside. On the official incident board, the action was listed as Controlled Participant Contact Attempt.
+
+The objective was simple enough to fit in one line: make contact without deepening engagement. The instructions underneath were stricter. No direct console input. No model queries. No live DAI requests. No attempts to interpret, solve, map, classify, or follow. The contact teams were permitted to observe, speak, and withdraw."
+P45,"“The board met this morning,” he said. “CEO, CTO, CFO, legal, comms, outside directors. Everybody.”
+
+That got them looking at him.
+
+“And somehow,” he continued, “the most visible current project inside this company is now us.”
+
+Alex, one of the interns near the far end of the table, gave a short laugh, then seemed to realize he was alone and turned it into a cough."
+P46,"The office had the exhausted look of a place kept alive by habit: chairs slightly off-line, mugs abandoned, fluorescent lights still insisting work was happening. Under his desk, the tower hummed. On his screen, the game world waited.
+
+Most online worlds were finite in practice, no matter how large they pretended to be. Maps ended. Stories looped. Mechanics returned under new names."
+P47,"""They're not going into an empty country,"" she said, to no one, to the notebook. ""They're going into a country full of people the machine can't see. Which is worse, because the machine will keep reporting it empty while it fills up with the dead.""
+
+On the wall, the aperture opened, and the war began, and Earth fired first, and there was no ambiguity, because Kika was watching, which was the one thing the room had brought her there to be able to say it had allowed.
+
+The aperture was a doorway of nothing standing in a meadow, and the first people to reach it were travelling a road that had existed before Earth set the door across it.
+
+The feed showed them — the raw edge of it, before the compensation layer smoothed it into something a human eye could parse — a small group, unhurried, along the old road: herders, by their staffs and their beasts; a family among them, walking. They came toward the aperture the way people come toward anything new on a familiar road, curious, unalarmed, and the autonomous perimeter that Earth had pushed through ahead of everything issued its warning in a language no one on that road had ever heard, and the group slowed, and did not understand, and one adult at the front raised both hands — the universal thing, the open empty hands, we are nothing, we carry nothing — and kept walking, because the warning meant nothing and the hands meant everything and surely the hands would be understood."
+P48,"It took him two years to arrange his absence, because an absence is a structure, and structures were what he built.
+
+The Exchange was converted to run without its root. He did it the way he did everything, in paper: authorities delegated, successions fixed, the senior claims placed in a standing trust whose trustees could operate everything and originate nothing. To the registrars it was estate planning, overdue, from an owner with no heir. Only two entries in two worlds knew what it was, and one of them was the private ledger, and the other was repairing fences in the north."
+P49,"""Huh,"" the hero said, which was what he had said at the bottom of the world, holding empty stone where a drop should have been. And then he said, with something that was almost respect and almost delight even now, even dying: ""You actually— "" and did not finish it, because there was no more time, and Jerry never learned whether the word would have been did it or found a way or are something, and the not-knowing joined the other things he carried.
+
+The hero fell, and did not get up, and the world paid Jerry for the kill.
+
+It paid him enormously — the richest single coin of his existence, a hero's whole weight of experience arriving at once, levels in a flood, the skill-echoes of a thing a tier above him settling into a body too ruined to feel them properly — and Jerry lay in the broken field beside the thing he had spent a decade unable to beat and had finally not beaten so much as outpriced, and understood that even this was not victory, because the hero would come back. Scattered, deported, re-dealt across the world the way Jerry was re-dealt, respawned somewhere far with everything reset but the memory — and the memory was the problem, because the hero would remember, would remember the field and the Thorns and the point-blank charge and the interesting thing that had finally, actually, killed him, and would come back, eventually, better prepared, more interested than ever.
+
+He had not ended the hunt. He had won a round the hero did not know could be won, and in doing so he had made himself, permanently, the most interesting thing in the hero's very long…"
+P50,"It is against his cheek, and it is cold, and each blade is itself. He can feel where one ends and the next begins. Dew comes through at the jaw. There is a smell, and the smell has layers: soil, something green and bruised where his body has crushed the stems, and beneath that a mineral coldness belonging to rain not yet fallen."

@@ -1,0 +1,146 @@
+{
+  "generated_at": "2026-10-25T23:50:12.364434Z",
+  "pilot_book": "inference",
+  "writer_report": {
+    "report_id": "edit-20261025T231633334069Z-904c13cd0598",
+    "state": "current",
+    "stale": false,
+    "scope": {
+      "kind": "book",
+      "whole_book": true,
+      "chapter_id_count": 45
+    },
+    "chapter_count": 45,
+    "chapter": "09-chapter.md",
+    "findings": [
+      {
+        "finding_id": "edfinding:535838c47c080717",
+        "code": "READABILITY.LONG_SENTENCE",
+        "severity": "high",
+        "passage_locator": true,
+        "line_start": 12
+      },
+      {
+        "finding_id": "edfinding:0b6e3f781609c819",
+        "code": "READABILITY.PARAGRAPH_DENSITY",
+        "severity": "medium",
+        "passage_locator": true,
+        "line_start": 90
+      },
+      {
+        "finding_id": "edfinding:05169a821c433850",
+        "code": "READABILITY.TRIVIAL_SECTION",
+        "severity": "low",
+        "passage_locator": false,
+        "line_start": 223
+      }
+    ]
+  },
+  "mission_control": {
+    "decision_totals": {
+      "groups": 197,
+      "findings": 2425,
+      "undecided": 2425,
+      "decided": 0,
+      "stale_groups": 0,
+      "missing_identity": 0,
+      "confirmed": 0,
+      "dismissed": 0,
+      "deferred": 0
+    },
+    "workbench": {
+      "url": "http://127.0.0.1:7420",
+      "book": "inference",
+      "ready": true,
+      "note": ""
+    },
+    "top_groups": [
+      {
+        "project_id": "inference",
+        "code": "READABILITY.LONG_SENTENCE",
+        "severity": "high",
+        "count": 23,
+        "undecided_count": 23,
+        "state": "undecided",
+        "finding_id": "edfinding:535838c47c080717",
+        "chapter_name": "09-chapter.md",
+        "workbench_book_ready": true,
+        "workbench_link": "http://127.0.0.1:7420/#chapter=09-chapter.md&menu=edt&drawer=editing&finding=edfinding%3A535838c47c080717"
+      },
+      {
+        "project_id": "inference",
+        "code": "READABILITY.PARAGRAPH_DENSITY",
+        "severity": "high",
+        "count": 14,
+        "undecided_count": 14,
+        "state": "undecided",
+        "finding_id": "edfinding:00dd0723c211b1bb",
+        "chapter_name": "20-chapter.md",
+        "workbench_book_ready": true,
+        "workbench_link": "http://127.0.0.1:7420/#chapter=20-chapter.md&menu=edt&drawer=editing&finding=edfinding%3A00dd0723c211b1bb"
+      },
+      {
+        "project_id": "inference",
+        "code": "READABILITY.PARAGRAPH_DENSITY",
+        "severity": "medium",
+        "count": 29,
+        "undecided_count": 29,
+        "state": "undecided",
+        "finding_id": "edfinding:383b1f5a1aa3bcf7",
+        "chapter_name": "01-chapter.md",
+        "workbench_book_ready": true,
+        "workbench_link": "http://127.0.0.1:7420/#chapter=01-chapter.md&menu=edt&drawer=editing&finding=edfinding%3A383b1f5a1aa3bcf7"
+      },
+      {
+        "project_id": "inference",
+        "code": "READABILITY.LONG_SENTENCE",
+        "severity": "medium",
+        "count": 9,
+        "undecided_count": 9,
+        "state": "undecided",
+        "finding_id": "edfinding:cceb7779379b59aa",
+        "chapter_name": "07-chapter.md",
+        "workbench_book_ready": true,
+        "workbench_link": "http://127.0.0.1:7420/#chapter=07-chapter.md&menu=edt&drawer=editing&finding=edfinding%3Acceb7779379b59aa"
+      },
+      {
+        "project_id": "inference",
+        "code": "READABILITY.FRAGMENTATION",
+        "severity": "medium",
+        "count": 2,
+        "undecided_count": 2,
+        "state": "undecided",
+        "finding_id": "edfinding:377ed74568fb8987",
+        "chapter_name": "35-chapter.md",
+        "workbench_book_ready": true,
+        "workbench_link": "http://127.0.0.1:7420/#chapter=35-chapter.md&menu=edt&drawer=editing&finding=edfinding%3A377ed74568fb8987"
+      }
+    ]
+  },
+  "deep_link_target": "http://127.0.0.1:7420/#chapter=09-chapter.md&menu=edt&drawer=editing&finding=edfinding%3A535838c47c080717",
+  "deep_link_verification": {
+    "url": "http://127.0.0.1:7420/#chapter=09-chapter.md&menu=edt&drawer=editing&finding=edfinding%3A535838c47c080717",
+    "book": "inference",
+    "chapter": "09-chapter.md",
+    "report": "edit-20261025T231633334069Z-904c13cd0598",
+    "scope": {
+      "kind": "book",
+      "whole_book": true,
+      "chapter_id_count": 45
+    },
+    "chapter_count": 45,
+    "state": "current",
+    "stale": false,
+    "status_label": "3 to decide",
+    "finding_id": "edfinding:535838c47c080717",
+    "finding_code": "READABILITY.LONG_SENTENCE",
+    "finding_open": "edfinding:535838c47c080717",
+    "drawer_open": true,
+    "card_open": true,
+    "passage_highlighted": true,
+    "locked": false,
+    "limitations_shown": true,
+    "apply_buttons": 0,
+    "notice": ""
+  }
+}

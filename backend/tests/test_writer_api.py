@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import json
+
 from fastapi.testclient import TestClient
 
 from mission_control.adapters.base import ResourceSeed
@@ -10,6 +12,7 @@ from mission_control.persistence.db import now_iso
 
 def _chapter(title: str, *, status: str, fragmentation: float, paragraph: float) -> dict:
     finding = {
+        "finding_id": "edfinding:" + title.lower().replace(" ", "-"),
         "code": "READABILITY.FRAGMENTATION",
         "severity": "high",
         "dimension": "readability",
@@ -239,3 +242,63 @@ def test_writer_workspace_preserves_subdimensions_and_orders_review_queue(
     not_run = next(book for book in workspace["books"] if book["project_id"] == "not-run")
     assert not_run["report_id"] is None
     assert not_run["readability"] is None
+
+def test_decision_queue_groups_findings_and_links_to_the_current_workbench_book(
+    client: TestClient,
+) -> None:
+    _seed_writer(client)
+    client.app.state.settings.workbench_preferences_path.write_text(
+        json.dumps({"book": {"project_id": "language", "book_root": "C:/language"}}),
+        encoding="utf-8",
+    )
+    workspace = client.get("/api/writer/books").json()
+    assert workspace["decision_totals"]["groups"] >= 1
+    language = next(
+        item for item in workspace["decision_queue"] if item["project_id"] == "language"
+    )
+    assert language["code"] == "READABILITY.FRAGMENTATION"
+    assert language["count"] == 1 and language["chapter_count"] == 1
+    assert language["state"] == "undecided"
+    assert language["finding_id"].startswith("edfinding:")
+    assert language["workbench_book_ready"] is True
+    assert "chapter=03.md" in language["workbench_link"]
+    assert "finding=edfinding%3A" in language["workbench_link"] or "finding=edfinding:" in language["workbench_link"]
+    stale = next(
+        item for item in workspace["decision_queue"] if item["project_id"] == "stale-book"
+    )
+    assert stale["state"] == "stale" and stale["workbench_link"] == ""
+    assert stale["workbench_book_ready"] is False
+
+
+def test_a_book_scope_workbench_decision_is_remembered_without_writing_it(
+    client: TestClient,
+) -> None:
+    _seed_writer(client)
+    log = client.app.state.settings.workbench_decisions_path
+    log.write_text(
+        json.dumps(
+            {
+                "decision_id": "eddecision:test",
+                "created_at": "2026-10-25T12:00:00Z",
+                "project_id": "language",
+                "chapter_id": "chapter:memory",
+                "finding_id": "edfinding:memory",
+                "code": "READABILITY.FRAGMENTATION",
+                "decision": "dismissed",
+                "scope": "book",
+                "reason": "Intentional style.",
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    workspace = client.get("/api/writer/books").json()
+    language = next(
+        item for item in workspace["decision_queue"] if item["project_id"] == "language"
+    )
+    assert language["state"] == "decided"
+    assert language["undecided_count"] == 0 and language["decided_count"] == 1
+    assert language["decision"]["decision"] == "dismissed"
+    assert language["decision"]["reason"] == "Intentional style."
+    assert workspace["decision_totals"]["dismissed"] == 1
+    assert log.read_text(encoding="utf-8").count("eddecision:test") == 1

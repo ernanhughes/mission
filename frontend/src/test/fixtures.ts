@@ -8,6 +8,7 @@ import type {
   InboxItem,
   Integration,
   IntegrationRecord,
+  ProcessInstance,
   Project,
   ProjectDetail,
   SearchResult,
@@ -90,6 +91,27 @@ export function makeApplication(overrides: Partial<Application> = {}): Applicati
     last_failure_detail: null,
     created_at: now,
     updated_at: now,
+    ...overrides,
+  };
+}
+
+export function makeProcess(overrides: Partial<ProcessInstance> = {}): ProcessInstance {
+  return {
+    id: "proc-1",
+    application_id: "next",
+    application_name: "Next",
+    launch_definition_id: "next-run",
+    pid: 1234,
+    status: "running",
+    started_at: now,
+    ended_at: null,
+    exit_code: null,
+    log_available: true,
+    working_directory: "C:\\Projects\\next",
+    command_preview: "python.exe -m next",
+    owned: true,
+    reattached: false,
+    error: null,
     ...overrides,
   };
 }
