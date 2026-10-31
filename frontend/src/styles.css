@@ -1116,6 +1116,25 @@ pre {
   overflow: hidden;
 }
 
+.app-url {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 7px;
+  color: var(--muted);
+  font-size: 0.72rem;
+  overflow-wrap: anywhere;
+}
+
+.app-url a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.app-url a:hover {
+  text-decoration: underline;
+}
+
 .app-actions {
   display: flex;
   flex-wrap: wrap;
@@ -5867,6 +5886,79 @@ pre {
 
 .writer-boundaries {
   max-width: 920px;
+}
+
+.writer-decision-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 0.76rem;
+  max-width: 920px;
+}
+
+.writer-decision-queue {
+  display: grid;
+  gap: 8px;
+  margin: 11px 0;
+}
+
+.writer-decision-card {
+  padding: 10px 11px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--panel-2);
+}
+
+.writer-decision-card:hover {
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
+}
+
+.writer-decision-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.writer-decision-state {
+  margin-left: auto;
+  color: var(--accent-strong);
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.writer-decision-count {
+  color: var(--muted);
+  font-size: 0.69rem;
+}
+
+.writer-decision-where {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 5px;
+  font-size: 0.76rem;
+}
+
+.writer-decision-card > p {
+  margin: 7px 0;
+  color: var(--muted);
+  font-size: 0.76rem;
+}
+
+.writer-decision-foot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.writer-decision-recorded {
+  color: var(--muted);
+  font-size: 0.7rem;
 }
 
 @media (max-width: 900px) {

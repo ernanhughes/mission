@@ -1,0 +1,71 @@
+........................................................................ [  7%]
+........................................................................ [ 14%]
+........................................................................ [ 21%]
+........................................................................ [ 28%]
+........................................................................ [ 35%]
+........................................................................ [ 42%]
+........................................................................ [ 49%]
+........................................................................ [ 56%]
+........................................................................ [ 63%]
+........................................................................ [ 70%]
+........................................................................ [ 77%]
+........................................................................ [ 84%]
+........................................................................ [ 91%]
+........................................................................ [ 98%]
+.................                                                        [100%]
+============================== warnings summary ===============================
+.venv\Lib\site-packages\fastapi\testclient.py:1
+  C:\Projects\workbench\.venv\Lib\site-packages\fastapi\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+tests/test_metadata_freshness.py::test_the_same_hash_is_current_a_different_one_is_changed_and_a_vanished_declaration_is_missing
+  C:\Projects\workbench\.venv\Lib\site-packages\_pytest\unraisableexception.py:67: PytestUnraisableExceptionWarning: Exception ignored in: <function BaseSubprocessTransport.__del__ at 0x000001F99B050C20>
+  
+  Traceback (most recent call last):
+    File "C:\Projects\workbench\.venv\Lib\site-packages\pydantic\type_adapter.py", line 251, in _init_core_attrs
+      self.core_schema = _getattr_no_parents(self._type, '__pydantic_core_schema__')
+                         ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    File "C:\Projects\workbench\.venv\Lib\site-packages\pydantic\type_adapter.py", line 55, in _getattr_no_parents
+      raise AttributeError(attribute)
+  AttributeError: __pydantic_core_schema__
+  
+  During handling of the above exception, another exception occurred:
+  
+  Traceback (most recent call last):
+    File "C:\Users\ernan\AppData\Local\Programs\Python\Python313\Lib\asyncio\base_subprocess.py", line 134, in __del__
+      _warn(f"unclosed transport {self!r}", ResourceWarning, source=self)
+                                 ^^^^^^^^
+    File "C:\Users\ernan\AppData\Local\Programs\Python\Python313\Lib\asyncio\base_subprocess.py", line 73, in __repr__
+      info.append(f'stdin={stdin.pipe}')
+                          ^^^^^^^^^^^^
+    File "C:\Users\ernan\AppData\Local\Programs\Python\Python313\Lib\asyncio\proactor_events.py", line 81, in __repr__
+      info.append(f'fd={self._sock.fileno()}')
+                        ~~~~~~~~~~~~~~~~~^^
+    File "C:\Users\ernan\AppData\Local\Programs\Python\Python313\Lib\asyncio\windows_utils.py", line 109, in fileno
+      raise ValueError("I/O operation on closed pipe")
+  ValueError: I/O operation on closed pipe
+  
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+    warnings.warn(pytest.PytestUnraisableExceptionWarning(msg))
+
+tests/test_service.py::test_edit_then_accept_revalidates
+  C:\Projects\workbench\.venv\Lib\site-packages\_pytest\unraisableexception.py:67: PytestUnraisableExceptionWarning: Exception ignored in: <function _ProactorBasePipeTransport.__del__ at 0x000001F99B052980>
+  
+  Traceback (most recent call last):
+    File "C:\Users\ernan\AppData\Local\Programs\Python\Python313\Lib\asyncio\proactor_events.py", line 117, in __del__
+      _warn(f"unclosed transport {self!r}", ResourceWarning, source=self)
+                                 ^^^^^^^^
+    File "C:\Users\ernan\AppData\Local\Programs\Python\Python313\Lib\asyncio\proactor_events.py", line 81, in __repr__
+      info.append(f'fd={self._sock.fileno()}')
+                        ~~~~~~~~~~~~~~~~~^^
+    File "C:\Users\ernan\AppData\Local\Programs\Python\Python313\Lib\asyncio\windows_utils.py", line 109, in fileno
+      raise ValueError("I/O operation on closed pipe")
+  ValueError: I/O operation on closed pipe
+  
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+    warnings.warn(pytest.PytestUnraisableExceptionWarning(msg))
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+1025 passed, 3 warnings in 389.97s (0:06:29)

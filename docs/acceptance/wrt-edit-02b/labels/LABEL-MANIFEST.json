@@ -1,0 +1,29 @@
+{
+  "schema": "wrt-edit-02b.label-manifest.v1",
+  "source_file": "e:\\Users\\ernan\\Downloads\\WRT-EDIT-02B-review-completed.csv",
+  "frozen_file": "C:\\Projects\\mission\\docs\\acceptance\\wrt-edit-02b\\labels\\WRT-EDIT-02B-review-completed-set1.csv",
+  "sha256": "9e0cbf6bbcd7e4a067d43de5bce7aedcec026532d45b09b6380ff87993a23568",
+  "rows_total": 50,
+  "reviewed": 10,
+  "reviewed_ids": [
+    "P01",
+    "P06",
+    "P09",
+    "P11",
+    "P23",
+    "P24",
+    "P37",
+    "P40",
+    "P41",
+    "P47"
+  ],
+  "reviewer": "AI-assisted reviewer (prior diagnostic exposure)",
+  "reviewer_status": "AI-assisted with prior diagnostic exposure",
+  "missing_fields": [
+    {
+      "passage_id": "P01",
+      "field": "fragmentation"
+    }
+  ],
+  "invalid_fields": []
+}

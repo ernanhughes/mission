@@ -1,0 +1,22 @@
+{
+  "finding": "edfinding:e1f378cdc4e0fbf5",
+  "handoff": {
+    "finding_id": "edfinding:e1f378cdc4e0fbf5",
+    "report_id": "edit-20261026T102047910150Z-e41af713be96",
+    "code": "READABILITY.UNIFORM_CADENCE",
+    "chapter_id": "chapter:language:03-chapter",
+    "canonical_fingerprint": "e41af713be966d1fe702c3b88ae9cf72d4de03b13b0400c936f80367477021d1",
+    "source_fingerprint": "0cc149a0d6a875c9ab8396e25ad6c537e3f3edc7de8fbbc7b5dde5754d61acf6",
+    "dimension": "readability",
+    "subdimension": "rhythm",
+    "severity": "medium",
+    "report_profile": "technical-nonfiction-v1",
+    "report_profile_version": "1.0.0",
+    "report_partial": false
+  },
+  "chip": "No paragraph selected: the whole chapter is open for discussion and changes. Revision for READABILITY.UNIFORM_CADENCE Clear",
+  "draftStarts": "Writer recorded a readability finding in this chapter:\n- rhythm (medium)\n- Why: ",
+  "candidateCode": true,
+  "cleared": true,
+  "exceptions": []
+}

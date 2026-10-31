@@ -1,0 +1,4 @@
+Forged passage scope against live Language Chapter 3 (non-recording check)
+HTTP 400 :: {"error":"This is a chapter-level finding with no passage locator, so it cannot take a passage decision. Use this chapter pattern or the book pattern. Nothing was recorded."}
+decision_counts: {"confirmed":0,"dismissed":0,"deferred":0,"undecided":1}
+decision_scopes: {"passage":0,"chapter":0,"book":0}

@@ -1,0 +1,6 @@
+workbench conversation turns: 0
+editing state: current; findings: 1; undecided: 1
+decision scopes: {"passage":0,"chapter":0,"book":0}
+candidate verdict log: absent
+editorial decision log: absent
+writer report: edit-20261026T102047910150Z-e41af713be96

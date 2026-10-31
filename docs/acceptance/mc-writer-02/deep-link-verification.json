@@ -1,0 +1,30 @@
+{
+  "state": {
+    "url": "http://127.0.0.1:7420/#chapter=09-chapter.md&menu=edt&drawer=editing&finding=edfinding%3A535838c47c080717",
+    "book": "inference",
+    "chapter": "09-chapter.md",
+    "report": "edit-20261025T231633334069Z-904c13cd0598",
+    "scope": {
+      "kind": "book",
+      "whole_book": true,
+      "chapter_id_count": 45
+    },
+    "chapter_count": 45,
+    "state": "current",
+    "stale": false,
+    "status_label": "3 to decide",
+    "finding_id": "edfinding:535838c47c080717",
+    "finding_code": "READABILITY.LONG_SENTENCE",
+    "finding_open": "edfinding:535838c47c080717",
+    "drawer_open": true,
+    "card_open": true,
+    "passage_highlighted": true,
+    "locked": false,
+    "limitations_shown": true,
+    "apply_buttons": 0,
+    "notice": ""
+  },
+  "errors": [
+    "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ]
+}

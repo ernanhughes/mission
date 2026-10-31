@@ -18,6 +18,7 @@ Mission Control is a local-first control centre for an existing ecosystem of AI 
 - **Cross-application experiments (MC10)** - one traceable Next → approval → Worker → CoCoder → human-decision workflow, with scope enforcement, local inference and durable evidence.
 - **Hardened experiments (MC11)** - Docker-isolated generated-code execution, two versioned templates, cancellation and duplicate-execution guards, `language.observation.v1`, and a project evidence timeline.
 - **Writer editing (MC-WRITER-01)** - Writer-owned readability reports with six independent subdimensions, findings and source locators, displayed in Mission Control with explicit `NOT_RUN` / `CURRENT` / `STALE` / `PARTIAL` / `ERROR` states and a cross-book review queue.
+- **Writer decision queue (MC-WRITER-02)** - Writer findings grouped by code and severity into a prioritized queue, Workbench-owned Confirm/Dismiss/Defer state read back read-only, and an exact-finding deep link that opens the passage in Workbench. The queue is a reading order, not a score.
 - **Evidence adapters** - Language, Inference, Math, live read-only Next, Work JSON CLI, CoCoder artifacts, Writer editing reports and Worker health. Unavailable integrations are shown as unavailable; they are not filled with sample data.
 - **Grounded daily briefing** - deterministic by default. Optional OpenAI-compatible AI interpretation only after explicit configuration, consent and request. AI remains advisory.
 - **Local API and OpenAPI docs** - FastAPI at `/api/*` and `/docs`.

@@ -2,17 +2,20 @@ books:
   - id: book-language
     project_id: language
     title: 'Language: When Intelligence Enters the Channel'
-    status: editorial_review
-    current_milestone: Author review of five editorial checkpoints, then a publication decision.
-    next_action: Read the five author-review checkpoints and record the publication decision.
+    status: published
+    current_milestone: 'Published: Language: When Intelligence Enters the Channel.'
+    next_action: 'Published on Amazon and Google Play; no further editorial action.'
     manuscript_paths:
       - 'C:\Projects\language\content\books\language'
       - 'C:\Projects\language\planning\STATUS.md'
     implementation_paths:
       - 'C:\Projects\project-language'
-    published_url: null
+    # Amazon is the single URL the book schema stores; the Google Play link is
+    # recorded on the project notes:
+    # https://play.google.com/store/books/details?id=mhUhEgAAQBAJ
+    published_url: 'https://www.amazon.com/dp/B0HP1TJQ9J'
     local_url: null
-    quality_review_state: pending
+    quality_review_state: complete
   - id: book-inference
     project_id: inference
     title: 'Inference From First Principles'

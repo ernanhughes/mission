@@ -14,6 +14,12 @@ from sqlalchemy import desc, select
 from mission_control.config import RuntimeSettings
 from mission_control.models import Application, AdapterStatus, IntegrationRecord
 from mission_control.persistence.db import Database
+from mission_control.writer.decisions import (
+    read_records,
+    read_workbench_book,
+    summary as decision_summary,
+)
+from mission_control.writer.queue import build_decision_queue
 
 _STATUS_RANK = {
     "ERROR": 0,
@@ -73,6 +79,27 @@ class WriterService:
                 (str(book.get("last_checked") or "") for book in books if book.get("last_checked")),
                 default=None,
             )
+            records = read_records(self.settings.workbench_decisions_path)
+            workbench_book = read_workbench_book(self.settings.workbench_preferences_path)
+            decision_queue, decision_totals, workbench = build_decision_queue(
+                books,
+                records,
+                workbench_url=self.settings.workbench_url,
+                workbench_book=workbench_book,
+            )
+            decision_counts = decision_summary(records)
+            limitations = [
+                "Mission Control displays Writer's report; it does not recalculate readability or findings.",
+                "NOT_RUN is not zero and not a pass. STALE means the source fingerprint changed after the report.",
+                "Metadata, MRI and Strengthen status are shown as not tracked because Editing v1 does not infer them.",
+                "The cross-book queue orders presentation only. It does not create an editorial decision.",
+                "The decision queue groups Writer findings by code and severity. It is a reading order, not a new score.",
+                "Workbench owns Confirm, Dismiss and Defer; Mission Control reads that log and never writes it.",
+            ]
+            if decision_totals["missing_identity"]:
+                limitations.append(
+                    "Some Writer findings have no stable identity yet; refresh Writer evidence to include them."
+                )
             return {
                 "available": bool(status and status.available and application and application.adapter_enabled),
                 "detail": status.detail if status else "Writer integration has not been refreshed yet.",
@@ -81,13 +108,16 @@ class WriterService:
                 "generated_at": generated_at,
                 "totals": totals,
                 "review_queue": queue,
+                "decision_queue": decision_queue,
+                "decision_totals": {
+                    **decision_totals,
+                    "confirmed": decision_counts.get("confirmed", 0),
+                    "dismissed": decision_counts.get("dismissed", 0),
+                    "deferred": decision_counts.get("deferred", 0),
+                },
+                "workbench": workbench,
                 "books": books,
-                "limitations": [
-                    "Mission Control displays Writer's report; it does not recalculate readability or findings.",
-                    "NOT_RUN is not zero and not a pass. STALE means the source fingerprint changed after the report.",
-                    "Metadata, MRI and Strengthen status are shown as not tracked because Editing v1 does not infer them.",
-                    "The cross-book queue orders presentation only. It does not create an editorial decision.",
-                ],
+                "limitations": limitations,
             }
 
     @staticmethod

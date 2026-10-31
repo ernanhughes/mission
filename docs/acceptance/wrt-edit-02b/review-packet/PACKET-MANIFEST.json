@@ -1,0 +1,23 @@
+{
+  "schema": "wrt-edit-02b.review-packet.v1",
+  "passage_count": 50,
+  "labels_included": false,
+  "diagnostic_key_included": false,
+  "files": [
+    {
+      "path": "calibration-blind-passages.csv",
+      "bytes": 34251,
+      "sha256": "f768eb800381105c80dcec432c4fc58387e90bf34322297bc1bd0bef8d8fee24"
+    },
+    {
+      "path": "calibration-review-template.csv",
+      "bytes": 832,
+      "sha256": "28830c74662da3080abe7ddf8a86197055698203dd93de2eafdb7a2bdb39e6df"
+    },
+    {
+      "path": "README-review.md",
+      "bytes": 1172,
+      "sha256": "3d34dd6d57df88b9615db523e21358ff287834782f2aede691797b0198508592"
+    }
+  ]
+}

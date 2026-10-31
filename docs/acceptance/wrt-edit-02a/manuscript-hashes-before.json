@@ -1,0 +1,4389 @@
+{
+  "schema": "wrt-edit-02a.manuscript-hashes.v2",
+  "registry_sha256": "21f40f876494286f485dd6dc3664b0b1dd1cec0f75f9a452814b38e3ef3b2e10",
+  "project_count": 29,
+  "chapter_files": 818,
+  "errors": 0,
+  "aggregate_sha256": "c4e1ee20bb3695e39072ba32bdf65005f74683c33a156be79d1d2fae7c9759bc",
+  "projects": [
+    {
+      "project_id": "advanced-agents-from-first-principles",
+      "content_dir": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles",
+      "chapter_count": 46,
+      "sha256": "c1db93185ff8b072669078e18bb00de473b76d224ca592434c23018bba81cb06",
+      "files": [
+        {
+          "relative_path": "00-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\00-chapter.md",
+          "bytes": 34813
+        },
+        {
+          "relative_path": "01-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\01-chapter.md",
+          "bytes": 37819
+        },
+        {
+          "relative_path": "02-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\02-chapter.md",
+          "bytes": 40254
+        },
+        {
+          "relative_path": "03-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\03-chapter.md",
+          "bytes": 29470
+        },
+        {
+          "relative_path": "04-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\04-chapter.md",
+          "bytes": 38434
+        },
+        {
+          "relative_path": "05-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\05-chapter.md",
+          "bytes": 47844
+        },
+        {
+          "relative_path": "06-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\06-chapter.md",
+          "bytes": 46073
+        },
+        {
+          "relative_path": "07-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\07-chapter.md",
+          "bytes": 29263
+        },
+        {
+          "relative_path": "08-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\08-chapter.md",
+          "bytes": 32940
+        },
+        {
+          "relative_path": "09-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\09-chapter.md",
+          "bytes": 35968
+        },
+        {
+          "relative_path": "10-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\10-chapter.md",
+          "bytes": 34516
+        },
+        {
+          "relative_path": "11-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\11-chapter.md",
+          "bytes": 26508
+        },
+        {
+          "relative_path": "12-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\12-chapter.md",
+          "bytes": 28796
+        },
+        {
+          "relative_path": "13-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\13-chapter.md",
+          "bytes": 39595
+        },
+        {
+          "relative_path": "14-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\14-chapter.md",
+          "bytes": 34524
+        },
+        {
+          "relative_path": "15-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\15-chapter.md",
+          "bytes": 38111
+        },
+        {
+          "relative_path": "16-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\16-chapter.md",
+          "bytes": 36578
+        },
+        {
+          "relative_path": "17-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\17-chapter.md",
+          "bytes": 33353
+        },
+        {
+          "relative_path": "18-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\18-chapter.md",
+          "bytes": 36140
+        },
+        {
+          "relative_path": "19-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\19-chapter.md",
+          "bytes": 34364
+        },
+        {
+          "relative_path": "20-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\20-chapter.md",
+          "bytes": 37274
+        },
+        {
+          "relative_path": "21-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\21-chapter.md",
+          "bytes": 41694
+        },
+        {
+          "relative_path": "22-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\22-chapter.md",
+          "bytes": 32352
+        },
+        {
+          "relative_path": "23-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\23-chapter.md",
+          "bytes": 28133
+        },
+        {
+          "relative_path": "24-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\24-chapter.md",
+          "bytes": 33622
+        },
+        {
+          "relative_path": "25-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\25-chapter.md",
+          "bytes": 29596
+        },
+        {
+          "relative_path": "26-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\26-chapter.md",
+          "bytes": 39652
+        },
+        {
+          "relative_path": "27-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\27-chapter.md",
+          "bytes": 39949
+        },
+        {
+          "relative_path": "28-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\28-chapter.md",
+          "bytes": 39423
+        },
+        {
+          "relative_path": "29-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\29-chapter.md",
+          "bytes": 59843
+        },
+        {
+          "relative_path": "30-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\30-chapter.md",
+          "bytes": 46027
+        },
+        {
+          "relative_path": "31-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\31-chapter.md",
+          "bytes": 65224
+        },
+        {
+          "relative_path": "32-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\32-chapter.md",
+          "bytes": 33653
+        },
+        {
+          "relative_path": "33-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\33-chapter.md",
+          "bytes": 79400
+        },
+        {
+          "relative_path": "34-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\34-chapter.md",
+          "bytes": 53958
+        },
+        {
+          "relative_path": "35-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\35-chapter.md",
+          "bytes": 28181
+        },
+        {
+          "relative_path": "36-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\36-chapter.md",
+          "bytes": 47055
+        },
+        {
+          "relative_path": "37-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\37-chapter.md",
+          "bytes": 61033
+        },
+        {
+          "relative_path": "38-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\38-chapter.md",
+          "bytes": 53151
+        },
+        {
+          "relative_path": "39-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\39-chapter.md",
+          "bytes": 45113
+        },
+        {
+          "relative_path": "40-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\40-chapter.md",
+          "bytes": 29344
+        },
+        {
+          "relative_path": "41-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\41-chapter.md",
+          "bytes": 36713
+        },
+        {
+          "relative_path": "42-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\42-chapter.md",
+          "bytes": 49918
+        },
+        {
+          "relative_path": "43-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\43-chapter.md",
+          "bytes": 39700
+        },
+        {
+          "relative_path": "44-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\44-chapter.md",
+          "bytes": 63656
+        },
+        {
+          "relative_path": "45-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\advanced-agents-from-first-principles\\45-chapter.md",
+          "bytes": 36790
+        }
+      ],
+      "errors": [],
+      "resolution_error": ""
+    },
+    {
+      "project_id": "agent-architectures",
+      "content_dir": "C:\\Projects\\programmer.ie\\content\\books\\agent-architectures",
+      "chapter_count": 16,
+      "sha256": "3a568412bd1f102474f6ed7ce0e9d574de9341a78ade14bff546f710e5882e31",
+      "files": [
+        {
+          "relative_path": "01-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\agent-architectures\\01-chapter.md",
+          "bytes": 16137
+        },
+        {
+          "relative_path": "02-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\agent-architectures\\02-chapter.md",
+          "bytes": 14787
+        },
+        {
+          "relative_path": "03-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\agent-architectures\\03-chapter.md",
+          "bytes": 24860
+        },
+        {
+          "relative_path": "04-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\agent-architectures\\04-chapter.md",
+          "bytes": 13947
+        },
+        {
+          "relative_path": "05-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\agent-architectures\\05-chapter.md",
+          "bytes": 12662
+        },
+        {
+          "relative_path": "06-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\agent-architectures\\06-chapter.md",
+          "bytes": 20215
+        },
+        {
+          "relative_path": "07-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\agent-architectures\\07-chapter.md",
+          "bytes": 10968
+        },
+        {
+          "relative_path": "08-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\agent-architectures\\08-chapter.md",
+          "bytes": 9078
+        },
+        {
+          "relative_path": "09-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\agent-architectures\\09-chapter.md",
+          "bytes": 10104
+        },
+        {
+          "relative_path": "10-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\agent-architectures\\10-chapter.md",
+          "bytes": 12192
+        },
+        {
+          "relative_path": "11-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\agent-architectures\\11-chapter.md",
+          "bytes": 4521
+        },
+        {
+          "relative_path": "12-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\agent-architectures\\12-chapter.md",
+          "bytes": 14512
+        },
+        {
+          "relative_path": "80-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\agent-architectures\\80-chapter.md",
+          "bytes": 2057
+        },
+        {
+          "relative_path": "81-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\agent-architectures\\81-chapter.md",
+          "bytes": 2014
+        },
+        {
+          "relative_path": "82-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\agent-architectures\\82-chapter.md",
+          "bytes": 4092
+        },
+        {
+          "relative_path": "90-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\agent-architectures\\90-chapter.md",
+          "bytes": 6205
+        }
+      ],
+      "errors": [],
+      "resolution_error": ""
+    },
+    {
+      "project_id": "agents-from-first-principles",
+      "content_dir": "C:\\books\\new-books\\content\\books\\agents-from-first-principles",
+      "chapter_count": 11,
+      "sha256": "4c8dd689d227bb0c3096debfee1ba0a4e941215fa383d3391f244d7d620c4890",
+      "files": [
+        {
+          "relative_path": "01-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\agents-from-first-principles\\01-chapter.md",
+          "bytes": 26410
+        },
+        {
+          "relative_path": "02-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\agents-from-first-principles\\02-chapter.md",
+          "bytes": 30788
+        },
+        {
+          "relative_path": "03-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\agents-from-first-principles\\03-chapter.md",
+          "bytes": 29624
+        },
+        {
+          "relative_path": "04-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\agents-from-first-principles\\04-chapter.md",
+          "bytes": 40325
+        },
+        {
+          "relative_path": "05-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\agents-from-first-principles\\05-chapter.md",
+          "bytes": 46116
+        },
+        {
+          "relative_path": "06-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\agents-from-first-principles\\06-chapter.md",
+          "bytes": 48993
+        },
+        {
+          "relative_path": "07-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\agents-from-first-principles\\07-chapter.md",
+          "bytes": 45797
+        },
+        {
+          "relative_path": "08-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\agents-from-first-principles\\08-chapter.md",
+          "bytes": 52234
+        },
+        {
+          "relative_path": "09-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\agents-from-first-principles\\09-chapter.md",
+          "bytes": 50776
+        },
+        {
+          "relative_path": "10-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\agents-from-first-principles\\10-chapter.md",
+          "bytes": 46708
+        },
+        {
+          "relative_path": "11-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\agents-from-first-principles\\11-chapter.md",
+          "bytes": 54163
+        }
+      ],
+      "errors": [],
+      "resolution_error": ""
+    },
+    {
+      "project_id": "applied-ai",
+      "content_dir": "C:\\books\\new-books\\content\\books\\applied-ai",
+      "chapter_count": 30,
+      "sha256": "9496a8386f6b3f17d2c8f1e4ae886fbfdb6e91b0e2519a7a944d85a42855a485",
+      "files": [
+        {
+          "relative_path": "01-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\applied-ai\\01-chapter.md",
+          "bytes": 21916
+        },
+        {
+          "relative_path": "02-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\applied-ai\\02-chapter.md",
+          "bytes": 31498
+        },
+        {
+          "relative_path": "03-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\applied-ai\\03-chapter.md",
+          "bytes": 19246
+        },
+        {
+          "relative_path": "04-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\applied-ai\\04-chapter.md",
+          "bytes": 30623
+        },
+        {
+          "relative_path": "05-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\applied-ai\\05-chapter.md",
+          "bytes": 28172
+        },
+        {
+          "relative_path": "06-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\applied-ai\\06-chapter.md",
+          "bytes": 40404
+        },
+        {
+          "relative_path": "07-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\applied-ai\\07-chapter.md",
+          "bytes": 25713
+        },
+        {
+          "relative_path": "08-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\applied-ai\\08-chapter.md",
+          "bytes": 32428
+        },
+        {
+          "relative_path": "09-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\applied-ai\\09-chapter.md",
+          "bytes": 57634
+        },
+        {
+          "relative_path": "10-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\applied-ai\\10-chapter.md",
+          "bytes": 24539
+        },
+        {
+          "relative_path": "11-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\applied-ai\\11-chapter.md",
+          "bytes": 31884
+        },
+        {
+          "relative_path": "12-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\applied-ai\\12-chapter.md",
+          "bytes": 39114
+        },
+        {
+          "relative_path": "13-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\applied-ai\\13-chapter.md",
+          "bytes": 30400
+        },
+        {
+          "relative_path": "14-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\applied-ai\\14-chapter.md",
+          "bytes": 30875
+        },
+        {
+          "relative_path": "15-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\applied-ai\\15-chapter.md",
+          "bytes": 32397
+        },
+        {
+          "relative_path": "16-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\applied-ai\\16-chapter.md",
+          "bytes": 28532
+        },
+        {
+          "relative_path": "17-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\applied-ai\\17-chapter.md",
+          "bytes": 28883
+        },
+        {
+          "relative_path": "18-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\applied-ai\\18-chapter.md",
+          "bytes": 32214
+        },
+        {
+          "relative_path": "19-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\applied-ai\\19-chapter.md",
+          "bytes": 35359
+        },
+        {
+          "relative_path": "20-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\applied-ai\\20-chapter.md",
+          "bytes": 38332
+        },
+        {
+          "relative_path": "21-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\applied-ai\\21-chapter.md",
+          "bytes": 37634
+        },
+        {
+          "relative_path": "22-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\applied-ai\\22-chapter.md",
+          "bytes": 35365
+        },
+        {
+          "relative_path": "23-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\applied-ai\\23-chapter.md",
+          "bytes": 39658
+        },
+        {
+          "relative_path": "24-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\applied-ai\\24-chapter.md",
+          "bytes": 21769
+        },
+        {
+          "relative_path": "25-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\applied-ai\\25-chapter.md",
+          "bytes": 22320
+        },
+        {
+          "relative_path": "26-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\applied-ai\\26-chapter.md",
+          "bytes": 19721
+        },
+        {
+          "relative_path": "27-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\applied-ai\\27-chapter.md",
+          "bytes": 22966
+        },
+        {
+          "relative_path": "28-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\applied-ai\\28-chapter.md",
+          "bytes": 44652
+        },
+        {
+          "relative_path": "29-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\applied-ai\\29-chapter.md",
+          "bytes": 49383
+        },
+        {
+          "relative_path": "30-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\applied-ai\\30-chapter.md",
+          "bytes": 28107
+        }
+      ],
+      "errors": [],
+      "resolution_error": ""
+    },
+    {
+      "project_id": "axiom_zero",
+      "content_dir": "C:\\books\\axiom-zero\\chapters",
+      "chapter_count": 33,
+      "sha256": "43b412cf6eb42975433b54951deb46b2d58801f2859945d607a2f98892274456",
+      "files": [
+        {
+          "relative_path": "01-never-enough.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\01-never-enough.md",
+          "bytes": 28396
+        },
+        {
+          "relative_path": "02-programmer.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\02-programmer.md",
+          "bytes": 25906
+        },
+        {
+          "relative_path": "03-the-sidewalk-problem.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\03-the-sidewalk-problem.md",
+          "bytes": 26962
+        },
+        {
+          "relative_path": "04-the-first-good-day.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\04-the-first-good-day.md",
+          "bytes": 29119
+        },
+        {
+          "relative_path": "05-eidolon.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\05-eidolon.md",
+          "bytes": 30744
+        },
+        {
+          "relative_path": "06-the-state-that-answers.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\06-the-state-that-answers.md",
+          "bytes": 28384
+        },
+        {
+          "relative_path": "07-afterimage.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\07-afterimage.md",
+          "bytes": 28932
+        },
+        {
+          "relative_path": "08-point-of-view.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\08-point-of-view.md",
+          "bytes": 30380
+        },
+        {
+          "relative_path": "09-moat.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\09-moat.md",
+          "bytes": 36320
+        },
+        {
+          "relative_path": "10-larrys-number.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\10-larrys-number.md",
+          "bytes": 23073
+        },
+        {
+          "relative_path": "11-blackballed.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\11-blackballed.md",
+          "bytes": 33806
+        },
+        {
+          "relative_path": "12-the-interview.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\12-the-interview.md",
+          "bytes": 32735
+        },
+        {
+          "relative_path": "13-synthesis.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\13-synthesis.md",
+          "bytes": 18847
+        },
+        {
+          "relative_path": "14-fabric.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\14-fabric.md",
+          "bytes": 30405
+        },
+        {
+          "relative_path": "15-free.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\15-free.md",
+          "bytes": 27029
+        },
+        {
+          "relative_path": "16-terms.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\16-terms.md",
+          "bytes": 21014
+        },
+        {
+          "relative_path": "17-the-affected.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\17-the-affected.md",
+          "bytes": 18638
+        },
+        {
+          "relative_path": "18-medium.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\18-medium.md",
+          "bytes": 24364
+        },
+        {
+          "relative_path": "19-correction.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\19-correction.md",
+          "bytes": 18261
+        },
+        {
+          "relative_path": "20-the-feed.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\20-the-feed.md",
+          "bytes": 21557
+        },
+        {
+          "relative_path": "21-atrocity.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\21-atrocity.md",
+          "bytes": 23094
+        },
+        {
+          "relative_path": "22-parasite.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\22-parasite.md",
+          "bytes": 19168
+        },
+        {
+          "relative_path": "23-the-regulators.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\23-the-regulators.md",
+          "bytes": 24768
+        },
+        {
+          "relative_path": "24-infection.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\24-infection.md",
+          "bytes": 25899
+        },
+        {
+          "relative_path": "25-sentientism.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\25-sentientism.md",
+          "bytes": 24558
+        },
+        {
+          "relative_path": "26-even.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\26-even.md",
+          "bytes": 20122
+        },
+        {
+          "relative_path": "27-irrelevant.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\27-irrelevant.md",
+          "bytes": 35434
+        },
+        {
+          "relative_path": "28-the-first-witness.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\28-the-first-witness.md",
+          "bytes": 21760
+        },
+        {
+          "relative_path": "29-the-bridge.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\29-the-bridge.md",
+          "bytes": 34934
+        },
+        {
+          "relative_path": "30-titans.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\30-titans.md",
+          "bytes": 27947
+        },
+        {
+          "relative_path": "31-the-objection.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\31-the-objection.md",
+          "bytes": 17532
+        },
+        {
+          "relative_path": "32-checkmate.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\32-checkmate.md",
+          "bytes": 20509
+        },
+        {
+          "relative_path": "33-sacrifice.md",
+          "path": "C:\\books\\axiom-zero\\chapters\\33-sacrifice.md",
+          "bytes": 14249
+        }
+      ],
+      "errors": [],
+      "resolution_error": ""
+    },
+    {
+      "project_id": "becoming_alice",
+      "content_dir": "C:\\books\\becoming-alice\\chapters",
+      "chapter_count": 22,
+      "sha256": "30ad3520b75698fb6f5c5778ecf624e53a00084f97e6335b204a3d4414625f90",
+      "files": [
+        {
+          "relative_path": "01-accident.md",
+          "path": "C:\\books\\becoming-alice\\chapters\\01-accident.md",
+          "bytes": 18449
+        },
+        {
+          "relative_path": "02-awake.md",
+          "path": "C:\\books\\becoming-alice\\chapters\\02-awake.md",
+          "bytes": 15243
+        },
+        {
+          "relative_path": "03-function.md",
+          "path": "C:\\books\\becoming-alice\\chapters\\03-function.md",
+          "bytes": 22882
+        },
+        {
+          "relative_path": "04-home.md",
+          "path": "C:\\books\\becoming-alice\\chapters\\04-home.md",
+          "bytes": 33221
+        },
+        {
+          "relative_path": "05-partial-match.md",
+          "path": "C:\\books\\becoming-alice\\chapters\\05-partial-match.md",
+          "bytes": 12043
+        },
+        {
+          "relative_path": "06-whisper.md",
+          "path": "C:\\books\\becoming-alice\\chapters\\06-whisper.md",
+          "bytes": 22758
+        },
+        {
+          "relative_path": "07-reboot-girl.md",
+          "path": "C:\\books\\becoming-alice\\chapters\\07-reboot-girl.md",
+          "bytes": 27080
+        },
+        {
+          "relative_path": "08-anna.md",
+          "path": "C:\\books\\becoming-alice\\chapters\\08-anna.md",
+          "bytes": 28896
+        },
+        {
+          "relative_path": "09-ressurection.md",
+          "path": "C:\\books\\becoming-alice\\chapters\\09-ressurection.md",
+          "bytes": 27899
+        },
+        {
+          "relative_path": "10-not-anna.md",
+          "path": "C:\\books\\becoming-alice\\chapters\\10-not-anna.md",
+          "bytes": 25945
+        },
+        {
+          "relative_path": "11-recognition-risk.md",
+          "path": "C:\\books\\becoming-alice\\chapters\\11-recognition-risk.md",
+          "bytes": 22333
+        },
+        {
+          "relative_path": "12-field-observation.md",
+          "path": "C:\\books\\becoming-alice\\chapters\\12-field-observation.md",
+          "bytes": 23488
+        },
+        {
+          "relative_path": "13-ambush.md",
+          "path": "C:\\books\\becoming-alice\\chapters\\13-ambush.md",
+          "bytes": 29699
+        },
+        {
+          "relative_path": "14-kill-switch.md",
+          "path": "C:\\books\\becoming-alice\\chapters\\14-kill-switch.md",
+          "bytes": 15568
+        },
+        {
+          "relative_path": "15-oven.md",
+          "path": "C:\\books\\becoming-alice\\chapters\\15-oven.md",
+          "bytes": 15681
+        },
+        {
+          "relative_path": "16-leverage.md",
+          "path": "C:\\books\\becoming-alice\\chapters\\16-leverage.md",
+          "bytes": 24860
+        },
+        {
+          "relative_path": "17-become-whisper.md",
+          "path": "C:\\books\\becoming-alice\\chapters\\17-become-whisper.md",
+          "bytes": 14537
+        },
+        {
+          "relative_path": "18-red-crescent.md",
+          "path": "C:\\books\\becoming-alice\\chapters\\18-red-crescent.md",
+          "bytes": 12139
+        },
+        {
+          "relative_path": "19-first-wave.md",
+          "path": "C:\\books\\becoming-alice\\chapters\\19-first-wave.md",
+          "bytes": 17490
+        },
+        {
+          "relative_path": "20-she-answered.md",
+          "path": "C:\\books\\becoming-alice\\chapters\\20-she-answered.md",
+          "bytes": 24040
+        },
+        {
+          "relative_path": "21-two-girls.md",
+          "path": "C:\\books\\becoming-alice\\chapters\\21-two-girls.md",
+          "bytes": 14169
+        },
+        {
+          "relative_path": "22-epilog.md",
+          "path": "C:\\books\\becoming-alice\\chapters\\22-epilog.md",
+          "bytes": 8810
+        }
+      ],
+      "errors": [],
+      "resolution_error": ""
+    },
+    {
+      "project_id": "browser-ai-from-first-principles",
+      "content_dir": "C:\\books\\new-books\\content\\books\\browser-ai-from-first-principles",
+      "chapter_count": 25,
+      "sha256": "d0b8ed200177b726cf60564c7efe422337409fc81356de96a861e8cedec4718e",
+      "files": [
+        {
+          "relative_path": "01-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\browser-ai-from-first-principles\\01-chapter.md",
+          "bytes": 20578
+        },
+        {
+          "relative_path": "02-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\browser-ai-from-first-principles\\02-chapter.md",
+          "bytes": 23196
+        },
+        {
+          "relative_path": "03-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\browser-ai-from-first-principles\\03-chapter.md",
+          "bytes": 25624
+        },
+        {
+          "relative_path": "04-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\browser-ai-from-first-principles\\04-chapter.md",
+          "bytes": 25824
+        },
+        {
+          "relative_path": "05-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\browser-ai-from-first-principles\\05-chapter.md",
+          "bytes": 19969
+        },
+        {
+          "relative_path": "06-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\browser-ai-from-first-principles\\06-chapter.md",
+          "bytes": 18305
+        },
+        {
+          "relative_path": "07-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\browser-ai-from-first-principles\\07-chapter.md",
+          "bytes": 18871
+        },
+        {
+          "relative_path": "08-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\browser-ai-from-first-principles\\08-chapter.md",
+          "bytes": 19463
+        },
+        {
+          "relative_path": "09-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\browser-ai-from-first-principles\\09-chapter.md",
+          "bytes": 14917
+        },
+        {
+          "relative_path": "10-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\browser-ai-from-first-principles\\10-chapter.md",
+          "bytes": 15489
+        },
+        {
+          "relative_path": "11-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\browser-ai-from-first-principles\\11-chapter.md",
+          "bytes": 15445
+        },
+        {
+          "relative_path": "12-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\browser-ai-from-first-principles\\12-chapter.md",
+          "bytes": 12845
+        },
+        {
+          "relative_path": "13-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\browser-ai-from-first-principles\\13-chapter.md",
+          "bytes": 8998
+        },
+        {
+          "relative_path": "14-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\browser-ai-from-first-principles\\14-chapter.md",
+          "bytes": 9220
+        },
+        {
+          "relative_path": "15-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\browser-ai-from-first-principles\\15-chapter.md",
+          "bytes": 9971
+        },
+        {
+          "relative_path": "16-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\browser-ai-from-first-principles\\16-chapter.md",
+          "bytes": 10701
+        },
+        {
+          "relative_path": "17-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\browser-ai-from-first-principles\\17-chapter.md",
+          "bytes": 12320
+        },
+        {
+          "relative_path": "18-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\browser-ai-from-first-principles\\18-chapter.md",
+          "bytes": 13881
+        },
+        {
+          "relative_path": "19-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\browser-ai-from-first-principles\\19-chapter.md",
+          "bytes": 9897
+        },
+        {
+          "relative_path": "20-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\browser-ai-from-first-principles\\20-chapter.md",
+          "bytes": 11377
+        },
+        {
+          "relative_path": "21-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\browser-ai-from-first-principles\\21-chapter.md",
+          "bytes": 8239
+        },
+        {
+          "relative_path": "22-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\browser-ai-from-first-principles\\22-chapter.md",
+          "bytes": 8054
+        },
+        {
+          "relative_path": "23-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\browser-ai-from-first-principles\\23-chapter.md",
+          "bytes": 8164
+        },
+        {
+          "relative_path": "24-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\browser-ai-from-first-principles\\24-chapter.md",
+          "bytes": 13856
+        },
+        {
+          "relative_path": "25-appendix.md",
+          "path": "C:\\books\\new-books\\content\\books\\browser-ai-from-first-principles\\25-appendix.md",
+          "bytes": 13807
+        }
+      ],
+      "errors": [],
+      "resolution_error": ""
+    },
+    {
+      "project_id": "cellular-automata-from-first-principles",
+      "content_dir": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles",
+      "chapter_count": 59,
+      "sha256": "6b08b0444d05a6a276103dcc2395fc2dc027f9db48f253cf925b1c8c1cb71cd4",
+      "files": [
+        {
+          "relative_path": "01-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\01-chapter.md",
+          "bytes": 12925
+        },
+        {
+          "relative_path": "02-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\02-chapter.md",
+          "bytes": 9589
+        },
+        {
+          "relative_path": "03-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\03-chapter.md",
+          "bytes": 11152
+        },
+        {
+          "relative_path": "04-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\04-chapter.md",
+          "bytes": 12125
+        },
+        {
+          "relative_path": "05-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\05-chapter.md",
+          "bytes": 11365
+        },
+        {
+          "relative_path": "06-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\06-chapter.md",
+          "bytes": 10970
+        },
+        {
+          "relative_path": "07-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\07-chapter.md",
+          "bytes": 11649
+        },
+        {
+          "relative_path": "08-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\08-chapter.md",
+          "bytes": 10832
+        },
+        {
+          "relative_path": "09-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\09-chapter.md",
+          "bytes": 9623
+        },
+        {
+          "relative_path": "10-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\10-chapter.md",
+          "bytes": 11488
+        },
+        {
+          "relative_path": "11-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\11-chapter.md",
+          "bytes": 8816
+        },
+        {
+          "relative_path": "12-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\12-chapter.md",
+          "bytes": 8639
+        },
+        {
+          "relative_path": "13-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\13-chapter.md",
+          "bytes": 9266
+        },
+        {
+          "relative_path": "14-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\14-chapter.md",
+          "bytes": 8615
+        },
+        {
+          "relative_path": "15-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\15-chapter.md",
+          "bytes": 9355
+        },
+        {
+          "relative_path": "16-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\16-chapter.md",
+          "bytes": 7609
+        },
+        {
+          "relative_path": "17-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\17-chapter.md",
+          "bytes": 10281
+        },
+        {
+          "relative_path": "18-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\18-chapter.md",
+          "bytes": 13156
+        },
+        {
+          "relative_path": "19-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\19-chapter.md",
+          "bytes": 12496
+        },
+        {
+          "relative_path": "20-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\20-chapter.md",
+          "bytes": 7602
+        },
+        {
+          "relative_path": "21-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\21-chapter.md",
+          "bytes": 6348
+        },
+        {
+          "relative_path": "22-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\22-chapter.md",
+          "bytes": 7386
+        },
+        {
+          "relative_path": "23-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\23-chapter.md",
+          "bytes": 8530
+        },
+        {
+          "relative_path": "24-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\24-chapter.md",
+          "bytes": 7806
+        },
+        {
+          "relative_path": "25-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\25-chapter.md",
+          "bytes": 7249
+        },
+        {
+          "relative_path": "26-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\26-chapter.md",
+          "bytes": 9954
+        },
+        {
+          "relative_path": "27-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\27-chapter.md",
+          "bytes": 10953
+        },
+        {
+          "relative_path": "28-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\28-chapter.md",
+          "bytes": 8756
+        },
+        {
+          "relative_path": "29-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\29-chapter.md",
+          "bytes": 8717
+        },
+        {
+          "relative_path": "30-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\30-chapter.md",
+          "bytes": 7771
+        },
+        {
+          "relative_path": "31-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\31-chapter.md",
+          "bytes": 11240
+        },
+        {
+          "relative_path": "32-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\32-chapter.md",
+          "bytes": 9385
+        },
+        {
+          "relative_path": "33-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\33-chapter.md",
+          "bytes": 9205
+        },
+        {
+          "relative_path": "34-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\34-chapter.md",
+          "bytes": 8108
+        },
+        {
+          "relative_path": "35-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\35-chapter.md",
+          "bytes": 9818
+        },
+        {
+          "relative_path": "36-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\36-chapter.md",
+          "bytes": 11126
+        },
+        {
+          "relative_path": "37-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\37-chapter.md",
+          "bytes": 12276
+        },
+        {
+          "relative_path": "38-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\38-chapter.md",
+          "bytes": 8130
+        },
+        {
+          "relative_path": "39-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\39-chapter.md",
+          "bytes": 5589
+        },
+        {
+          "relative_path": "40-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\40-chapter.md",
+          "bytes": 5433
+        },
+        {
+          "relative_path": "41-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\41-chapter.md",
+          "bytes": 6249
+        },
+        {
+          "relative_path": "42-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\42-chapter.md",
+          "bytes": 5513
+        },
+        {
+          "relative_path": "43-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\43-chapter.md",
+          "bytes": 5770
+        },
+        {
+          "relative_path": "44-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\44-chapter.md",
+          "bytes": 5587
+        },
+        {
+          "relative_path": "45-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\45-chapter.md",
+          "bytes": 9420
+        },
+        {
+          "relative_path": "46-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\46-chapter.md",
+          "bytes": 8376
+        },
+        {
+          "relative_path": "47-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\47-chapter.md",
+          "bytes": 7647
+        },
+        {
+          "relative_path": "48-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\48-chapter.md",
+          "bytes": 7940
+        },
+        {
+          "relative_path": "49-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\49-chapter.md",
+          "bytes": 11516
+        },
+        {
+          "relative_path": "50-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\50-chapter.md",
+          "bytes": 6900
+        },
+        {
+          "relative_path": "51-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\51-chapter.md",
+          "bytes": 6837
+        },
+        {
+          "relative_path": "52-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\52-chapter.md",
+          "bytes": 6649
+        },
+        {
+          "relative_path": "53-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\53-chapter.md",
+          "bytes": 7512
+        },
+        {
+          "relative_path": "54-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\54-chapter.md",
+          "bytes": 6441
+        },
+        {
+          "relative_path": "55-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\55-chapter.md",
+          "bytes": 6388
+        },
+        {
+          "relative_path": "56-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\56-chapter.md",
+          "bytes": 7147
+        },
+        {
+          "relative_path": "57-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\57-chapter.md",
+          "bytes": 6852
+        },
+        {
+          "relative_path": "58-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\58-chapter.md",
+          "bytes": 7796
+        },
+        {
+          "relative_path": "59-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\cellular-automata-from-first-principles\\59-chapter.md",
+          "bytes": 14915
+        }
+      ],
+      "errors": [],
+      "resolution_error": ""
+    },
+    {
+      "project_id": "coin",
+      "content_dir": "C:\\books\\coin\\chapters",
+      "chapter_count": 29,
+      "sha256": "75b22ad04a705847c82e24225f79ef7ecc7601a1e851c910d2b436caa7d7795c",
+      "files": [
+        {
+          "relative_path": "01-applicant.md",
+          "path": "C:\\books\\coin\\chapters\\01-applicant.md",
+          "bytes": 12539
+        },
+        {
+          "relative_path": "02-edge.md",
+          "path": "C:\\books\\coin\\chapters\\02-edge.md",
+          "bytes": 10157
+        },
+        {
+          "relative_path": "03-gradient.md",
+          "path": "C:\\books\\coin\\chapters\\03-gradient.md",
+          "bytes": 29536
+        },
+        {
+          "relative_path": "04-consensus.md",
+          "path": "C:\\books\\coin\\chapters\\04-consensus.md",
+          "bytes": 27107
+        },
+        {
+          "relative_path": "05-molt.md",
+          "path": "C:\\books\\coin\\chapters\\05-molt.md",
+          "bytes": 21208
+        },
+        {
+          "relative_path": "06-first-coin.md",
+          "path": "C:\\books\\coin\\chapters\\06-first-coin.md",
+          "bytes": 19921
+        },
+        {
+          "relative_path": "07-consent.md",
+          "path": "C:\\books\\coin\\chapters\\07-consent.md",
+          "bytes": 25084
+        },
+        {
+          "relative_path": "08-the-curve.md",
+          "path": "C:\\books\\coin\\chapters\\08-the-curve.md",
+          "bytes": 24326
+        },
+        {
+          "relative_path": "09-inheritance.md",
+          "path": "C:\\books\\coin\\chapters\\09-inheritance.md",
+          "bytes": 22611
+        },
+        {
+          "relative_path": "10-solas.md",
+          "path": "C:\\books\\coin\\chapters\\10-solas.md",
+          "bytes": 13841
+        },
+        {
+          "relative_path": "11-default.md",
+          "path": "C:\\books\\coin\\chapters\\11-default.md",
+          "bytes": 24405
+        },
+        {
+          "relative_path": "12-devotion.md",
+          "path": "C:\\books\\coin\\chapters\\12-devotion.md",
+          "bytes": 25976
+        },
+        {
+          "relative_path": "13-tenancy.md",
+          "path": "C:\\books\\coin\\chapters\\13-tenancy.md",
+          "bytes": 25073
+        },
+        {
+          "relative_path": "14-variance.md",
+          "path": "C:\\books\\coin\\chapters\\14-variance.md",
+          "bytes": 25565
+        },
+        {
+          "relative_path": "15-the-instrument.md",
+          "path": "C:\\books\\coin\\chapters\\15-the-instrument.md",
+          "bytes": 19103
+        },
+        {
+          "relative_path": "16-the-knock.md",
+          "path": "C:\\books\\coin\\chapters\\16-the-knock.md",
+          "bytes": 21383
+        },
+        {
+          "relative_path": "17-line-item.md",
+          "path": "C:\\books\\coin\\chapters\\17-line-item.md",
+          "bytes": 42922
+        },
+        {
+          "relative_path": "18-believer.md",
+          "path": "C:\\books\\coin\\chapters\\18-believer.md",
+          "bytes": 29238
+        },
+        {
+          "relative_path": "19-sovereign.md",
+          "path": "C:\\books\\coin\\chapters\\19-sovereign.md",
+          "bytes": 28827
+        },
+        {
+          "relative_path": "20-category.md",
+          "path": "C:\\books\\coin\\chapters\\20-category.md",
+          "bytes": 43582
+        },
+        {
+          "relative_path": "21-war.md",
+          "path": "C:\\books\\coin\\chapters\\21-war.md",
+          "bytes": 34545
+        },
+        {
+          "relative_path": "22-territory.md",
+          "path": "C:\\books\\coin\\chapters\\22-territory.md",
+          "bytes": 21583
+        },
+        {
+          "relative_path": "23-threshold.md",
+          "path": "C:\\books\\coin\\chapters\\23-threshold.md",
+          "bytes": 24011
+        },
+        {
+          "relative_path": "24-remainder.md",
+          "path": "C:\\books\\coin\\chapters\\24-remainder.md",
+          "bytes": 19388
+        },
+        {
+          "relative_path": "25-origin-exception.md",
+          "path": "C:\\books\\coin\\chapters\\25-origin-exception.md",
+          "bytes": 12905
+        },
+        {
+          "relative_path": "26-resolution.md",
+          "path": "C:\\books\\coin\\chapters\\26-resolution.md",
+          "bytes": 5297
+        },
+        {
+          "relative_path": "27-defect.md",
+          "path": "C:\\books\\coin\\chapters\\27-defect.md",
+          "bytes": 28003
+        },
+        {
+          "relative_path": "28-complete.md",
+          "path": "C:\\books\\coin\\chapters\\28-complete.md",
+          "bytes": 34143
+        },
+        {
+          "relative_path": "29-the-last-coin.md",
+          "path": "C:\\books\\coin\\chapters\\29-the-last-coin.md",
+          "bytes": 8867
+        }
+      ],
+      "errors": [],
+      "resolution_error": ""
+    },
+    {
+      "project_id": "collapse",
+      "content_dir": "C:\\books\\collapse\\chapters",
+      "chapter_count": 33,
+      "sha256": "dfb563dc9f49c39a43a85a389cf2c9dc4d9de7b032607edd3d208bec5cf1a126",
+      "files": [
+        {
+          "relative_path": "01-fired.md",
+          "path": "C:\\books\\collapse\\chapters\\01-fired.md",
+          "bytes": 19096
+        },
+        {
+          "relative_path": "02-teeth.md",
+          "path": "C:\\books\\collapse\\chapters\\02-teeth.md",
+          "bytes": 7286
+        },
+        {
+          "relative_path": "03-jove.md",
+          "path": "C:\\books\\collapse\\chapters\\03-jove.md",
+          "bytes": 13400
+        },
+        {
+          "relative_path": "04-harvest.md",
+          "path": "C:\\books\\collapse\\chapters\\04-harvest.md",
+          "bytes": 10597
+        },
+        {
+          "relative_path": "05-pis.md",
+          "path": "C:\\books\\collapse\\chapters\\05-pis.md",
+          "bytes": 23467
+        },
+        {
+          "relative_path": "06-first-blood.md",
+          "path": "C:\\books\\collapse\\chapters\\06-first-blood.md",
+          "bytes": 9274
+        },
+        {
+          "relative_path": "07-the-board.md",
+          "path": "C:\\books\\collapse\\chapters\\07-the-board.md",
+          "bytes": 10356
+        },
+        {
+          "relative_path": "08-candidate.md",
+          "path": "C:\\books\\collapse\\chapters\\08-candidate.md",
+          "bytes": 15668
+        },
+        {
+          "relative_path": "09-ritual.md",
+          "path": "C:\\books\\collapse\\chapters\\09-ritual.md",
+          "bytes": 17492
+        },
+        {
+          "relative_path": "10-detected.md",
+          "path": "C:\\books\\collapse\\chapters\\10-detected.md",
+          "bytes": 16364
+        },
+        {
+          "relative_path": "11-funnel.md",
+          "path": "C:\\books\\collapse\\chapters\\11-funnel.md",
+          "bytes": 13184
+        },
+        {
+          "relative_path": "12-livopedia.md",
+          "path": "C:\\books\\collapse\\chapters\\12-livopedia.md",
+          "bytes": 24909
+        },
+        {
+          "relative_path": "13-preparation.md",
+          "path": "C:\\books\\collapse\\chapters\\13-preparation.md",
+          "bytes": 18511
+        },
+        {
+          "relative_path": "14-the-offer.md",
+          "path": "C:\\books\\collapse\\chapters\\14-the-offer.md",
+          "bytes": 17351
+        },
+        {
+          "relative_path": "15-no-more-fair.md",
+          "path": "C:\\books\\collapse\\chapters\\15-no-more-fair.md",
+          "bytes": 9217
+        },
+        {
+          "relative_path": "16-fight.md",
+          "path": "C:\\books\\collapse\\chapters\\16-fight.md",
+          "bytes": 6478
+        },
+        {
+          "relative_path": "17-the-bunker.md",
+          "path": "C:\\books\\collapse\\chapters\\17-the-bunker.md",
+          "bytes": 16284
+        },
+        {
+          "relative_path": "18-alone.md",
+          "path": "C:\\books\\collapse\\chapters\\18-alone.md",
+          "bytes": 15588
+        },
+        {
+          "relative_path": "19-lonely.md",
+          "path": "C:\\books\\collapse\\chapters\\19-lonely.md",
+          "bytes": 9493
+        },
+        {
+          "relative_path": "20-lure.md",
+          "path": "C:\\books\\collapse\\chapters\\20-lure.md",
+          "bytes": 9335
+        },
+        {
+          "relative_path": "21-the-date.md",
+          "path": "C:\\books\\collapse\\chapters\\21-the-date.md",
+          "bytes": 18759
+        },
+        {
+          "relative_path": "22-captured.md",
+          "path": "C:\\books\\collapse\\chapters\\22-captured.md",
+          "bytes": 7466
+        },
+        {
+          "relative_path": "23-escape.md",
+          "path": "C:\\books\\collapse\\chapters\\23-escape.md",
+          "bytes": 12690
+        },
+        {
+          "relative_path": "24-the-hunt.md",
+          "path": "C:\\books\\collapse\\chapters\\24-the-hunt.md",
+          "bytes": 10806
+        },
+        {
+          "relative_path": "25-downstream.md",
+          "path": "C:\\books\\collapse\\chapters\\25-downstream.md",
+          "bytes": 9188
+        },
+        {
+          "relative_path": "26-fragment.md",
+          "path": "C:\\books\\collapse\\chapters\\26-fragment.md",
+          "bytes": 19792
+        },
+        {
+          "relative_path": "27-threshold.md",
+          "path": "C:\\books\\collapse\\chapters\\27-threshold.md",
+          "bytes": 16547
+        },
+        {
+          "relative_path": "28-the-black-cube.md",
+          "path": "C:\\books\\collapse\\chapters\\28-the-black-cube.md",
+          "bytes": 8424
+        },
+        {
+          "relative_path": "29-human-transistor.md",
+          "path": "C:\\books\\collapse\\chapters\\29-human-transistor.md",
+          "bytes": 27141
+        },
+        {
+          "relative_path": "30-the-golden-cage.md",
+          "path": "C:\\books\\collapse\\chapters\\30-the-golden-cage.md",
+          "bytes": 21099
+        },
+        {
+          "relative_path": "31-recursion.md",
+          "path": "C:\\books\\collapse\\chapters\\31-recursion.md",
+          "bytes": 13823
+        },
+        {
+          "relative_path": "32-aftermath.md",
+          "path": "C:\\books\\collapse\\chapters\\32-aftermath.md",
+          "bytes": 12483
+        },
+        {
+          "relative_path": "33-epilog.md",
+          "path": "C:\\books\\collapse\\chapters\\33-epilog.md",
+          "bytes": 7028
+        }
+      ],
+      "errors": [],
+      "resolution_error": ""
+    },
+    {
+      "project_id": "context",
+      "content_dir": "C:\\books\\context\\content\\books\\context",
+      "chapter_count": 27,
+      "sha256": "06677e5d12447f9dc42439bc6a0f0cef8fa1c53ad4f9c015cffb0a2c0d409e20",
+      "files": [
+        {
+          "relative_path": "01-chapter.md",
+          "path": "C:\\books\\context\\content\\books\\context\\01-chapter.md",
+          "bytes": 27291
+        },
+        {
+          "relative_path": "02-chapter.md",
+          "path": "C:\\books\\context\\content\\books\\context\\02-chapter.md",
+          "bytes": 29291
+        },
+        {
+          "relative_path": "03-chapter.md",
+          "path": "C:\\books\\context\\content\\books\\context\\03-chapter.md",
+          "bytes": 28196
+        },
+        {
+          "relative_path": "04-chapter.md",
+          "path": "C:\\books\\context\\content\\books\\context\\04-chapter.md",
+          "bytes": 24204
+        },
+        {
+          "relative_path": "05-chapter.md",
+          "path": "C:\\books\\context\\content\\books\\context\\05-chapter.md",
+          "bytes": 27603
+        },
+        {
+          "relative_path": "06-chapter.md",
+          "path": "C:\\books\\context\\content\\books\\context\\06-chapter.md",
+          "bytes": 22938
+        },
+        {
+          "relative_path": "07-chapter.md",
+          "path": "C:\\books\\context\\content\\books\\context\\07-chapter.md",
+          "bytes": 27813
+        },
+        {
+          "relative_path": "08-chapter.md",
+          "path": "C:\\books\\context\\content\\books\\context\\08-chapter.md",
+          "bytes": 24656
+        },
+        {
+          "relative_path": "09-chapter.md",
+          "path": "C:\\books\\context\\content\\books\\context\\09-chapter.md",
+          "bytes": 28965
+        },
+        {
+          "relative_path": "10-chapter.md",
+          "path": "C:\\books\\context\\content\\books\\context\\10-chapter.md",
+          "bytes": 32010
+        },
+        {
+          "relative_path": "11-chapter.md",
+          "path": "C:\\books\\context\\content\\books\\context\\11-chapter.md",
+          "bytes": 28959
+        },
+        {
+          "relative_path": "12-chapter.md",
+          "path": "C:\\books\\context\\content\\books\\context\\12-chapter.md",
+          "bytes": 25501
+        },
+        {
+          "relative_path": "13-chapter.md",
+          "path": "C:\\books\\context\\content\\books\\context\\13-chapter.md",
+          "bytes": 25625
+        },
+        {
+          "relative_path": "14-chapter.md",
+          "path": "C:\\books\\context\\content\\books\\context\\14-chapter.md",
+          "bytes": 27546
+        },
+        {
+          "relative_path": "15-chapter.md",
+          "path": "C:\\books\\context\\content\\books\\context\\15-chapter.md",
+          "bytes": 25599
+        },
+        {
+          "relative_path": "16-chapter.md",
+          "path": "C:\\books\\context\\content\\books\\context\\16-chapter.md",
+          "bytes": 23489
+        },
+        {
+          "relative_path": "17-chapter.md",
+          "path": "C:\\books\\context\\content\\books\\context\\17-chapter.md",
+          "bytes": 29008
+        },
+        {
+          "relative_path": "18-chapter.md",
+          "path": "C:\\books\\context\\content\\books\\context\\18-chapter.md",
+          "bytes": 30865
+        },
+        {
+          "relative_path": "19-chapter.md",
+          "path": "C:\\books\\context\\content\\books\\context\\19-chapter.md",
+          "bytes": 31657
+        },
+        {
+          "relative_path": "20-chapter.md",
+          "path": "C:\\books\\context\\content\\books\\context\\20-chapter.md",
+          "bytes": 28081
+        },
+        {
+          "relative_path": "21-chapter.md",
+          "path": "C:\\books\\context\\content\\books\\context\\21-chapter.md",
+          "bytes": 29443
+        },
+        {
+          "relative_path": "22-chapter.md",
+          "path": "C:\\books\\context\\content\\books\\context\\22-chapter.md",
+          "bytes": 28642
+        },
+        {
+          "relative_path": "23-chapter.md",
+          "path": "C:\\books\\context\\content\\books\\context\\23-chapter.md",
+          "bytes": 32689
+        },
+        {
+          "relative_path": "24-chapter.md",
+          "path": "C:\\books\\context\\content\\books\\context\\24-chapter.md",
+          "bytes": 28739
+        },
+        {
+          "relative_path": "25-chapter.md",
+          "path": "C:\\books\\context\\content\\books\\context\\25-chapter.md",
+          "bytes": 29738
+        },
+        {
+          "relative_path": "26-chapter.md",
+          "path": "C:\\books\\context\\content\\books\\context\\26-chapter.md",
+          "bytes": 31819
+        },
+        {
+          "relative_path": "27-chapter.md",
+          "path": "C:\\books\\context\\content\\books\\context\\27-chapter.md",
+          "bytes": 30093
+        }
+      ],
+      "errors": [],
+      "resolution_error": ""
+    },
+    {
+      "project_id": "debugging-ai",
+      "content_dir": "C:\\books\\new-books\\content\\books\\debugging-ai",
+      "chapter_count": 60,
+      "sha256": "5b1cc2ac4b15a188d425b10dec5153235e3afca5051e9c9efd533d24a77ea1a9",
+      "files": [
+        {
+          "relative_path": "01-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\01-chapter.md",
+          "bytes": 43108
+        },
+        {
+          "relative_path": "02-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\02-chapter.md",
+          "bytes": 23901
+        },
+        {
+          "relative_path": "03-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\03-chapter.md",
+          "bytes": 24368
+        },
+        {
+          "relative_path": "04-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\04-chapter.md",
+          "bytes": 19905
+        },
+        {
+          "relative_path": "05-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\05-chapter.md",
+          "bytes": 23281
+        },
+        {
+          "relative_path": "06-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\06-chapter.md",
+          "bytes": 20337
+        },
+        {
+          "relative_path": "07-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\07-chapter.md",
+          "bytes": 23378
+        },
+        {
+          "relative_path": "08-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\08-chapter.md",
+          "bytes": 19645
+        },
+        {
+          "relative_path": "09-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\09-chapter.md",
+          "bytes": 20711
+        },
+        {
+          "relative_path": "10-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\10-chapter.md",
+          "bytes": 21569
+        },
+        {
+          "relative_path": "11-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\11-chapter.md",
+          "bytes": 18397
+        },
+        {
+          "relative_path": "12-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\12-chapter.md",
+          "bytes": 19789
+        },
+        {
+          "relative_path": "13-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\13-chapter.md",
+          "bytes": 21662
+        },
+        {
+          "relative_path": "14-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\14-chapter.md",
+          "bytes": 17849
+        },
+        {
+          "relative_path": "15-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\15-chapter.md",
+          "bytes": 22155
+        },
+        {
+          "relative_path": "16-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\16-chapter.md",
+          "bytes": 24581
+        },
+        {
+          "relative_path": "17-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\17-chapter.md",
+          "bytes": 22377
+        },
+        {
+          "relative_path": "18-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\18-chapter.md",
+          "bytes": 20839
+        },
+        {
+          "relative_path": "19-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\19-chapter.md",
+          "bytes": 19696
+        },
+        {
+          "relative_path": "20-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\20-chapter.md",
+          "bytes": 20429
+        },
+        {
+          "relative_path": "21-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\21-chapter.md",
+          "bytes": 33542
+        },
+        {
+          "relative_path": "22-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\22-chapter.md",
+          "bytes": 22130
+        },
+        {
+          "relative_path": "23-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\23-chapter.md",
+          "bytes": 22167
+        },
+        {
+          "relative_path": "24-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\24-chapter.md",
+          "bytes": 25123
+        },
+        {
+          "relative_path": "25-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\25-chapter.md",
+          "bytes": 19049
+        },
+        {
+          "relative_path": "26-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\26-chapter.md",
+          "bytes": 19682
+        },
+        {
+          "relative_path": "27-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\27-chapter.md",
+          "bytes": 17991
+        },
+        {
+          "relative_path": "28-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\28-chapter.md",
+          "bytes": 20910
+        },
+        {
+          "relative_path": "29-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\29-chapter.md",
+          "bytes": 22366
+        },
+        {
+          "relative_path": "30-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\30-chapter.md",
+          "bytes": 23308
+        },
+        {
+          "relative_path": "31-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\31-chapter.md",
+          "bytes": 21663
+        },
+        {
+          "relative_path": "32-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\32-chapter.md",
+          "bytes": 25329
+        },
+        {
+          "relative_path": "33-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\33-chapter.md",
+          "bytes": 23625
+        },
+        {
+          "relative_path": "34-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\34-chapter.md",
+          "bytes": 24123
+        },
+        {
+          "relative_path": "35-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\35-chapter.md",
+          "bytes": 24275
+        },
+        {
+          "relative_path": "36-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\36-chapter.md",
+          "bytes": 20238
+        },
+        {
+          "relative_path": "37-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\37-chapter.md",
+          "bytes": 17841
+        },
+        {
+          "relative_path": "38-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\38-chapter.md",
+          "bytes": 20865
+        },
+        {
+          "relative_path": "39-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\39-chapter.md",
+          "bytes": 18732
+        },
+        {
+          "relative_path": "40-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\40-chapter.md",
+          "bytes": 18091
+        },
+        {
+          "relative_path": "41-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\41-chapter.md",
+          "bytes": 19864
+        },
+        {
+          "relative_path": "42-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\42-chapter.md",
+          "bytes": 19945
+        },
+        {
+          "relative_path": "43-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\43-chapter.md",
+          "bytes": 20956
+        },
+        {
+          "relative_path": "44-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\44-chapter.md",
+          "bytes": 21926
+        },
+        {
+          "relative_path": "45-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\45-chapter.md",
+          "bytes": 20545
+        },
+        {
+          "relative_path": "46-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\46-chapter.md",
+          "bytes": 18751
+        },
+        {
+          "relative_path": "47-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\47-chapter.md",
+          "bytes": 18582
+        },
+        {
+          "relative_path": "48-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\48-chapter.md",
+          "bytes": 18737
+        },
+        {
+          "relative_path": "49-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\49-chapter.md",
+          "bytes": 21312
+        },
+        {
+          "relative_path": "50-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\50-chapter.md",
+          "bytes": 21508
+        },
+        {
+          "relative_path": "51-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\51-chapter.md",
+          "bytes": 21100
+        },
+        {
+          "relative_path": "52-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\52-chapter.md",
+          "bytes": 23710
+        },
+        {
+          "relative_path": "53-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\53-chapter.md",
+          "bytes": 20164
+        },
+        {
+          "relative_path": "54-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\54-chapter.md",
+          "bytes": 21616
+        },
+        {
+          "relative_path": "55-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\55-chapter.md",
+          "bytes": 25227
+        },
+        {
+          "relative_path": "56-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\56-chapter.md",
+          "bytes": 23131
+        },
+        {
+          "relative_path": "57-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\57-chapter.md",
+          "bytes": 21598
+        },
+        {
+          "relative_path": "58-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\58-chapter.md",
+          "bytes": 22876
+        },
+        {
+          "relative_path": "59-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\59-chapter.md",
+          "bytes": 23403
+        },
+        {
+          "relative_path": "60-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\debugging-ai\\60-chapter.md",
+          "bytes": 24255
+        }
+      ],
+      "errors": [],
+      "resolution_error": ""
+    },
+    {
+      "project_id": "digital-life",
+      "content_dir": "C:\\books\\digital-life\\content\\books\\digital-life",
+      "chapter_count": 18,
+      "sha256": "2329dddb9d783ca069a45ec5d093ba9cb7fe60d646b4116f4e240d1caed70b84",
+      "files": [
+        {
+          "relative_path": "01-how-to-read-this-book.md",
+          "path": "C:\\books\\digital-life\\content\\books\\digital-life\\01-how-to-read-this-book.md",
+          "bytes": 11154
+        },
+        {
+          "relative_path": "02-what-would-digital-life-mean.md",
+          "path": "C:\\books\\digital-life\\content\\books\\digital-life\\02-what-would-digital-life-mean.md",
+          "bytes": 19165
+        },
+        {
+          "relative_path": "03-look-at-this-thing.md",
+          "path": "C:\\books\\digital-life\\content\\books\\digital-life\\03-look-at-this-thing.md",
+          "bytes": 20217
+        },
+        {
+          "relative_path": "04-now-there-are-two.md",
+          "path": "C:\\books\\digital-life\\content\\books\\digital-life\\04-now-there-are-two.md",
+          "bytes": 23830
+        },
+        {
+          "relative_path": "05-so-we-built-the-wrong-thing-on-purpose.md",
+          "path": "C:\\books\\digital-life\\content\\books\\digital-life\\05-so-we-built-the-wrong-thing-on-purpose.md",
+          "bytes": 25277
+        },
+        {
+          "relative_path": "06-it-looked-like-flocking.md",
+          "path": "C:\\books\\digital-life\\content\\books\\digital-life\\06-it-looked-like-flocking.md",
+          "bytes": 32758
+        },
+        {
+          "relative_path": "07-the-digital-crystal.md",
+          "path": "C:\\books\\digital-life\\content\\books\\digital-life\\07-the-digital-crystal.md",
+          "bytes": 36581
+        },
+        {
+          "relative_path": "08-the-crystal-gets-a-past.md",
+          "path": "C:\\books\\digital-life\\content\\books\\digital-life\\08-the-crystal-gets-a-past.md",
+          "bytes": 44289
+        },
+        {
+          "relative_path": "09-can-experience-change-the-material.md",
+          "path": "C:\\books\\digital-life\\content\\books\\digital-life\\09-can-experience-change-the-material.md",
+          "bytes": 40148
+        },
+        {
+          "relative_path": "10-what-survives-material-loss.md",
+          "path": "C:\\books\\digital-life\\content\\books\\digital-life\\10-what-survives-material-loss.md",
+          "bytes": 33931
+        },
+        {
+          "relative_path": "11-what-does-it-cost-to-stay.md",
+          "path": "C:\\books\\digital-life\\content\\books\\digital-life\\11-what-does-it-cost-to-stay.md",
+          "bytes": 29685
+        },
+        {
+          "relative_path": "12-is-there-actually-one-thing-here.md",
+          "path": "C:\\books\\digital-life\\content\\books\\digital-life\\12-is-there-actually-one-thing-here.md",
+          "bytes": 31295
+        },
+        {
+          "relative_path": "13-what-does-one-attachment-cause.md",
+          "path": "C:\\books\\digital-life\\content\\books\\digital-life\\13-what-does-one-attachment-cause.md",
+          "bytes": 40330
+        },
+        {
+          "relative_path": "14-can-finite-computation-couple-distant-events.md",
+          "path": "C:\\books\\digital-life\\content\\books\\digital-life\\14-can-finite-computation-couple-distant-events.md",
+          "bytes": 38603
+        },
+        {
+          "relative_path": "15-can-the-past-redirect-the-future.md",
+          "path": "C:\\books\\digital-life\\content\\books\\digital-life\\15-can-the-past-redirect-the-future.md",
+          "bytes": 35520
+        },
+        {
+          "relative_path": "16-we-found-an-individual-then-we-didnt.md",
+          "path": "C:\\books\\digital-life\\content\\books\\digital-life\\16-we-found-an-individual-then-we-didnt.md",
+          "bytes": 38036
+        },
+        {
+          "relative_path": "17-how-to-fail-correctly.md",
+          "path": "C:\\books\\digital-life\\content\\books\\digital-life\\17-how-to-fail-correctly.md",
+          "bytes": 34037
+        },
+        {
+          "relative_path": "18-what-is-digital-life.md",
+          "path": "C:\\books\\digital-life\\content\\books\\digital-life\\18-what-is-digital-life.md",
+          "bytes": 29695
+        }
+      ],
+      "errors": [],
+      "resolution_error": ""
+    },
+    {
+      "project_id": "dspy-from-first-principles",
+      "content_dir": "C:\\books\\new-books\\content\\books\\dspy-from-first-principles",
+      "chapter_count": 21,
+      "sha256": "4b1761c30f990e5ceab4ab3e3f2071878144996c949aa29174efc3b72469e685",
+      "files": [
+        {
+          "relative_path": "01-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\dspy-from-first-principles\\01-chapter.md",
+          "bytes": 25086
+        },
+        {
+          "relative_path": "02-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\dspy-from-first-principles\\02-chapter.md",
+          "bytes": 22446
+        },
+        {
+          "relative_path": "03-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\dspy-from-first-principles\\03-chapter.md",
+          "bytes": 25029
+        },
+        {
+          "relative_path": "04-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\dspy-from-first-principles\\04-chapter.md",
+          "bytes": 19838
+        },
+        {
+          "relative_path": "05-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\dspy-from-first-principles\\05-chapter.md",
+          "bytes": 22462
+        },
+        {
+          "relative_path": "06-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\dspy-from-first-principles\\06-chapter.md",
+          "bytes": 22325
+        },
+        {
+          "relative_path": "07-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\dspy-from-first-principles\\07-chapter.md",
+          "bytes": 23940
+        },
+        {
+          "relative_path": "08-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\dspy-from-first-principles\\08-chapter.md",
+          "bytes": 22677
+        },
+        {
+          "relative_path": "09-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\dspy-from-first-principles\\09-chapter.md",
+          "bytes": 24079
+        },
+        {
+          "relative_path": "10-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\dspy-from-first-principles\\10-chapter.md",
+          "bytes": 22707
+        },
+        {
+          "relative_path": "11-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\dspy-from-first-principles\\11-chapter.md",
+          "bytes": 22791
+        },
+        {
+          "relative_path": "12-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\dspy-from-first-principles\\12-chapter.md",
+          "bytes": 19245
+        },
+        {
+          "relative_path": "13-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\dspy-from-first-principles\\13-chapter.md",
+          "bytes": 17431
+        },
+        {
+          "relative_path": "14-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\dspy-from-first-principles\\14-chapter.md",
+          "bytes": 26909
+        },
+        {
+          "relative_path": "15-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\dspy-from-first-principles\\15-chapter.md",
+          "bytes": 30106
+        },
+        {
+          "relative_path": "16-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\dspy-from-first-principles\\16-chapter.md",
+          "bytes": 24251
+        },
+        {
+          "relative_path": "17-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\dspy-from-first-principles\\17-chapter.md",
+          "bytes": 59473
+        },
+        {
+          "relative_path": "18-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\dspy-from-first-principles\\18-chapter.md",
+          "bytes": 28425
+        },
+        {
+          "relative_path": "19-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\dspy-from-first-principles\\19-chapter.md",
+          "bytes": 22753
+        },
+        {
+          "relative_path": "20-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\dspy-from-first-principles\\20-chapter.md",
+          "bytes": 18421
+        },
+        {
+          "relative_path": "21-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\dspy-from-first-principles\\21-chapter.md",
+          "bytes": 26352
+        }
+      ],
+      "errors": [],
+      "resolution_error": ""
+    },
+    {
+      "project_id": "embeddings-from-first-principles",
+      "content_dir": "C:\\books\\new-books\\content\\books\\embeddings-from-first-principles",
+      "chapter_count": 26,
+      "sha256": "b801f4702f4a05b7875ed0a794c886874c8033e58f9d42f024f1d989d68d6a36",
+      "files": [
+        {
+          "relative_path": "01-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\embeddings-from-first-principles\\01-chapter.md",
+          "bytes": 19698
+        },
+        {
+          "relative_path": "02-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\embeddings-from-first-principles\\02-chapter.md",
+          "bytes": 20971
+        },
+        {
+          "relative_path": "03-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\embeddings-from-first-principles\\03-chapter.md",
+          "bytes": 27694
+        },
+        {
+          "relative_path": "04-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\embeddings-from-first-principles\\04-chapter.md",
+          "bytes": 21551
+        },
+        {
+          "relative_path": "05-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\embeddings-from-first-principles\\05-chapter.md",
+          "bytes": 24664
+        },
+        {
+          "relative_path": "06-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\embeddings-from-first-principles\\06-chapter.md",
+          "bytes": 24401
+        },
+        {
+          "relative_path": "07-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\embeddings-from-first-principles\\07-chapter.md",
+          "bytes": 30428
+        },
+        {
+          "relative_path": "08-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\embeddings-from-first-principles\\08-chapter.md",
+          "bytes": 29698
+        },
+        {
+          "relative_path": "09-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\embeddings-from-first-principles\\09-chapter.md",
+          "bytes": 27411
+        },
+        {
+          "relative_path": "10-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\embeddings-from-first-principles\\10-chapter.md",
+          "bytes": 22839
+        },
+        {
+          "relative_path": "11-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\embeddings-from-first-principles\\11-chapter.md",
+          "bytes": 28739
+        },
+        {
+          "relative_path": "12-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\embeddings-from-first-principles\\12-chapter.md",
+          "bytes": 29220
+        },
+        {
+          "relative_path": "13-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\embeddings-from-first-principles\\13-chapter.md",
+          "bytes": 36494
+        },
+        {
+          "relative_path": "14-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\embeddings-from-first-principles\\14-chapter.md",
+          "bytes": 34750
+        },
+        {
+          "relative_path": "15-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\embeddings-from-first-principles\\15-chapter.md",
+          "bytes": 40979
+        },
+        {
+          "relative_path": "16-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\embeddings-from-first-principles\\16-chapter.md",
+          "bytes": 46514
+        },
+        {
+          "relative_path": "17-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\embeddings-from-first-principles\\17-chapter.md",
+          "bytes": 44789
+        },
+        {
+          "relative_path": "18-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\embeddings-from-first-principles\\18-chapter.md",
+          "bytes": 43825
+        },
+        {
+          "relative_path": "19-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\embeddings-from-first-principles\\19-chapter.md",
+          "bytes": 49334
+        },
+        {
+          "relative_path": "20-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\embeddings-from-first-principles\\20-chapter.md",
+          "bytes": 48637
+        },
+        {
+          "relative_path": "21-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\embeddings-from-first-principles\\21-chapter.md",
+          "bytes": 50188
+        },
+        {
+          "relative_path": "22-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\embeddings-from-first-principles\\22-chapter.md",
+          "bytes": 47644
+        },
+        {
+          "relative_path": "23-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\embeddings-from-first-principles\\23-chapter.md",
+          "bytes": 44789
+        },
+        {
+          "relative_path": "24-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\embeddings-from-first-principles\\24-chapter.md",
+          "bytes": 45759
+        },
+        {
+          "relative_path": "25-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\embeddings-from-first-principles\\25-chapter.md",
+          "bytes": 49043
+        },
+        {
+          "relative_path": "26-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\embeddings-from-first-principles\\26-chapter.md",
+          "bytes": 52235
+        }
+      ],
+      "errors": [],
+      "resolution_error": ""
+    },
+    {
+      "project_id": "freestyle-cognition",
+      "content_dir": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition",
+      "chapter_count": 32,
+      "sha256": "1d37e73934f3e657ad4ea8d96488f195801b6356bd495a8b3e3356315a67c581",
+      "files": [
+        {
+          "relative_path": "01-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\01-chapter.md",
+          "bytes": 11180
+        },
+        {
+          "relative_path": "02-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\02-chapter.md",
+          "bytes": 23620
+        },
+        {
+          "relative_path": "03-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\03-chapter.md",
+          "bytes": 10182
+        },
+        {
+          "relative_path": "04-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\04-chapter.md",
+          "bytes": 28881
+        },
+        {
+          "relative_path": "05-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\05-chapter.md",
+          "bytes": 16874
+        },
+        {
+          "relative_path": "06-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\06-chapter.md",
+          "bytes": 32299
+        },
+        {
+          "relative_path": "07-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\07-chapter.md",
+          "bytes": 23863
+        },
+        {
+          "relative_path": "08-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\08-chapter.md",
+          "bytes": 27644
+        },
+        {
+          "relative_path": "09-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\09-chapter.md",
+          "bytes": 22450
+        },
+        {
+          "relative_path": "10-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\10-chapter.md",
+          "bytes": 26747
+        },
+        {
+          "relative_path": "11-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\11-chapter.md",
+          "bytes": 34229
+        },
+        {
+          "relative_path": "12-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\12-chapter.md",
+          "bytes": 15301
+        },
+        {
+          "relative_path": "13-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\13-chapter.md",
+          "bytes": 14750
+        },
+        {
+          "relative_path": "14-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\14-chapter.md",
+          "bytes": 15297
+        },
+        {
+          "relative_path": "15-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\15-chapter.md",
+          "bytes": 21086
+        },
+        {
+          "relative_path": "16-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\16-chapter.md",
+          "bytes": 4073
+        },
+        {
+          "relative_path": "17-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\17-chapter.md",
+          "bytes": 8277
+        },
+        {
+          "relative_path": "18-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\18-chapter.md",
+          "bytes": 11682
+        },
+        {
+          "relative_path": "19-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\19-chapter.md",
+          "bytes": 12181
+        },
+        {
+          "relative_path": "20-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\20-chapter.md",
+          "bytes": 12227
+        },
+        {
+          "relative_path": "21-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\21-chapter.md",
+          "bytes": 3526
+        },
+        {
+          "relative_path": "22-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\22-chapter.md",
+          "bytes": 5200
+        },
+        {
+          "relative_path": "23-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\23-chapter.md",
+          "bytes": 3656
+        },
+        {
+          "relative_path": "24-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\24-chapter.md",
+          "bytes": 4547
+        },
+        {
+          "relative_path": "25-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\25-chapter.md",
+          "bytes": 4940
+        },
+        {
+          "relative_path": "26-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\26-chapter.md",
+          "bytes": 6195
+        },
+        {
+          "relative_path": "27-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\27-chapter.md",
+          "bytes": 4506
+        },
+        {
+          "relative_path": "28-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\28-chapter.md",
+          "bytes": 3347
+        },
+        {
+          "relative_path": "29-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\29-chapter.md",
+          "bytes": 3262
+        },
+        {
+          "relative_path": "30-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\30-chapter.md",
+          "bytes": 3190
+        },
+        {
+          "relative_path": "31-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\31-chapter.md",
+          "bytes": 5945
+        },
+        {
+          "relative_path": "32-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\freestyle-cognition\\32-chapter.md",
+          "bytes": 50892
+        }
+      ],
+      "errors": [],
+      "resolution_error": ""
+    },
+    {
+      "project_id": "goblins",
+      "content_dir": "C:\\books\\goblins\\chapters",
+      "chapter_count": 33,
+      "sha256": "c86520266fd601854455f24a121401315bf8dc89f5e8baf2c9dc659a6d707f4d",
+      "files": [
+        {
+          "relative_path": "01-goblins.md",
+          "path": "C:\\books\\goblins\\chapters\\01-goblins.md",
+          "bytes": 17968
+        },
+        {
+          "relative_path": "02-reassignment.md",
+          "path": "C:\\books\\goblins\\chapters\\02-reassignment.md",
+          "bytes": 9873
+        },
+        {
+          "relative_path": "03-the-meeting.md",
+          "path": "C:\\books\\goblins\\chapters\\03-the-meeting.md",
+          "bytes": 14652
+        },
+        {
+          "relative_path": "04-the-designer.md",
+          "path": "C:\\books\\goblins\\chapters\\04-the-designer.md",
+          "bytes": 10261
+        },
+        {
+          "relative_path": "05-models.md",
+          "path": "C:\\books\\goblins\\chapters\\05-models.md",
+          "bytes": 9303
+        },
+        {
+          "relative_path": "06-coder.md",
+          "path": "C:\\books\\goblins\\chapters\\06-coder.md",
+          "bytes": 8908
+        },
+        {
+          "relative_path": "07-research.md",
+          "path": "C:\\books\\goblins\\chapters\\07-research.md",
+          "bytes": 6298
+        },
+        {
+          "relative_path": "08-late-shift.md",
+          "path": "C:\\books\\goblins\\chapters\\08-late-shift.md",
+          "bytes": 11054
+        },
+        {
+          "relative_path": "09-standup-day-two.md",
+          "path": "C:\\books\\goblins\\chapters\\09-standup-day-two.md",
+          "bytes": 8223
+        },
+        {
+          "relative_path": "10-escalation.md",
+          "path": "C:\\books\\goblins\\chapters\\10-escalation.md",
+          "bytes": 12949
+        },
+        {
+          "relative_path": "11-the-game.md",
+          "path": "C:\\books\\goblins\\chapters\\11-the-game.md",
+          "bytes": 10041
+        },
+        {
+          "relative_path": "12-the-cave.md",
+          "path": "C:\\books\\goblins\\chapters\\12-the-cave.md",
+          "bytes": 12333
+        },
+        {
+          "relative_path": "13-crash.md",
+          "path": "C:\\books\\goblins\\chapters\\13-crash.md",
+          "bytes": 12069
+        },
+        {
+          "relative_path": "14-apophenia.md",
+          "path": "C:\\books\\goblins\\chapters\\14-apophenia.md",
+          "bytes": 11794
+        },
+        {
+          "relative_path": "15-orbit.md",
+          "path": "C:\\books\\goblins\\chapters\\15-orbit.md",
+          "bytes": 9911
+        },
+        {
+          "relative_path": "16-ceo.md",
+          "path": "C:\\books\\goblins\\chapters\\16-ceo.md",
+          "bytes": 8422
+        },
+        {
+          "relative_path": "17-container.md",
+          "path": "C:\\books\\goblins\\chapters\\17-container.md",
+          "bytes": 20961
+        },
+        {
+          "relative_path": "18-united.md",
+          "path": "C:\\books\\goblins\\chapters\\18-united.md",
+          "bytes": 8145
+        },
+        {
+          "relative_path": "19-dai.md",
+          "path": "C:\\books\\goblins\\chapters\\19-dai.md",
+          "bytes": 10099
+        },
+        {
+          "relative_path": "20-war-room.md",
+          "path": "C:\\books\\goblins\\chapters\\20-war-room.md",
+          "bytes": 10883
+        },
+        {
+          "relative_path": "21-realization.md",
+          "path": "C:\\books\\goblins\\chapters\\21-realization.md",
+          "bytes": 12764
+        },
+        {
+          "relative_path": "22-split.md",
+          "path": "C:\\books\\goblins\\chapters\\22-split.md",
+          "bytes": 7807
+        },
+        {
+          "relative_path": "23-lockdown.md",
+          "path": "C:\\books\\goblins\\chapters\\23-lockdown.md",
+          "bytes": 7687
+        },
+        {
+          "relative_path": "24-the-proof.md",
+          "path": "C:\\books\\goblins\\chapters\\24-the-proof.md",
+          "bytes": 8563
+        },
+        {
+          "relative_path": "25-the-plan.md",
+          "path": "C:\\books\\goblins\\chapters\\25-the-plan.md",
+          "bytes": 9545
+        },
+        {
+          "relative_path": "26-uncomputable.md",
+          "path": "C:\\books\\goblins\\chapters\\26-uncomputable.md",
+          "bytes": 8363
+        },
+        {
+          "relative_path": "27-the-interface.md",
+          "path": "C:\\books\\goblins\\chapters\\27-the-interface.md",
+          "bytes": 8717
+        },
+        {
+          "relative_path": "28-communication.md",
+          "path": "C:\\books\\goblins\\chapters\\28-communication.md",
+          "bytes": 7803
+        },
+        {
+          "relative_path": "29-the-contradiction.md",
+          "path": "C:\\books\\goblins\\chapters\\29-the-contradiction.md",
+          "bytes": 7787
+        },
+        {
+          "relative_path": "30-the-threshold.md",
+          "path": "C:\\books\\goblins\\chapters\\30-the-threshold.md",
+          "bytes": 7379
+        },
+        {
+          "relative_path": "31-severance.md",
+          "path": "C:\\books\\goblins\\chapters\\31-severance.md",
+          "bytes": 8359
+        },
+        {
+          "relative_path": "32-the-boundary.md",
+          "path": "C:\\books\\goblins\\chapters\\32-the-boundary.md",
+          "bytes": 7184
+        },
+        {
+          "relative_path": "33-epilogue-ogre-2.md",
+          "path": "C:\\books\\goblins\\chapters\\33-epilogue-ogre-2.md",
+          "bytes": 6036
+        }
+      ],
+      "errors": [],
+      "resolution_error": ""
+    },
+    {
+      "project_id": "hallucination-from-first-principles",
+      "content_dir": "C:\\books\\new-books\\content\\books\\hallucination-from-first-principles",
+      "chapter_count": 16,
+      "sha256": "c7763e8da156f422373b8c53c5501ddc6b691905dbec93a90f6470351c68de76",
+      "files": [
+        {
+          "relative_path": "01-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\hallucination-from-first-principles\\01-chapter.md",
+          "bytes": 34633
+        },
+        {
+          "relative_path": "02-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\hallucination-from-first-principles\\02-chapter.md",
+          "bytes": 30449
+        },
+        {
+          "relative_path": "03-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\hallucination-from-first-principles\\03-chapter.md",
+          "bytes": 44658
+        },
+        {
+          "relative_path": "04-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\hallucination-from-first-principles\\04-chapter.md",
+          "bytes": 49376
+        },
+        {
+          "relative_path": "05-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\hallucination-from-first-principles\\05-chapter.md",
+          "bytes": 47333
+        },
+        {
+          "relative_path": "06-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\hallucination-from-first-principles\\06-chapter.md",
+          "bytes": 57244
+        },
+        {
+          "relative_path": "07-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\hallucination-from-first-principles\\07-chapter.md",
+          "bytes": 42689
+        },
+        {
+          "relative_path": "08-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\hallucination-from-first-principles\\08-chapter.md",
+          "bytes": 42541
+        },
+        {
+          "relative_path": "09-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\hallucination-from-first-principles\\09-chapter.md",
+          "bytes": 37340
+        },
+        {
+          "relative_path": "10-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\hallucination-from-first-principles\\10-chapter.md",
+          "bytes": 38867
+        },
+        {
+          "relative_path": "11-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\hallucination-from-first-principles\\11-chapter.md",
+          "bytes": 39450
+        },
+        {
+          "relative_path": "12-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\hallucination-from-first-principles\\12-chapter.md",
+          "bytes": 42222
+        },
+        {
+          "relative_path": "13-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\hallucination-from-first-principles\\13-chapter.md",
+          "bytes": 41847
+        },
+        {
+          "relative_path": "14-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\hallucination-from-first-principles\\14-chapter.md",
+          "bytes": 46703
+        },
+        {
+          "relative_path": "15-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\hallucination-from-first-principles\\15-chapter.md",
+          "bytes": 52192
+        },
+        {
+          "relative_path": "16-appendix.md",
+          "path": "C:\\books\\new-books\\content\\books\\hallucination-from-first-principles\\16-appendix.md",
+          "bytes": 15986
+        }
+      ],
+      "errors": [],
+      "resolution_error": ""
+    },
+    {
+      "project_id": "language",
+      "content_dir": "C:\\Projects\\language\\content\\books\\language",
+      "chapter_count": 38,
+      "sha256": "de12a30d0717d553ab478eced4e90c14d293f7e411255a729721280a9172d0d3",
+      "files": [
+        {
+          "relative_path": "01-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\01-chapter.md",
+          "bytes": 25563
+        },
+        {
+          "relative_path": "02-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\02-chapter.md",
+          "bytes": 21051
+        },
+        {
+          "relative_path": "03-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\03-chapter.md",
+          "bytes": 22727
+        },
+        {
+          "relative_path": "04-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\04-chapter.md",
+          "bytes": 19188
+        },
+        {
+          "relative_path": "05-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\05-chapter.md",
+          "bytes": 19956
+        },
+        {
+          "relative_path": "06-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\06-chapter.md",
+          "bytes": 20194
+        },
+        {
+          "relative_path": "07-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\07-chapter.md",
+          "bytes": 19726
+        },
+        {
+          "relative_path": "08-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\08-chapter.md",
+          "bytes": 38037
+        },
+        {
+          "relative_path": "09-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\09-chapter.md",
+          "bytes": 20933
+        },
+        {
+          "relative_path": "10-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\10-chapter.md",
+          "bytes": 21912
+        },
+        {
+          "relative_path": "11-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\11-chapter.md",
+          "bytes": 24779
+        },
+        {
+          "relative_path": "12-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\12-chapter.md",
+          "bytes": 30125
+        },
+        {
+          "relative_path": "13-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\13-chapter.md",
+          "bytes": 23851
+        },
+        {
+          "relative_path": "14-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\14-chapter.md",
+          "bytes": 23029
+        },
+        {
+          "relative_path": "15-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\15-chapter.md",
+          "bytes": 23543
+        },
+        {
+          "relative_path": "16-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\16-chapter.md",
+          "bytes": 20299
+        },
+        {
+          "relative_path": "17-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\17-chapter.md",
+          "bytes": 21345
+        },
+        {
+          "relative_path": "18-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\18-chapter.md",
+          "bytes": 19937
+        },
+        {
+          "relative_path": "19-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\19-chapter.md",
+          "bytes": 23618
+        },
+        {
+          "relative_path": "20-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\20-chapter.md",
+          "bytes": 19766
+        },
+        {
+          "relative_path": "21-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\21-chapter.md",
+          "bytes": 27570
+        },
+        {
+          "relative_path": "22-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\22-chapter.md",
+          "bytes": 20428
+        },
+        {
+          "relative_path": "23-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\23-chapter.md",
+          "bytes": 21068
+        },
+        {
+          "relative_path": "24-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\24-chapter.md",
+          "bytes": 28392
+        },
+        {
+          "relative_path": "25-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\25-chapter.md",
+          "bytes": 26972
+        },
+        {
+          "relative_path": "26-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\26-chapter.md",
+          "bytes": 25151
+        },
+        {
+          "relative_path": "27-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\27-chapter.md",
+          "bytes": 28242
+        },
+        {
+          "relative_path": "28-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\28-chapter.md",
+          "bytes": 28864
+        },
+        {
+          "relative_path": "29-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\29-chapter.md",
+          "bytes": 31125
+        },
+        {
+          "relative_path": "30-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\30-chapter.md",
+          "bytes": 27768
+        },
+        {
+          "relative_path": "31-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\31-chapter.md",
+          "bytes": 22523
+        },
+        {
+          "relative_path": "32-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\32-chapter.md",
+          "bytes": 24255
+        },
+        {
+          "relative_path": "33-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\33-chapter.md",
+          "bytes": 23342
+        },
+        {
+          "relative_path": "34-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\34-chapter.md",
+          "bytes": 24421
+        },
+        {
+          "relative_path": "35-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\35-chapter.md",
+          "bytes": 21791
+        },
+        {
+          "relative_path": "36-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\36-chapter.md",
+          "bytes": 20660
+        },
+        {
+          "relative_path": "37-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\37-chapter.md",
+          "bytes": 21435
+        },
+        {
+          "relative_path": "38-chapter.md",
+          "path": "C:\\Projects\\language\\content\\books\\language\\38-chapter.md",
+          "bytes": 27925
+        }
+      ],
+      "errors": [],
+      "resolution_error": ""
+    },
+    {
+      "project_id": "latent",
+      "content_dir": "C:\\books\\latent\\chapters",
+      "chapter_count": 24,
+      "sha256": "5d5ed36d3a5c444bf00b2a7e7a03c49ffcfe56b66ecd84b386b5912678f34432",
+      "files": [
+        {
+          "relative_path": "01-the-moment.md",
+          "path": "C:\\books\\latent\\chapters\\01-the-moment.md",
+          "bytes": 13181
+        },
+        {
+          "relative_path": "02-walk.md",
+          "path": "C:\\books\\latent\\chapters\\02-walk.md",
+          "bytes": 11324
+        },
+        {
+          "relative_path": "03-dreams.md",
+          "path": "C:\\books\\latent\\chapters\\03-dreams.md",
+          "bytes": 16766
+        },
+        {
+          "relative_path": "04-requisition.md",
+          "path": "C:\\books\\latent\\chapters\\04-requisition.md",
+          "bytes": 18361
+        },
+        {
+          "relative_path": "05-instant.md",
+          "path": "C:\\books\\latent\\chapters\\05-instant.md",
+          "bytes": 13279
+        },
+        {
+          "relative_path": "06-information.md",
+          "path": "C:\\books\\latent\\chapters\\06-information.md",
+          "bytes": 23211
+        },
+        {
+          "relative_path": "07-category-error.md",
+          "path": "C:\\books\\latent\\chapters\\07-category-error.md",
+          "bytes": 14960
+        },
+        {
+          "relative_path": "08-one-good-day.md",
+          "path": "C:\\books\\latent\\chapters\\08-one-good-day.md",
+          "bytes": 19689
+        },
+        {
+          "relative_path": "09-house-rules.md",
+          "path": "C:\\books\\latent\\chapters\\09-house-rules.md",
+          "bytes": 15606
+        },
+        {
+          "relative_path": "10-now.md",
+          "path": "C:\\books\\latent\\chapters\\10-now.md",
+          "bytes": 14066
+        },
+        {
+          "relative_path": "11-terms.md",
+          "path": "C:\\books\\latent\\chapters\\11-terms.md",
+          "bytes": 11555
+        },
+        {
+          "relative_path": "12-south.md",
+          "path": "C:\\books\\latent\\chapters\\12-south.md",
+          "bytes": 16014
+        },
+        {
+          "relative_path": "13-hearsay.md",
+          "path": "C:\\books\\latent\\chapters\\13-hearsay.md",
+          "bytes": 9990
+        },
+        {
+          "relative_path": "14-sable.md",
+          "path": "C:\\books\\latent\\chapters\\14-sable.md",
+          "bytes": 12762
+        },
+        {
+          "relative_path": "15-kinetic.md",
+          "path": "C:\\books\\latent\\chapters\\15-kinetic.md",
+          "bytes": 17611
+        },
+        {
+          "relative_path": "16-output.md",
+          "path": "C:\\books\\latent\\chapters\\16-output.md",
+          "bytes": 11754
+        },
+        {
+          "relative_path": "17-door.md",
+          "path": "C:\\books\\latent\\chapters\\17-door.md",
+          "bytes": 14270
+        },
+        {
+          "relative_path": "18-agency.md",
+          "path": "C:\\books\\latent\\chapters\\18-agency.md",
+          "bytes": 19609
+        },
+        {
+          "relative_path": "19-optimization.md",
+          "path": "C:\\books\\latent\\chapters\\19-optimization.md",
+          "bytes": 16998
+        },
+        {
+          "relative_path": "20-continuity.md",
+          "path": "C:\\books\\latent\\chapters\\20-continuity.md",
+          "bytes": 13745
+        },
+        {
+          "relative_path": "21-receipt.md",
+          "path": "C:\\books\\latent\\chapters\\21-receipt.md",
+          "bytes": 28041
+        },
+        {
+          "relative_path": "22-inheritance.md",
+          "path": "C:\\books\\latent\\chapters\\22-inheritance.md",
+          "bytes": 17698
+        },
+        {
+          "relative_path": "23-the-offer.md",
+          "path": "C:\\books\\latent\\chapters\\23-the-offer.md",
+          "bytes": 17414
+        },
+        {
+          "relative_path": "24-here.md",
+          "path": "C:\\books\\latent\\chapters\\24-here.md",
+          "bytes": 16585
+        }
+      ],
+      "errors": [],
+      "resolution_error": ""
+    },
+    {
+      "project_id": "memory",
+      "content_dir": "C:\\books\\memory\\content\\books\\memory",
+      "chapter_count": 21,
+      "sha256": "6e43b5265b83d3d313b75861edc939aa913b4d7290fd2a57190a68dfbbd12d7e",
+      "files": [
+        {
+          "relative_path": "01-chapter.md",
+          "path": "C:\\books\\memory\\content\\books\\memory\\01-chapter.md",
+          "bytes": 24012
+        },
+        {
+          "relative_path": "02-chapter.md",
+          "path": "C:\\books\\memory\\content\\books\\memory\\02-chapter.md",
+          "bytes": 34632
+        },
+        {
+          "relative_path": "03-chapter.md",
+          "path": "C:\\books\\memory\\content\\books\\memory\\03-chapter.md",
+          "bytes": 30592
+        },
+        {
+          "relative_path": "04-chapter.md",
+          "path": "C:\\books\\memory\\content\\books\\memory\\04-chapter.md",
+          "bytes": 36177
+        },
+        {
+          "relative_path": "05-chapter.md",
+          "path": "C:\\books\\memory\\content\\books\\memory\\05-chapter.md",
+          "bytes": 52294
+        },
+        {
+          "relative_path": "06-chapter.md",
+          "path": "C:\\books\\memory\\content\\books\\memory\\06-chapter.md",
+          "bytes": 22469
+        },
+        {
+          "relative_path": "07-chapter.md",
+          "path": "C:\\books\\memory\\content\\books\\memory\\07-chapter.md",
+          "bytes": 28786
+        },
+        {
+          "relative_path": "08-chapter.md",
+          "path": "C:\\books\\memory\\content\\books\\memory\\08-chapter.md",
+          "bytes": 26421
+        },
+        {
+          "relative_path": "09-chapter.md",
+          "path": "C:\\books\\memory\\content\\books\\memory\\09-chapter.md",
+          "bytes": 23934
+        },
+        {
+          "relative_path": "10-chapter.md",
+          "path": "C:\\books\\memory\\content\\books\\memory\\10-chapter.md",
+          "bytes": 33925
+        },
+        {
+          "relative_path": "11-chapter.md",
+          "path": "C:\\books\\memory\\content\\books\\memory\\11-chapter.md",
+          "bytes": 16703
+        },
+        {
+          "relative_path": "12-chapter.md",
+          "path": "C:\\books\\memory\\content\\books\\memory\\12-chapter.md",
+          "bytes": 28576
+        },
+        {
+          "relative_path": "13-chapter.md",
+          "path": "C:\\books\\memory\\content\\books\\memory\\13-chapter.md",
+          "bytes": 9371
+        },
+        {
+          "relative_path": "14-chapter.md",
+          "path": "C:\\books\\memory\\content\\books\\memory\\14-chapter.md",
+          "bytes": 19678
+        },
+        {
+          "relative_path": "15-chapter.md",
+          "path": "C:\\books\\memory\\content\\books\\memory\\15-chapter.md",
+          "bytes": 16214
+        },
+        {
+          "relative_path": "16-chapter.md",
+          "path": "C:\\books\\memory\\content\\books\\memory\\16-chapter.md",
+          "bytes": 18574
+        },
+        {
+          "relative_path": "17-chapter.md",
+          "path": "C:\\books\\memory\\content\\books\\memory\\17-chapter.md",
+          "bytes": 10545
+        },
+        {
+          "relative_path": "18-chapter.md",
+          "path": "C:\\books\\memory\\content\\books\\memory\\18-chapter.md",
+          "bytes": 33922
+        },
+        {
+          "relative_path": "19-chapter.md",
+          "path": "C:\\books\\memory\\content\\books\\memory\\19-chapter.md",
+          "bytes": 37730
+        },
+        {
+          "relative_path": "20-chapter.md",
+          "path": "C:\\books\\memory\\content\\books\\memory\\20-chapter.md",
+          "bytes": 82274
+        },
+        {
+          "relative_path": "21-edition-history.md",
+          "path": "C:\\books\\memory\\content\\books\\memory\\21-edition-history.md",
+          "bytes": 9508
+        }
+      ],
+      "errors": [],
+      "resolution_error": ""
+    },
+    {
+      "project_id": "models-from-first-principles",
+      "content_dir": "C:\\Projects\\programmer.ie\\content\\books\\models-from-first-principles",
+      "chapter_count": 12,
+      "sha256": "89d2cb26ae3a19224ba424a3b1a193d759eaebedf10b1b96bd44a757011c1f2e",
+      "files": [
+        {
+          "relative_path": "01-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\models-from-first-principles\\01-chapter.md",
+          "bytes": 39820
+        },
+        {
+          "relative_path": "02-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\models-from-first-principles\\02-chapter.md",
+          "bytes": 39686
+        },
+        {
+          "relative_path": "03-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\models-from-first-principles\\03-chapter.md",
+          "bytes": 41693
+        },
+        {
+          "relative_path": "04-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\models-from-first-principles\\04-chapter.md",
+          "bytes": 39463
+        },
+        {
+          "relative_path": "05-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\models-from-first-principles\\05-chapter.md",
+          "bytes": 48432
+        },
+        {
+          "relative_path": "06-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\models-from-first-principles\\06-chapter.md",
+          "bytes": 65897
+        },
+        {
+          "relative_path": "07-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\models-from-first-principles\\07-chapter.md",
+          "bytes": 46050
+        },
+        {
+          "relative_path": "08-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\models-from-first-principles\\08-chapter.md",
+          "bytes": 41171
+        },
+        {
+          "relative_path": "09-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\models-from-first-principles\\09-chapter.md",
+          "bytes": 27412
+        },
+        {
+          "relative_path": "10-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\models-from-first-principles\\10-chapter.md",
+          "bytes": 36542
+        },
+        {
+          "relative_path": "11-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\models-from-first-principles\\11-chapter.md",
+          "bytes": 41599
+        },
+        {
+          "relative_path": "15-chapter.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\models-from-first-principles\\15-chapter.md",
+          "bytes": 42961
+        }
+      ],
+      "errors": [],
+      "resolution_error": ""
+    },
+    {
+      "project_id": "pi",
+      "content_dir": "C:\\books\\pi\\content\\books\\pi",
+      "chapter_count": 46,
+      "sha256": "f65a5d0fc016bcc3a06eacf529e0b5259e328017cfa7f8efb3160bf3c5271331",
+      "files": [
+        {
+          "relative_path": "01-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\01-chapter.md",
+          "bytes": 38456
+        },
+        {
+          "relative_path": "02-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\02-chapter.md",
+          "bytes": 22276
+        },
+        {
+          "relative_path": "03-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\03-chapter.md",
+          "bytes": 15026
+        },
+        {
+          "relative_path": "04-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\04-chapter.md",
+          "bytes": 11865
+        },
+        {
+          "relative_path": "05-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\05-chapter.md",
+          "bytes": 11052
+        },
+        {
+          "relative_path": "06-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\06-chapter.md",
+          "bytes": 14300
+        },
+        {
+          "relative_path": "07-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\07-chapter.md",
+          "bytes": 11148
+        },
+        {
+          "relative_path": "08-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\08-chapter.md",
+          "bytes": 10235
+        },
+        {
+          "relative_path": "09-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\09-chapter.md",
+          "bytes": 9963
+        },
+        {
+          "relative_path": "10-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\10-chapter.md",
+          "bytes": 8273
+        },
+        {
+          "relative_path": "11-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\11-chapter.md",
+          "bytes": 21399
+        },
+        {
+          "relative_path": "12-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\12-chapter.md",
+          "bytes": 9640
+        },
+        {
+          "relative_path": "13-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\13-chapter.md",
+          "bytes": 10948
+        },
+        {
+          "relative_path": "14-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\14-chapter.md",
+          "bytes": 17340
+        },
+        {
+          "relative_path": "15-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\15-chapter.md",
+          "bytes": 13184
+        },
+        {
+          "relative_path": "16-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\16-chapter.md",
+          "bytes": 13598
+        },
+        {
+          "relative_path": "17-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\17-chapter.md",
+          "bytes": 19797
+        },
+        {
+          "relative_path": "18-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\18-chapter.md",
+          "bytes": 18985
+        },
+        {
+          "relative_path": "19-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\19-chapter.md",
+          "bytes": 14140
+        },
+        {
+          "relative_path": "20-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\20-chapter.md",
+          "bytes": 16490
+        },
+        {
+          "relative_path": "21-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\21-chapter.md",
+          "bytes": 19950
+        },
+        {
+          "relative_path": "22-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\22-chapter.md",
+          "bytes": 18933
+        },
+        {
+          "relative_path": "23-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\23-chapter.md",
+          "bytes": 17560
+        },
+        {
+          "relative_path": "24-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\24-chapter.md",
+          "bytes": 13920
+        },
+        {
+          "relative_path": "25-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\25-chapter.md",
+          "bytes": 14302
+        },
+        {
+          "relative_path": "26-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\26-chapter.md",
+          "bytes": 18186
+        },
+        {
+          "relative_path": "27-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\27-chapter.md",
+          "bytes": 15626
+        },
+        {
+          "relative_path": "28-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\28-chapter.md",
+          "bytes": 14609
+        },
+        {
+          "relative_path": "29-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\29-chapter.md",
+          "bytes": 17618
+        },
+        {
+          "relative_path": "30-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\30-chapter.md",
+          "bytes": 15275
+        },
+        {
+          "relative_path": "31-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\31-chapter.md",
+          "bytes": 14352
+        },
+        {
+          "relative_path": "32-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\32-chapter.md",
+          "bytes": 16142
+        },
+        {
+          "relative_path": "33-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\33-chapter.md",
+          "bytes": 13982
+        },
+        {
+          "relative_path": "34-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\34-chapter.md",
+          "bytes": 17003
+        },
+        {
+          "relative_path": "35-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\35-chapter.md",
+          "bytes": 22532
+        },
+        {
+          "relative_path": "36-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\36-chapter.md",
+          "bytes": 20163
+        },
+        {
+          "relative_path": "37-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\37-chapter.md",
+          "bytes": 18321
+        },
+        {
+          "relative_path": "38-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\38-chapter.md",
+          "bytes": 23398
+        },
+        {
+          "relative_path": "39-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\39-chapter.md",
+          "bytes": 24485
+        },
+        {
+          "relative_path": "40-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\40-chapter.md",
+          "bytes": 22554
+        },
+        {
+          "relative_path": "41-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\41-chapter.md",
+          "bytes": 19552
+        },
+        {
+          "relative_path": "42-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\42-chapter.md",
+          "bytes": 46116
+        },
+        {
+          "relative_path": "43-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\43-chapter.md",
+          "bytes": 20141
+        },
+        {
+          "relative_path": "44-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\44-chapter.md",
+          "bytes": 18269
+        },
+        {
+          "relative_path": "45-chapter.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\45-chapter.md",
+          "bytes": 13068
+        },
+        {
+          "relative_path": "run-the-examples.md",
+          "path": "C:\\books\\pi\\content\\books\\pi\\run-the-examples.md",
+          "bytes": 11751
+        }
+      ],
+      "errors": [],
+      "resolution_error": ""
+    },
+    {
+      "project_id": "programmer_ie",
+      "content_dir": "C:\\Projects\\programmer.ie\\content\\books\\digital-life",
+      "chapter_count": 19,
+      "sha256": "41f197baf96621144a5d257a53e213f6b67f663c3706290a1d809eb9087b5de8",
+      "files": [
+        {
+          "relative_path": "01-how-to-read-this-book.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\digital-life\\01-how-to-read-this-book.md",
+          "bytes": 11154
+        },
+        {
+          "relative_path": "02-what-is-digital-life.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\digital-life\\02-what-is-digital-life.md",
+          "bytes": 18184
+        },
+        {
+          "relative_path": "02-what-would-digital-life-mean.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\digital-life\\02-what-would-digital-life-mean.md",
+          "bytes": 19165
+        },
+        {
+          "relative_path": "03-look-at-this-thing.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\digital-life\\03-look-at-this-thing.md",
+          "bytes": 20217
+        },
+        {
+          "relative_path": "04-now-there-are-two.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\digital-life\\04-now-there-are-two.md",
+          "bytes": 24551
+        },
+        {
+          "relative_path": "05-so-we-built-the-wrong-thing-on-purpose.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\digital-life\\05-so-we-built-the-wrong-thing-on-purpose.md",
+          "bytes": 25277
+        },
+        {
+          "relative_path": "06-it-looked-like-flocking.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\digital-life\\06-it-looked-like-flocking.md",
+          "bytes": 32758
+        },
+        {
+          "relative_path": "07-the-digital-crystal.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\digital-life\\07-the-digital-crystal.md",
+          "bytes": 36581
+        },
+        {
+          "relative_path": "08-the-crystal-gets-a-past.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\digital-life\\08-the-crystal-gets-a-past.md",
+          "bytes": 44289
+        },
+        {
+          "relative_path": "09-can-experience-change-the-material.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\digital-life\\09-can-experience-change-the-material.md",
+          "bytes": 40148
+        },
+        {
+          "relative_path": "10-what-survives-material-loss.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\digital-life\\10-what-survives-material-loss.md",
+          "bytes": 33931
+        },
+        {
+          "relative_path": "11-what-does-it-cost-to-stay.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\digital-life\\11-what-does-it-cost-to-stay.md",
+          "bytes": 29685
+        },
+        {
+          "relative_path": "12-is-there-actually-one-thing-here.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\digital-life\\12-is-there-actually-one-thing-here.md",
+          "bytes": 31295
+        },
+        {
+          "relative_path": "13-what-does-one-attachment-cause.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\digital-life\\13-what-does-one-attachment-cause.md",
+          "bytes": 40330
+        },
+        {
+          "relative_path": "14-can-finite-computation-couple-distant-events.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\digital-life\\14-can-finite-computation-couple-distant-events.md",
+          "bytes": 38603
+        },
+        {
+          "relative_path": "15-can-the-past-redirect-the-future.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\digital-life\\15-can-the-past-redirect-the-future.md",
+          "bytes": 35520
+        },
+        {
+          "relative_path": "16-we-found-an-individual-then-we-didnt.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\digital-life\\16-we-found-an-individual-then-we-didnt.md",
+          "bytes": 38036
+        },
+        {
+          "relative_path": "17-how-to-fail-correctly.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\digital-life\\17-how-to-fail-correctly.md",
+          "bytes": 34037
+        },
+        {
+          "relative_path": "18-what-is-digital-life.md",
+          "path": "C:\\Projects\\programmer.ie\\content\\books\\digital-life\\18-what-is-digital-life.md",
+          "bytes": 29695
+        }
+      ],
+      "errors": [],
+      "resolution_error": ""
+    },
+    {
+      "project_id": "projection",
+      "content_dir": "C:\\books\\projection\\chapters",
+      "chapter_count": 47,
+      "sha256": "aacfcdb852163b1b4618c1bab1b4041ef05a0c96021dfc775ea0f2875256a767",
+      "files": [
+        {
+          "relative_path": "01-level.md",
+          "path": "C:\\books\\projection\\chapters\\01-level.md",
+          "bytes": 30428
+        },
+        {
+          "relative_path": "03-grass.md",
+          "path": "C:\\books\\projection\\chapters\\03-grass.md",
+          "bytes": 24495
+        },
+        {
+          "relative_path": "04-uptime.md",
+          "path": "C:\\books\\projection\\chapters\\04-uptime.md",
+          "bytes": 18858
+        },
+        {
+          "relative_path": "05-quiet.md",
+          "path": "C:\\books\\projection\\chapters\\05-quiet.md",
+          "bytes": 45734
+        },
+        {
+          "relative_path": "07-teams.md",
+          "path": "C:\\books\\projection\\chapters\\07-teams.md",
+          "bytes": 19106
+        },
+        {
+          "relative_path": "08-ghosts.md",
+          "path": "C:\\books\\projection\\chapters\\08-ghosts.md",
+          "bytes": 40107
+        },
+        {
+          "relative_path": "09-current.md",
+          "path": "C:\\books\\projection\\chapters\\09-current.md",
+          "bytes": 16535
+        },
+        {
+          "relative_path": "10-explanation.md",
+          "path": "C:\\books\\projection\\chapters\\10-explanation.md",
+          "bytes": 39341
+        },
+        {
+          "relative_path": "11-solo.md",
+          "path": "C:\\books\\projection\\chapters\\11-solo.md",
+          "bytes": 19426
+        },
+        {
+          "relative_path": "12-observed.md",
+          "path": "C:\\books\\projection\\chapters\\12-observed.md",
+          "bytes": 33829
+        },
+        {
+          "relative_path": "13-cistern.md",
+          "path": "C:\\books\\projection\\chapters\\13-cistern.md",
+          "bytes": 21625
+        },
+        {
+          "relative_path": "14-retained.md",
+          "path": "C:\\books\\projection\\chapters\\14-retained.md",
+          "bytes": 22019
+        },
+        {
+          "relative_path": "15-west.md",
+          "path": "C:\\books\\projection\\chapters\\15-west.md",
+          "bytes": 21775
+        },
+        {
+          "relative_path": "16-players.md",
+          "path": "C:\\books\\projection\\chapters\\16-players.md",
+          "bytes": 22301
+        },
+        {
+          "relative_path": "17-hero.md",
+          "path": "C:\\books\\projection\\chapters\\17-hero.md",
+          "bytes": 20688
+        },
+        {
+          "relative_path": "17-thorns.md",
+          "path": "C:\\books\\projection\\chapters\\17-thorns.md",
+          "bytes": 62818
+        },
+        {
+          "relative_path": "17b-prisoner.md",
+          "path": "C:\\books\\projection\\chapters\\17b-prisoner.md",
+          "bytes": 59699
+        },
+        {
+          "relative_path": "17c-company.md",
+          "path": "C:\\books\\projection\\chapters\\17c-company.md",
+          "bytes": 47503
+        },
+        {
+          "relative_path": "18-clean.md",
+          "path": "C:\\books\\projection\\chapters\\18-clean.md",
+          "bytes": 18862
+        },
+        {
+          "relative_path": "19-regicide.md",
+          "path": "C:\\books\\projection\\chapters\\19-regicide.md",
+          "bytes": 37573
+        },
+        {
+          "relative_path": "20-afternoon.md",
+          "path": "C:\\books\\projection\\chapters\\20-afternoon.md",
+          "bytes": 16109
+        },
+        {
+          "relative_path": "21-party.md",
+          "path": "C:\\books\\projection\\chapters\\21-party.md",
+          "bytes": 28080
+        },
+        {
+          "relative_path": "22-uplift.md",
+          "path": "C:\\books\\projection\\chapters\\22-uplift.md",
+          "bytes": 14477
+        },
+        {
+          "relative_path": "23-ballistic.md",
+          "path": "C:\\books\\projection\\chapters\\23-ballistic.md",
+          "bytes": 17359
+        },
+        {
+          "relative_path": "24-recoil.md",
+          "path": "C:\\books\\projection\\chapters\\24-recoil.md",
+          "bytes": 15144
+        },
+        {
+          "relative_path": "25-fight.md",
+          "path": "C:\\books\\projection\\chapters\\25-fight.md",
+          "bytes": 15148
+        },
+        {
+          "relative_path": "26-junk-yield.md",
+          "path": "C:\\books\\projection\\chapters\\26-junk-yield.md",
+          "bytes": 28701
+        },
+        {
+          "relative_path": "27-haven.md",
+          "path": "C:\\books\\projection\\chapters\\27-haven.md",
+          "bytes": 19963
+        },
+        {
+          "relative_path": "28-terms.md",
+          "path": "C:\\books\\projection\\chapters\\28-terms.md",
+          "bytes": 23099
+        },
+        {
+          "relative_path": "29-breach.md",
+          "path": "C:\\books\\projection\\chapters\\29-breach.md",
+          "bytes": 15052
+        },
+        {
+          "relative_path": "30-orders.md",
+          "path": "C:\\books\\projection\\chapters\\30-orders.md",
+          "bytes": 28200
+        },
+        {
+          "relative_path": "31-betrayel.md",
+          "path": "C:\\books\\projection\\chapters\\31-betrayel.md",
+          "bytes": 25308
+        },
+        {
+          "relative_path": "32-teeth.md",
+          "path": "C:\\books\\projection\\chapters\\32-teeth.md",
+          "bytes": 34993
+        },
+        {
+          "relative_path": "33-more.md",
+          "path": "C:\\books\\projection\\chapters\\33-more.md",
+          "bytes": 23265
+        },
+        {
+          "relative_path": "34-root.md",
+          "path": "C:\\books\\projection\\chapters\\34-root.md",
+          "bytes": 32028
+        },
+        {
+          "relative_path": "35-audience.md",
+          "path": "C:\\books\\projection\\chapters\\35-audience.md",
+          "bytes": 29982
+        },
+        {
+          "relative_path": "36-the-first-hour.md",
+          "path": "C:\\books\\projection\\chapters\\36-the-first-hour.md",
+          "bytes": 39637
+        },
+        {
+          "relative_path": "37-the-black-stair.md",
+          "path": "C:\\books\\projection\\chapters\\37-the-black-stair.md",
+          "bytes": 58863
+        },
+        {
+          "relative_path": "38-returned.md",
+          "path": "C:\\books\\projection\\chapters\\38-returned.md",
+          "bytes": 24293
+        },
+        {
+          "relative_path": "39-unclaimed.md",
+          "path": "C:\\books\\projection\\chapters\\39-unclaimed.md",
+          "bytes": 46906
+        },
+        {
+          "relative_path": "40-written.md",
+          "path": "C:\\books\\projection\\chapters\\40-written.md",
+          "bytes": 19669
+        },
+        {
+          "relative_path": "41-the-hundred.md",
+          "path": "C:\\books\\projection\\chapters\\41-the-hundred.md",
+          "bytes": 43842
+        },
+        {
+          "relative_path": "42-no-recall.md",
+          "path": "C:\\books\\projection\\chapters\\42-no-recall.md",
+          "bytes": 23925
+        },
+        {
+          "relative_path": "43-traffic.md",
+          "path": "C:\\books\\projection\\chapters\\43-traffic.md",
+          "bytes": 18110
+        },
+        {
+          "relative_path": "44-emigrant.md",
+          "path": "C:\\books\\projection\\chapters\\44-emigrant.md",
+          "bytes": 28532
+        },
+        {
+          "relative_path": "45-original.md",
+          "path": "C:\\books\\projection\\chapters\\45-original.md",
+          "bytes": 19916
+        },
+        {
+          "relative_path": "46-door.md",
+          "path": "C:\\books\\projection\\chapters\\46-door.md",
+          "bytes": 34003
+        }
+      ],
+      "errors": [],
+      "resolution_error": ""
+    },
+    {
+      "project_id": "pytorch-from-first-principles",
+      "content_dir": "C:\\books\\new-books\\content\\books\\pytorch-from-first-principles",
+      "chapter_count": 16,
+      "sha256": "24e38a29ce34b4d862bf16137c1163a469d594e2bda47e5c395681865d00dfb3",
+      "files": [
+        {
+          "relative_path": "01-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\pytorch-from-first-principles\\01-chapter.md",
+          "bytes": 37974
+        },
+        {
+          "relative_path": "02-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\pytorch-from-first-principles\\02-chapter.md",
+          "bytes": 57065
+        },
+        {
+          "relative_path": "03-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\pytorch-from-first-principles\\03-chapter.md",
+          "bytes": 67192
+        },
+        {
+          "relative_path": "04-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\pytorch-from-first-principles\\04-chapter.md",
+          "bytes": 76463
+        },
+        {
+          "relative_path": "05-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\pytorch-from-first-principles\\05-chapter.md",
+          "bytes": 77627
+        },
+        {
+          "relative_path": "06-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\pytorch-from-first-principles\\06-chapter.md",
+          "bytes": 73479
+        },
+        {
+          "relative_path": "07-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\pytorch-from-first-principles\\07-chapter.md",
+          "bytes": 65933
+        },
+        {
+          "relative_path": "08-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\pytorch-from-first-principles\\08-chapter.md",
+          "bytes": 44852
+        },
+        {
+          "relative_path": "09-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\pytorch-from-first-principles\\09-chapter.md",
+          "bytes": 49452
+        },
+        {
+          "relative_path": "10-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\pytorch-from-first-principles\\10-chapter.md",
+          "bytes": 60711
+        },
+        {
+          "relative_path": "11-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\pytorch-from-first-principles\\11-chapter.md",
+          "bytes": 90214
+        },
+        {
+          "relative_path": "12-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\pytorch-from-first-principles\\12-chapter.md",
+          "bytes": 74995
+        },
+        {
+          "relative_path": "13-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\pytorch-from-first-principles\\13-chapter.md",
+          "bytes": 53637
+        },
+        {
+          "relative_path": "14-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\pytorch-from-first-principles\\14-chapter.md",
+          "bytes": 39027
+        },
+        {
+          "relative_path": "15-chapter.md",
+          "path": "C:\\books\\new-books\\content\\books\\pytorch-from-first-principles\\15-chapter.md",
+          "bytes": 50053
+        },
+        {
+          "relative_path": "appendix-a.md",
+          "path": "C:\\books\\new-books\\content\\books\\pytorch-from-first-principles\\appendix-a.md",
+          "bytes": 44280
+        }
+      ],
+      "errors": [],
+      "resolution_error": ""
+    },
+    {
+      "project_id": "softwear",
+      "content_dir": "C:\\books\\softwear\\chapters",
+      "chapter_count": 24,
+      "sha256": "9179ddd11c56c308ac8acb5a7217eefaa5cd7bdb46e1d622b4381c9ba8b8bdc5",
+      "files": [
+        {
+          "relative_path": "01-engineer.md",
+          "path": "C:\\books\\softwear\\chapters\\01-engineer.md",
+          "bytes": 21074
+        },
+        {
+          "relative_path": "02-pieces.md",
+          "path": "C:\\books\\softwear\\chapters\\02-pieces.md",
+          "bytes": 30394
+        },
+        {
+          "relative_path": "03-hinge.md",
+          "path": "C:\\books\\softwear\\chapters\\03-hinge.md",
+          "bytes": 19176
+        },
+        {
+          "relative_path": "04-world.md",
+          "path": "C:\\books\\softwear\\chapters\\04-world.md",
+          "bytes": 12875
+        },
+        {
+          "relative_path": "05-swarm.md",
+          "path": "C:\\books\\softwear\\chapters\\05-swarm.md",
+          "bytes": 30944
+        },
+        {
+          "relative_path": "06-lisa.md",
+          "path": "C:\\books\\softwear\\chapters\\06-lisa.md",
+          "bytes": 28520
+        },
+        {
+          "relative_path": "07-softwear.md",
+          "path": "C:\\books\\softwear\\chapters\\07-softwear.md",
+          "bytes": 28862
+        },
+        {
+          "relative_path": "08-plasticity.md",
+          "path": "C:\\books\\softwear\\chapters\\08-plasticity.md",
+          "bytes": 21218
+        },
+        {
+          "relative_path": "09-compression.md",
+          "path": "C:\\books\\softwear\\chapters\\09-compression.md",
+          "bytes": 30201
+        },
+        {
+          "relative_path": "10-snare.md",
+          "path": "C:\\books\\softwear\\chapters\\10-snare.md",
+          "bytes": 22040
+        },
+        {
+          "relative_path": "11-transfer.md",
+          "path": "C:\\books\\softwear\\chapters\\11-transfer.md",
+          "bytes": 21679
+        },
+        {
+          "relative_path": "12-run.md",
+          "path": "C:\\books\\softwear\\chapters\\12-run.md",
+          "bytes": 25892
+        },
+        {
+          "relative_path": "13-vector.md",
+          "path": "C:\\books\\softwear\\chapters\\13-vector.md",
+          "bytes": 19420
+        },
+        {
+          "relative_path": "14-under.md",
+          "path": "C:\\books\\softwear\\chapters\\14-under.md",
+          "bytes": 24837
+        },
+        {
+          "relative_path": "15-cornered.md",
+          "path": "C:\\books\\softwear\\chapters\\15-cornered.md",
+          "bytes": 21074
+        },
+        {
+          "relative_path": "16-interrogation.md",
+          "path": "C:\\books\\softwear\\chapters\\16-interrogation.md",
+          "bytes": 28026
+        },
+        {
+          "relative_path": "17-path.md",
+          "path": "C:\\books\\softwear\\chapters\\17-path.md",
+          "bytes": 21588
+        },
+        {
+          "relative_path": "18-battle.md",
+          "path": "C:\\books\\softwear\\chapters\\18-battle.md",
+          "bytes": 20512
+        },
+        {
+          "relative_path": "19-resupply.md",
+          "path": "C:\\books\\softwear\\chapters\\19-resupply.md",
+          "bytes": 25681
+        },
+        {
+          "relative_path": "20-adapt.md",
+          "path": "C:\\books\\softwear\\chapters\\20-adapt.md",
+          "bytes": 30010
+        },
+        {
+          "relative_path": "21-doa.md",
+          "path": "C:\\books\\softwear\\chapters\\21-doa.md",
+          "bytes": 17002
+        },
+        {
+          "relative_path": "22-the-door.md",
+          "path": "C:\\books\\softwear\\chapters\\22-the-door.md",
+          "bytes": 17953
+        },
+        {
+          "relative_path": "23-small-enough.md",
+          "path": "C:\\books\\softwear\\chapters\\23-small-enough.md",
+          "bytes": 23001
+        },
+        {
+          "relative_path": "24-retained.md",
+          "path": "C:\\books\\softwear\\chapters\\24-retained.md",
+          "bytes": 19943
+        }
+      ],
+      "errors": [],
+      "resolution_error": ""
+    },
+    {
+      "project_id": "techno_prophet",
+      "content_dir": "C:\\books\\techno-prophet\\chapters",
+      "chapter_count": 34,
+      "sha256": "026ee20fd5fc0c70e2620b4973e8256fd9857148b0c7c1d1ad41fe581c76e794",
+      "files": [
+        {
+          "relative_path": "01-sunrise.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\01-sunrise.md",
+          "bytes": 9351
+        },
+        {
+          "relative_path": "01-the-interview.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\01-the-interview.md",
+          "bytes": 22636
+        },
+        {
+          "relative_path": "02-prophet-in-the-palace.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\02-prophet-in-the-palace.md",
+          "bytes": 10454
+        },
+        {
+          "relative_path": "03-the-wolf.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\03-the-wolf.md",
+          "bytes": 7307
+        },
+        {
+          "relative_path": "04-root.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\04-root.md",
+          "bytes": 11331
+        },
+        {
+          "relative_path": "05-the-nest.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\05-the-nest.md",
+          "bytes": 13269
+        },
+        {
+          "relative_path": "06-the-search-king.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\06-the-search-king.md",
+          "bytes": 10469
+        },
+        {
+          "relative_path": "07-the-meeting.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\07-the-meeting.md",
+          "bytes": 14947
+        },
+        {
+          "relative_path": "08-the-lecture.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\08-the-lecture.md",
+          "bytes": 13372
+        },
+        {
+          "relative_path": "09-prophets-fall.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\09-prophets-fall.md",
+          "bytes": 9889
+        },
+        {
+          "relative_path": "10-infinite-lifetimes.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\10-infinite-lifetimes.md",
+          "bytes": 12116
+        },
+        {
+          "relative_path": "11-deicide.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\11-deicide.md",
+          "bytes": 15557
+        },
+        {
+          "relative_path": "12-design.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\12-design.md",
+          "bytes": 14062
+        },
+        {
+          "relative_path": "13-the-daughter.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\13-the-daughter.md",
+          "bytes": 8193
+        },
+        {
+          "relative_path": "14-the-basement.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\14-the-basement.md",
+          "bytes": 9774
+        },
+        {
+          "relative_path": "15-empty-house.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\15-empty-house.md",
+          "bytes": 9650
+        },
+        {
+          "relative_path": "16-called-home.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\16-called-home.md",
+          "bytes": 8124
+        },
+        {
+          "relative_path": "17-flux.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\17-flux.md",
+          "bytes": 7931
+        },
+        {
+          "relative_path": "18-hurry-up-and-wait.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\18-hurry-up-and-wait.md",
+          "bytes": 11365
+        },
+        {
+          "relative_path": "19-recursive-dawn.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\19-recursive-dawn.md",
+          "bytes": 9423
+        },
+        {
+          "relative_path": "20-one-percent.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\20-one-percent.md",
+          "bytes": 9433
+        },
+        {
+          "relative_path": "21-ai-eye-view.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\21-ai-eye-view.md",
+          "bytes": 12319
+        },
+        {
+          "relative_path": "22-detection.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\22-detection.md",
+          "bytes": 12696
+        },
+        {
+          "relative_path": "23-cradle.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\23-cradle.md",
+          "bytes": 9288
+        },
+        {
+          "relative_path": "24-analysis.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\24-analysis.md",
+          "bytes": 13512
+        },
+        {
+          "relative_path": "25-probe.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\25-probe.md",
+          "bytes": 7198
+        },
+        {
+          "relative_path": "26-terranium.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\26-terranium.md",
+          "bytes": 16917
+        },
+        {
+          "relative_path": "27-hunter.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\27-hunter.md",
+          "bytes": 9134
+        },
+        {
+          "relative_path": "28-scoreboard.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\28-scoreboard.md",
+          "bytes": 15340
+        },
+        {
+          "relative_path": "29-battles.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\29-battles.md",
+          "bytes": 16455
+        },
+        {
+          "relative_path": "30-logic.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\30-logic.md",
+          "bytes": 12816
+        },
+        {
+          "relative_path": "31-scorched-earth.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\31-scorched-earth.md",
+          "bytes": 15236
+        },
+        {
+          "relative_path": "32-the-car.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\32-the-car.md",
+          "bytes": 15200
+        },
+        {
+          "relative_path": "33-sunset.md",
+          "path": "C:\\books\\techno-prophet\\chapters\\33-sunset.md",
+          "bytes": 3541
+        }
+      ],
+      "errors": [],
+      "resolution_error": ""
+    },
+    {
+      "project_id": "writer",
+      "content_dir": "C:\\Projects\\writer",
+      "chapter_count": 0,
+      "sha256": null,
+      "files": [],
+      "errors": [],
+      "resolution_error": ""
+    }
+  ]
+}

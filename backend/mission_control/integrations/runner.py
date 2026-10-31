@@ -79,7 +79,7 @@ def _run(
     )
     return CommandResult(
         exit_code=completed.returncode,
-        stdout=redact_text(completed.stdout[-5_000_000:]),
+        stdout=redact_text(completed.stdout[-32_000_000:]),
         stderr=redact_text(completed.stderr[-20_000:]),
         duration_seconds=round(time.monotonic() - started, 3),
         executable=executable,

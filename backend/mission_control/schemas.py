@@ -1011,6 +1011,9 @@ class WriterWorkspaceRead(BaseModel):
     generated_at: str | None = None
     totals: dict[str, Any] = Field(default_factory=dict)
     review_queue: list[dict[str, Any]] = Field(default_factory=list)
+    decision_queue: list[dict[str, Any]] = Field(default_factory=list)
+    decision_totals: dict[str, Any] = Field(default_factory=dict)
+    workbench: dict[str, Any] = Field(default_factory=dict)
     books: list[dict[str, Any]] = Field(default_factory=list)
     limitations: list[str] = Field(default_factory=list)
 

@@ -529,7 +529,19 @@ export type WriterDimension = {
   scoring?: Record<string, any>;
 };
 
+export type WriterLocator = {
+  chapter_id: string;
+  source_path: string;
+  relative_path: string;
+  line_start: number | null;
+  line_end: number | null;
+  paragraph_index: number | null;
+  section_title: string | null;
+  excerpt: string;
+};
+
 export type WriterFinding = {
+  finding_id: string | null;
   code: string;
   severity: "high" | "medium" | "low" | "info";
   dimension: string;
@@ -537,16 +549,7 @@ export type WriterFinding = {
   book_id: string;
   chapter_id: string | null;
   source_path: string | null;
-  locator: {
-    chapter_id: string;
-    source_path: string;
-    relative_path: string;
-    line_start: number | null;
-    line_end: number | null;
-    paragraph_index: number | null;
-    section_title: string | null;
-    excerpt: string;
-  } | null;
+  locator: WriterLocator | null;
   measured: Record<string, any>;
   reason: string;
   recommendation: string;
@@ -614,6 +617,56 @@ export type WriterBook = {
   limitations: string[];
 };
 
+export type WriterDecision = {
+  decision: string;
+  scope: string;
+  reason: string;
+  created_at: string | null;
+  decision_id: string | null;
+};
+
+export type WriterDecisionQueueItem = {
+  id: string;
+  project_id: string;
+  book_title: string;
+  book_status: string;
+  stale: boolean;
+  code: string;
+  subdimension: string;
+  severity: string;
+  dimension: string;
+  chapter_id: string;
+  chapter_title: string;
+  chapter_order: number;
+  chapter_name: string;
+  finding_id: string;
+  reason: string;
+  recommendation: string;
+  locator: WriterLocator | null;
+  measured: Record<string, any>;
+  limitations: string[];
+  count: number;
+  chapter_count: number;
+  decided_count: number;
+  undecided_count: number;
+  state: "undecided" | "partial" | "decided" | "stale";
+  decision: WriterDecision | null;
+  workbench_link: string;
+  workbench_book_ready: boolean;
+};
+
+export type WriterDecisionTotals = {
+  groups: number;
+  findings: number;
+  undecided: number;
+  decided: number;
+  stale_groups: number;
+  missing_identity: number;
+  confirmed: number;
+  dismissed: number;
+  deferred: number;
+};
+
 export type WriterWorkspace = {
   available: boolean;
   detail: string;
@@ -622,6 +675,14 @@ export type WriterWorkspace = {
   generated_at: string | null;
   totals: Record<string, number>;
   review_queue: Array<Record<string, any>>;
+  decision_queue: WriterDecisionQueueItem[];
+  decision_totals: WriterDecisionTotals;
+  workbench: {
+    url: string;
+    book: string | null;
+    ready: boolean;
+    note: string;
+  };
   books: WriterBook[];
   limitations: string[];
 };

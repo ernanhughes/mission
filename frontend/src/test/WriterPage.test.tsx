@@ -92,6 +92,7 @@ function chapter(overrides: Partial<WriterChapter> = {}): WriterChapter {
     finding_count: 3,
     findings: [
       {
+        finding_id: "edfinding:language-fragmentation",
         code: "READABILITY.FRAGMENTATION",
         severity: "high",
         dimension: "readability",
@@ -236,6 +237,64 @@ function workspace(overrides: Partial<WriterWorkspace> = {}): WriterWorkspace {
         last_checked: null,
       },
     ],
+    decision_queue: [
+      {
+        id: "writer-decision:language:READABILITY.FRAGMENTATION:high",
+        project_id: "language",
+        book_title: "Language",
+        book_status: "NEEDS_REVIEW",
+        stale: false,
+        code: "READABILITY.FRAGMENTATION",
+        subdimension: "fragmentation",
+        severity: "high",
+        dimension: "readability",
+        chapter_id: "chapter:language:24-chapter",
+        chapter_title: "Memory can be right and still make the present wrong",
+        chapter_order: 23,
+        chapter_name: "24-chapter.md",
+        finding_id: "edfinding:language-fragmentation",
+        reason: "Short one-sentence paragraphs dominate the diagnostic sample.",
+        recommendation: "Check whether the short paragraphs are doing distinct work.",
+        locator: {
+          chapter_id: "chapter:language:24-chapter",
+          source_path: "C:\\Projects\\language\\content\\books\\language\\24-chapter.md",
+          relative_path: "content/books/language/24-chapter.md",
+          line_start: 22,
+          line_end: 22,
+          paragraph_index: 4,
+          section_title: "Memory can be right and still make the present wrong",
+          excerpt: "In October, she asks why a duplicate write can still appear during recovery.",
+        },
+        measured: { short_percent: 80.36 },
+        limitations: ["Heuristic."],
+        count: 3,
+        chapter_count: 1,
+        decided_count: 0,
+        undecided_count: 3,
+        state: "undecided",
+        decision: null,
+        workbench_link:
+          "http://127.0.0.1:7420/#chapter=24-chapter.md&menu=edt&drawer=editing&finding=edfinding%3Alanguage-fragmentation",
+        workbench_book_ready: true,
+      },
+    ],
+    decision_totals: {
+      groups: 1,
+      findings: 3,
+      undecided: 3,
+      decided: 0,
+      stale_groups: 0,
+      missing_identity: 0,
+      confirmed: 0,
+      dismissed: 0,
+      deferred: 0,
+    },
+    workbench: {
+      url: "http://127.0.0.1:7420",
+      book: "language",
+      ready: true,
+      note: "",
+    },
     books: [
       book({
         project_id: "stale-book",
@@ -300,10 +359,47 @@ describe("WriterPage", () => {
       (await screen.findAllByText("Memory can be right and still make the present wrong")).length,
     ).toBeGreaterThan(0);
     expect((await screen.findAllByText("READABILITY.FRAGMENTATION")).length).toBeGreaterThan(0);
-    expect(screen.getByText(/content\/books\/language\/24-chapter.md:22/)).toBeInTheDocument();
+    expect(
+      Array.from(document.querySelectorAll("code.writer-locator")).some((element) =>
+        element.textContent?.includes("content/books/language/24-chapter.md:22"),
+      ),
+    ).toBe(true);
     expect(screen.getByText(/Check whether the short paragraphs/)).toBeInTheDocument();
     expect(screen.getAllByText(/Raw metrics and scoring/).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/Flesch does not establish comprehension/).length).toBeGreaterThan(0);
+  });
+
+  it("groups repeated findings and links the representative to the exact Workbench finding", async () => {
+    mockFetch(({ path }) => {
+      if (path === "/api/writer/books") return json(workspace());
+      return apiError(404, `Unhandled ${path}`);
+    });
+    renderRoute(<WriterPage />, "/writer");
+
+    expect(await screen.findByRole("heading", { name: "Decision queue" })).toBeInTheDocument();
+    expect(screen.getAllByText("READABILITY.FRAGMENTATION").length).toBeGreaterThan(0);
+    expect(screen.getByText("Undecided")).toBeInTheDocument();
+    expect(screen.getByText("3 findings in 1 chapter")).toBeInTheDocument();
+    const link = screen.getByRole("link", { name: /Open in Workbench/i });
+    expect(link).toHaveAttribute("href", expect.stringContaining("#chapter=24-chapter.md"));
+    expect(link).toHaveAttribute("href", expect.stringContaining("finding=edfinding"));
+  });
+
+
+  it("marks partial book evidence in the decision queue", async () => {
+    const base = workspace();
+    mockFetch(({ path }) => {
+      if (path === "/api/writer/books") {
+        return json(
+          workspace({
+            decision_queue: [{ ...base.decision_queue[0], book_status: "PARTIAL" }],
+          }),
+        );
+      }
+      return apiError(404, `Unhandled ${path}`);
+    });
+    renderRoute(<WriterPage />, "/writer");
+    expect(await screen.findByText("Partial evidence")).toBeInTheDocument();
   });
 
   it("shows a truthful unavailable state when Writer is not configured", async () => {

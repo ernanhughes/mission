@@ -1,0 +1,20 @@
+{
+  "options": [
+    {
+      "value": "chapter",
+      "text": "This chapter pattern",
+      "selected": true,
+      "disabled": false
+    },
+    {
+      "value": "book",
+      "text": "This book pattern",
+      "selected": false,
+      "disabled": false
+    }
+  ],
+  "value": "chapter",
+  "chapterLevel": true,
+  "showButton": false,
+  "text": "medium\nrhythm\nREADABILITY.UNIFORM_CADENCE\nParagraph lengths cluster into a narrow band or share a repeated sentence-count construction, which can indicate mechanically uniform editing.\nChapter-level finding; no single passage locator.\nWriter suggests: Check wh"
+}
