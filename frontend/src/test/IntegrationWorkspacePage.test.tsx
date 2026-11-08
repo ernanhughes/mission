@@ -33,7 +33,57 @@ const execution = {
 
 afterEach(() => {
   vi.restoreAllMocks();
+  delete (window.navigator as unknown as { clipboard?: unknown }).clipboard;
 });
+
+function researchSession(overrides: Record<string, unknown> = {}) {
+  return {
+    id: "rcs-1",
+    application_id: "next",
+    resource_type: "next_opportunity",
+    external_id: "next-fixture-1",
+    record_id: "res-next-1",
+    opportunity_title: "Fixture Next recommendation",
+    context_schema: "mc.research-context.v1",
+    context_fingerprint: "fingerprint-1",
+    context_observed_at: "2026-10-23T12:00:00+00:00",
+    model_route: "configured-local-openai",
+    model_id: "qwen2.5:latest",
+    model_local: true,
+    provider: "openai-compatible",
+    endpoint: "127.0.0.1",
+    created_at: "2026-10-23T12:00:00+00:00",
+    updated_at: "2026-10-23T12:00:00+00:00",
+    message_count: 0,
+    messages: [],
+    context_stale: false,
+    current_fingerprint: "fingerprint-1",
+    freshness_notice: null,
+    ...overrides,
+  };
+}
+
+function chatMessage(
+  id: string,
+  sequence: number,
+  role: "user" | "assistant",
+  content: string,
+) {
+  return {
+    id,
+    session_id: "rcs-1",
+    sequence,
+    role,
+    content,
+    status: "completed",
+    error: null,
+    provider: role === "assistant" ? "openai-compatible" : null,
+    model: role === "assistant" ? "qwen2.5:latest" : null,
+    route: role === "assistant" ? "configured-local-openai" : null,
+    metadata: role === "assistant" ? { local: true, latency_ms: 42 } : { local_only: true },
+    created_at: "2026-10-23T12:00:00+00:00",
+  };
+}
 
 describe("IntegrationWorkspacePage", () => {
   it("opens a real Next record and records a local-only decision", async () => {
@@ -216,5 +266,146 @@ describe("IntegrationWorkspacePage", () => {
     const actionCall = calls.find((call) => call.path.endsWith("/execute"));
     expect(actionCall?.method).toBe("POST");
     confirm.mockRestore();
+  });
+
+  it("copies a structured review package without invoking a model", async () => {
+    const record = makeIntegrationRecord();
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    const markdown = "# Research review package\n\n## A. Review instructions\n\nDo not assume the opportunity is valid.";
+    const calls = mockFetch(({ path, method }) => {
+      if (path === "/api/integrations/next") return json(makeIntegration());
+      if (path === "/api/projects") return json([makeProject()]);
+      if (path === "/api/integrations/next/resources") return json([record]);
+      if (path === `/api/integrations/next/resources/${record.id}`) return json(record);
+      if (path === `/api/research/opportunities/${record.id}/export` && method === "GET")
+        return json({
+          schema: "mc.research-export.v1",
+          fingerprint: "fingerprint-1",
+          markdown,
+          context: {},
+        });
+      return apiError(404, `Unhandled ${method} ${path}`);
+    });
+    const user = userEvent.setup();
+    Object.defineProperty(window.navigator, "clipboard", {
+      value: { writeText },
+      configurable: true,
+    });
+    renderRoute(<IntegrationWorkspacePage appId="next" />, "/next");
+
+    await user.click(await screen.findByRole("tab", { name: "Candidates" }));
+    await user.click(await screen.findByRole("button", { name: /Fixture Next recommendation/i }));
+    await user.click(await screen.findByRole("button", { name: /Copy for ChatGPT/i }));
+
+    await waitFor(() => expect(writeText).toHaveBeenCalledWith(markdown));
+    expect(await screen.findByText("Research review package copied")).toBeInTheDocument();
+    expect(calls.some((call) => call.path.includes("/messages"))).toBe(false);
+    expect(calls.some((call) => call.path.endsWith("/sessions"))).toBe(false);
+    expect(calls.some((call) => call.method === "POST" && call.path.includes("/research/"))).toBe(
+      false,
+    );
+  });
+
+  it("opens a contextual chat, sends, and preserves model attribution", async () => {
+    const record = makeIntegrationRecord();
+    const firstAnswer =
+      "The combination is a proposal, not a demonstrated improvement. Compare both components independently.";
+    const secondAnswer =
+      "A controlled comparison with a held-out task would falsify the claimed gain.";
+    const calls = mockFetch(({ path, method, body }) => {
+      if (path === "/api/integrations/next") return json(makeIntegration());
+      if (path === "/api/projects") return json([makeProject()]);
+      if (path === "/api/integrations/next/resources") return json([record]);
+      if (path === `/api/integrations/next/resources/${record.id}`) return json(record);
+      if (path === "/api/research/models" && method === "GET")
+        return json({
+          provider: "openai-compatible",
+          route: "configured-local-openai",
+          configured: true,
+          local: true,
+          available: true,
+          endpoint: "127.0.0.1",
+          selected: "qwen2.5:latest",
+          models: [
+            {
+              id: "qwen2.5:latest",
+              label: "qwen2.5:latest",
+              local: true,
+              configured: true,
+              available: true,
+            },
+          ],
+          detail: "Configured local model is available.",
+          error: null,
+        });
+      if (path === `/api/research/opportunities/${record.id}/sessions` && method === "GET")
+        return json([]);
+      if (path === `/api/research/opportunities/${record.id}/sessions` && method === "POST")
+        return json(researchSession());
+      if (path === "/api/research/sessions/rcs-1/messages" && method === "POST") {
+        const content = String((body as { content?: string }).content || "");
+        if (content.includes("falsify")) {
+          return json(
+            researchSession({
+              message_count: 4,
+              messages: [
+                chatMessage("m1", 1, "user", "What is genuinely new here?"),
+                chatMessage("m2", 2, "assistant", firstAnswer),
+                chatMessage("m3", 3, "user", content),
+                chatMessage("m4", 4, "assistant", secondAnswer),
+              ],
+            }),
+          );
+        }
+        return json(
+          researchSession({
+            message_count: 2,
+            messages: [
+              chatMessage("m1", 1, "user", content),
+              chatMessage("m2", 2, "assistant", firstAnswer),
+            ],
+          }),
+        );
+      }
+      return apiError(404, `Unhandled ${method} ${path}`);
+    });
+    const user = userEvent.setup();
+    renderRoute(<IntegrationWorkspacePage appId="next" />, "/next");
+
+    await user.click(await screen.findByRole("tab", { name: "Candidates" }));
+    await user.click(await screen.findByRole("button", { name: /Fixture Next recommendation/i }));
+    await user.click(await screen.findByRole("button", { name: /Discuss with AI/i }));
+
+    expect(
+      await screen.findByRole("dialog", { name: "Research conversation" }),
+    ).toBeInTheDocument();
+    expect(await screen.findByText("Local inference")).toBeInTheDocument();
+    expect(screen.getByText(/Nothing is sent to a model until you submit/i)).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Explain the core research mechanism." }));
+    const send = screen.getByRole("button", { name: /^Send$/i });
+    await waitFor(() => expect(send).not.toBeDisabled());
+    await user.click(send);
+
+    expect(await screen.findByText(firstAnswer)).toBeInTheDocument();
+    expect(screen.getByText("qwen2.5:latest")).toBeInTheDocument();
+    expect(screen.getByText("local route")).toBeInTheDocument();
+    const postSession = calls.find(
+      (call) => call.path.endsWith("/sessions") && call.method === "POST",
+    );
+    expect(postSession?.body).toEqual({
+      model_id: "qwen2.5:latest",
+      model_route: "configured-local-openai",
+    });
+    const firstMessage = calls.find((call) => call.path.endsWith("/messages"));
+    expect(firstMessage?.body).toMatchObject({ content: "Explain the core research mechanism." });
+
+    await user.type(
+      screen.getByLabelText("Message the research model"),
+      "What would falsify it?",
+    );
+    await user.click(screen.getByRole("button", { name: /^Send$/i }));
+    expect(await screen.findByText(secondAnswer)).toBeInTheDocument();
+    expect(screen.getByText("What is genuinely new here?")).toBeInTheDocument();
   });
 });

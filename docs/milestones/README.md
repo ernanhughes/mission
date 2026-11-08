@@ -15,5 +15,6 @@
 | MC11 | Harden, generalise and observe | Docker execution boundary, two templates, cancellation/idempotency, Language observations, project timeline; 58 backend + 26 frontend tests; real Chrome acceptance |
 | MC-WRITER-01 | Writer Editing integration | Writer-owned readability reports, six independent subdimensions, stale fingerprints, durable audit action, book/chapter view and cross-book queue; 63 backend + 29 frontend tests; real Chrome acceptance |
 | MC-WRITER-02 | Writer decision queue and Workbench deep link | Writer-owned `edfinding:` identity, 197 grouped decision groups over 2,425 findings, Workbench decision-log projection with passage/chapter/book precedence, exact-finding deep link verified in Chrome; 71 backend + 32 frontend + 1,025 Workbench tests |
+| MC-NEXT-CHAT-01 | Research export and contextual AI chat | Shared evidence package for copy and chat, local-only model discovery, persisted conversations with frozen snapshots, real `qwen2.5:latest` smoke call; 83 backend + 34 frontend tests |
 
 Milestone completion is based on executable evidence, not file creation. Detailed records are in the individual milestone files and [the acceptance report](../acceptance/REPORT.md).

@@ -25,6 +25,7 @@ from mission_control.api import (
     integrations as integrations_api,
     processes,
     projects,
+    research as research_api,
     settings as settings_api,
     workflows as workflows_api,
     writer as writer_api,
@@ -41,6 +42,7 @@ from mission_control.persistence.migrations import apply_migrations
 from mission_control.persistence.seed import seed_defaults
 from mission_control.processes.manager import ProcessManager
 from mission_control.projects.service import refresh_repositories
+from mission_control.research.chat_service import ResearchChatService
 from mission_control.workflows.service import WorkflowService
 
 logger = logging.getLogger(__name__)
@@ -80,6 +82,7 @@ def create_app(runtime: RuntimeSettings | None = None) -> FastAPI:
         discovery_service = DiscoveryService(database)
         integration_service = IntegrationService(database, settings)
         workflow_service = WorkflowService(database, settings, integration_service)
+        research_chat = ResearchChatService(database, settings)
         app.state.database = database
         app.state.settings = settings
         app.state.process_manager = process_manager
@@ -87,6 +90,7 @@ def create_app(runtime: RuntimeSettings | None = None) -> FastAPI:
         app.state.discovery = discovery_service
         app.state.integration_service = integration_service
         app.state.workflow_service = workflow_service
+        app.state.research_chat = research_chat
         await process_manager.reconcile_startup()
         refresh_task: asyncio.Task[None] | None = None
         if settings.start_monitor:
@@ -197,6 +201,7 @@ def create_app(runtime: RuntimeSettings | None = None) -> FastAPI:
     app.include_router(discovery.router)
     app.include_router(adapters.router)
     app.include_router(integrations_api.router)
+    app.include_router(research_api.router)
     app.include_router(workflows_api.router)
     app.include_router(writer_api.router)
     app.include_router(briefing.router)

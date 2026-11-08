@@ -7,10 +7,12 @@ import {
   ChevronRight,
   CircleSlash,
   Code2,
+  Copy,
   ExternalLink,
   FileJson,
   FlaskConical,
   Gauge,
+  MessageSquare,
   Play,
   RefreshCw,
   Search,
@@ -37,6 +39,8 @@ import {
   Stat,
   Tag,
 } from "../components/ui";
+import { ResearchChatPanel } from "../features/research/ResearchChatPanel";
+import { copyText } from "../lib/clipboard";
 import {
   formatDateTime,
   provenanceLabel,
@@ -51,6 +55,7 @@ import type {
   IntegrationExecution,
   IntegrationRecord,
   Project,
+  ResearchContext,
 } from "../types/api";
 
 type Tab = {
@@ -717,10 +722,36 @@ function DetailView({
   const navigate = useNavigate();
   const toast = useToast();
   const [proposing, setProposing] = useState(false);
+  const [copying, setCopying] = useState(false);
+  const [chatOpen, setChatOpen] = useState(false);
   const canProposeWorkflow =
     record.application_id === "next" &&
     record.title.includes("TraceLite") &&
     record.state === "NEW";
+
+  useEffect(() => {
+    setChatOpen(false);
+    setCopying(false);
+  }, [record.id]);
+
+  async function copyForChatGpt() {
+    setCopying(true);
+    try {
+      const exported = await api.get<ResearchContext>(
+        `/api/research/opportunities/${record.id}/export`,
+      );
+      await copyText(exported.markdown);
+      toast.push(
+        "success",
+        "Research review package copied",
+        "Paste it into ChatGPT or another AI. No model was called and no source state was changed.",
+      );
+    } catch (caught) {
+      toast.push("error", "Could not copy research package", errorMessage(caught));
+    } finally {
+      setCopying(false);
+    }
+  }
 
   async function proposeWorkflow() {
     setProposing(true);
@@ -761,6 +792,29 @@ function DetailView({
         <span>{record.source_version || "version not stated"}</span>
         <span>Observed {timeAgo(record.observed_at)}</span>
       </div>
+      {record.application_id === "next" ? (
+        <div className="research-actions">
+          <button
+            className="button button-secondary button-small"
+            onClick={() => void copyForChatGpt()}
+            disabled={copying}
+            type="button"
+          >
+            <Copy size={14} /> {copying ? "Copying…" : "Copy for ChatGPT"}
+          </button>
+          <button
+            className="button button-primary button-small"
+            onClick={() => setChatOpen(true)}
+            type="button"
+          >
+            <MessageSquare size={14} /> Discuss with AI
+          </button>
+          <span className="muted small">
+            Export is structured data, not scraped HTML. No model is called until you
+            submit a chat message.
+          </span>
+        </div>
+      ) : null}
       {canProposeWorkflow ? (
         <div className="workflow-cta">
           <div>
@@ -790,6 +844,13 @@ function DetailView({
         <pre>{JSON.stringify(record.data, null, 2)}</pre>
       </details>
       <DecisionPanel record={record} projects={projects} onChanged={onChanged} />
+      {chatOpen ? (
+        <ResearchChatPanel
+          key={record.id}
+          record={record}
+          onClose={() => setChatOpen(false)}
+        />
+      ) : null}
     </article>
   );
 }

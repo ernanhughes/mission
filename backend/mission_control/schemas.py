@@ -1053,5 +1053,99 @@ class WorkflowDecision(RawModel):
     override_adverse: bool = False
 
 
+class ResearchModelInfo(BaseModel):
+    id: str
+    label: str
+    local: bool
+    configured: bool
+    available: bool
+
+
+class ResearchModelCatalogue(BaseModel):
+    provider: str
+    route: str
+    configured: bool
+    local: bool
+    available: bool
+    endpoint: str | None
+    selected: str | None
+    models: list[ResearchModelInfo]
+    detail: str
+    error: str | None = None
+
+
+class ResearchContextRead(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    schema_name: str = Field(alias="schema", serialization_alias="schema")
+    fingerprint: str
+    markdown: str
+    context: dict[str, Any]
+
+
+class ResearchChatSessionCreate(RawModel):
+    model_id: str = Field(min_length=1, max_length=200)
+    model_route: str = Field(default="configured-local-openai", max_length=120)
+
+
+class ResearchChatMessageCreate(RawModel):
+    content: str = Field(min_length=1, max_length=8000)
+    request_key: str | None = Field(default=None, max_length=120)
+
+
+class ResearchChatMessageRead(BaseModel):
+    id: str
+    session_id: str
+    sequence: int
+    role: str
+    content: str
+    status: str
+    error: str | None
+    provider: str | None
+    model: str | None
+    route: str | None
+    metadata: dict[str, Any]
+    created_at: str
+
+
+class ResearchChatSessionRead(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    id: str
+    application_id: str
+    resource_type: str
+    external_id: str
+    record_id: str | None
+    opportunity_title: str
+    context_schema_name: str = Field(alias="context_schema", serialization_alias="context_schema")
+    context_fingerprint: str
+    context_observed_at: str | None
+    model_route: str
+    model_id: str
+    model_local: bool
+    provider: str
+    endpoint: str | None
+    created_at: str
+    updated_at: str
+    message_count: int
+    messages: list[ResearchChatMessageRead]
+    context_stale: bool
+    current_fingerprint: str | None = None
+    freshness_notice: str | None = None
+
+
+class ResearchChatSessionSummary(BaseModel):
+    id: str
+    opportunity_title: str
+    model_id: str
+    model_local: bool
+    provider: str
+    created_at: str
+    updated_at: str
+    message_count: int
+    last_message: str | None
+    context_stale: bool
+
+
 BookRead.model_rebuild()
 ProjectDetail.model_rebuild()

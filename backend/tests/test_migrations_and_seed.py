@@ -12,9 +12,9 @@ from mission_control.persistence.seed import seed_defaults
 
 def test_migrations_are_repeatable_and_create_expected_tables(runtime: RuntimeSettings) -> None:
     database = Database(runtime)
-    assert apply_migrations(database) == [1, 2, 3, 4, 5]
+    assert apply_migrations(database) == [1, 2, 3, 4, 5, 6]
     assert apply_migrations(database) == []
-    assert schema_version(database) == 5
+    assert schema_version(database) == 6
     with database.engine.connect() as connection:
         tables = {
             row[0]
@@ -40,6 +40,8 @@ def test_migrations_are_repeatable_and_create_expected_tables(runtime: RuntimeSe
         "experiment_workflows",
         "workflow_events",
         "language_observations",
+        "research_chat_sessions",
+        "research_chat_messages",
     }:
         assert expected in tables
     database.dispose()
