@@ -465,6 +465,86 @@ export type IntegrationRecord = {
   decision_options: string[];
 };
 
+export type ResearchModelInfo = {
+  id: string;
+  label: string;
+  local: boolean;
+  configured: boolean;
+  available: boolean;
+};
+
+export type ResearchModelCatalogue = {
+  provider: string;
+  route: string;
+  configured: boolean;
+  local: boolean;
+  available: boolean;
+  endpoint: string | null;
+  selected: string | null;
+  models: ResearchModelInfo[];
+  detail: string;
+  error: string | null;
+};
+
+export type ResearchContext = {
+  schema: string;
+  fingerprint: string;
+  markdown: string;
+  context: Record<string, any>;
+};
+
+export type ResearchChatMessage = {
+  id: string;
+  session_id: string;
+  sequence: number;
+  role: "user" | "assistant";
+  content: string;
+  status: "pending" | "completed" | "failed";
+  error: string | null;
+  provider: string | null;
+  model: string | null;
+  route: string | null;
+  metadata: Record<string, any>;
+  created_at: string;
+};
+
+export type ResearchChatSession = {
+  id: string;
+  application_id: string;
+  resource_type: string;
+  external_id: string;
+  record_id: string | null;
+  opportunity_title: string;
+  context_schema: string;
+  context_fingerprint: string;
+  context_observed_at: string | null;
+  model_route: string;
+  model_id: string;
+  model_local: boolean;
+  provider: string;
+  endpoint: string | null;
+  created_at: string;
+  updated_at: string;
+  message_count: number;
+  messages: ResearchChatMessage[];
+  context_stale: boolean;
+  current_fingerprint: string | null;
+  freshness_notice: string | null;
+};
+
+export type ResearchChatSessionSummary = {
+  id: string;
+  opportunity_title: string;
+  model_id: string;
+  model_local: boolean;
+  provider: string;
+  created_at: string;
+  updated_at: string;
+  message_count: number;
+  last_message: string | null;
+  context_stale: boolean;
+};
+
 export type IntegrationExecution = {
   id: string;
   application_id: string;

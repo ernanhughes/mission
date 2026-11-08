@@ -1,0 +1,85 @@
+{
+  "schema": "mc.research-export.v1",
+  "fingerprint": "3e568f5c316143b562a2e6c6e57994b58a897aee8fd0d40877e6dea70e992b74",
+  "markdown_characters": 8782,
+  "selected_record_id": "res-55ff4404532bf16d807a",
+  "opportunity_id": "combine-36908f991960c259",
+  "title": "[combine] awesome-self-improving-coding-agents + A Framework for Context Enrichment and Selective Robustness in LLM Social Agents",
+  "opportunity_type": "combine",
+  "source_items": [
+    {
+      "id": "b28eb9ae9453a5a3cd959012c827e8f94a0039eaed062ad28cc49965175fd086",
+      "title": "awesome-self-improving-coding-agents",
+      "source": "github",
+      "source_kind": "GitHub implementation or reference repository",
+      "description": null,
+      "url": "https://github.com/vicfei/awesome-self-improving-coding-agents",
+      "recorded_reference": "https://github.com/vicfei/awesome-self-improving-coding-agents",
+      "url_recorded": true
+    },
+    {
+      "id": "1c66b496bf51a924163fa303fedfdcfb82f26839c31b7ed77dc335445cf91e4a",
+      "title": "A Framework for Context Enrichment and Selective Robustness in LLM Social Agents",
+      "source": "arxiv",
+      "source_kind": "Original research source (arXiv)",
+      "description": null,
+      "url": null,
+      "recorded_reference": "2611.06914v1",
+      "url_recorded": true,
+      "reference_note": "Next recorded a source identifier rather than a full URL. No link was invented."
+    }
+  ],
+  "assessment_status": "Provisional",
+  "scores": [
+    {
+      "key": "score",
+      "label": "Overall score",
+      "value": 13.0,
+      "recorded": true
+    },
+    {
+      "key": "capability_gain",
+      "label": "Capability gain",
+      "value": 0.0,
+      "recorded": true
+    },
+    {
+      "key": "feasibility",
+      "label": "Feasibility",
+      "value": 0.0,
+      "recorded": true
+    },
+    {
+      "key": "cost_efficiency",
+      "label": "Cost efficiency",
+      "value": 0.0,
+      "recorded": true
+    },
+    {
+      "key": "evidence_strength",
+      "label": "Evidence strength",
+      "value": 4.0,
+      "recorded": true
+    },
+    {
+      "key": "novelty",
+      "label": "Novelty",
+      "value": 7.0,
+      "recorded": true
+    },
+    {
+      "key": "uncertainty",
+      "label": "Uncertainty",
+      "value": 62.0,
+      "recorded": true
+    },
+    {
+      "key": "overall_confidence",
+      "label": "Overall confidence",
+      "value": null,
+      "recorded": false
+    }
+  ],
+  "experiment_status": "No experiment has been run.",
+  "source_mode": "postgres-readonly"
+}

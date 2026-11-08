@@ -41,3 +41,8 @@ class LaunchProblem(MissionControlError):
 class AdapterProblem(MissionControlError):
     status_code = 502
     code = "adapter_failed"
+
+
+class InferenceProblem(MissionControlError):
+    status_code = 502
+    code = "inference_failed"

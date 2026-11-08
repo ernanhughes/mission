@@ -499,6 +499,58 @@ class WorkflowEvent(Base):
     created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
 
 
+class ResearchChatSession(Base):
+    __tablename__ = "research_chat_sessions"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    application_id: Mapped[str] = mapped_column(String, nullable=False)
+    resource_type: Mapped[str] = mapped_column(String, nullable=False)
+    external_id: Mapped[str] = mapped_column(String, nullable=False)
+    record_id: Mapped[str | None] = mapped_column(
+        String, ForeignKey("integration_records.id", ondelete="SET NULL")
+    )
+    opportunity_title: Mapped[str] = mapped_column(String, nullable=False)
+    context_schema: Mapped[str] = mapped_column(String, nullable=False)
+    context_fingerprint: Mapped[str] = mapped_column(String, nullable=False)
+    context_snapshot: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict, nullable=False)
+    context_observed_at: Mapped[str | None] = mapped_column(String)
+    model_route: Mapped[str] = mapped_column(String, nullable=False)
+    model_id: Mapped[str] = mapped_column(String, nullable=False)
+    model_local: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    provider: Mapped[str] = mapped_column(String, default="openai-compatible", nullable=False)
+    endpoint: Mapped[str | None] = mapped_column(String)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+    updated_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class ResearchChatMessage(Base):
+    __tablename__ = "research_chat_messages"
+    __table_args__ = (
+        UniqueConstraint("session_id", "sequence", name="uq_research_chat_message_sequence"),
+        UniqueConstraint("session_id", "request_key", name="uq_research_chat_message_request"),
+    )
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    session_id: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("research_chat_sessions.id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    sequence: Mapped[int] = mapped_column(Integer, nullable=False)
+    role: Mapped[str] = mapped_column(String, nullable=False)
+    content: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    status: Mapped[str] = mapped_column(String, default="completed", nullable=False)
+    error: Mapped[str | None] = mapped_column(Text)
+    provider: Mapped[str | None] = mapped_column(String)
+    model: Mapped[str | None] = mapped_column(String)
+    route: Mapped[str | None] = mapped_column(String)
+    request_key: Mapped[str | None] = mapped_column(String)
+    metadata_json: Mapped[dict[str, Any]] = mapped_column(
+        "metadata", JSON, default=dict, nullable=False
+    )
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
 class Briefing(Base):
     __tablename__ = "briefings"
 

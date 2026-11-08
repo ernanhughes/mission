@@ -12,6 +12,7 @@ Mission Control is a local-first control centre for an existing ecosystem of AI 
 - **Daily continuity** — project focus, checkpoints, tasks, decisions, activity and a resume card based on the latest saved checkpoint.
 - **Read-only discovery** — bounded scans of `C:\Projects` and `C:\books`, classification with evidence, exclusions, cancellation and persisted candidates. Discovery never enables a launch command.
 - **Unified engine workspaces (MC09)** - Next, Work and CoCoder expose their real data inside Mission Control: candidates and evidence, opportunities and qualification, repository findings and review operations.
+- **Research export and contextual chat (MC-NEXT-CHAT-01)** - every Next opportunity can be copied as a structured critical-review package for another AI or discussed in a persisted, local-only conversation. The export and chat share one evidence snapshot; no Next writes occur.
 - **Unified inbox and federated search** - one attention queue and one search surface across Next, Work, CoCoder, projects, repositories, tasks, checkpoints and decisions. Source identity is preserved.
 - **Controlled application actions** - registered, validated operations with approval and durable execution history. CoCoder reviews can be launched from Mission Control; Next and Work write operations remain explicitly blocked.
 - **Shared project context** - associate Next candidates, Work opportunities and CoCoder findings with projects without copying ownership away from the source engines.
@@ -30,7 +31,7 @@ engines. The workspaces are real application surfaces, not shortcuts.
 
 | Workspace | What is usable |
 | --- | --- |
-| **Next** | Live opportunities, runs and evidence gaps; searchable candidates; scores and experiment detail; local decisions; project association. Discovery launch is blocked pending a reviewed contract. |
+| **Next** | Live opportunities, runs and evidence gaps; searchable candidates; scores and experiment detail; local decisions; project association; **Copy for ChatGPT** and **Discuss with AI** with a frozen opportunity context. Discovery launch is blocked pending a reviewed contract. |
 | **Work** | Live opportunities and qualification; filtering; buyer/location/compensation context; local shortlist, defer, reject or investigate decisions. Source synchronisation is blocked. |
 | **CoCoder** | Repositories, assessments and findings; severity/evidence/affected paths; local dispositions; a registered, confirmed review action with execution history. |
 | **Inbox** | Pending items from Next, Work, CoCoder and Mission Control tasks, with source filters, priority and functional detail links. |
@@ -41,6 +42,22 @@ engines. The workspaces are real application surfaces, not shortcuts.
 Decisions made in Mission Control are stored locally with
 `sync_state=local_only`. They never claim that Next, Work or CoCoder was updated.
 The UI distinguishes source state, cached observation time and human decisions.
+
+### Research export and local chat
+
+Open a Next opportunity and choose **Copy for ChatGPT** to copy a structured
+Markdown review package, or **Discuss with AI** to open a persisted conversation
+grounded in the same context package.
+
+Research chat is deliberately local-only. It reuses the existing
+OpenAI-compatible AI configuration, requires a loopback endpoint, discovers the
+models that endpoint actually reports, and refuses a remote fallback. A
+conversation stores its own evidence snapshot, so a later Next refresh shows a
+freshness notice instead of rewriting history. Copying and chatting never write
+to Next.
+
+See [the implementation and boundary notes](docs/MC-NEXT-CHAT-01.md) and
+[acceptance evidence](docs/acceptance/mc-next-chat-01/README.md).
 
 ### Integration modes
 
