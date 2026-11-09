@@ -6578,3 +6578,154 @@ pre {
   margin-bottom: 10px;
   padding: 12px 14px;
 }
+
+/* ------------------------------------------------- cultivation (MC-CULTIVATION-01) */
+.cultivation-hud {
+  position: fixed;
+  top: 12px;
+  right: 16px;
+  z-index: 40;
+  width: 300px;
+  max-width: calc(100vw - 32px);
+}
+
+.hud-compact {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel);
+  box-shadow: var(--shadow-soft);
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+
+.hud-compact-copy {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.hud-compact-copy strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.8rem;
+}
+
+.hud-compact-detail {
+  color: var(--muted);
+  font-size: 0.7rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hud-bar {
+  display: inline-block;
+  min-width: 56px;
+  flex: 1;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--line);
+  overflow: hidden;
+}
+
+.hud-bar > span {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  border-radius: 3px;
+}
+
+.hud-bar-block {
+  display: block;
+  width: 100%;
+  margin: 6px 0;
+}
+
+.hud-chevron-open {
+  transform: rotate(180deg);
+}
+
+.hud-panel {
+  margin-top: 6px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel);
+  box-shadow: var(--shadow-soft);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 60vh;
+  overflow: auto;
+}
+
+.hud-rank {
+  margin: 0;
+  font-size: 0.8rem;
+}
+
+.hud-goal-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hud-goal-progress {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.72rem;
+}
+
+.hud-recent ul {
+  margin: 4px 0 0;
+  padding-left: 18px;
+  font-size: 0.75rem;
+}
+
+.cultivation-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.goal-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.goal-card {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel);
+  padding: 10px 12px;
+}
+
+.goal-card-active {
+  border-color: var(--accent);
+}
+
+@media (max-width: 900px) {
+  .cultivation-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .cultivation-hud {
+    top: auto;
+    bottom: 12px;
+  }
+}

@@ -16,6 +16,7 @@ from mission_control.config import RuntimeSettings
 from mission_control.models import (
     Application,
     Book,
+    CultivationGoal,
     DiscoveryRoot,
     LaunchDefinition,
     Outcome,
@@ -114,6 +115,121 @@ def _read_yaml(path: Path) -> dict[str, Any]:
 
 def repository_id(path: str) -> str:
     return "repo-" + hashlib.sha1(path.casefold().encode("utf-8")).hexdigest()[:16]
+
+
+def seed_cultivation(session) -> None:
+    """Seed the starter goal catalogue without ever overwriting user goals.
+
+    Estimates stay labelled estimates. The blog-post milestone is a
+    user-attested baseline with no invented date. Nothing else is pre-filled.
+    """
+    from mission_control.cultivation.service import (
+        DEFAULT_RANKS,
+        DEFAULT_STAGES,
+        create_goal,
+    )
+
+    _get_or_create_setting(
+        session, "cultivation",
+        {"stages": [dict(stage) for stage in DEFAULT_STAGES],
+         "ranks": [dict(rank) for rank in DEFAULT_RANKS]})
+
+    catalogue = [
+        {"id": "published_books", "name": "Published Books",
+         "description": "Distinct published book titles across all collections.",
+         "category": "books", "unit": "books", "target_value": 100,
+         "measurement_type": "count", "qualifying_stage": "published",
+         "baseline_value": 30.0,
+         "baseline_note": ("Owner estimate of ~30 published books; awaiting inventory "
+                           "verification. Reduce this starting count as historical titles "
+                           "are backfilled as tracked items."),
+         "baseline_provenance": "estimate",
+         "completion_criteria": ("A distinct published book title. Different formats or "
+                                 "editions of the same book do not count separately unless "
+                                 "the owner defines them as separate items."),
+         "milestones": [1.0, 10.0, 25.0, 50.0, 75.0, 100.0],
+         "priority": 10, "pinned": True, "pin_order": 0, "evidence_source": "manual"},
+        {"id": "fiction_books", "name": "Fiction Books",
+         "description": "Published fiction titles. Also counts toward Published Books.",
+         "category": "books", "unit": "books", "target_value": 100,
+         "measurement_type": "count", "qualifying_stage": "published",
+         "milestones": [1.0, 10.0, 25.0, 50.0, 75.0, 100.0],
+         "priority": 200, "pinned": False, "evidence_source": "manual"},
+        {"id": "technical_books", "name": "Technical Books",
+         "description": "Published technical titles. Also counts toward Published Books.",
+         "category": "books", "unit": "books", "target_value": 100,
+         "measurement_type": "count", "qualifying_stage": "published",
+         "milestones": [1.0, 10.0, 25.0, 50.0, 75.0, 100.0],
+         "priority": 200, "pinned": False, "evidence_source": "manual"},
+        {"id": "blog_posts", "name": "Blog Posts",
+         "description": "Published blog posts.",
+         "category": "writing", "unit": "posts", "target_value": 100,
+         "measurement_type": "count", "qualifying_stage": "published",
+         "baseline_value": 100.0,
+         "baseline_note": ("Reported achieved during the previous year. User-attested; "
+                           "exact completion date not recorded and not independently verified."),
+         "baseline_provenance": "user_assertion",
+         "milestones": [1.0, 10.0, 25.0, 50.0, 75.0, 100.0],
+         "priority": 20, "pinned": True, "pin_order": 10,
+         "state": "achieved", "evidence_source": "manual"},
+        {"id": "movies", "name": "Movies",
+         "description": "Completed/released films.",
+         "category": "film", "unit": "films", "target_value": 100,
+         "measurement_type": "count", "qualifying_stage": "published",
+         "milestones": [1.0, 10.0, 25.0, 50.0, 75.0, 100.0],
+         "priority": 200, "pinned": False, "evidence_source": "manual"},
+        {"id": "songs", "name": "Songs",
+         "description": "Completed/released compositions.",
+         "category": "music", "unit": "songs", "target_value": 100,
+         "measurement_type": "count", "qualifying_stage": "published",
+         "milestones": [1.0, 10.0, 25.0, 50.0, 75.0, 100.0],
+         "priority": 200, "pinned": False, "evidence_source": "manual"},
+        {"id": "research_papers", "name": "Research Papers",
+         "description": "Completed papers meeting a chosen publication standard.",
+         "category": "research", "unit": "papers", "target_value": 100,
+         "measurement_type": "count", "qualifying_stage": "published",
+         "completion_criteria": "A completed paper meeting the publication standard named in its evidence.",
+         "milestones": [1.0, 10.0, 25.0, 50.0, 75.0, 100.0],
+         "priority": 200, "pinned": False, "evidence_source": "manual"},
+        {"id": "applications", "name": "Applications",
+         "description": "Shipped, usable applications.",
+         "category": "software", "unit": "apps", "target_value": 100,
+         "measurement_type": "count", "qualifying_stage": "published",
+         "milestones": [1.0, 10.0, 25.0, 50.0, 75.0, 100.0],
+         "priority": 200, "pinned": False, "evidence_source": "manual"},
+        {"id": "repositories", "name": "Repositories",
+         "description": "Substantive, distinct Git repositories.",
+         "category": "software", "unit": "repos", "target_value": 1000,
+         "measurement_type": "count", "qualifying_stage": "published",
+         "milestones": [100.0, 250.0, 500.0, 750.0, 1000.0],
+         "priority": 200, "pinned": False, "evidence_source": "manual"},
+        {"id": "perfect_repositories", "name": "Perfect Repositories",
+         "description": "Repositories meeting an explicit, independently checked quality standard.",
+         "category": "software", "unit": "repos", "target_value": 100,
+         "measurement_type": "qualified_count", "qualifying_stage": "published",
+         "completion_criteria": ("Revisable qualification standard: passing automated tests, "
+                                 "documentation complete, architectural compliance, no unresolved "
+                                 "critical review findings, relevant security checks, accepted "
+                                 "independent review. Qualification may need renewal; it is not a "
+                                 "guarantee the repository stays defect-free."),
+         "milestones": [1.0, 10.0, 25.0, 50.0, 75.0, 100.0],
+         "priority": 200, "pinned": False, "evidence_source": "manual"},
+        {"id": "body_weight", "name": "Body Weight",
+         "description": "Optional private decreasing-weight target.",
+         "category": "health", "unit": "lb", "target_value": 150,
+         "measurement_type": "threshold_down",
+         "completion_criteria": "Optional, private. No baseline recorded yet.",
+         "priority": 300, "pinned": False, "privacy": "private", "evidence_source": "manual"},
+        {"id": "press_ups", "name": "Press-ups",
+         "description": "Press-ups achieved in a day (switch to recurring for a sustained habit).",
+         "category": "health", "unit": "press-ups", "target_value": 100,
+         "measurement_type": "threshold_up",
+         "priority": 300, "pinned": False, "privacy": "private", "evidence_source": "manual"},
+    ]
+    for entry in catalogue:
+        if session.get(CultivationGoal, entry["id"]) is None:
+            create_goal(session, entry)
+    logger.info("Seeded cultivation starter catalogue")
 
 
 def _get_or_create_setting(session: Session, key: str, value: Any) -> None:
@@ -337,6 +453,8 @@ def seed_defaults(session: Session, settings: RuntimeSettings) -> None:
                     updated_at=now_iso(),
                 )
             )
+
+    seed_cultivation(session)
 
     # One honest seed activity, not synthetic user work.
     record_activity(

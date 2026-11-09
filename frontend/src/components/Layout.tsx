@@ -16,11 +16,13 @@ import {
   Search,
   Settings,
   ShieldCheck,
+  Sprout,
   Sun,
   Telescope,
   X,
 } from "lucide-react";
 import { useApi } from "../api/useApi";
+import { CultivationHud } from "../features/cultivation/CultivationHud";
 import { useTheme } from "./Theme";
 import { CommandPalette } from "./CommandPalette";
 import type { Health } from "../types/api";
@@ -35,6 +37,7 @@ const navigation = [
       { to: "/books", label: "Books", icon: BookOpen },
       { to: "/projects", label: "Projects", icon: Crosshair },
       { to: "/activity", label: "Activity", icon: Activity },
+      { to: "/cultivation", label: "Cultivation", icon: Sprout },
     ],
   },
   {
@@ -158,6 +161,7 @@ export function Layout() {
       </div>
 
       <main className="main-content" id="main-content">
+        <CultivationHud />
         <Outlet />
       </main>
       <CommandPalette open={paletteOpen} onClose={() => setPaletteOpen(false)} />

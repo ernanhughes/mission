@@ -450,6 +450,119 @@ class GitReviewFeedback(Base):
     created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
 
 
+class CultivationGoal(Base):
+    __tablename__ = "cultivation_goals"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    name: Mapped[str] = mapped_column(String, nullable=False)
+    description: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    category: Mapped[str] = mapped_column(String, default="general", nullable=False)
+    unit: Mapped[str] = mapped_column(String, default="items", nullable=False)
+    target_value: Mapped[float] = mapped_column(Float, default=100, nullable=False)
+    measurement_type: Mapped[str] = mapped_column(String, default="count", nullable=False)
+    baseline_value: Mapped[float | None] = mapped_column(Float)
+    baseline_note: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    baseline_provenance: Mapped[str] = mapped_column(String, default="none", nullable=False)
+    qualifying_stage: Mapped[str] = mapped_column(String, default="published", nullable=False)
+    window_days: Mapped[int | None] = mapped_column(Integer)
+    priority: Mapped[int] = mapped_column(Integer, default=100, nullable=False)
+    state: Mapped[str] = mapped_column(String, default="active", nullable=False)
+    pinned: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    pin_order: Mapped[int] = mapped_column(Integer, default=100, nullable=False)
+    privacy: Mapped[str] = mapped_column(String, default="standard", nullable=False)
+    completion_criteria: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    milestones: Mapped[list[float]] = mapped_column(JSON, default=list, nullable=False)
+    dependencies: Mapped[list[str]] = mapped_column(JSON, default=list, nullable=False)
+    evidence_source: Mapped[str] = mapped_column(String, default="manual", nullable=False)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+    updated_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class CultivationItem(Base):
+    __tablename__ = "cultivation_items"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    title: Mapped[str] = mapped_column(String, nullable=False)
+    item_type: Mapped[str] = mapped_column(String, default="work", nullable=False)
+    notes: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    tags: Mapped[list[str]] = mapped_column(JSON, default=list, nullable=False)
+    provenance: Mapped[str] = mapped_column(String, default="unclassified", nullable=False)
+    source_application: Mapped[str | None] = mapped_column(String)
+    source_project_id: Mapped[str | None] = mapped_column(String)
+    source_ref: Mapped[str | None] = mapped_column(Text)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+    updated_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class CultivationMembership(Base):
+    __tablename__ = "cultivation_memberships"
+
+    item_id: Mapped[str] = mapped_column(
+        String, ForeignKey("cultivation_items.id", ondelete="CASCADE"), primary_key=True
+    )
+    goal_id: Mapped[str] = mapped_column(
+        String, ForeignKey("cultivation_goals.id", ondelete="CASCADE"), primary_key=True
+    )
+    stage: Mapped[str] = mapped_column(String, default="idea", nullable=False)
+    evidence_status: Mapped[str] = mapped_column(String, default="none", nullable=False)
+    quality_evidence: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict, nullable=False)
+    qualified: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    qualified_at: Mapped[str | None] = mapped_column(String)
+    completed_at: Mapped[str | None] = mapped_column(String)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+    updated_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class CultivationMeasurement(Base):
+    __tablename__ = "cultivation_measurements"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    goal_id: Mapped[str] = mapped_column(
+        String, ForeignKey("cultivation_goals.id", ondelete="CASCADE"), nullable=False
+    )
+    value: Mapped[float] = mapped_column(Float, nullable=False)
+    observed_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+    note: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    source: Mapped[str] = mapped_column(String, default="manual", nullable=False)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class CultivationEvent(Base):
+    __tablename__ = "cultivation_events"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    goal_id: Mapped[str | None] = mapped_column(
+        String, ForeignKey("cultivation_goals.id", ondelete="CASCADE")
+    )
+    item_id: Mapped[str | None] = mapped_column(
+        String, ForeignKey("cultivation_items.id", ondelete="CASCADE")
+    )
+    event_type: Mapped[str] = mapped_column(String, nullable=False)
+    from_value: Mapped[str | None] = mapped_column(Text)
+    to_value: Mapped[str | None] = mapped_column(Text)
+    note: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    evidence_ref: Mapped[str | None] = mapped_column(Text)
+    occurred_at: Mapped[str | None] = mapped_column(String)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class CultivationEvidence(Base):
+    __tablename__ = "cultivation_evidence"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    goal_id: Mapped[str | None] = mapped_column(
+        String, ForeignKey("cultivation_goals.id", ondelete="CASCADE")
+    )
+    item_id: Mapped[str | None] = mapped_column(
+        String, ForeignKey("cultivation_items.id", ondelete="CASCADE")
+    )
+    kind: Mapped[str] = mapped_column(String, default="reference", nullable=False)
+    reference: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    note: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    verified: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
 class IntegrationRecord(Base):
     __tablename__ = "integration_records"
     __table_args__ = (

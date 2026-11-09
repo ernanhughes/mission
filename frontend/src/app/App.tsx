@@ -6,6 +6,7 @@ import { ProjectPage } from "../pages/ProjectPage";
 import { ApplicationsPage } from "../pages/ApplicationsPage";
 import { BooksPage } from "../pages/BooksPage";
 import { ActivityPage } from "../pages/ActivityPage";
+import { CultivationPage } from "../pages/CultivationPage";
 import { SettingsPage } from "../pages/SettingsPage";
 import { InboxPage } from "../pages/InboxPage";
 import { SearchPage } from "../pages/SearchPage";
@@ -34,6 +35,7 @@ export function App() {
         <Route path="applications" element={<ApplicationsPage />} />
         <Route path="books" element={<BooksPage />} />
         <Route path="activity" element={<ActivityPage />} />
+        <Route path="cultivation" element={<CultivationPage />} />
         <Route path="settings" element={<SettingsPage />} />
         <Route
           path="*"

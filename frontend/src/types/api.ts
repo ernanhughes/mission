@@ -982,6 +982,148 @@ export type ReviewModelCatalogue = {
   error: string | null;
 };
 
+export type CultivationStageDef = {
+  id: string;
+  label: string;
+  color: string;
+};
+
+export type CultivationProgress = {
+  current: number | null;
+  target: number;
+  unit: string;
+  percent: number | null;
+  unknown_reason: string | null;
+  achieved: boolean;
+  estimate_label: string | null;
+  item_count: number;
+  pipeline: Record<string, number>;
+  milestones_reached: number[];
+  next_milestone: number | null;
+};
+
+export type CultivationGoal = {
+  id: string;
+  name: string;
+  description: string;
+  category: string;
+  unit: string;
+  target_value: number;
+  measurement_type: string;
+  baseline_value: number | null;
+  baseline_note: string;
+  baseline_provenance: string;
+  qualifying_stage: string;
+  window_days: number | null;
+  priority: number;
+  state: string;
+  pinned: boolean;
+  pin_order: number;
+  privacy: string;
+  completion_criteria: string;
+  milestones: number[];
+  dependencies: string[];
+  evidence_source: string;
+  created_at: string;
+  updated_at: string;
+  progress: CultivationProgress;
+};
+
+export type CultivationMembership = {
+  item_id: string;
+  goal_id: string;
+  goal_name: string | null;
+  stage: string;
+  evidence_status: string;
+  quality_evidence: Record<string, any>;
+  qualified: boolean;
+  qualified_at: string | null;
+  completed_at: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type CultivationItem = {
+  id: string;
+  title: string;
+  item_type: string;
+  notes: string;
+  tags: string[];
+  provenance: string;
+  source_application: string | null;
+  source_project_id: string | null;
+  source_project_name: string | null;
+  source_ref: string | null;
+  created_at: string;
+  updated_at: string;
+  memberships: CultivationMembership[];
+};
+
+export type CultivationMeasurement = {
+  id: string;
+  goal_id: string;
+  value: number;
+  observed_at: string;
+  note: string;
+  source: string;
+  created_at: string;
+};
+
+export type CultivationEvent = {
+  id: string;
+  goal_id: string | null;
+  item_id: string | null;
+  item_title: string | null;
+  event_type: string;
+  from_value: string | null;
+  to_value: string | null;
+  note: string;
+  evidence_ref: string | null;
+  occurred_at: string | null;
+  created_at: string;
+};
+
+export type CultivationEvidence = {
+  id: string;
+  goal_id: string | null;
+  item_id: string | null;
+  kind: string;
+  reference: string;
+  note: string;
+  verified: boolean;
+  created_at: string;
+};
+
+export type CultivationRank = {
+  id: string;
+  name: string;
+  concept: string;
+  qualified: boolean;
+  requires: Record<string, any>;
+};
+
+export type CultivationHudGoal = {
+  id: string;
+  name: string;
+  unit: string;
+  state: string;
+  privacy: string;
+  progress: CultivationProgress;
+};
+
+export type CultivationHud = {
+  primary: CultivationHudGoal | null;
+  pinned: CultivationHudGoal[];
+  rank: CultivationRank | null;
+  recent_completions: CultivationEvent[];
+  generated_at: string;
+};
+
+export type CultivationConfig = {
+  stages: CultivationStageDef[];
+  ranks: Array<{ id: string; name: string; concept: string; requires: Record<string, any> }>;
+};
+
 export type ApiErrorPayload = {
   error?: {
     code?: string;
