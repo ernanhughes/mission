@@ -2133,6 +2133,9 @@ pre {
   gap: 5px;
   position: sticky;
   top: 24px;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  padding-right: 2px;
 }
 
 .book-selector-item {
@@ -5291,6 +5294,8 @@ pre {
     position: static;
     flex-direction: row;
     overflow-x: auto;
+    overflow-y: hidden;
+    max-height: none;
     padding-bottom: 3px;
   }
 
@@ -6464,4 +6469,112 @@ pre {
 .research-chat-summary {
   margin-top: 5px;
   line-height: 1.45;
+}
+
+/* ------------------------------------------------- git activity (MC-ACTIVITY-01) */
+.notice {
+  margin: 0 0 12px;
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius);
+  background: var(--panel);
+  font-size: 0.8rem;
+}
+
+.notice-warning {
+  border-left-color: var(--warn);
+}
+
+.notice-error {
+  border-left-color: var(--bad);
+}
+
+.activity-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.key-values {
+  margin: 0 0 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.key-values div {
+  display: grid;
+  grid-template-columns: 110px minmax(0, 1fr);
+  gap: 8px;
+  font-size: 0.78rem;
+}
+
+.key-values dt {
+  margin: 0;
+  color: var(--muted);
+}
+
+.key-values dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.row-line {
+  margin: 4px 0;
+  font-size: 0.8rem;
+  overflow-wrap: anywhere;
+}
+
+.row-line code,
+.key-values code {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+}
+
+.pre-wrap {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  max-height: 320px;
+  overflow: auto;
+}
+
+.diff-block {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  max-height: 480px;
+  overflow: auto;
+}
+
+.link-button {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--accent-strong);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+}
+
+.link-button:hover {
+  text-decoration: underline;
+}
+
+.review-card {
+  margin-bottom: 10px;
+  padding: 12px 14px;
 }

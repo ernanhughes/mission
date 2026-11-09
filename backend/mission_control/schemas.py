@@ -344,8 +344,14 @@ class BookRead(BaseModel):
     quality_review_state: str
     last_activity_at: str | None
     priority: int | None = None
+    pinned: bool = False
     latest_checkpoint: "CheckpointRead | None" = None
     repository_action: ActionState | None = None
+
+
+class BookDetectionRead(BaseModel):
+    created: list[str]
+    count: int
 
 
 class BookUpdate(RawModel):
@@ -855,6 +861,153 @@ class ScanRead(BaseModel):
     excluded_count: int | None = None
     skipped_links: list[str] = Field(default_factory=list)
     error: str | None = None
+    repos_discovered: int | None = None
+    repos_indexed: int | None = None
+    commits_new: int | None = None
+    backfill_pending: int | None = None
+    total_repos: int | None = None
+    total_commits: int | None = None
+
+
+# ------------------------------------------------------- git activity (MC-ACTIVITY-01)
+class GitRootCreate(RawModel):
+    path: str
+    name: str = Field(default="", max_length=120)
+    category: str = Field(default="software", max_length=60)
+    enabled: bool = True
+
+    @field_validator("path")
+    @classmethod
+    def check_path(cls, value: str) -> str:
+        return normalize_absolute_path(value, field="activity root")
+
+
+class GitRootUpdate(RawModel):
+    name: str | None = Field(default=None, max_length=120)
+    category: str | None = Field(default=None, max_length=60)
+    enabled: bool | None = None
+    git_enabled: bool | None = None
+
+
+class GitRootRead(BaseModel):
+    path: str
+    name: str
+    category: str
+    enabled: bool
+    git_enabled: bool
+    added_at: str | None = None
+    last_git_sync_at: str | None = None
+    last_git_error: str | None = None
+
+
+class GitRepoRead(BaseModel):
+    id: str
+    root_path: str
+    path: str
+    name: str
+    branch: str | None = None
+    head_sha: str | None = None
+    accessible: bool = True
+    is_bare: bool = False
+    is_shallow: bool = False
+    last_indexed_at: str | None = None
+    backfill_complete: bool = False
+    total_commits: int = 0
+    has_agents: bool = False
+    has_description: bool = False
+    context_status: str = "missing"
+    error: str | None = None
+
+
+class GitCommitRead(BaseModel):
+    repo_id: str
+    repo_name: str
+    repo_path: str
+    root_path: str
+    sha: str
+    short_sha: str
+    subject: str
+    author_name: str
+    author_email: str
+    author_ts: int = 0
+    committer_ts: int = 0
+    committer_tz: str = ""
+    parents: list[str] = Field(default_factory=list)
+    branches: list[str] = Field(default_factory=list)
+    files_changed: int = 0
+    insertions: int = 0
+    deletions: int = 0
+    is_merge: bool = False
+    is_root: bool = False
+    reachable: bool = True
+    review_count: int = 0
+    review_status: str = "awaiting"
+
+
+class GitTimelineRead(BaseModel):
+    items: list[GitCommitRead]
+    total: int
+    partial: bool
+    limit: int
+    offset: int
+
+
+class GitSummaryRead(BaseModel):
+    commits_today: int = 0
+    projects_today: int = 0
+    commits_week: int = 0
+    commits_reviewed: int = 0
+    commits_indexed: int = 0
+    repos_indexed: int = 0
+    backfill_pending: int = 0
+    complete: bool = True
+    generated_at: str
+
+
+class GitReviewCreate(RawModel):
+    repo_id: str = Field(min_length=1, max_length=120)
+    sha: str | None = Field(default=None, max_length=64)
+    commit_shas: list[str] | None = None
+    base_sha: str | None = Field(default=None, max_length=64)
+    target_sha: str | None = Field(default=None, max_length=64)
+    model: str = Field(default="", max_length=200)
+    profile: str = Field(default="code", max_length=20)
+
+
+class GitReviewRead(BaseModel):
+    id: str
+    repo_id: str
+    review_type: str
+    commit_sha: str | None = None
+    base_sha: str | None = None
+    target_sha: str | None = None
+    commit_shas: list[str] = Field(default_factory=list)
+    reviewer_type: str
+    requested_model: str
+    observed_model: str | None = None
+    model_route: str = ""
+    profile: str = "code"
+    status: str
+    verdict: str | None = None
+    findings: list[dict[str, Any]] = Field(default_factory=list)
+    summary: str = ""
+    tests: dict[str, Any] = Field(default_factory=dict)
+    architecture: dict[str, Any] = Field(default_factory=dict)
+    limitations: list[str] = Field(default_factory=list)
+    prompt_hash: str = ""
+    diff_hash: str = ""
+    context_fingerprint: str = ""
+    evidence_coverage: dict[str, Any] = Field(default_factory=dict)
+    usage_info: dict[str, Any] = Field(default_factory=dict)
+    error: str | None = None
+    created_at: str
+    completed_at: str | None = None
+    feedback: list[dict[str, Any]] = Field(default_factory=list)
+
+
+class GitReviewFeedbackCreate(RawModel):
+    rating: str = Field(min_length=1, max_length=40)
+    detail: str = Field(default="", max_length=4000)
 
 
 class CandidateRead(RepositoryRead):

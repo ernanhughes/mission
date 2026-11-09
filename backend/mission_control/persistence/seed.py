@@ -45,6 +45,8 @@ DEFAULT_EXCLUSIONS = [
     "build",
     "coverage",
     ".coverage",
+    ".workbench",
+    ".roborev",
     "*.egg-info",
     "*-review-pack",
     "*-review-pack-v3",
@@ -124,9 +126,21 @@ def seed_defaults(session: Session, settings: RuntimeSettings) -> None:
         return
 
     # Root discovery paths are editable and survive restarts.
-    for root in ("C:\\Projects", "C:\\books"):
-        if Path(root).exists() and session.get(DiscoveryRoot, root) is None:
-            session.add(DiscoveryRoot(path=root, enabled=True, added_at=now_iso()))
+    for root, display, category in (
+        ("C:\\Projects", "Projects", "software"),
+        ("C:\\books", "Books", "books"),
+        ("C:\\book-projects", "Book Projects", "books"),
+    ):
+        if Path(root).exists():
+            existing = session.get(DiscoveryRoot, root)
+            if existing is None:
+                session.add(DiscoveryRoot(path=root, enabled=True, added_at=now_iso(),
+                                          display_name=display, category=category, git_enabled=True))
+            else:
+                if not (existing.display_name or "").strip():
+                    existing.display_name = display
+                if not (existing.category or "").strip():
+                    existing.category = category
     for key, value in DEFAULT_SETTINGS.items():
         _get_or_create_setting(session, key, value)
     _get_or_create_setting(session, "ui", {"theme": "system"})

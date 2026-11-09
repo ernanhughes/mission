@@ -341,7 +341,113 @@ class DiscoveryRoot(Base):
 
     path: Mapped[str] = mapped_column(Text, primary_key=True)
     enabled: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    display_name: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    category: Mapped[str] = mapped_column(Text, default="software", nullable=False)
+    git_enabled: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    last_git_sync_at: Mapped[str | None] = mapped_column(Text)
+    last_git_error: Mapped[str | None] = mapped_column(Text)
     added_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class GitRepository(Base):
+    __tablename__ = "git_repositories"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    root_path: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    path: Mapped[str] = mapped_column(Text, unique=True, nullable=False)
+    name: Mapped[str] = mapped_column(String, default="", nullable=False)
+    git_dir: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    repo_uid: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    branch: Mapped[str | None] = mapped_column(Text)
+    head_sha: Mapped[str | None] = mapped_column(Text)
+    refs_snapshot: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    accessible: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    is_bare: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    is_shallow: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    last_indexed_at: Mapped[str | None] = mapped_column(Text)
+    backfill_complete: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    backfill_before: Mapped[str | None] = mapped_column(Text)
+    total_commits: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    has_agents: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    has_description: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    context_status: Mapped[str] = mapped_column(String, default="missing", nullable=False)
+    error: Mapped[str | None] = mapped_column(Text)
+    updated_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class GitCommit(Base):
+    __tablename__ = "git_commits"
+
+    repo_id: Mapped[str] = mapped_column(
+        String, ForeignKey("git_repositories.id", ondelete="CASCADE"), primary_key=True
+    )
+    sha: Mapped[str] = mapped_column(String, primary_key=True)
+    short_sha: Mapped[str] = mapped_column(String, default="", nullable=False)
+    subject: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    body: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    author_name: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    author_email: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    author_ts: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    author_tz: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    committer_ts: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    committer_tz: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    parents: Mapped[list[str]] = mapped_column(JSON, default=list, nullable=False)
+    branches: Mapped[list[str]] = mapped_column(JSON, default=list, nullable=False)
+    files_changed: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    insertions: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    deletions: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    is_merge: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    is_root: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    reachable: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    first_seen_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+    observed_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class GitReview(Base):
+    __tablename__ = "git_reviews"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    repo_id: Mapped[str] = mapped_column(
+        String, ForeignKey("git_repositories.id", ondelete="CASCADE"), nullable=False
+    )
+    review_type: Mapped[str] = mapped_column(String, default="single", nullable=False)
+    commit_sha: Mapped[str | None] = mapped_column(String)
+    base_sha: Mapped[str | None] = mapped_column(String)
+    target_sha: Mapped[str | None] = mapped_column(String)
+    commit_shas: Mapped[list[str]] = mapped_column(JSON, default=list, nullable=False)
+    reviewer_type: Mapped[str] = mapped_column(String, default="local", nullable=False)
+    requested_model: Mapped[str] = mapped_column(String, default="", nullable=False)
+    observed_model: Mapped[str | None] = mapped_column(String)
+    model_route: Mapped[str] = mapped_column(String, default="", nullable=False)
+    profile: Mapped[str] = mapped_column(String, default="code", nullable=False)
+    status: Mapped[str] = mapped_column(String, default="queued", nullable=False)
+    verdict: Mapped[str | None] = mapped_column(String)
+    findings: Mapped[list[Any]] = mapped_column(JSON, default=list, nullable=False)
+    summary: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    tests: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict, nullable=False)
+    architecture: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict, nullable=False)
+    limitations: Mapped[list[str]] = mapped_column(JSON, default=list, nullable=False)
+    prompt: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    prompt_hash: Mapped[str] = mapped_column(String, default="", nullable=False)
+    diff_hash: Mapped[str] = mapped_column(String, default="", nullable=False)
+    context_fingerprint: Mapped[str] = mapped_column(String, default="", nullable=False)
+    evidence_coverage: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict, nullable=False)
+    usage_info: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict, nullable=False)
+    error: Mapped[str | None] = mapped_column(Text)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+    completed_at: Mapped[str | None] = mapped_column(String)
+
+
+class GitReviewFeedback(Base):
+    __tablename__ = "git_review_feedback"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    review_id: Mapped[str] = mapped_column(
+        String, ForeignKey("git_reviews.id", ondelete="CASCADE"), nullable=False
+    )
+    rating: Mapped[str] = mapped_column(String, default="", nullable=False)
+    detail: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
 
 
 class IntegrationRecord(Base):
