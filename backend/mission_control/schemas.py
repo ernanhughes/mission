@@ -1010,6 +1010,259 @@ class GitReviewFeedbackCreate(RawModel):
     detail: str = Field(default="", max_length=4000)
 
 
+# --------------------------------------------------- cultivation (MC-CULTIVATION-01)
+CultivationMeasurementType = str
+CultivationGoalState = str
+
+
+class CultivationStageDef(BaseModel):
+    id: str
+    label: str
+    color: str = "grey"
+
+
+class CultivationRankDef(BaseModel):
+    id: str
+    name: str
+    concept: str = ""
+    requires: dict[str, Any] = Field(default_factory=dict)
+
+
+class CultivationConfig(BaseModel):
+    stages: list[CultivationStageDef] = Field(default_factory=list)
+    ranks: list[CultivationRankDef] = Field(default_factory=list)
+
+
+class CultivationGoalCreate(RawModel):
+    id: str | None = None
+    name: str = Field(min_length=1, max_length=120)
+    description: str = ""
+    category: str = Field(default="general", max_length=60)
+    unit: str = Field(default="items", max_length=60)
+    target_value: float = Field(default=100)
+    measurement_type: str = Field(default="count", max_length=40)
+    baseline_value: float | None = None
+    baseline_note: str = ""
+    baseline_provenance: str = Field(default="none", max_length=20)
+    qualifying_stage: str = Field(default="published", max_length=60)
+    window_days: int | None = Field(default=None, ge=1, le=3650)
+    priority: int = 100
+    state: str = Field(default="active", max_length=20)
+    pinned: bool = False
+    pin_order: int = 100
+    privacy: str = Field(default="standard", max_length=20)
+    completion_criteria: str = ""
+    milestones: list[float] | None = None
+    dependencies: list[str] = Field(default_factory=list)
+    evidence_source: str = Field(default="manual", max_length=60)
+
+
+class CultivationGoalUpdate(RawModel):
+    name: str | None = Field(default=None, min_length=1, max_length=120)
+    description: str | None = None
+    category: str | None = Field(default=None, max_length=60)
+    unit: str | None = Field(default=None, max_length=60)
+    target_value: float | None = None
+    measurement_type: str | None = Field(default=None, max_length=40)
+    baseline_value: float | None = None
+    baseline_note: str | None = None
+    baseline_provenance: str | None = Field(default=None, max_length=20)
+    qualifying_stage: str | None = Field(default=None, max_length=60)
+    window_days: int | None = Field(default=None, ge=1, le=3650)
+    priority: int | None = None
+    state: str | None = Field(default=None, max_length=20)
+    pinned: bool | None = None
+    pin_order: int | None = None
+    privacy: str | None = Field(default=None, max_length=20)
+    completion_criteria: str | None = None
+    milestones: list[float] | None = None
+    dependencies: list[str] | None = None
+    evidence_source: str | None = Field(default=None, max_length=60)
+
+
+class CultivationProgress(BaseModel):
+    current: float | None = None
+    target: float
+    unit: str
+    percent: float | None = None
+    unknown_reason: str | None = None
+    achieved: bool = False
+    estimate_label: str | None = None
+    item_count: int = 0
+    pipeline: dict[str, int] = Field(default_factory=dict)
+    milestones_reached: list[float] = Field(default_factory=list)
+    next_milestone: float | None = None
+
+
+class CultivationGoalRead(BaseModel):
+    id: str
+    name: str
+    description: str
+    category: str
+    unit: str
+    target_value: float
+    measurement_type: str
+    baseline_value: float | None
+    baseline_note: str
+    baseline_provenance: str
+    qualifying_stage: str
+    window_days: int | None
+    priority: int
+    state: str
+    pinned: bool
+    pin_order: int
+    privacy: str
+    completion_criteria: str
+    milestones: list[float]
+    dependencies: list[str]
+    evidence_source: str
+    created_at: str
+    updated_at: str
+    progress: CultivationProgress
+
+
+class CultivationItemCreate(RawModel):
+    id: str | None = None
+    title: str = Field(min_length=1, max_length=300)
+    item_type: str = Field(default="work", max_length=60)
+    notes: str = ""
+    tags: list[str] = Field(default_factory=list)
+    provenance: str = Field(default="unclassified", max_length=40)
+    source_application: str | None = None
+    source_project_id: str | None = None
+    source_ref: str | None = None
+    goal_ids: list[str] = Field(default_factory=list)
+    stage: str = Field(default="idea", max_length=60)
+
+
+class CultivationItemUpdate(RawModel):
+    title: str | None = Field(default=None, min_length=1, max_length=300)
+    item_type: str | None = Field(default=None, max_length=60)
+    notes: str | None = None
+    tags: list[str] | None = None
+    provenance: str | None = Field(default=None, max_length=40)
+    source_application: str | None = None
+    source_project_id: str | None = None
+    source_ref: str | None = None
+
+
+class CultivationMembershipRead(BaseModel):
+    item_id: str
+    goal_id: str
+    goal_name: str | None = None
+    stage: str
+    evidence_status: str
+    quality_evidence: dict[str, Any] = Field(default_factory=dict)
+    qualified: bool
+    qualified_at: str | None
+    completed_at: str | None
+    created_at: str
+    updated_at: str
+
+
+class CultivationItemRead(BaseModel):
+    id: str
+    title: str
+    item_type: str
+    notes: str
+    tags: list[str]
+    provenance: str
+    source_application: str | None
+    source_project_id: str | None
+    source_project_name: str | None = None
+    source_ref: str | None
+    created_at: str
+    updated_at: str
+    memberships: list[CultivationMembershipRead] = Field(default_factory=list)
+
+
+class CultivationStageUpdate(RawModel):
+    stage: str = Field(min_length=1, max_length=60)
+    note: str = ""
+    evidence_ref: str | None = None
+
+
+class CultivationQualifyUpdate(RawModel):
+    qualified: bool = True
+    quality_evidence: dict[str, Any] = Field(default_factory=dict)
+    note: str = ""
+
+
+class CultivationMeasurementCreate(RawModel):
+    value: float
+    observed_at: str | None = None
+    note: str = Field(default="", max_length=2000)
+    source: str = Field(default="manual", max_length=60)
+
+
+class CultivationMeasurementRead(BaseModel):
+    id: str
+    goal_id: str
+    value: float
+    observed_at: str
+    note: str
+    source: str
+    created_at: str
+
+
+class CultivationEventRead(BaseModel):
+    id: str
+    goal_id: str | None
+    item_id: str | None
+    item_title: str | None = None
+    event_type: str
+    from_value: str | None
+    to_value: str | None
+    note: str
+    evidence_ref: str | None
+    occurred_at: str | None
+    created_at: str
+
+
+class CultivationEvidenceCreate(RawModel):
+    item_id: str | None = None
+    kind: str = Field(default="reference", max_length=60)
+    reference: str = Field(default="", max_length=2000)
+    note: str = Field(default="", max_length=4000)
+    verified: bool = False
+
+
+class CultivationEvidenceRead(BaseModel):
+    id: str
+    goal_id: str | None
+    item_id: str | None
+    kind: str
+    reference: str
+    note: str
+    verified: bool
+    created_at: str
+
+
+class CultivationRankStatus(BaseModel):
+    id: str
+    name: str
+    concept: str
+    qualified: bool
+    requires: dict[str, Any]
+
+
+class CultivationHudGoal(BaseModel):
+    id: str
+    name: str
+    unit: str
+    state: str
+    privacy: str
+    progress: CultivationProgress
+
+
+class CultivationHudRead(BaseModel):
+    primary: CultivationHudGoal | None
+    pinned: list[CultivationHudGoal]
+    rank: CultivationRankStatus | None
+    recent_completions: list[CultivationEventRead]
+    generated_at: str
+
+
 class CandidateRead(RepositoryRead):
     pass
 

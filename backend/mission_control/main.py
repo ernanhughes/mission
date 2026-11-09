@@ -20,6 +20,7 @@ from mission_control.api import (
     adapters,
     applications,
     briefing,
+    cultivation,
     dashboard,
     discovery,
     git_activity,
@@ -215,6 +216,7 @@ def create_app(runtime: RuntimeSettings | None = None) -> FastAPI:
     app.include_router(processes.router)
     app.include_router(projects.router)
     app.include_router(discovery.router)
+    app.include_router(cultivation.router)
     app.include_router(git_activity.router)
     app.include_router(adapters.router)
     app.include_router(integrations_api.router)
