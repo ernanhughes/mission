@@ -130,6 +130,7 @@ export type Book = {
   quality_review_state: string;
   last_activity_at: string | null;
   priority: number | null;
+  pinned: boolean;
   latest_checkpoint: Checkpoint | null;
   repository_action: ActionState | null;
 };
@@ -846,6 +847,139 @@ export type SearchResult = {
   project_id: string | null;
   target_path: string;
   observed_at: string | null;
+};
+
+export type GitActivityRoot = {
+  path: string;
+  name: string;
+  category: string;
+  enabled: boolean;
+  git_enabled: boolean;
+  added_at: string | null;
+  last_git_sync_at: string | null;
+  last_git_error: string | null;
+};
+
+export type GitRepo = {
+  id: string;
+  root_path: string;
+  path: string;
+  name: string;
+  branch: string | null;
+  head_sha: string | null;
+  accessible: boolean;
+  is_bare: boolean;
+  is_shallow: boolean;
+  last_indexed_at: string | null;
+  backfill_complete: boolean;
+  total_commits: number;
+  has_agents: boolean;
+  has_description: boolean;
+  context_status: string;
+  error: string | null;
+};
+
+export type GitCommit = {
+  repo_id: string;
+  repo_name: string;
+  repo_path: string;
+  root_path: string;
+  sha: string;
+  short_sha: string;
+  subject: string;
+  author_name: string;
+  author_email: string;
+  author_ts: number;
+  committer_ts: number;
+  committer_tz: string;
+  parents: string[];
+  branches: string[];
+  files_changed: number;
+  insertions: number;
+  deletions: number;
+  is_merge: boolean;
+  is_root: boolean;
+  reachable: boolean;
+  review_count: number;
+  review_status: string;
+};
+
+export type GitTimeline = {
+  items: GitCommit[];
+  total: number;
+  partial: boolean;
+  limit: number;
+  offset: number;
+};
+
+export type GitSummary = {
+  commits_today: number;
+  projects_today: number;
+  commits_week: number;
+  commits_reviewed: number;
+  commits_indexed: number;
+  repos_indexed: number;
+  backfill_pending: number;
+  complete: boolean;
+  generated_at: string;
+};
+
+export type GitReview = {
+  id: string;
+  repo_id: string;
+  review_type: string;
+  commit_sha: string | null;
+  base_sha: string | null;
+  target_sha: string | null;
+  commit_shas: string[];
+  reviewer_type: string;
+  requested_model: string;
+  observed_model: string | null;
+  model_route: string;
+  profile: string;
+  status: string;
+  verdict: string | null;
+  findings: Array<Record<string, any>>;
+  summary: string;
+  tests: Record<string, any>;
+  architecture: Record<string, any>;
+  limitations: string[];
+  prompt_hash: string;
+  diff_hash: string;
+  context_fingerprint: string;
+  evidence_coverage: Record<string, any>;
+  usage_info: Record<string, any>;
+  error: string | null;
+  created_at: string;
+  completed_at: string | null;
+  feedback: Array<{ id: string; rating: string; detail: string; created_at: string }>;
+};
+
+export type GitScanStatus = {
+  scan_id: string | null;
+  status: string;
+  running: boolean;
+  repos_discovered?: number;
+  repos_indexed?: number;
+  commits_new?: number;
+  backfill_pending?: number;
+  total_repos?: number;
+  total_commits?: number;
+  errors?: Array<{ path: string; error: string }>;
+  error?: string | null;
+};
+
+export type ReviewModelCatalogue = {
+  provider: string;
+  route: string;
+  configured: boolean;
+  local: boolean;
+  available: boolean;
+  endpoint: string | null;
+  selected: string | null;
+  models: Array<{ id: string; label: string; local: boolean; configured: boolean; available: boolean }>;
+  detail: string;
+  error: string | null;
 };
 
 export type ApiErrorPayload = {

@@ -15,12 +15,14 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from mission_control import __version__
 from mission_control.adapters.service import AdapterService
+from mission_control.activity_git.service import GitActivityService
 from mission_control.api import (
     adapters,
     applications,
     briefing,
     dashboard,
     discovery,
+    git_activity,
     health,
     integrations as integrations_api,
     processes,
@@ -35,6 +37,7 @@ from mission_control.core.errors import MissionControlError
 from mission_control.core.logging import configure_logging
 from mission_control.core.paths import is_within
 from mission_control.core.security import OriginGuardMiddleware, SecurityHeadersMiddleware
+from mission_control.discovery.books import sync_detected_books
 from mission_control.discovery.service import DiscoveryService
 from mission_control.integrations.service import IntegrationService
 from mission_control.persistence.db import Database
@@ -76,13 +79,21 @@ def create_app(runtime: RuntimeSettings | None = None) -> FastAPI:
         apply_migrations(database)
         with database.session() as session:
             seed_defaults(session, settings)
+        try:
+            with database.session() as session:
+                detected = sync_detected_books(session, [settings.book_root])
+                if detected:
+                    logger.info("Detected %s book workspaces", len(detected))
+        except Exception:
+            logger.exception("Book detection failed; existing workspaces remain available")
         process_manager = ProcessManager(database, settings)
         adapter_service = AdapterService(database, settings)
         adapter_service.ensure_statuses()
-        discovery_service = DiscoveryService(database)
+        discovery_service = DiscoveryService(database, book_root=settings.book_root)
         integration_service = IntegrationService(database, settings)
         workflow_service = WorkflowService(database, settings, integration_service)
         research_chat = ResearchChatService(database, settings)
+        git_activity_service = GitActivityService(database)
         app.state.database = database
         app.state.settings = settings
         app.state.process_manager = process_manager
@@ -91,6 +102,7 @@ def create_app(runtime: RuntimeSettings | None = None) -> FastAPI:
         app.state.integration_service = integration_service
         app.state.workflow_service = workflow_service
         app.state.research_chat = research_chat
+        app.state.git_activity = git_activity_service
         await process_manager.reconcile_startup()
         refresh_task: asyncio.Task[None] | None = None
         if settings.start_monitor:
@@ -115,6 +127,10 @@ def create_app(runtime: RuntimeSettings | None = None) -> FastAPI:
                 await discovery_service.shutdown()
             except Exception:
                 logger.exception("Discovery shutdown failed")
+            try:
+                await git_activity_service.shutdown()
+            except Exception:
+                logger.exception("Git activity shutdown failed")
             database.dispose()
 
     app = FastAPI(
@@ -199,6 +215,7 @@ def create_app(runtime: RuntimeSettings | None = None) -> FastAPI:
     app.include_router(processes.router)
     app.include_router(projects.router)
     app.include_router(discovery.router)
+    app.include_router(git_activity.router)
     app.include_router(adapters.router)
     app.include_router(integrations_api.router)
     app.include_router(research_api.router)

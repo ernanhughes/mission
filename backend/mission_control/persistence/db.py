@@ -39,7 +39,7 @@ class Database:
             pool_pre_ping=True,
         )
         if settings.database_url.startswith("sqlite"):
-            event.listen(self.engine, "connect", _enable_sqlite_foreign_keys)
+            event.listen(self.engine, "connect", _enable_sqlite_pragmas)
         self.session_factory = sessionmaker(self.engine, expire_on_commit=False, future=True)
 
     @contextmanager
@@ -58,9 +58,20 @@ class Database:
         self.engine.dispose()
 
 
-def _enable_sqlite_foreign_keys(dbapi_connection, _connection_record) -> None:  # type: ignore[no-untyped-def]
+def _enable_sqlite_pragmas(dbapi_connection, _connection_record) -> None:  # type: ignore[no-untyped-def]
     cursor = dbapi_connection.cursor()
     cursor.execute("PRAGMA foreign_keys=ON")
+    # The Git activity index writes from a bounded worker pool while the UI
+    # reads concurrently. WAL plus a busy timeout keeps short concurrent
+    # writers from failing with SQLITE_BUSY under default rollback journals.
+    try:
+        cursor.execute("PRAGMA journal_mode=WAL")
+    except Exception:  # pragma: no cover - defensive; keep DELETE mode
+        pass
+    try:
+        cursor.execute("PRAGMA busy_timeout=30000")
+    except Exception:  # pragma: no cover - defensive
+        pass
     cursor.close()
 
 
