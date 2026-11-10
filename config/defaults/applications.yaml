@@ -297,8 +297,8 @@ applications:
     icon: "Wb"
     tags: [books, editing, context]
     enabled: true
-    pinned: false
-    display_order: 90
+    pinned: true
+    display_order: 15
     repository_path: 'C:\Projects\workbench'
     documentation_paths:
       - 'C:\Projects\workbench\README.md'
@@ -313,5 +313,25 @@ applications:
     control_policy:
       allow_launch: true
       confirmation_required: false
-    launch_definitions: []
+    launch_definitions:
+      - id: workbench-server
+        name: Workbench server
+        launch_type: server
+        executable: 'C:\Projects\workbench\.venv\Scripts\python.exe'
+        arguments: ['-m', workbench, --port, '7420']
+        working_directory: 'C:\Projects\workbench'
+        env_names: []
+        browser_url: http://127.0.0.1:7420/
+        health_type: http
+        health_url: http://127.0.0.1:7420/
+        expected_port: 7420
+        is_primary: true
+        enabled: true
+        verified: true
+        verification_note: >-
+          Verified against the local checkout: the workbench venv python serves
+          the Workbench single-page UI (<title>Workbench</title>) at
+          http://127.0.0.1:7420/. Mission Control verifies that marker before
+          opening or adopting a listener.
+        shutdown_behavior: terminate
     source: default

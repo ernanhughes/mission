@@ -13,10 +13,10 @@ projects:
     current_milestone: Author review of five editorial checkpoints, then a publication decision.
     next_action: Read the five author-review checkpoints and record the publication decision.
     notes: >-
-      Baseline observed in C:\Projects\language\planning\STATUS.md. The
+      Baseline observed in C:\books\language\planning\STATUS.md. The
       implementation lives in project-language; the manuscript remains the product.
     repositories:
-      - path: 'C:\Projects\language'
+      - path: 'C:\books\language'
         name: language
         classification: book
         confidence: 0.98
@@ -24,7 +24,7 @@ projects:
         evidence:
           - README.md describes a 37-chapter Hugo book.
           - planning/STATUS.md records the editorial baseline.
-      - path: 'C:\Projects\project-language'
+      - path: 'C:\book-projects\project-language'
         name: project-language
         classification: supporting_repository
         confidence: 0.95

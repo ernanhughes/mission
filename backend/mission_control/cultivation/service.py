@@ -42,6 +42,7 @@ from mission_control.models import (
 from mission_control.persistence.db import now_iso
 
 MEASUREMENT_TYPES = {"count", "threshold_up", "threshold_down", "recurring", "qualified_count"}
+RECURRING_MODES = {"daily", "period"}
 GOAL_STATES = {"active", "paused", "achieved", "archived"}
 PRIVACY_LEVELS = {"standard", "private"}
 PROVENANCE_VALUES = {"human", "ai_assisted", "ai_workflow", "unclassified"}
@@ -160,6 +161,11 @@ def _validate_goal_payload(payload: dict[str, Any], *, partial: bool) -> dict[st
         cleaned["baseline_provenance"] = provenance
     if "qualifying_stage" in payload or not partial:
         cleaned["qualifying_stage"] = str(payload.get("qualifying_stage", "published"))[:60]
+    if "recurring_mode" in payload or not partial:
+        recurring_mode = str(payload.get("recurring_mode", "daily") or "daily")
+        if recurring_mode not in RECURRING_MODES:
+            raise ValidationProblem(f"Unknown recurring_mode: {recurring_mode}")
+        cleaned["recurring_mode"] = recurring_mode
     if "milestones" in payload and payload["milestones"] is not None:
         try:
             cleaned["milestones"] = sorted({float(value) for value in payload["milestones"]})
@@ -265,6 +271,18 @@ def goal_progress(session: Session, goal: CultivationGoal) -> dict[str, Any]:
             return _unknown(goal, pipeline, "Needs a measurement window (window_days) before progress can be measured.")
         rows = session.scalars(select(CultivationMeasurement).where(
             CultivationMeasurement.goal_id == goal.id).order_by(desc(CultivationMeasurement.observed_at))).all()
+        mode = (goal.recurring_mode or "daily").strip().lower() or "daily"
+        if mode == "period":
+            # Total output inside the window versus the target (e.g. at least
+            # one new script per 7-day window). Each measurement counts once.
+            from datetime import date as _date, timedelta as _td
+            cutoff = (_date.today() - _td(days=window - 1)).isoformat()
+            total = sum(float(row.value) for row in rows if (row.observed_at or "")[:10] >= cutoff)
+            return {"current": total, "target": goal.target_value, "unit": goal.unit,
+                    "percent": min(100.0, total / goal.target_value * 100.0) if goal.target_value > 0 else None,
+                    "unknown_reason": None, "achieved": total >= goal.target_value,
+                    "estimate_label": None, "item_count": 0, "pipeline": pipeline,
+                    "milestones_reached": [], "next_milestone": None}
         by_day: dict[str, float] = {}
         for row in rows:
             day = (row.observed_at or "")[:10]
@@ -730,6 +748,7 @@ def goal_read(session: Session, goal: CultivationGoal) -> dict[str, Any]:
         "measurement_type": goal.measurement_type, "baseline_value": goal.baseline_value,
         "baseline_note": goal.baseline_note, "baseline_provenance": goal.baseline_provenance,
         "qualifying_stage": goal.qualifying_stage, "window_days": goal.window_days,
+        "recurring_mode": goal.recurring_mode or "daily",
         "priority": goal.priority, "state": goal.state, "pinned": bool(goal.pinned),
         "pin_order": goal.pin_order, "privacy": goal.privacy,
         "completion_criteria": goal.completion_criteria, "milestones": list(goal.milestones or []),

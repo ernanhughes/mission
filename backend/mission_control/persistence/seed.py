@@ -342,6 +342,88 @@ def _get_or_create_setting(session: Session, key: str, value: Any) -> None:
         session.add(Setting(key=key, value=value, updated_at=now_iso()))
 
 
+#: Canonical Workbench launch definition. Mirrors
+#: ``config/defaults/applications.yaml`` (application ``workbench``).
+#: Inserted only when the Workbench application exists but has no launch
+#: definitions at all, so author-customized commands, paths and environment
+#: settings are never overwritten.
+WORKBENCH_LAUNCH_DEFINITION = {
+    "id": "workbench-server",
+    "name": "Workbench server",
+    "launch_type": "server",
+    "executable": r"C:\Projects\workbench\.venv\Scripts\python.exe",
+    "arguments": ["-m", "workbench", "--port", "7420"],
+    "working_directory": r"C:\Projects\workbench",
+    "env_names": [],
+    "browser_url": "http://127.0.0.1:7420/",
+    "health_type": "http",
+    "health_url": "http://127.0.0.1:7420/",
+    "expected_port": 7420,
+    "is_primary": True,
+    "enabled": True,
+    "verified": True,
+    "verification_note": (
+        "Verified against the local checkout: the workbench venv python serves "
+        "the Workbench single-page UI (<title>Workbench</title>) at "
+        "http://127.0.0.1:7420/. Mission Control verifies that marker before "
+        "opening or adopting a listener."
+    ),
+    "shutdown_behavior": "terminate",
+}
+
+
+def ensure_workbench_launch_definition(session: Session) -> bool:
+    """Backfill the Workbench launch definition on existing databases.
+
+    Returns True when the canonical definition was inserted. Never touches a
+    Workbench registration that already has launch definitions.
+    """
+    app = session.get(Application, "workbench")
+    if app is None:
+        return False
+    existing = session.scalars(
+        select(LaunchDefinition).where(LaunchDefinition.application_id == "workbench").limit(1)
+    ).first()
+    if existing is not None:
+        return False
+    definition = WORKBENCH_LAUNCH_DEFINITION
+    session.add(
+        LaunchDefinition(
+            id=definition["id"],
+            application_id="workbench",
+            name=definition["name"],  # type: ignore[arg-type]
+            launch_type=definition["launch_type"],  # type: ignore[arg-type]
+            executable=definition["executable"],  # type: ignore[arg-type]
+            arguments=list(definition["arguments"]),  # type: ignore[arg-type]
+            working_directory=definition["working_directory"],  # type: ignore[arg-type]
+            env_names=list(definition["env_names"]),  # type: ignore[arg-type]
+            browser_url=definition["browser_url"],  # type: ignore[arg-type]
+            health_type=definition["health_type"],  # type: ignore[arg-type]
+            health_url=definition["health_url"],  # type: ignore[arg-type]
+            expected_port=definition["expected_port"],  # type: ignore[arg-type]
+            is_primary=bool(definition["is_primary"]),
+            enabled=bool(definition["enabled"]),
+            verified=bool(definition["verified"]),
+            verification_note=str(definition["verification_note"]),
+            shutdown_behavior=str(definition["shutdown_behavior"]),
+            created_at=now_iso(),
+            updated_at=now_iso(),
+        )
+    )
+    record_activity(
+        session,
+        event_type="system",
+        title="Registered Workbench launch definition",
+        detail="Backfilled the verified local Workbench server definition; no author configuration was overwritten.",
+        application_id="workbench",
+        source="mission-control",
+        provenance="verified_observation",
+        dedupe_key="seed-workbench-launch-v1",
+    )
+    logger.info("Backfilled Workbench launch definition")
+    return True
+
+
 def seed_defaults(session: Session, settings: RuntimeSettings) -> None:
     if not settings.seed_defaults:
         return
@@ -560,6 +642,11 @@ def seed_defaults(session: Session, settings: RuntimeSettings) -> None:
             )
 
     seed_cultivation(session)
+
+    # Existing databases seeded before the Workbench launch definition was
+    # shipped keep their (empty) registration; backfill the canonical
+    # definition without touching author customizations.
+    ensure_workbench_launch_definition(session)
 
     # One honest seed activity, not synthetic user work.
     record_activity(

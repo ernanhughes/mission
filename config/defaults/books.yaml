@@ -6,10 +6,10 @@ books:
     current_milestone: 'Published: Language: When Intelligence Enters the Channel.'
     next_action: 'Published on Amazon and Google Play; no further editorial action.'
     manuscript_paths:
-      - 'C:\Projects\language\content\books\language'
-      - 'C:\Projects\language\planning\STATUS.md'
+      - 'C:\books\language\content\books\language'
+      - 'C:\books\language\planning\STATUS.md'
     implementation_paths:
-      - 'C:\Projects\project-language'
+      - 'C:\book-projects\project-language'
     # Amazon is the single URL the book schema stores; the Google Play link is
     # recorded on the project notes:
     # https://play.google.com/store/books/details?id=mhUhEgAAQBAJ

@@ -579,6 +579,7 @@ class CultivationGoal(Base):
     baseline_provenance: Mapped[str] = mapped_column(String, default="none", nullable=False)
     qualifying_stage: Mapped[str] = mapped_column(String, default="published", nullable=False)
     window_days: Mapped[int | None] = mapped_column(Integer)
+    recurring_mode: Mapped[str] = mapped_column(String, default="daily", nullable=False)
     priority: Mapped[int] = mapped_column(Integer, default=100, nullable=False)
     state: Mapped[str] = mapped_column(String, default="active", nullable=False)
     pinned: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)

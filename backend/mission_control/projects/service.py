@@ -144,6 +144,7 @@ def _book_read(session: Session, book: Book, project: Project) -> BookRead:
         quality_review_state=book.quality_review_state,
         last_activity_at=book.last_activity_at,
         priority=project.priority,
+        pinned=project.pinned,
         latest_checkpoint=_checkpoint_read(session, checkpoint) if checkpoint else None,
         repository_action=repository_action(session, book.project_id),
     )

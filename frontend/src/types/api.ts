@@ -1254,3 +1254,12 @@ export type ApiErrorPayload = {
     detail?: unknown;
   };
 };
+
+export type EnsureOpenResult = {
+  url: string;
+  application_id: string;
+  state: string;
+  ownership: string;
+  process_id: string | null;
+  detail: string | null;
+};

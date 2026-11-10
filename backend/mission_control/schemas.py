@@ -1046,6 +1046,7 @@ class CultivationGoalCreate(RawModel):
     baseline_provenance: str = Field(default="none", max_length=20)
     qualifying_stage: str = Field(default="published", max_length=60)
     window_days: int | None = Field(default=None, ge=1, le=3650)
+    recurring_mode: str = Field(default="daily", max_length=20)
     priority: int = 100
     state: str = Field(default="active", max_length=20)
     pinned: bool = False
@@ -1070,6 +1071,7 @@ class CultivationGoalUpdate(RawModel):
     baseline_provenance: str | None = Field(default=None, max_length=20)
     qualifying_stage: str | None = Field(default=None, max_length=60)
     window_days: int | None = Field(default=None, ge=1, le=3650)
+    recurring_mode: str | None = Field(default=None, max_length=20)
     priority: int | None = None
     state: str | None = Field(default=None, max_length=20)
     pinned: bool | None = None
@@ -1113,6 +1115,7 @@ class CultivationGoalRead(BaseModel):
     baseline_provenance: str
     qualifying_stage: str
     window_days: int | None
+    recurring_mode: str = "daily"
     priority: int
     state: str
     pinned: bool
@@ -1604,6 +1607,15 @@ class OpenUrlResponse(BaseModel):
     url: str
     application_id: str
     opened_externally: bool = False
+
+
+class EnsureOpenResponse(BaseModel):
+    url: str
+    application_id: str
+    state: str
+    ownership: str
+    process_id: str | None = None
+    detail: str | None = None
 
 
 class OkResponse(BaseModel):

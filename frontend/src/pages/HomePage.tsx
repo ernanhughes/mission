@@ -111,7 +111,9 @@ export function HomePage() {
 
   if (!dashboard.data) return null;
   const data = dashboard.data;
-  const books = [...data.books].sort((a, b) => (a.priority ?? 999) - (b.priority ?? 999));
+  const books = [...data.books]
+    .filter((book) => book.pinned)
+    .sort((a, b) => (a.priority ?? 999) - (b.priority ?? 999));
   const pinnedApps = data.applications.filter((app) => app.pinned && app.enabled && !app.archived);
   const focus = data.focus;
   const checkpoint = data.checkpoint;
@@ -274,52 +276,66 @@ export function HomePage() {
           </span>
         }
       >
-        <div className="book-grid">
-          {books.map((book, index) => (
-            <article className="book-card" key={book.id}>
-              <div className="book-card-top">
-                <span className="book-rank">0{index + 1}</span>
-                <SimpleStatusBadge state={book.status} />
-              </div>
-              <h3>{book.title}</h3>
-              <span className="book-project">{book.project_name}</span>
-              <div className="book-block">
-                <span>Milestone</span>
-                <p>{book.current_milestone || "No milestone recorded."}</p>
-              </div>
-              <div className="book-block">
-                <span>Next action</span>
-                <p>{book.next_action || "No next action recorded."}</p>
-              </div>
-              <div className="book-card-meta">
-                <span>Checkpoint {book.latest_checkpoint ? timeAgo(book.latest_checkpoint.created_at) : "not saved"}</span>
-              </div>
-              <div className="book-card-actions">
-                <Link className="button button-primary button-small" to={`/projects/${book.project_id}`}>
-                  <BookOpen size={14} /> Open
-                </Link>
-                <div className="reorder-controls" aria-label={`Reorder ${book.title}`}>
-                  <button
-                    className="icon-button"
-                    aria-label={`Move ${book.project_name} up`}
-                    disabled={index === 0 || reordering}
-                    onClick={() => void reorderBooks(book, -1)}
-                  >
-                    <ArrowUp size={15} />
-                  </button>
-                  <button
-                    className="icon-button"
-                    aria-label={`Move ${book.project_name} down`}
-                    disabled={index === books.length - 1 || reordering}
-                    onClick={() => void reorderBooks(book, 1)}
-                  >
-                    <ArrowDown size={15} />
-                  </button>
+        {books.length ? (
+          <div className="book-grid">
+            {books.map((book, index) => (
+              <article className="book-card" key={book.id}>
+                <div className="book-card-top">
+                  <span className="book-rank">{String(index + 1).padStart(2, "0")}</span>
+                  <SimpleStatusBadge state={book.status} />
                 </div>
-              </div>
-            </article>
-          ))}
-        </div>
+                <h3>{book.title}</h3>
+                <span className="book-project">{book.project_name}</span>
+                <div className="book-block">
+                  <span>Milestone</span>
+                  <p>{book.current_milestone || "No milestone recorded."}</p>
+                </div>
+                <div className="book-block">
+                  <span>Next action</span>
+                  <p>{book.next_action || "No next action recorded."}</p>
+                </div>
+                <div className="book-card-meta">
+                  <span>
+                    Checkpoint{" "}
+                    {book.latest_checkpoint
+                      ? timeAgo(book.latest_checkpoint.created_at)
+                      : "not saved"}
+                  </span>
+                </div>
+                <div className="book-card-actions">
+                  <Link
+                    className="button button-primary button-small"
+                    to={`/projects/${book.project_id}`}
+                  >
+                    <BookOpen size={14} /> Open
+                  </Link>
+                  <div className="reorder-controls" aria-label={`Reorder ${book.title}`}>
+                    <button
+                      className="icon-button"
+                      aria-label={`Move ${book.project_name} up`}
+                      disabled={index === 0 || reordering}
+                      onClick={() => void reorderBooks(book, -1)}
+                    >
+                      <ArrowUp size={15} />
+                    </button>
+                    <button
+                      className="icon-button"
+                      aria-label={`Move ${book.project_name} down`}
+                      disabled={index === books.length - 1 || reordering}
+                      onClick={() => void reorderBooks(book, 1)}
+                    >
+                      <ArrowDown size={15} />
+                    </button>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <p className="muted">
+            No priority books are pinned. Pin a book in its project workspace to show it here.
+          </p>
+        )}
       </Section>
 
       <Section

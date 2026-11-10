@@ -2,7 +2,8 @@
 [CmdletBinding()]
 param(
     [int]$Port = 8790,
-    [switch]$Rebuild
+    [switch]$Rebuild,
+    [switch]$NoBrowser
 )
 
 $ErrorActionPreference = "Stop"
@@ -39,11 +40,14 @@ Write-Host "Stop:      Ctrl+C (managed application processes remain and reattach
 Write-Host ""
 
 # Open the browser shortly after startup without blocking the server.
-$browserJob = Start-Job -ScriptBlock {
-    param($target)
-    Start-Sleep -Seconds 2
-    Start-Process $target
-} -ArgumentList $url
+$browserJob = $null
+if (-not $NoBrowser) {
+    $browserJob = Start-Job -ScriptBlock {
+        param($target)
+        Start-Sleep -Seconds 2
+        Start-Process $target
+    } -ArgumentList $url
+}
 
 try {
     & .venv\Scripts\python.exe -m mission_control --host 127.0.0.1 --port $Port
