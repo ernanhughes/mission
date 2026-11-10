@@ -972,6 +972,122 @@ class GitReviewCreate(RawModel):
     target_sha: str | None = Field(default=None, max_length=64)
     model: str = Field(default="", max_length=200)
     profile: str = Field(default="code", max_length=20)
+    daily_date: str | None = Field(default=None, max_length=10)
+    daily_timezone: str | None = Field(default=None, max_length=80)
+    daily_mode: str | None = Field(default=None, max_length=20)
+
+    @field_validator("daily_date")
+    @classmethod
+    def check_daily_date(cls, value: str | None) -> str | None:
+        if value is None:
+            return None
+        if not re.match(r"^\d{4}-\d{2}-\d{2}$", value.strip()):
+            raise ValueError("daily_date must be ISO YYYY-MM-DD")
+        return value.strip()
+
+    @field_validator("daily_mode")
+    @classmethod
+    def check_daily_mode(cls, value: str | None) -> str | None:
+        if value is None:
+            return None
+        normalized = value.strip().lower()
+        if normalized == "explanation":
+            normalized = "explain"
+        if normalized not in {"explain", "review"}:
+            raise ValueError("daily_mode must be explain or review")
+        return normalized
+
+
+class GitDailyPromptRequest(RawModel):
+    repo_id: str = Field(min_length=1, max_length=120)
+    date: str = Field(min_length=10, max_length=10)
+    timezone: str = Field(default="Europe/Dublin", max_length=80)
+    mode: str = Field(default="review", max_length=20)
+    profile: str = Field(default="code", max_length=20)
+
+    @field_validator("date")
+    @classmethod
+    def check_date(cls, value: str) -> str:
+        if not re.match(r"^\d{4}-\d{2}-\d{2}$", (value or "").strip()):
+            raise ValueError("date must be ISO YYYY-MM-DD")
+        return value.strip()
+
+    @field_validator("mode")
+    @classmethod
+    def check_mode(cls, value: str) -> str:
+        normalized = (value or "review").strip().lower()
+        if normalized == "explanation":
+            normalized = "explain"
+        if normalized not in {"explain", "review"}:
+            raise ValueError("mode must be explain or review")
+        return normalized
+
+
+class GitDailyReviewRequest(RawModel):
+    repo_id: str = Field(min_length=1, max_length=120)
+    date: str = Field(min_length=10, max_length=10)
+    timezone: str = Field(default="Europe/Dublin", max_length=80)
+    mode: str = Field(default="review", max_length=20)
+    profile: str = Field(default="code", max_length=20)
+    model: str = Field(default="", max_length=200)
+
+    @field_validator("date")
+    @classmethod
+    def check_date(cls, value: str) -> str:
+        if not re.match(r"^\d{4}-\d{2}-\d{2}$", (value or "").strip()):
+            raise ValueError("date must be ISO YYYY-MM-DD")
+        return value.strip()
+
+    @field_validator("mode")
+    @classmethod
+    def check_mode(cls, value: str) -> str:
+        normalized = (value or "review").strip().lower()
+        if normalized == "explanation":
+            normalized = "explain"
+        if normalized not in {"explain", "review"}:
+            raise ValueError("mode must be explain or review")
+        return normalized
+
+
+class GitDailyProjectRead(BaseModel):
+    repo_id: str
+    repo_name: str
+    date: str
+    timezone: str
+    start_ts: int
+    end_ts: int
+    commit_count: int
+    insertions: int
+    deletions: int
+    files_changed: int
+    files_changed_distinct: int | None = None
+    files_changed_estimated: bool = True
+    first_ts: int
+    last_ts: int
+    backfill_complete: bool
+    index_complete: bool
+    coverage_warning: str | None = None
+    snapshot_fingerprint: str
+    commit_shas: list[str] = Field(default_factory=list)
+    review_status: str = "not_reviewed"
+    review_id: str | None = None
+    review_mode: str | None = None
+    review_verdict: str | None = None
+    review_completed_at: str | None = None
+    review_stale: bool = False
+    review_count: int = 0
+
+
+class GitDailyProjectsRead(BaseModel):
+    date: str
+    timezone: str
+    start_ts: int
+    end_ts: int
+    total_commits: int
+    total_repos: int
+    projects: list[GitDailyProjectRead]
+    partial: bool
+    backfill_pending: int
 
 
 class GitReviewRead(BaseModel):

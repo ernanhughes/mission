@@ -12,9 +12,9 @@ from mission_control.persistence.seed import seed_defaults
 
 def test_migrations_are_repeatable_and_create_expected_tables(runtime: RuntimeSettings) -> None:
     database = Database(runtime)
-    assert apply_migrations(database) == [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    assert apply_migrations(database) == [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
     assert apply_migrations(database) == []
-    assert schema_version(database) == 10
+    assert schema_version(database) == 11
     with database.engine.connect() as connection:
         tables = {
             row[0]

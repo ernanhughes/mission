@@ -228,6 +228,20 @@ def seed_cultivation(session) -> None:
          "category": "health", "unit": "press-ups", "target_value": 100,
          "measurement_type": "threshold_up",
          "priority": 300, "pinned": False, "privacy": "private", "evidence_source": "manual"},
+        {"id": "scripts_published", "name": "Hypnosis Scripts",
+         "description": ("Numbered self-hypnosis scripts (ScriptNNN.md) in C:\\script. "
+                         "Only numbered files count; notes, themed files and audio are context."),
+         "category": "writing", "unit": "scripts", "target_value": 100,
+         "measurement_type": "count", "qualifying_stage": "published",
+         "milestones": [1.0, 10.0, 25.0, 50.0, 75.0, 100.0],
+         "priority": 20, "pinned": True, "pin_order": 20, "evidence_source": "manual"},
+        {"id": "weekly_script", "name": "Weekly Script",
+         "description": ("One new self-hypnosis script per 7-day window. Fed automatically "
+                         "when the scripts source observes a new numbered file."),
+         "category": "writing", "unit": "scripts", "target_value": 1,
+         "measurement_type": "recurring", "recurring_mode": "period", "window_days": 7,
+         "milestones": [1.0],
+         "priority": 21, "pinned": True, "pin_order": 21, "evidence_source": "manual"},
     ]
     for entry in catalogue:
         if session.get(CultivationGoal, entry["id"]) is None:
@@ -249,6 +263,9 @@ def seed_cultivation(session) -> None:
          "description": "Technical titles from idea to publication."},
         {"id": "blog-posts", "name": "Blog Posts", "icon": "rss", "category": "writing",
          "description": "Published posts on programmer.ie.", "pinned": True, "pin_order": 10},
+        {"id": "scripts", "name": "Scripts", "icon": "moon", "category": "writing",
+         "description": "Self-hypnosis scripts: one new numbered script each week.",
+         "pinned": True, "pin_order": 20},
         {"id": "software-development", "name": "Software Development", "icon": "git-branch", "category": "software",
          "description": "Repositories, shipped applications and qualified quality, counted on evidence."},
         {"id": "research", "name": "Research", "icon": "telescope", "category": "research",
@@ -276,7 +293,8 @@ def seed_cultivation(session) -> None:
         "movies": "films", "songs": "music", "research_papers": "research",
         "applications": "software-development", "repositories": "software-development",
         "perfect_repositories": "software-development", "body_weight": "physical-training",
-        "press_ups": "physical-training",
+        "press_ups": "physical-training", "scripts_published": "scripts",
+        "weekly_script": "scripts",
     }
     for goal_id, skill_id in assignments.items():
         goal = session.get(CultivationGoal, goal_id)
@@ -321,6 +339,20 @@ def seed_cultivation(session) -> None:
                                 "goal_id": "repositories", "path": "",
                                 "config": {"included_roots": [r"C:\Projects"], "min_commits": 2}})
         logger.info("Seeded cultivation Activity source (not yet synced)")
+
+    # Seeded numbered-file source: self-hypnosis scripts. Path-gated like the
+    # blog source and never synced automatically. The config names the
+    # weekly-rhythm goal the sync feeds with one unit per new script.
+    scripts_path = r"C:\script"
+    existing_scripts = session.scalars(
+        select(CultivationSource).where(CultivationSource.kind == "numbered_files",
+                                        CultivationSource.goal_id == "scripts_published")).first()
+    if existing_scripts is None and Path(scripts_path).is_dir():
+        create_source(session, {"id": "src-scripts", "name": "Self-hypnosis scripts",
+                                "kind": "numbered_files", "skill_id": "scripts",
+                                "goal_id": "scripts_published", "path": scripts_path,
+                                "config": {"period_goal_id": "weekly_script"}})
+        logger.info("Seeded cultivation scripts source (not yet synced)")
 
     # 100-day Cycle 5: reported position only. No start date is invented, so
     # the day does not auto-advance until the owner sets one.
