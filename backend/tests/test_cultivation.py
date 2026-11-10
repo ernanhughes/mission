@@ -130,18 +130,21 @@ def test_threshold_down_requires_baseline(client: TestClient) -> None:
 
 
 def test_recurring_goal(client: TestClient) -> None:
+    from datetime import date as _date, timedelta as _td
     goal = _goal(client, name="Daily Habit", measurement_type="recurring",
                  target_value=100, window_days=3)
     assert "window" in (goal["progress"]["unknown_reason"] or "") or goal["progress"]["current"] == 0.0
+    today = _date.today()
     # Two of the last three days met: not yet achieved.
     client.post(f"/api/cultivation/goals/{goal['id']}/measurements",
-                json={"value": 100, "observed_at": "2026-11-09T08:00:00Z"})
+                json={"value": 100, "observed_at": f"{today.isoformat()}T08:00:00Z"})
     client.post(f"/api/cultivation/goals/{goal['id']}/measurements",
-                json={"value": 100, "observed_at": "2026-11-08T08:00:00Z"})
+                json={"value": 100, "observed_at": f"{(today - _td(days=1)).isoformat()}T08:00:00Z"})
     partial = client.get(f"/api/cultivation/goals/{goal['id']}").json()
+    assert partial["progress"]["current"] == 2.0
     assert partial["progress"]["achieved"] is False
     client.post(f"/api/cultivation/goals/{goal['id']}/measurements",
-                json={"value": 120, "observed_at": "2026-11-07T08:00:00Z"})
+                json={"value": 120, "observed_at": f"{(today - _td(days=2)).isoformat()}T08:00:00Z"})
     full = client.get(f"/api/cultivation/goals/{goal['id']}").json()
     assert full["progress"]["current"] == 3.0
     assert full["progress"]["achieved"] is True
@@ -201,7 +204,8 @@ def test_qualified_count_goal(client: TestClient) -> None:
     detail = client.get(f"/api/cultivation/items/{item['id']}").json()
     membership = next(m for m in detail["memberships"] if m["goal_id"] == goal["id"])
     assert membership["qualified"] is True
-    assert membership["quality_evidence"] == {"tests": "passing", "review": "accepted"}
+    assert membership["quality_evidence"]["tests"] == "passing"
+    assert membership["quality_evidence"]["qualified_by"] == "user"
     # A review verdict alone is not qualification evidence: unqualifying drops it.
     client.patch(f"/api/cultivation/items/{item['id']}/goals/{goal['id']}/qualify",
                  json={"qualified": False, "note": "Standard revised"})

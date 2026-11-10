@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any
 
 import yaml
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from mission_control.activity.service import record_activity
@@ -16,7 +16,10 @@ from mission_control.config import RuntimeSettings
 from mission_control.models import (
     Application,
     Book,
+    CultivationCycle,
     CultivationGoal,
+    CultivationSkill,
+    CultivationSource,
     DiscoveryRoot,
     LaunchDefinition,
     Outcome,
@@ -230,6 +233,108 @@ def seed_cultivation(session) -> None:
         if session.get(CultivationGoal, entry["id"]) is None:
             create_goal(session, entry)
     logger.info("Seeded cultivation starter catalogue")
+
+    from mission_control.cultivation.service import (
+        create_cycle,
+        create_skill,
+        create_source,
+    )
+
+    skills = [
+        {"id": "books", "name": "Books", "icon": "book", "category": "writing",
+         "description": "Published books across all collections.", "pinned": True, "pin_order": 0},
+        {"id": "fiction-writing", "name": "Fiction Writing", "icon": "pen", "category": "writing",
+         "description": "Fiction titles from idea to publication."},
+        {"id": "technical-writing", "name": "Technical Writing", "icon": "cpu", "category": "writing",
+         "description": "Technical titles from idea to publication."},
+        {"id": "blog-posts", "name": "Blog Posts", "icon": "rss", "category": "writing",
+         "description": "Published posts on programmer.ie.", "pinned": True, "pin_order": 10},
+        {"id": "software-development", "name": "Software Development", "icon": "git-branch", "category": "software",
+         "description": "Repositories, shipped applications and qualified quality, counted on evidence."},
+        {"id": "research", "name": "Research", "icon": "telescope", "category": "research",
+         "description": "Papers and research programmes."},
+        {"id": "films", "name": "Films", "icon": "clapperboard", "category": "film",
+         "description": "Completed films."},
+        {"id": "music", "name": "Music", "icon": "music", "category": "music",
+         "description": "Completed compositions."},
+        {"id": "mathematics", "name": "Mathematics", "icon": "sigma", "category": "research",
+         "description": "Mathematical work and exposition."},
+        {"id": "physical-training", "name": "Physical Training", "icon": "dumbbell", "category": "health",
+         "description": "Strength, conditioning and body metrics."},
+        {"id": "knowledge", "name": "Knowledge Management", "icon": "database", "category": "systems",
+         "description": "Notes, systems and personal knowledge infrastructure."},
+        {"id": "ai-systems", "name": "AI Systems", "icon": "brain", "category": "software",
+         "description": "AI infrastructure and intelligent systems."},
+    ]
+    for entry in skills:
+        if session.get(CultivationSkill, entry["id"]) is None:
+            create_skill(session, entry)
+
+    assignments = {
+        "published_books": "books", "fiction_books": "fiction-writing",
+        "technical_books": "technical-writing", "blog_posts": "blog-posts",
+        "movies": "films", "songs": "music", "research_papers": "research",
+        "applications": "software-development", "repositories": "software-development",
+        "perfect_repositories": "software-development", "body_weight": "physical-training",
+        "press_ups": "physical-training",
+    }
+    for goal_id, skill_id in assignments.items():
+        goal = session.get(CultivationGoal, goal_id)
+        if goal is not None and goal.skill_id is None and session.get(CultivationSkill, skill_id) is not None:
+            goal.skill_id = skill_id
+            goal.updated_at = now_iso()
+
+    # Retire the superseded 02 scaffolding skills only when they are still
+    # untouched defaults, empty and unpinned: never touch user customization.
+    for stale_id, defaults in (
+        ("software-projects", {"name": "Software Projects", "icon": "code", "category": "software",
+                               "description": "Repositories and shipped applications."}),
+        ("applications", {"name": "Applications", "icon": "app", "category": "software",
+                          "description": "Shipped, usable applications."}),
+    ):
+        stale = session.get(CultivationSkill, stale_id)
+        if stale is None or stale.pinned or stale.state == "archived":
+            continue
+        if any(getattr(stale, field) != value for field, value in defaults.items()):
+            continue
+        if session.scalar(select(func.count()).select_from(CultivationGoal).where(
+                CultivationGoal.skill_id == stale_id)):
+            continue
+        stale.state = "archived"
+        stale.updated_at = now_iso()
+        logger.info("Archived superseded cultivation skill %s", stale_id)
+
+    # Seeded live sources: blog (path-gated) and the Activity project index.
+    # Neither is ever synced automatically.
+    blog_path = r"C:\Projects\programmer.ie\content\post"
+    existing_blog = session.scalars(
+        select(CultivationSource).where(CultivationSource.kind == "hugo_blog",
+                                        CultivationSource.goal_id == "blog_posts")).first()
+    if existing_blog is None and Path(blog_path).is_dir():
+        create_source(session, {"id": "src-blog-posts", "name": "programmer.ie posts",
+                                "kind": "hugo_blog", "skill_id": "blog-posts",
+                                "goal_id": "blog_posts", "path": blog_path})
+        logger.info("Seeded cultivation blog source (not yet synced)")
+    if session.get(CultivationSource, "src-activity-projects") is None:
+        create_source(session, {"id": "src-activity-projects", "name": "Activity projects",
+                                "kind": "activity_projects", "skill_id": "software-development",
+                                "goal_id": "repositories", "path": "",
+                                "config": {"included_roots": [r"C:\Projects"], "min_commits": 2}})
+        logger.info("Seeded cultivation Activity source (not yet synced)")
+
+    # 100-day Cycle 5: reported position only. No start date is invented, so
+    # the day does not auto-advance until the owner sets one.
+    if session.scalar(select(CultivationCycle).where(CultivationCycle.number == 5)) is None:
+        create_cycle(session, {"number": 5, "name": "Cycle V", "length_days": 100,
+                               "snapshot_day": 50,
+                               "snapshot_note": ("Owner-reported position: day 50 of 100. "
+                                                 "Start date not established; the day count "
+                                                 "does not auto-advance until it is set."),
+                               "state": "active",
+                               "notes": "Focus goals are illustrative defaults; adjust freely.",
+                               "focus_goal_ids": ["published_books", "blog_posts",
+                                                  "applications", "research_papers"]})
+        logger.info("Seeded cultivation cycle 5 snapshot")
 
 
 def _get_or_create_setting(session: Session, key: str, value: Any) -> None:

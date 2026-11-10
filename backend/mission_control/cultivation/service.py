@@ -8,7 +8,8 @@ labelled with their provenance and never silently converted into evidence.
 from __future__ import annotations
 
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
+from pathlib import Path
 from typing import Any
 
 from sqlalchemy import desc, func, select
@@ -17,13 +18,25 @@ from sqlalchemy.orm import Session
 from mission_control.core.errors import Conflict, NotFound, ValidationProblem
 from mission_control.models import (
     Book,
+    CultivationApplication,
+    CultivationAppRepo,
+    CultivationCycle,
+    CultivationCycleGoal,
     CultivationEvent,
     CultivationEvidence,
     CultivationGoal,
     CultivationItem,
     CultivationMeasurement,
     CultivationMembership,
+    CultivationRepoState,
+    CultivationSkill,
+    CultivationSource,
+    DiscoveryRoot,
+    GitCommit,
+    GitRepository,
     Project,
+    ProjectRepository,
+    Repository,
     Setting,
 )
 from mission_control.persistence.db import now_iso
@@ -34,6 +47,17 @@ PRIVACY_LEVELS = {"standard", "private"}
 PROVENANCE_VALUES = {"human", "ai_assisted", "ai_workflow", "unclassified"}
 BASELINE_PROVENANCE = {"none", "estimate", "user_assertion", "verified"}
 EVIDENCE_STATUS = {"none", "claimed", "verified"}
+SKILL_STATES = {"active", "archived"}
+SOURCE_KINDS = {"hugo_blog", "activity_projects"}
+CYCLE_STATES = {"active", "completed", "archived"}
+REPO_QUALIFICATIONS = {"discovered", "eligible", "pending", "qualified", "excluded", "archived", "unavailable"}
+REPO_CLASSIFICATIONS = {"application", "library", "infrastructure", "research", "website",
+                        "book", "experiment", "other", "unclassified"}
+LIFECYCLE_STAGES = {"idea", "planned", "in_development", "functional", "testing",
+                    "released", "maintained", "archived"}
+RELEASE_EVIDENCE_KINDS = {"versioned_release", "deployment", "published", "completion_decision",
+                          "owner_confirmed", "project_record"}
+DUBLIN_TZ = "Europe/Dublin"
 
 DEFAULT_STAGES = [
     {"id": "idea", "label": "Idea", "color": "grey"},
@@ -184,6 +208,9 @@ def _pipeline(session: Session, goal: CultivationGoal) -> dict[str, int]:
 
 def goal_progress(session: Session, goal: CultivationGoal) -> dict[str, Any]:
     """Recompute progress from stored rows. Unknown stays unknown — never estimated."""
+    live = _live_observation(session, goal)
+    if live is not None:
+        return live
     measurement_type = goal.measurement_type
     baseline = goal.baseline_value or 0.0
     has_baseline = goal.baseline_value is not None
@@ -321,12 +348,14 @@ def rank_status(session: Session) -> dict[str, Any]:
 
 # ------------------------------------------------------------------ goals
 def list_goals(session: Session, *, include_archived: bool = False,
-               privacy: str | None = None) -> list[CultivationGoal]:
+               privacy: str | None = None, skill_id: str | None = None) -> list[CultivationGoal]:
     query = select(CultivationGoal).order_by(CultivationGoal.priority, CultivationGoal.name)
     if not include_archived:
         query = query.where(CultivationGoal.state != "archived")
     if privacy in PRIVACY_LEVELS:
         query = query.where(CultivationGoal.privacy == privacy)
+    if skill_id:
+        query = query.where(CultivationGoal.skill_id == skill_id)
     return list(session.scalars(query).all())
 
 
@@ -368,6 +397,11 @@ def create_goal(session: Session, payload: dict[str, Any]) -> CultivationGoal:
         milestones=milestones,
         created_at=now_iso(), updated_at=now_iso(), **validated,
     )
+    skill_id = payload.get("skill_id")
+    if skill_id is not None:
+        if session.get(CultivationSkill, skill_id) is None:
+            raise NotFound("Skill not found")
+        goal.skill_id = skill_id
     if not goal.name:
         raise ValidationProblem("Goal name must not be empty")
     session.add(goal)
@@ -409,6 +443,14 @@ def update_goal(session: Session, goal_id: str, payload: dict[str, Any]) -> Cult
     if "dependencies" in payload and payload["dependencies"] is not None:
         goal.dependencies = list(payload["dependencies"])[:50]
         changes.append("dependencies")
+    if "skill_id" in payload:
+        skill_id = payload["skill_id"]
+        if skill_id is not None:
+            if session.get(CultivationSkill, skill_id) is None:
+                raise NotFound("Skill not found")
+        if goal.skill_id != skill_id:
+            changes.append("skill_id")
+            goal.skill_id = skill_id
     goal.updated_at = now_iso()
     session.flush()
     if changes:
@@ -518,7 +560,7 @@ def add_membership(session: Session, item_id: str, goal_id: str, *, stage: str =
 
 def set_stage(session: Session, item_id: str, goal_id: str, *, stage: str,
               note: str = "", evidence_ref: str | None = None,
-              completed_at: str | None = None) -> CultivationMembership:
+              completed_at: str | None = None, by_sync: bool = False) -> CultivationMembership:
     membership = session.get(CultivationMembership, (item_id, goal_id))
     if membership is None:
         raise NotFound("Item is not tracked in this goal")
@@ -526,8 +568,15 @@ def set_stage(session: Session, item_id: str, goal_id: str, *, stage: str,
         raise ValidationProblem(f"Unknown stage: {stage}")
     goal = get_goal(session, goal_id)
     previous = membership.stage
+    managed = isinstance(membership.quality_evidence, dict) and bool(membership.quality_evidence.get("managed_by"))
     if previous == stage and completed_at is None:
+        session.flush()
         return membership
+    if not by_sync and managed:
+        # An explicit human move of a source-managed item holds: the next
+        # sync will not silently overwrite it.
+        membership.quality_evidence = {**membership.quality_evidence, "manual_hold": True}
+        note = (note + " " if note else "") + "(Manual hold: source sync will no longer move this item.)"
     membership.stage = stage
     membership.updated_at = now_iso()
     _record_event(session, goal_id=goal_id, item_id=item_id, event_type="stage_changed",
@@ -565,6 +614,9 @@ def set_qualified(session: Session, item_id: str, goal_id: str, *, qualified: bo
     membership.qualified_at = now_iso() if qualified else None
     if quality_evidence:
         membership.quality_evidence = dict(quality_evidence)
+    if qualified:
+        # Human-recorded qualification survives source reconciliation.
+        membership.quality_evidence = {**dict(membership.quality_evidence or {}), "qualified_by": "user"}
     membership.updated_at = now_iso()
     session.flush()
     _record_event(session, goal_id=goal_id, item_id=item_id, event_type="qualified" if qualified else "unqualified",
@@ -624,7 +676,54 @@ def add_evidence(session: Session, goal_id: str | None, *, item_id: str | None =
 
 
 # ------------------------------------------------------------------ reads
+def _live_observation(session: Session, goal: CultivationGoal) -> dict[str, Any] | None:
+    """Observed counts from an attached live source.
+
+    The observation never rewrites the user-attested baseline: when the two
+    disagree the milestone stays achieved (explicit state) while the progress
+    honestly reports the observed value with a reconciliation note.
+    """
+    if goal.evidence_source != "hugo_blog":
+        return None
+    source = session.scalars(select(CultivationSource).where(
+        CultivationSource.goal_id == goal.id, CultivationSource.kind == "hugo_blog",
+        CultivationSource.last_sync_at.is_not(None)).order_by(
+        desc(CultivationSource.last_sync_at)).limit(1)).first()
+    if source is None or not isinstance(source.observed, dict):
+        return None
+    observed = source.observed
+    current = float(observed.get("published", 0))
+    milestones = sorted(set(float(value) for value in (goal.milestones or [])))
+    reached = [value for value in milestones if current >= value]
+    upcoming = [value for value in milestones if value > current]
+    stale = source.last_status == "stale"
+    label = f"{current:g} / {goal.target_value:g} {goal.unit} observed {(source.last_sync_at or '')[:10]}"
+    if stale:
+        label += " (stale — source unavailable, last known kept)"
+    disagreement = None
+    if goal.baseline_value is not None:
+        label += f" · user-attested milestone {goal.baseline_value:g} preserved"
+    if goal.baseline_value is not None and current < goal.baseline_value:
+        kind = "estimate" if goal.baseline_provenance == "estimate" else "user-attested prior achievements"
+        disagreement = (f"Source observes {current:g} but {goal.baseline_value:g} {kind} are recorded. "
+                        "Milestone history is preserved; reconciliation required.")
+    return {"current": current, "target": goal.target_value, "unit": goal.unit,
+            "percent": min(100.0, current / goal.target_value * 100.0) if goal.target_value > 0 else None,
+            "unknown_reason": None, "achieved": current >= goal.target_value,
+            "estimate_label": label, "item_count": int(observed.get("published", 0)),
+            "pipeline": {"published": int(observed.get("published", 0)),
+                         "draft": int(observed.get("drafts", 0)),
+                         "unknown": int(observed.get("unknown", 0))},
+            "milestones_reached": reached, "next_milestone": upcoming[0] if upcoming else None,
+            "live_observed": current, "live_sync_at": source.last_sync_at, "live_stale": stale,
+            "disagreement": disagreement}
+
+
 def goal_read(session: Session, goal: CultivationGoal) -> dict[str, Any]:
+    skill_name = None
+    if goal.skill_id:
+        skill = session.get(CultivationSkill, goal.skill_id)
+        skill_name = skill.name if skill else None
     return {
         "id": goal.id, "name": goal.name, "description": goal.description,
         "category": goal.category, "unit": goal.unit, "target_value": goal.target_value,
@@ -635,6 +734,7 @@ def goal_read(session: Session, goal: CultivationGoal) -> dict[str, Any]:
         "pin_order": goal.pin_order, "privacy": goal.privacy,
         "completion_criteria": goal.completion_criteria, "milestones": list(goal.milestones or []),
         "dependencies": list(goal.dependencies or []), "evidence_source": goal.evidence_source,
+        "skill_id": goal.skill_id, "skill_name": skill_name,
         "created_at": goal.created_at, "updated_at": goal.updated_at,
         "progress": goal_progress(session, goal),
     }
@@ -697,6 +797,706 @@ def event_read(session: Session, event: CultivationEvent) -> dict[str, Any]:
     }
 
 
+def active_cycle(session: Session) -> CultivationCycle | None:
+    return session.scalars(select(CultivationCycle).where(
+        CultivationCycle.state == "active").order_by(desc(CultivationCycle.number)).limit(1)).first()
+
+
+# ------------------------------------------------- projects adapter (03)
+#
+# R1 B1/B2 qualification gate (read before extending): B1 affects review
+# redaction labels; B2 affects short-SHA commit resolution. Neither touches
+# repository identity, discovery, or indexed commit metadata. This adapter
+# therefore uses ONLY the verified subset — git_repositories rows,
+# git_commits aggregates addressed by full SHA, discovery_roots config —
+# and never calls file_diff, build_prompt, or short-SHA prefix resolution.
+
+REPO_ITEM_PREFIX = "repo-"
+APP_ITEM_PREFIX = "app-"
+
+
+def _repo_item_id(repo_uid: str) -> str:
+    return REPO_ITEM_PREFIX + repo_uid
+
+
+def _app_item_id(app_id: str) -> str:
+    return APP_ITEM_PREFIX + app_id
+
+
+def _scope_roots(session: Session, source) -> list[str]:
+    config = source.config if isinstance(source.config, dict) else {}
+    included = config.get("included_roots")
+    if included:
+        return [str(path) for path in included]
+    rows = session.scalars(select(DiscoveryRoot).where(DiscoveryRoot.enabled.is_(True))).all()
+    return [row.path for row in rows if (row.category or "software") == "software"]
+
+
+def _root_category(session: Session, root_path: str) -> str:
+    root = session.get(DiscoveryRoot, root_path)
+    return (root.category if root and root.category else "software")
+
+
+def _project_map(session: Session) -> dict[str, list[str]]:
+    """Repository path (normcase) -> project ids, via ProjectRepository links."""
+    import os as _os
+
+    rows = session.execute(select(Repository.path, ProjectRepository.project_id).join(
+        ProjectRepository, ProjectRepository.repository_id == Repository.id)).all()
+    mapping: dict[str, list[str]] = {}
+    for path, project_id in rows:
+        mapping.setdefault(_os.path.normcase(path), []).append(project_id)
+    return mapping
+
+
+def _commit_aggregates(session: Session) -> dict[str, dict[str, int]]:
+    rows = session.execute(select(GitCommit.repo_id, func.count(GitCommit.sha),
+                                 func.min(GitCommit.committer_ts),
+                                 func.max(GitCommit.committer_ts)).group_by(GitCommit.repo_id)).all()
+    return {repo_id: {"count": int(count), "first_ts": int(first or 0), "last_ts": int(last or 0)}
+            for repo_id, count, first, last in rows}
+
+
+def _auto_qualification(accessible: bool, commit_count: int, config: dict[str, Any]) -> tuple[str, str]:
+    """Conservative default: nothing is ever auto-qualified. Owner confirms."""
+    if not accessible:
+        return "discovered", "Repository is currently inaccessible; kept as discovered, not counted."
+    min_commits = int(config.get("min_commits", 2))
+    if commit_count < min_commits:
+        return "pending", (f"Only {commit_count} commit(s) indexed (minimum {min_commits}); "
+                           "needs owner review before it can count.")
+    return "eligible", (f"{commit_count} commits indexed; eligible but requires "
+                        "explicit owner confirmation to count.")
+
+
+def _first_configured_stage(session: Session) -> str:
+    stages = get_config(session)["stages"]
+    return str(stages[0]["id"]) if stages else "idea"
+
+
+def _resolve_git_row(session: Session, state: CultivationRepoState):
+    """Authoritative row by id, falling back to any row sharing the stable
+    uid (handles moves where Activity issued a new row id)."""
+    repo = session.get(GitRepository, state.repo_id)
+    if repo is None and state.repo_uid:
+        repo = session.scalars(select(GitRepository).where(
+            GitRepository.repo_uid == state.repo_uid).limit(1)).first()
+    return repo
+
+
+def sync_activity_projects(session: Session, source_id: str) -> dict[str, Any]:
+    """Read-only sync from Activity's index. Never writes git tables, never
+    spawns git, never touches the filesystem beyond configured roots (and then
+    only reads already-indexed rows — no traversal here at all)."""
+    import hashlib as _hashlib
+    import os as _os
+
+    source = get_source(session, source_id)
+    if source.kind != "activity_projects":
+        raise ValidationProblem("Only activity_projects sources sync this way")
+    config = source.config if isinstance(source.config, dict) else {}
+    roots = _scope_roots(session, source)
+
+    def _in_scope(repo_path: str) -> str | None:
+        from mission_control.core.paths import is_within, normalize_absolute_path
+        try:
+            candidate = normalize_absolute_path(repo_path, field="repository path")
+        except ValidationProblem:
+            return None
+        for root in roots:
+            try:
+                if _os.path.normcase(candidate) == _os.path.normcase(root) or is_within(Path(candidate), Path(root)):
+                    return root
+            except OSError:
+                continue
+        return None
+
+    git_rows = session.scalars(select(GitRepository)).all()
+    project_map = _project_map(session)
+    aggregates = _commit_aggregates(session)
+
+    uid_groups: dict[str, list] = {}
+    for row in git_rows:
+        root = _in_scope(row.path)
+        if root is None:
+            continue
+        uid_groups.setdefault(row.repo_uid or f"noid:{row.id}", []).append((root, row))
+
+    digest = _hashlib.sha256()
+    for uid in sorted(uid_groups):
+        rows = sorted(uid_groups[uid], key=lambda pair: pair[1].path)
+        _root, primary = rows[0]
+        agg = aggregates.get(primary.id, {"count": 0, "first_ts": 0, "last_ts": 0})
+        digest.update(uid.encode("utf-8"))
+        digest.update(str(primary.head_sha or "").encode("utf-8"))
+        digest.update(str(agg["count"]).encode("utf-8"))
+    fingerprint = digest.hexdigest()[:24]
+
+    seen_repo_ids: set[str] = set()
+    new_items = 0
+    for uid in sorted(uid_groups):
+        rows = sorted(uid_groups[uid], key=lambda pair: pair[1].path)
+        root, primary = rows[0]
+        seen_repo_ids.add(primary.id)
+        agg = aggregates.get(primary.id, {"count": 0, "first_ts": 0, "last_ts": 0})
+        from datetime import datetime as _dt, timezone as _tz
+        first_iso = (_dt.fromtimestamp(agg["first_ts"], tz=_tz.utc).isoformat()
+                     if agg["first_ts"] else None)
+
+        item_id = _repo_item_id(uid)
+        item = session.get(CultivationItem, item_id)
+        if item is None:
+            item = CultivationItem(
+                id=item_id, title=primary.name or Path(primary.path).name, item_type="repository",
+                notes=f"Observed by source '{source.name}'.", provenance="unclassified",
+                source_application="activity_projects", source_ref=f"{source.id}:{primary.path}",
+                created_at=now_iso(), updated_at=now_iso())
+            session.add(item)
+            session.flush()
+            new_items += 1
+        else:
+            if primary.name and item.title != primary.name:
+                old_title = item.title
+                item.title = primary.name
+                _record_event(session, goal_id=None, item_id=item_id, event_type="renamed",
+                              from_value=old_title, to_value=primary.name,
+                              note="Repository renamed or moved; stable identity kept, no new achievement.")
+            item.source_ref = f"{source.id}:{primary.path}"
+            item.updated_at = now_iso()
+
+        state = session.get(CultivationRepoState, primary.id)
+        if state is None:
+            # Same uid under a new Activity row id (root removed without
+            # history, then rediscovered): migrate the judgement across.
+            migrated = session.scalars(select(CultivationRepoState).where(
+                CultivationRepoState.repo_uid == uid).limit(1)).first()
+            if migrated is not None and migrated.repo_id != primary.id:
+                session.delete(migrated)
+                session.flush()
+                _record_event(session, goal_id=None, item_id=item_id, event_type="reidentified",
+                              from_value=migrated.repo_id, to_value=primary.id,
+                              note="Activity row identity changed; owner judgement carried across.")
+            category = _root_category(session, root)
+            state = CultivationRepoState(
+                repo_id=primary.id, repo_uid=uid,
+                classification="book" if category == "books" else "unclassified",
+                accessible=bool(primary.accessible), last_seen_at=now_iso(),
+                last_head=primary.head_sha, last_commit_count=agg["count"],
+                created_at=now_iso(), updated_at=now_iso())
+            session.add(state)
+            session.flush()
+        prev_head, prev_count = state.last_head, state.last_commit_count
+        state.accessible = bool(primary.accessible)
+        state.last_seen_at = now_iso()
+        state.last_head = primary.head_sha
+        state.last_commit_count = agg["count"]
+        state.updated_at = now_iso()
+
+        if state.decided_by == "undecided":
+            qualification, rationale = _auto_qualification(bool(primary.accessible), agg["count"], config)
+            if state.qualification != qualification or not state.rationale:
+                state.qualification = qualification
+                state.rationale = rationale
+                state.updated_at = now_iso()
+            projects = sorted({pid for _, row in rows for pid in project_map.get(_os.path.normcase(row.path), [])})
+            if projects:
+                evidence = dict(state.evidence or {})
+                evidence["project_ids"] = projects
+                state.evidence = evidence
+        else:
+            # Archived work receiving new commits is an observation, never an
+            # automatic state change.
+            if (state.lifecycle_stage == "archived" or state.qualification == "archived") and (
+                    prev_head != primary.head_sha or prev_count != agg["count"]):
+                _record_event(session, goal_id=None, item_id=item_id, event_type="activity_observed",
+                              note=(f"New commits observed on an archived repository "
+                                    f"({prev_count} -> {agg['count']}); state unchanged by design."))
+        # First-evidence timestamp for honest cycle attribution (scan time is
+        # NOT the creation date).
+        for membership in session.scalars(select(CultivationMembership).where(
+                CultivationMembership.item_id == item_id)).all():
+            evidence = dict(membership.quality_evidence or {})
+            if first_iso and evidence.get("first_evidence_ts") != first_iso:
+                evidence["first_evidence_ts"] = first_iso
+                membership.quality_evidence = evidence
+                membership.updated_at = now_iso()
+
+    # Repositories that vanished from the Activity index keep their history.
+    for state in session.scalars(select(CultivationRepoState)).all():
+        if state.repo_id in seen_repo_ids:
+            continue
+        # Still present under another Activity row id (uid match after a move)?
+        moved = session.scalars(select(GitRepository).where(
+            GitRepository.repo_uid == state.repo_uid).limit(1)).first()
+        if moved is not None:
+            continue
+        if state.accessible:
+            state.accessible = False
+            state.updated_at = now_iso()
+            item_id = _repo_item_id(state.repo_uid or state.repo_id)
+            _record_event(session, goal_id=None, item_id=item_id if session.get(CultivationItem, item_id) else None,
+                          event_type="source_removed",
+                          note=(f"Repository no longer in the Activity index ({state.repo_id}); "
+                                "qualifications and history preserved, counted state unchanged."))
+
+    by_qualification: dict[str, int] = {}
+    by_lifecycle: dict[str, int] = {}
+    projects_linked = 0
+    for state in session.scalars(select(CultivationRepoState)).all():
+        by_qualification[state.qualification] = by_qualification.get(state.qualification, 0) + 1
+        if state.lifecycle_stage:
+            by_lifecycle[state.lifecycle_stage] = by_lifecycle.get(state.lifecycle_stage, 0) + 1
+        if isinstance(state.evidence, dict) and state.evidence.get("project_ids"):
+            projects_linked += 1
+    observed = {"repos_total": len(seen_repo_ids), "by_qualification": by_qualification,
+                "by_lifecycle": by_lifecycle, "projects_linked": projects_linked,
+                "roots": roots, "fingerprint": fingerprint,
+                "note": "Owner confirmation required before anything counts."}
+    changed = fingerprint != (source.fingerprint or "")
+    source.observed = observed
+    source.fingerprint = fingerprint
+    source.last_sync_at = now_iso()
+    source.last_status = "ok"
+    source.last_error = None
+    source.updated_at = now_iso()
+    session.flush()
+    if changed and source.goal_id and session.get(CultivationGoal, source.goal_id):
+        _record_event(session, goal_id=source.goal_id, event_type="synced",
+                      to_value=str(len(seen_repo_ids)),
+                      note=(f"Source '{source.name}': {len(seen_repo_ids)} repositories observed "
+                            f"({by_qualification})."))
+    return {"source_id": source.id, "status": "ok", "observed": observed,
+            "stale": False, "goal_id": source.goal_id, "new_items": new_items,
+            "fingerprint_changed": changed}
+
+
+def repo_read(session: Session, state: CultivationRepoState) -> dict[str, Any]:
+    """Display record joining owner judgement with live Activity evidence."""
+    repo = _resolve_git_row(session, state)
+    projects: list[dict[str, str]] = []
+    if repo is not None:
+        import os as _os
+
+        for project_id in _project_map(session).get(_os.path.normcase(repo.path), []):
+            project = session.get(Project, project_id)
+            if project is not None:
+                projects.append({"id": project.id, "name": project.name})
+    agg_count = agg_first = agg_last = None
+    if repo is not None:
+        row = session.execute(select(func.count(GitCommit.sha),
+                                     func.min(GitCommit.committer_ts),
+                                     func.max(GitCommit.committer_ts)).where(
+            GitCommit.repo_id == repo.id)).first()
+        if row is not None:
+            agg_count, agg_first, agg_last = int(row[0]), int(row[1] or 0), int(row[2] or 0)
+    return {
+        "repo_id": state.repo_id, "repo_uid": state.repo_uid,
+        "name": repo.name if repo else state.repo_id,
+        "path": repo.path if repo else None,
+        "root_path": repo.root_path if repo else None,
+        "branch": repo.branch if repo else None,
+        "head_sha": repo.head_sha if repo else None,
+        "accessible": bool(repo.accessible) if repo else False,
+        "indexed": repo is not None,
+        "total_commits": agg_count if agg_count is not None else state.last_commit_count,
+        "first_commit_ts": agg_first, "last_commit_ts": agg_last,
+        "backfill_complete": bool(repo.backfill_complete) if repo else False,
+        "last_indexed_at": repo.last_indexed_at if repo else None,
+        "has_agents": bool(repo.has_agents) if repo else False,
+        "has_description": bool(repo.has_description) if repo else False,
+        "context_status": repo.context_status if repo else "missing",
+        "projects": projects,
+        "qualification": state.qualification, "lifecycle_stage": state.lifecycle_stage,
+        "classification": state.classification, "rationale": state.rationale,
+        "evidence": dict(state.evidence or {}), "decided_by": state.decided_by,
+        "decided_at": state.decided_at, "last_seen_at": state.last_seen_at,
+        "created_at": state.created_at, "updated_at": state.updated_at,
+    }
+
+
+def list_repo_states(session: Session, *, qualification: str | None = None,
+                     classification: str | None = None, lifecycle: str | None = None,
+                     root: str | None = None, search: str | None = None,
+                     include_unavailable: bool = True,
+                     limit: int = 100, offset: int = 0) -> tuple[list[dict[str, Any]], int]:
+    query = select(CultivationRepoState).order_by(CultivationRepoState.updated_at.desc())
+    if qualification:
+        if qualification not in REPO_QUALIFICATIONS:
+            raise ValidationProblem(f"Unknown qualification: {qualification}")
+        query = query.where(CultivationRepoState.qualification == qualification)
+    if classification:
+        if classification not in REPO_CLASSIFICATIONS:
+            raise ValidationProblem(f"Unknown classification: {classification}")
+        query = query.where(CultivationRepoState.classification == classification)
+    if lifecycle:
+        if lifecycle != "unset" and lifecycle not in LIFECYCLE_STAGES:
+            raise ValidationProblem(f"Unknown lifecycle stage: {lifecycle}")
+        if lifecycle == "unset":
+            query = query.where(CultivationRepoState.lifecycle_stage.is_(None))
+        else:
+            query = query.where(CultivationRepoState.lifecycle_stage == lifecycle)
+    if not include_unavailable:
+        query = query.where(CultivationRepoState.accessible.is_(True))
+    if search:
+        needle = f"%{search}%"
+        query = query.join(CultivationItem, CultivationItem.id == ("repo-" + CultivationRepoState.repo_uid)).where(
+            CultivationItem.title.ilike(needle))
+    total = session.scalar(select(func.count()).select_from(query.subquery())) or 0
+    rows = session.scalars(query.limit(min(max(limit, 1), 500)).offset(max(offset, 0))).all()
+    items = []
+    for state in rows:
+        record = repo_read(session, state)
+        if root and (record["root_path"] or "") != root:
+            continue
+        items.append(record)
+    if items:
+        horizon = int(datetime.now(timezone.utc).timestamp()) - 7 * 86400
+        repo_ids = [item["repo_id"] for item in items]
+        recent = dict(session.execute(select(GitCommit.repo_id, func.count(GitCommit.sha)).where(
+            GitCommit.repo_id.in_(repo_ids), GitCommit.committer_ts >= horizon).group_by(
+            GitCommit.repo_id)).all())
+        from mission_control.models import GitReview as _GitReview
+        reviewed = dict(session.execute(select(_GitReview.repo_id, func.count(_GitReview.id)).where(
+            _GitReview.repo_id.in_(repo_ids), _GitReview.status == "completed").group_by(
+            _GitReview.repo_id)).all())
+        for item in items:
+            item["recent_commits"] = int(recent.get(item["repo_id"], 0))
+            item["review_count"] = int(reviewed.get(item["repo_id"], 0))
+    return items, int(total or 0)
+
+
+def classify_repo(session: Session, repo_id: str, *, classification: str | None = None,
+                  lifecycle_stage: str | None = None, qualification: str | None = None,
+                  rationale: str = "", evidence: dict[str, Any] | None = None,
+                  goal_id: str | None = None, completed_at: str | None = None) -> CultivationRepoState:
+    """Owner judgement over a repository. Never applied automatically by sync."""
+    state = session.get(CultivationRepoState, repo_id)
+    if state is None:
+        raise NotFound("Repository is not tracked yet — sync its source first")
+    if classification is not None and classification not in REPO_CLASSIFICATIONS:
+        raise ValidationProblem(f"Unknown classification: {classification}")
+    if lifecycle_stage is not None and lifecycle_stage not in LIFECYCLE_STAGES:
+        raise ValidationProblem(f"Unknown lifecycle stage: {lifecycle_stage}")
+    if qualification is not None and qualification not in REPO_QUALIFICATIONS:
+        raise ValidationProblem(f"Unknown qualification: {qualification}")
+    if qualification in {"qualified", "excluded"} and not rationale.strip():
+        raise ValidationProblem("Qualifying or excluding a repository requires a rationale")
+    changed: list[str] = []
+    if classification is not None and state.classification != classification:
+        state.classification = classification
+        changed.append("classified")
+    if lifecycle_stage is not None and state.lifecycle_stage != lifecycle_stage:
+        previous = state.lifecycle_stage
+        state.lifecycle_stage = lifecycle_stage
+        changed.append("lifecycle_stage")
+        _record_event(session, goal_id=None, event_type="lifecycle_changed",
+                      from_value=previous, to_value=lifecycle_stage,
+                      note=rationale or f"Repository lifecycle set to '{lifecycle_stage}'.")
+    if qualification is not None and state.qualification != qualification:
+        state.qualification = qualification
+        changed.append("qualification")
+        _record_event(session, goal_id=None, event_type="qualified" if qualification == "qualified" else "unqualified",
+                      to_value=qualification, note=rationale)
+    if evidence:
+        merged = dict(state.evidence or {})
+        merged.update(evidence)
+        state.evidence = merged
+        changed.append("evidence")
+    if changed:
+        state.decided_by = "owner"
+        state.decided_at = now_iso()
+    state.updated_at = now_iso()
+    session.flush()
+    if "qualification" in changed and goal_id and session.get(CultivationGoal, goal_id):
+        _sync_repo_membership(session, state, goal_id, completed_at=completed_at)
+    return state
+
+
+def _sync_repo_membership(session: Session, state: CultivationRepoState, goal_id: str,
+                          *, completed_at: str | None = None) -> None:
+    """A qualified repository counts in the goal; anything else leaves the count."""
+    goal = get_goal(session, goal_id)
+    item_id = _repo_item_id(state.repo_uid or state.repo_id)
+    membership = session.get(CultivationMembership, (item_id, goal_id))
+    if state.qualification == "qualified":
+        if membership is None:
+            membership = CultivationMembership(
+                item_id=item_id, goal_id=goal_id, stage=goal.qualifying_stage,
+                evidence_status="claimed",
+                quality_evidence={"qualified_by": "owner"},
+                completed_at=completed_at or now_iso(),
+                created_at=now_iso(), updated_at=now_iso())
+            session.add(membership)
+            session.flush()
+            _record_event(session, goal_id=goal_id, item_id=item_id, event_type="completed",
+                          to_value=goal.qualifying_stage,
+                          note="Repository qualified; counts toward the goal.")
+        elif membership.stage != goal.qualifying_stage:
+            set_stage(session, item_id, goal_id, stage=goal.qualifying_stage,
+                      completed_at=completed_at, note="Repository qualified; counts toward the goal.")
+        progress = goal_progress(session, goal)
+        _check_milestones(session, goal, progress["current"])
+    elif membership is not None and membership.stage == goal.qualifying_stage:
+        set_stage(session, item_id, goal_id, stage=_first_configured_stage(session),
+                  note="Repository left the qualified state; no longer counted, history kept.")
+        progress = goal_progress(session, goal)
+        _check_milestones(session, goal, progress["current"])
+
+
+def bulk_set_qualification(session: Session, repo_ids: list[str], *,
+                           qualification: str, rationale: str,
+                           goal_id: str | None = None) -> dict[str, int]:
+    """Explicit owner bulk action; every repository recorded individually."""
+    if qualification not in REPO_QUALIFICATIONS:
+        raise ValidationProblem(f"Unknown qualification: {qualification}")
+    if not rationale.strip():
+        raise ValidationProblem("Bulk qualification requires a rationale")
+    done = 0
+    for repo_id in list(repo_ids or [])[:500]:
+        state = session.get(CultivationRepoState, repo_id)
+        if state is None:
+            continue
+        classify_repo(session, repo_id, qualification=qualification,
+                      rationale=rationale, goal_id=goal_id)
+        done += 1
+    return {"updated": done}
+
+
+# ------------------------------------------------------------ applications
+def list_applications(session: Session, *, lifecycle: str | None = None,
+                      search: str | None = None) -> list[CultivationApplication]:
+    if lifecycle is not None and lifecycle not in LIFECYCLE_STAGES:
+        raise ValidationProblem(f"Unknown lifecycle stage: {lifecycle}")
+    query = select(CultivationApplication).order_by(CultivationApplication.name)
+    if lifecycle:
+        query = query.where(CultivationApplication.lifecycle_stage == lifecycle)
+    if search:
+        query = query.where(CultivationApplication.name.ilike(f"%{search}%"))
+    return list(session.scalars(query.limit(500)).all())
+
+
+def get_application(session: Session, app_id: str) -> CultivationApplication:
+    app = session.get(CultivationApplication, app_id)
+    if app is None:
+        raise NotFound("Application not found")
+    return app
+
+
+def create_application(session: Session, payload: dict[str, Any]) -> CultivationApplication:
+    name = str(payload.get("name", "")).strip()
+    if not name:
+        raise ValidationProblem("Application name must not be empty")
+    app_id = str(payload.get("id") or _new_id("capp"))
+    if session.get(CultivationApplication, app_id) is not None:
+        raise Conflict("Application id already exists")
+    lifecycle = str(payload.get("lifecycle_stage", "idea"))
+    if lifecycle not in LIFECYCLE_STAGES:
+        raise ValidationProblem(f"Unknown lifecycle stage: {lifecycle}")
+    if lifecycle in {"released", "maintained"}:
+        raise ValidationProblem("New applications start unreleased — use the release action with evidence")
+    app = CultivationApplication(
+        id=app_id, name=name[:200], description=str(payload.get("description", ""))[:4000],
+        lifecycle_stage=lifecycle, release_evidence={},
+        notes=str(payload.get("notes", ""))[:4000],
+        created_at=now_iso(), updated_at=now_iso())
+    session.add(app)
+    session.flush()
+    for repo_id in list(payload.get("repo_ids", []) or [])[:50]:
+        link_app_repo(session, app_id, repo_id)
+    _record_event(session, goal_id=None, event_type="application_created",
+                  note=f"Application '{name}' registered at stage '{lifecycle}'.")
+    return app
+
+
+def update_application(session: Session, app_id: str, payload: dict[str, Any]) -> CultivationApplication:
+    app = get_application(session, app_id)
+    for field in ("name", "description", "notes"):
+        if field in payload and payload[field] is not None:
+            setattr(app, field, str(payload[field])[:4000 if field != "name" else 200])
+    if "lifecycle_stage" in payload and payload["lifecycle_stage"] is not None:
+        stage = str(payload["lifecycle_stage"])
+        if stage not in LIFECYCLE_STAGES:
+            raise ValidationProblem(f"Unknown lifecycle stage: {stage}")
+        if stage in {"released", "maintained"} and not app.release_evidence:
+            raise ValidationProblem("Releasing requires release evidence — use the release action")
+        if app.lifecycle_stage != stage:
+            previous = app.lifecycle_stage
+            app.lifecycle_stage = stage
+            _record_event(session, goal_id=None, event_type="lifecycle_changed",
+                          from_value=previous, to_value=stage,
+                          note=f"Application '{app.name}' moved to '{stage}'.")
+            if stage not in {"released", "maintained"}:
+                _sync_app_membership(session, app, None)
+    app.updated_at = now_iso()
+    session.flush()
+    return app
+
+
+def link_app_repo(session: Session, app_id: str, repo_id: str) -> None:
+    get_application(session, app_id)
+    if session.get(GitRepository, repo_id) is None:
+        raise NotFound("Repository is not in the Activity index")
+    if session.get(CultivationAppRepo, (app_id, repo_id)) is None:
+        session.add(CultivationAppRepo(app_id=app_id, repo_id=repo_id, created_at=now_iso()))
+        session.flush()
+        _record_event(session, goal_id=None, event_type="application_linked",
+                      note=f"Repository {repo_id[:12]}… linked to '{session.get(CultivationApplication, app_id).name}'.")
+
+
+def unlink_app_repo(session: Session, app_id: str, repo_id: str) -> None:
+    link = session.get(CultivationAppRepo, (app_id, repo_id))
+    if link is None:
+        raise NotFound("Repository is not linked to this application")
+    session.delete(link)
+    session.flush()
+    _record_event(session, goal_id=None, event_type="application_unlinked",
+                  note="Repository unlinked; link history preserved.")
+
+
+def _validate_release_evidence(evidence: dict[str, Any]) -> dict[str, Any]:
+    kind = str(evidence.get("kind", ""))
+    if kind not in RELEASE_EVIDENCE_KINDS:
+        raise ValidationProblem("Release evidence kind must be one of: " + ", ".join(sorted(RELEASE_EVIDENCE_KINDS)))
+    if not str(evidence.get("reference", "") or "").strip() and not str(evidence.get("note", "") or "").strip():
+        raise ValidationProblem("Release evidence needs a reference or an owner note")
+    completed_at = evidence.get("completed_at")
+    if completed_at:
+        try:
+            datetime.fromisoformat(str(completed_at).replace("Z", "+00:00"))
+        except ValueError:
+            raise ValidationProblem("completed_at must be an ISO-8601 timestamp") from None
+    return {"kind": kind, "reference": str(evidence.get("reference", ""))[:2000],
+            "date": str(evidence.get("date", "") or "")[:40],
+            "authority": str(evidence.get("authority", "owner"))[:120],
+            "note": str(evidence.get("note", ""))[:4000],
+            "completed_at": str(completed_at or "")[:40] or None}
+
+
+def release_application(session: Session, app_id: str, *, lifecycle: str,
+                        evidence: dict[str, Any], completed_at: str | None = None,
+                        goal_id: str | None = None, note: str = "") -> CultivationApplication:
+    if lifecycle not in {"released", "maintained"}:
+        raise ValidationProblem("Release requires the released or maintained stage")
+    app = get_application(session, app_id)
+    checked = _validate_release_evidence(dict(evidence or {}))
+    stamp = completed_at or checked.get("completed_at") or now_iso()
+    try:
+        datetime.fromisoformat(str(stamp).replace("Z", "+00:00"))
+    except ValueError:
+        raise ValidationProblem("completed_at must be an ISO-8601 timestamp") from None
+    previous = app.lifecycle_stage
+    app.lifecycle_stage = lifecycle
+    app.release_evidence = checked
+    app.completed_at = stamp
+    app.updated_at = now_iso()
+    session.flush()
+    _record_event(session, goal_id=None, event_type="lifecycle_changed",
+                  from_value=previous, to_value=lifecycle,
+                  note=(note or f"Application '{app.name}' {lifecycle} "
+                        f"({checked['kind']}: {checked['reference'] or checked['note']})."))
+    _sync_app_membership(session, app, goal_id or "applications", completed_at=stamp)
+    return app
+
+
+def unrelease_application(session: Session, app_id: str, *, note: str = "") -> CultivationApplication:
+    app = get_application(session, app_id)
+    if app.lifecycle_stage in {"released", "maintained"}:
+        app.lifecycle_stage = "functional"
+        app.updated_at = now_iso()
+        session.flush()
+        _record_event(session, goal_id=None, event_type="reopened",
+                      note=note or "Release withdrawn; application no longer counts as shipped.")
+        _sync_app_membership(session, app, None)
+    return app
+
+
+def _sync_app_membership(session: Session, app: CultivationApplication, goal_id: str | None,
+                         *, completed_at: str | None = None) -> None:
+    """One released application counts once, however many repositories it owns."""
+    item_id = _app_item_id(app.id)
+    item = session.get(CultivationItem, item_id)
+    if item is None:
+        item = CultivationItem(
+            id=item_id, title=app.name, item_type="application", provenance="unclassified",
+            source_application="cultivation", source_ref=f"application:{app.id}",
+            notes=app.description, created_at=now_iso(), updated_at=now_iso())
+        session.add(item)
+        session.flush()
+    else:
+        item.title = app.name
+        item.updated_at = now_iso()
+    if goal_id is None:
+        # Goal unknown (e.g. after unrelease): move every qualifying
+        # membership out, keeping history, instead of leaving a stale count.
+        for membership in list(session.scalars(select(CultivationMembership).where(
+                CultivationMembership.item_id == item_id)).all()):
+            goal = session.get(CultivationGoal, membership.goal_id)
+            if goal is not None and membership.stage == goal.qualifying_stage:
+                set_stage(session, item_id, goal.id, stage=_first_configured_stage(session),
+                          note="Application no longer shipped; removed from the count with history kept.")
+                progress = goal_progress(session, goal)
+                _check_milestones(session, goal, progress["current"])
+        return
+    goal = session.get(CultivationGoal, goal_id)
+    assert goal is not None
+    membership = session.get(CultivationMembership, (item_id, goal_id))
+    if app.lifecycle_stage in {"released", "maintained"}:
+        if membership is None:
+            membership = CultivationMembership(
+                item_id=item_id, goal_id=goal_id, stage=goal.qualifying_stage,
+                evidence_status="claimed",
+                quality_evidence={"release": dict(app.release_evidence or {})},
+                completed_at=completed_at or app.completed_at or now_iso(),
+                created_at=now_iso(), updated_at=now_iso())
+            session.add(membership)
+            session.flush()
+            _record_event(session, goal_id=goal_id, item_id=item_id, event_type="completed",
+                          to_value=goal.qualifying_stage,
+                          note=f"Application '{app.name}' shipped; counts once.")
+        elif membership.stage != goal.qualifying_stage:
+            set_stage(session, item_id, goal_id, stage=goal.qualifying_stage,
+                      completed_at=completed_at or app.completed_at, note="Application shipped.")
+        progress = goal_progress(session, goal)
+        _check_milestones(session, goal, progress["current"])
+    elif membership is not None and membership.stage == goal.qualifying_stage:
+        set_stage(session, item_id, goal_id, stage=_first_configured_stage(session),
+                  note="Application no longer shipped; removed from the count with history kept.")
+        progress = goal_progress(session, goal)
+        _check_milestones(session, goal, progress["current"])
+
+
+def app_read(session: Session, app: CultivationApplication) -> dict[str, Any]:
+    repos = []
+    for link in session.scalars(select(CultivationAppRepo).where(
+            CultivationAppRepo.app_id == app.id)).all():
+        state = session.get(CultivationRepoState, link.repo_id)
+        git_repo = session.get(GitRepository, link.repo_id)
+        repos.append({
+            "repo_id": link.repo_id,
+            "name": git_repo.name if git_repo else (state.repo_uid if state else link.repo_id),
+            "path": git_repo.path if git_repo else None,
+            "qualification": state.qualification if state else "untracked",
+            "accessible": bool(git_repo.accessible) if git_repo else False,
+        })
+    memberships = []
+    item = session.get(CultivationItem, _app_item_id(app.id))
+    if item is not None:
+        for membership in session.scalars(select(CultivationMembership).where(
+                CultivationMembership.item_id == item.id)).all():
+            goal = session.get(CultivationGoal, membership.goal_id)
+            memberships.append({
+                "goal_id": membership.goal_id, "goal_name": goal.name if goal else None,
+                "stage": membership.stage, "completed_at": membership.completed_at,
+                "qualified": bool(membership.qualified),
+                "evidence_status": membership.evidence_status,
+            })
+    return {"id": app.id, "name": app.name, "description": app.description,
+            "lifecycle_stage": app.lifecycle_stage, "release_evidence": dict(app.release_evidence or {}),
+            "completed_at": app.completed_at, "notes": app.notes,
+            "created_at": app.created_at, "updated_at": app.updated_at,
+            "repos": repos, "memberships": memberships}
+
+
 def hud_summary(session: Session) -> dict[str, Any]:
     pinned = [goal for goal in session.scalars(select(CultivationGoal).where(
         CultivationGoal.pinned.is_(True), CultivationGoal.state != "archived").order_by(
@@ -712,10 +1512,538 @@ def hud_summary(session: Session) -> dict[str, Any]:
         CultivationEvent.event_type == "completed").order_by(
         desc(CultivationEvent.created_at)).limit(10)).all()
     ranks = rank_status(session)
+    cycle = active_cycle(session)
+    pinned_skills = [skill_read(session, skill) for skill in session.scalars(select(CultivationSkill).where(
+        CultivationSkill.pinned.is_(True), CultivationSkill.state != "archived").order_by(
+        CultivationSkill.pin_order, CultivationSkill.name)).all()]
     return {
         "primary": _hud_goal(primary) if primary else None,
         "pinned": [_hud_goal(goal) for goal in pinned],
         "rank": ranks["current"],
         "recent_completions": [event_read(session, event) for event in recent],
         "generated_at": now_iso(),
+        "cycle": cycle_read(session, cycle) if cycle else None,
+        "pinned_skills": pinned_skills,
     }
+
+
+# ------------------------------------------------------------------ skills
+def list_skills(session: Session, *, include_archived: bool = False) -> list[CultivationSkill]:
+    query = select(CultivationSkill).order_by(CultivationSkill.pin_order, CultivationSkill.name)
+    if not include_archived:
+        query = query.where(CultivationSkill.state != "archived")
+    return list(session.scalars(query).all())
+
+
+def get_skill(session: Session, skill_id: str) -> CultivationSkill:
+    skill = session.get(CultivationSkill, skill_id)
+    if skill is None:
+        raise NotFound("Skill not found")
+    return skill
+
+
+def create_skill(session: Session, payload: dict[str, Any]) -> CultivationSkill:
+    name = str(payload.get("name", "")).strip()
+    if not name:
+        raise ValidationProblem("Skill name must not be empty")
+    skill_id = str(payload.get("id") or _new_id("skl"))
+    if session.get(CultivationSkill, skill_id) is not None:
+        raise Conflict("Skill id already exists")
+    state = str(payload.get("state", "active"))
+    if state not in SKILL_STATES:
+        raise ValidationProblem(f"Unknown state: {state}")
+    skill = CultivationSkill(
+        id=skill_id, name=name[:120], icon=str(payload.get("icon", "sprout"))[:40],
+        category=str(payload.get("category", "general"))[:60],
+        description=str(payload.get("description", ""))[:2000],
+        pinned=bool(payload.get("pinned", False)), pin_order=int(payload.get("pin_order", 100)),
+        state=state, created_at=now_iso(), updated_at=now_iso())
+    session.add(skill)
+    session.flush()
+    _record_event(session, goal_id=None, event_type="skill_created", note=f"Skill '{name}' created.")
+    return skill
+
+
+def update_skill(session: Session, skill_id: str, payload: dict[str, Any]) -> CultivationSkill:
+    skill = get_skill(session, skill_id)
+    for field in ("name", "icon", "category", "description"):
+        if field in payload and payload[field] is not None:
+            setattr(skill, field, str(payload[field])[:2000 if field == "description" else 120])
+    if "state" in payload and payload["state"] is not None:
+        if str(payload["state"]) not in SKILL_STATES:
+            raise ValidationProblem("Unknown state")
+        skill.state = str(payload["state"])
+    for field in ("pinned", "pin_order"):
+        if field in payload and payload[field] is not None:
+            setattr(skill, field, bool(payload[field]) if field == "pinned" else int(payload[field]))
+    skill.updated_at = now_iso()
+    session.flush()
+    return skill
+
+
+def reorder_skill_pins(session: Session, ordered_ids: list[str]) -> None:
+    for position, skill_id in enumerate(ordered_ids[:200]):
+        skill = session.get(CultivationSkill, skill_id)
+        if skill is None:
+            raise NotFound(f"Skill not found: {skill_id}")
+        skill.pin_order = position
+        skill.updated_at = now_iso()
+    session.flush()
+
+
+def skill_goals(session: Session, skill_id: str) -> list[CultivationGoal]:
+    get_skill(session, skill_id)
+    return list(session.scalars(select(CultivationGoal).where(
+        CultivationGoal.skill_id == skill_id).order_by(
+        CultivationGoal.priority, CultivationGoal.name)).all())
+
+
+def skill_read(session: Session, skill: CultivationSkill) -> dict[str, Any]:
+    goals = skill_goals(session, skill.id)
+    achieved = sum(1 for goal in goals if goal.state == "achieved")
+    completions = 0
+    for goal in goals:
+        completions += session.scalar(select(func.count()).select_from(CultivationMembership).where(
+            CultivationMembership.goal_id == goal.id,
+            CultivationMembership.completed_at.is_not(None))) or 0
+    members = []
+    for goal in goals:
+        progress = goal_progress(session, goal)
+        members.append({"id": goal.id, "name": goal.name, "unit": goal.unit,
+                        "state": goal.state, "progress": progress})
+    return {"id": skill.id, "name": skill.name, "icon": skill.icon,
+            "category": skill.category, "description": skill.description,
+            "pinned": bool(skill.pinned), "pin_order": skill.pin_order,
+            "state": skill.state, "created_at": skill.created_at,
+            "updated_at": skill.updated_at,
+            "goals_total": len(goals), "goals_achieved": achieved,
+            "item_completions": int(completions), "goals": members}
+
+
+# ----------------------------------------------------------------- sources
+def list_sources(session: Session) -> list[CultivationSource]:
+    return list(session.scalars(select(CultivationSource).order_by(CultivationSource.name)).all())
+
+
+def get_source(session: Session, source_id: str) -> CultivationSource:
+    source = session.get(CultivationSource, source_id)
+    if source is None:
+        raise NotFound("Source not found")
+    return source
+
+
+def create_source(session: Session, payload: dict[str, Any]) -> CultivationSource:
+    from mission_control.core.paths import require_existing_directory
+    kind = str(payload.get("kind", "hugo_blog"))
+    if kind not in SOURCE_KINDS:
+        raise ValidationProblem(f"Unsupported source kind: {kind}. Only hugo_blog and activity_projects are implemented.")
+    raw_path = str(payload.get("path", "") or "")
+    if kind == "activity_projects":
+        # The index lives in the database; an explicit path is optional and,
+        # when given, must exist (it only documents intent, roots come from
+        # the source config plus DiscoveryRoot rows).
+        path = require_existing_directory(raw_path, field="source path") if raw_path else ""
+    else:
+        path = require_existing_directory(raw_path, field="source path")
+    skill_id = payload.get("skill_id")
+    if skill_id is not None and session.get(CultivationSkill, skill_id) is None:
+        raise NotFound("Skill not found")
+    goal_id = payload.get("goal_id")
+    if goal_id is not None and session.get(CultivationGoal, goal_id) is None:
+        raise NotFound("Goal not found")
+    source_id = str(payload.get("id") or _new_id("src"))
+    if session.get(CultivationSource, source_id) is not None:
+        raise Conflict("Source id already exists")
+    source = CultivationSource(
+        id=source_id, name=str(payload.get("name", "Source")).strip()[:120] or "Source",
+        kind=kind, skill_id=skill_id, goal_id=goal_id, path=path,
+        config=dict(payload.get("config", {}) or {}),
+        last_status="never_synced", created_at=now_iso(), updated_at=now_iso())
+    session.add(source)
+    session.flush()
+    return source
+
+
+def update_source(session: Session, source_id: str, payload: dict[str, Any]) -> CultivationSource:
+    from mission_control.core.paths import require_existing_directory
+    source = get_source(session, source_id)
+    if "name" in payload and payload["name"] is not None:
+        source.name = str(payload["name"]).strip()[:120] or source.name
+    if "path" in payload and payload["path"] is not None:
+        raw = str(payload["path"] or "")
+        if source.kind == "activity_projects" and not raw:
+            source.path = ""
+        else:
+            source.path = require_existing_directory(raw or str(source.path), field="source path")
+    for field in ("skill_id", "goal_id"):
+        if field in payload:
+            value = payload[field]
+            if value is not None:
+                model = CultivationSkill if field == "skill_id" else CultivationGoal
+                if session.get(model, value) is None:
+                    raise NotFound(f"{'Skill' if field == 'skill_id' else 'Goal'} not found")
+            setattr(source, field, value)
+    if "config" in payload and payload["config"] is not None:
+        if not isinstance(payload["config"], dict):
+            raise ValidationProblem("config must be a mapping")
+        source.config = dict(payload["config"])
+    source.updated_at = now_iso()
+    session.flush()
+    return source
+
+
+def _hugo_item_id(source_id: str, identity: str) -> str:
+    import hashlib as _hashlib
+    return "hugo-" + _hashlib.sha1(f"{source_id}:{identity}".encode("utf-8")).hexdigest()[:16]
+
+
+def sync_source(session: Session, source_id: str) -> dict[str, Any]:
+    """Dispatch to the kind-specific synchronizer.
+
+    All synchronizers are read-only toward their evidence: the Hugo scanner
+    reads files; the Activity adapter reads indexed rows only.
+    """
+    source = get_source(session, source_id)
+    if source.kind == "hugo_blog":
+        return _sync_hugo_blog(session, source)
+    if source.kind == "activity_projects":
+        return sync_activity_projects(session, source_id)
+    raise ValidationProblem(f"Unsupported source kind: {source.kind}")
+
+
+def _sync_hugo_blog(session: Session, source: CultivationSource) -> dict[str, Any]:
+    from pathlib import Path as _Path
+
+    from mission_control.cultivation.sources import scan_hugo_blog
+    if not source.path or not _Path(source.path).is_dir():
+        source.last_status = "stale"
+        source.last_error = "Source directory unavailable; kept the last observation."
+        source.updated_at = now_iso()
+        session.flush()
+        return {"source_id": source.id, "status": "stale", "observed": dict(source.observed or {}),
+                "error": source.last_error, "stale": True}
+    scan = scan_hugo_blog(source.path)
+    observed = {"published": scan.published, "drafts": scan.drafts, "unknown": scan.unknown,
+                "excluded": scan.excluded, "candidates": scan.candidates,
+                "errors": scan.errors[:20], "fingerprint": scan.fingerprint}
+    source.observed = observed
+    source.fingerprint = scan.fingerprint
+    source.last_sync_at = now_iso()
+    source.last_status = "ok"
+    source.last_error = "; ".join(error["error"] for error in scan.errors[:3]) or None
+    source.updated_at = now_iso()
+    session.flush()
+
+    goal = session.get(CultivationGoal, source.goal_id) if source.goal_id else None
+    if goal is None:
+        return {"source_id": source.id, "status": "ok", "observed": observed,
+                "stale": False, "goal_id": None}
+    if goal.evidence_source != "hugo_blog":
+        goal.evidence_source = "hugo_blog"
+        goal.updated_at = now_iso()
+        _record_event(session, goal_id=goal.id, event_type="goal_updated",
+                      note=f"Live source '{source.name}' attached: progress now follows observed counts; "
+                           "the user-attested baseline is preserved as history.")
+    stages = get_config(session)["stages"]
+    stage_ids = [str(stage["id"]) for stage in stages]
+    first_stage = stage_ids[0] if stage_ids else "idea"
+    draft_stage = "development" if "development" in stage_ids else first_stage
+    qualifying = goal.qualifying_stage if goal.qualifying_stage in stage_ids else None
+    seen: set[str] = set()
+    for post in scan.posts:
+        item_id = _hugo_item_id(source.id, post.identity)
+        seen.add(item_id)
+        item = session.get(CultivationItem, item_id)
+        if item is None:
+            item = CultivationItem(
+                id=item_id, title=post.title or post.identity, item_type="blog_post",
+                notes=f"Observed in {source.name}.", provenance="unclassified",
+                source_application="hugo_blog",
+                source_ref=f"{source.id}:{post.relpath}",
+                created_at=now_iso(), updated_at=now_iso())
+            session.add(item)
+            session.flush()
+        else:
+            item.title = post.title or item.title
+            item.source_ref = f"{source.id}:{post.relpath}"
+            item.updated_at = now_iso()
+        target = qualifying if post.state == "published" and qualifying else (
+            draft_stage if post.state == "draft" else first_stage)
+        membership = session.get(CultivationMembership, (item_id, goal.id))
+        first_seen = post.date.isoformat() if post.date else None
+        if membership is None:
+            membership = CultivationMembership(
+                item_id=item_id, goal_id=goal.id, stage=target,
+                evidence_status="claimed" if post.state == "published" else "none",
+                quality_evidence={"managed_by": source.id, "fingerprint": post.fingerprint,
+                                  "mtime_ns": post.mtime_ns, "relpath": post.relpath,
+                                  "first_evidence_ts": first_seen},
+                completed_at=post.date.isoformat() if post.state == "published" and post.date else (
+                    now_iso() if post.state == "published" else None),
+                created_at=now_iso(), updated_at=now_iso())
+            session.add(membership)
+            session.flush()
+            _record_event(session, goal_id=goal.id, item_id=item_id, event_type="item_added",
+                          to_value=target, note=f"Observed '{item.title}' in {source.name} ({post.reason}).")
+            if post.state == "published":
+                _record_event(session, goal_id=goal.id, item_id=item_id, event_type="completed",
+                              to_value=target, note=f"Published post observed: {post.relpath}.")
+            continue
+        membership.quality_evidence = {**dict(membership.quality_evidence or {}),
+                                       "fingerprint": post.fingerprint,
+                                       "mtime_ns": post.mtime_ns, "relpath": post.relpath,
+                                       "managed_by": source.id,
+                                       "first_evidence_ts": first_seen or membership.quality_evidence.get("first_evidence_ts")}
+        membership.updated_at = now_iso()
+        if membership.quality_evidence.get("manual_hold"):
+            continue
+        if membership.stage != target:
+            set_stage(session, item_id, goal.id, stage=target, by_sync=True,
+                      completed_at=post.date.isoformat() if post.state == "published" and post.date else None,
+                      note=f"Observed by source '{source.name}': {post.reason}.")
+        elif post.state == "published" and not membership.completed_at and post.date:
+            membership.completed_at = post.date.isoformat()
+    # Reconcile removals: files no longer observed leave the qualifying set,
+    # with history preserved as events. Human qualifications are kept.
+    for membership in session.scalars(select(CultivationMembership).where(
+            CultivationMembership.goal_id == goal.id)).all():
+        item = session.get(CultivationItem, membership.item_id)
+        if item is None or item.source_application != "hugo_blog":
+            continue
+        ref = str(item.source_ref or "")
+        if not ref.startswith(f"{source.id}:") or membership.item_id in seen:
+            continue
+        set_stage(session, membership.item_id, goal.id, stage=first_stage, by_sync=True,
+                  note=f"Observed by source '{source.name}': file no longer present; moved out of '{membership.stage}'.")
+        refreshed = session.get(CultivationMembership, (membership.item_id, goal.id))
+        if refreshed is not None and refreshed.qualified and refreshed.quality_evidence.get("qualified_by") != "user":
+            refreshed.qualified = False
+            refreshed.qualified_at = None
+            refreshed.updated_at = now_iso()
+            _record_event(session, goal_id=goal.id, item_id=membership.item_id, event_type="unqualified",
+                          note="Source item removed; automatic qualification cleared (human qualifications are kept).")
+        _record_event(session, goal_id=goal.id, item_id=membership.item_id, event_type="source_removed",
+                      note=f"File {ref.split(':', 1)[1] if ':' in ref else ref} no longer observed in {source.name}.")
+    progress = goal_progress(session, goal)
+    _check_milestones(session, goal, progress["current"])
+    _record_event(session, goal_id=goal.id, event_type="synced",
+                  to_value=str(observed["published"]),
+                  note=(f"Source '{source.name}': {observed['published']} published, "
+                        f"{observed['drafts']} drafts, {observed['unknown']} unknown of "
+                        f"{observed['candidates']} files."))
+    return {"source_id": source.id, "status": "ok", "observed": observed,
+            "stale": False, "goal_id": goal.id, "current": progress["current"]}
+
+
+# ------------------------------------------------------------------ cycles
+_ROMAN = [(100, "C"), (90, "XC"), (50, "L"), (40, "XL"), (10, "X"), (9, "IX"), (5, "V"), (4, "IV"), (1, "I")]
+
+
+def to_roman(value: int) -> str:
+    result = ""
+    remaining = max(1, int(value))
+    for amount, numeral in _ROMAN:
+        while remaining >= amount:
+            result += numeral
+            remaining -= amount
+    return result
+
+
+def _parse_cycle_date(value: str | None, *, field: str) -> str | None:
+    if value is None or (isinstance(value, str) and not value.strip()):
+        return None
+    text = str(value).strip()[:10]
+    try:
+        datetime.strptime(text, "%Y-%m-%d")
+    except ValueError:
+        raise ValidationProblem(f"{field} must be a YYYY-MM-DD date") from None
+    return text
+
+
+def list_cycles(session: Session) -> list[CultivationCycle]:
+    return list(session.scalars(select(CultivationCycle).order_by(CultivationCycle.number)).all())
+
+
+def get_cycle(session: Session, cycle_id: str) -> CultivationCycle:
+    cycle = session.get(CultivationCycle, cycle_id)
+    if cycle is None:
+        raise NotFound("Cycle not found")
+    return cycle
+
+
+def create_cycle(session: Session, payload: dict[str, Any]) -> CultivationCycle:
+    number = payload.get("number")
+    if number is None:
+        highest = session.scalar(select(func.max(CultivationCycle.number))) or 0
+        number = int(highest) + 1
+    number = int(number)
+    if number < 1:
+        raise ValidationProblem("Cycle number must be positive")
+    if session.scalar(select(CultivationCycle).where(CultivationCycle.number == number)) is not None:
+        raise Conflict(f"Cycle {number} already exists")
+    state = str(payload.get("state", "active"))
+    if state not in CYCLE_STATES:
+        raise ValidationProblem(f"Unknown state: {state}")
+    cycle = CultivationCycle(
+        id=_new_id("cyc"), number=number, name=str(payload.get("name", f"Cycle {to_roman(number)}"))[:120],
+        length_days=int(payload.get("length_days", 100)),
+        start_date=_parse_cycle_date(payload.get("start_date"), field="start_date"),
+        snapshot_day=payload.get("snapshot_day"), snapshot_note=str(payload.get("snapshot_note", ""))[:2000],
+        state=state, notes=str(payload.get("notes", ""))[:4000],
+        created_at=now_iso(), updated_at=now_iso())
+    if cycle.length_days < 1 or cycle.length_days > 3650:
+        raise ValidationProblem("length_days must be between 1 and 3650")
+    session.add(cycle)
+    session.flush()
+    focus = list(payload.get("focus_goal_ids", []) or [])[:50]
+    if focus:
+        set_cycle_focus(session, cycle.id, focus)
+    _record_event(session, goal_id=None, event_type="cycle_created",
+                  note=f"Cycle {number} '{cycle.name}' created.")
+    return cycle
+
+
+def update_cycle(session: Session, cycle_id: str, payload: dict[str, Any]) -> CultivationCycle:
+    cycle = get_cycle(session, cycle_id)
+    if "name" in payload and payload["name"] is not None:
+        cycle.name = str(payload["name"])[:120]
+    if "length_days" in payload and payload["length_days"] is not None:
+        length = int(payload["length_days"])
+        if length < 1 or length > 3650:
+            raise ValidationProblem("length_days must be between 1 and 3650")
+        cycle.length_days = length
+    if "start_date" in payload:
+        cycle.start_date = _parse_cycle_date(payload["start_date"], field="start_date")
+    if "snapshot_day" in payload:
+        snapshot = payload["snapshot_day"]
+        cycle.snapshot_day = None if snapshot is None else int(snapshot)
+    if "snapshot_note" in payload and payload["snapshot_note"] is not None:
+        cycle.snapshot_note = str(payload["snapshot_note"])[:2000]
+    if "notes" in payload and payload["notes"] is not None:
+        cycle.notes = str(payload["notes"])[:4000]
+    if "state" in payload and payload["state"] is not None:
+        if str(payload["state"]) not in CYCLE_STATES:
+            raise ValidationProblem("Unknown state")
+        cycle.state = str(payload["state"])
+    cycle.updated_at = now_iso()
+    session.flush()
+    return cycle
+
+
+def set_cycle_focus(session: Session, cycle_id: str, goal_ids: list[str]) -> None:
+    cycle = get_cycle(session, cycle_id)
+    for goal_id in goal_ids[:50]:
+        if session.get(CultivationGoal, goal_id) is None:
+            raise NotFound(f"Goal not found: {goal_id}")
+    existing = {row.goal_id for row in session.scalars(
+        select(CultivationCycleGoal).where(CultivationCycleGoal.cycle_id == cycle_id)).all()}
+    wanted = set(goal_ids[:50])
+    for goal_id in sorted(wanted - existing):
+        session.add(CultivationCycleGoal(cycle_id=cycle_id, goal_id=goal_id))
+    for goal_id in sorted(existing - wanted):
+        link = session.get(CultivationCycleGoal, (cycle_id, goal_id))
+        if link is not None:
+            session.delete(link)
+    cycle.updated_at = now_iso()
+    session.flush()
+    _record_event(session, goal_id=None, event_type="cycle_focus",
+                  note=f"Cycle {cycle.number} focus goals: {', '.join(sorted(wanted)) or 'none'}.")
+
+
+def rollover_cycle(session: Session, cycle_id: str) -> CultivationCycle:
+    """Explicitly complete a cycle and open the next one. Nothing automatic."""
+    cycle = get_cycle(session, cycle_id)
+    if cycle.state != "active":
+        raise Conflict("Only an active cycle can be rolled over")
+    cycle.state = "completed"
+    cycle.updated_at = now_iso()
+    session.flush()
+    _record_event(session, goal_id=None, event_type="cycle_completed",
+                  note=f"Cycle {cycle.number} completed.")
+    focus = [row.goal_id for row in session.scalars(
+        select(CultivationCycleGoal).where(CultivationCycleGoal.cycle_id == cycle_id)).all()]
+    nxt = create_cycle(session, {"number": cycle.number + 1, "length_days": cycle.length_days,
+                                 "focus_goal_ids": focus,
+                                 "snapshot_note": f"Opened by rollover from cycle {cycle.number}."})
+    return nxt
+
+
+def cycle_day(session: Session, cycle: CultivationCycle) -> dict[str, Any]:
+    from zoneinfo import ZoneInfo
+    if cycle.start_date:
+        start = datetime.strptime(cycle.start_date, "%Y-%m-%d").date()
+        today = datetime.now(ZoneInfo(DUBLIN_TZ)).date()
+        day = (today - start).days + 1
+        return {"day": day, "mode": "calculated", "length_days": cycle.length_days,
+                "past_length": day > cycle.length_days,
+                "label": f"Cycle {to_roman(cycle.number)} — Day {day} / {cycle.length_days}"}
+    if cycle.snapshot_day is not None:
+        return {"day": int(cycle.snapshot_day), "mode": "snapshot",
+                "length_days": cycle.length_days, "past_length": False,
+                "label": (f"Cycle {to_roman(cycle.number)} — Day {cycle.snapshot_day} / "
+                          f"{cycle.length_days} (reported; start date not set)")}
+    return {"day": None, "mode": "unknown", "length_days": cycle.length_days,
+            "past_length": False,
+            "label": f"Cycle {to_roman(cycle.number)} — day unknown (no start date or snapshot)"}
+
+
+def cycle_focus_goals(session: Session, cycle_id: str) -> list[CultivationGoal]:
+    get_cycle(session, cycle_id)
+    return list(session.scalars(select(CultivationGoal).join(
+        CultivationCycleGoal, CultivationCycleGoal.goal_id == CultivationGoal.id).where(
+        CultivationCycleGoal.cycle_id == cycle_id).order_by(CultivationGoal.name)).all())
+
+
+def cycle_progress(session: Session, cycle: CultivationCycle) -> dict[str, Any]:
+    """Completions attributed by event/publication dates, never scan timestamps.
+
+    Without a start date there is no window to attribute to: totals are shown,
+    windowed counts stay null rather than manufactured.
+    """
+    window: dict[str, str] | None = None
+    if cycle.start_date:
+        from zoneinfo import ZoneInfo
+        start = datetime.strptime(cycle.start_date, "%Y-%m-%d").date()
+        end = start + timedelta(days=cycle.length_days)
+        today = datetime.now(ZoneInfo(DUBLIN_TZ)).date()
+        window = {"from": start.isoformat(), "to": min(end, today).isoformat()}
+    focus = []
+    for goal in cycle_focus_goals(session, cycle.id):
+        current = goal_progress(session, goal)["current"]
+        completions: int | None = None
+        started: int | None = None
+        if window is not None:
+            rows = session.scalars(select(CultivationEvent).where(
+                CultivationEvent.goal_id == goal.id,
+                CultivationEvent.event_type == "completed")).all()
+            completions = 0
+            for event in rows:
+                stamp = (event.occurred_at or event.created_at or "")[:10]
+                if window["from"] <= stamp <= window["to"]:
+                    completions += 1
+            # "Established" uses first-evidence dates, never scan timestamps:
+            # an old repository discovered today must not count as new.
+            started = 0
+            for membership, item in session.execute(
+                    select(CultivationMembership, CultivationItem).join(
+                        CultivationItem, CultivationItem.id == CultivationMembership.item_id).where(
+                        CultivationMembership.goal_id == goal.id)).all():
+                evidence = dict(membership.quality_evidence or {})
+                first_seen = str(evidence.get("first_evidence_ts") or membership.created_at or "")[:10]
+                if window["from"] <= first_seen <= window["to"]:
+                    started += 1
+        focus.append({"goal_id": goal.id, "goal_name": goal.name,
+                      "completions_in_window": completions, "started_in_window": started,
+                      "current": current})
+    return {"window": window, "focus": focus}
+
+
+def cycle_read(session: Session, cycle: CultivationCycle) -> dict[str, Any]:
+    return {"id": cycle.id, "number": cycle.number, "name": cycle.name,
+            "length_days": cycle.length_days, "start_date": cycle.start_date,
+            "snapshot_day": cycle.snapshot_day, "snapshot_note": cycle.snapshot_note,
+            "state": cycle.state, "notes": cycle.notes,
+            "created_at": cycle.created_at, "updated_at": cycle.updated_at,
+            "day": cycle_day(session, cycle),
+            "focus_goal_ids": [goal.id for goal in cycle_focus_goals(session, cycle.id)],
+            "progress": cycle_progress(session, cycle)}

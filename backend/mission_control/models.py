@@ -450,6 +450,120 @@ class GitReviewFeedback(Base):
     created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
 
 
+class CultivationSkill(Base):
+    __tablename__ = "cultivation_skills"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    name: Mapped[str] = mapped_column(String, nullable=False)
+    icon: Mapped[str] = mapped_column(String, default="sprout", nullable=False)
+    category: Mapped[str] = mapped_column(String, default="general", nullable=False)
+    description: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    pinned: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    pin_order: Mapped[int] = mapped_column(Integer, default=100, nullable=False)
+    state: Mapped[str] = mapped_column(String, default="active", nullable=False)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+    updated_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class CultivationSource(Base):
+    __tablename__ = "cultivation_sources"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    name: Mapped[str] = mapped_column(String, nullable=False)
+    kind: Mapped[str] = mapped_column(String, default="hugo_blog", nullable=False)
+    skill_id: Mapped[str | None] = mapped_column(
+        String, ForeignKey("cultivation_skills.id", ondelete="SET NULL"))
+    goal_id: Mapped[str | None] = mapped_column(
+        String, ForeignKey("cultivation_goals.id", ondelete="SET NULL"))
+    path: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    config: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict, nullable=False)
+    last_sync_at: Mapped[str | None] = mapped_column(String)
+    last_status: Mapped[str] = mapped_column(String, default="never_synced", nullable=False)
+    last_error: Mapped[str | None] = mapped_column(Text)
+    fingerprint: Mapped[str] = mapped_column(String, default="", nullable=False)
+    observed: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict, nullable=False)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+    updated_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class CultivationCycle(Base):
+    __tablename__ = "cultivation_cycles"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    number: Mapped[int] = mapped_column(Integer, unique=True, nullable=False)
+    name: Mapped[str] = mapped_column(String, default="", nullable=False)
+    length_days: Mapped[int] = mapped_column(Integer, default=100, nullable=False)
+    start_date: Mapped[str | None] = mapped_column(String)
+    snapshot_day: Mapped[int | None] = mapped_column(Integer)
+    snapshot_note: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    state: Mapped[str] = mapped_column(String, default="active", nullable=False)
+    notes: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+    updated_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class CultivationCycleGoal(Base):
+    __tablename__ = "cultivation_cycle_goals"
+
+    cycle_id: Mapped[str] = mapped_column(
+        String, ForeignKey("cultivation_cycles.id", ondelete="CASCADE"), primary_key=True
+    )
+    goal_id: Mapped[str] = mapped_column(
+        String, ForeignKey("cultivation_goals.id", ondelete="CASCADE"), primary_key=True
+    )
+
+
+class CultivationRepoState(Base):
+    """Owner-maintained qualification of one Activity repository.
+
+    The Activity row (git_repositories) stays authoritative for Git facts.
+    Everything here is Cultivation-side judgement, reconciliation and history
+    pointers — never written back into Activity tables.
+    """
+
+    __tablename__ = "cultivation_repo_states"
+
+    repo_id: Mapped[str] = mapped_column(String, primary_key=True)
+    repo_uid: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    qualification: Mapped[str] = mapped_column(String, default="discovered", nullable=False)
+    lifecycle_stage: Mapped[str | None] = mapped_column(String)
+    classification: Mapped[str] = mapped_column(String, default="unclassified", nullable=False)
+    rationale: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    evidence: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict, nullable=False)
+    decided_by: Mapped[str] = mapped_column(String, default="undecided", nullable=False)
+    decided_at: Mapped[str | None] = mapped_column(String)
+    accessible: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    last_seen_at: Mapped[str | None] = mapped_column(String)
+    last_head: Mapped[str | None] = mapped_column(String)
+    last_commit_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+    updated_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class CultivationApplication(Base):
+    __tablename__ = "cultivation_applications"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    name: Mapped[str] = mapped_column(String, nullable=False)
+    description: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    lifecycle_stage: Mapped[str] = mapped_column(String, default="idea", nullable=False)
+    release_evidence: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict, nullable=False)
+    completed_at: Mapped[str | None] = mapped_column(String)
+    notes: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+    updated_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class CultivationAppRepo(Base):
+    __tablename__ = "cultivation_app_repos"
+
+    app_id: Mapped[str] = mapped_column(
+        String, ForeignKey("cultivation_applications.id", ondelete="CASCADE"), primary_key=True
+    )
+    repo_id: Mapped[str] = mapped_column(String, primary_key=True)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
 class CultivationGoal(Base):
     __tablename__ = "cultivation_goals"
 
@@ -474,6 +588,8 @@ class CultivationGoal(Base):
     milestones: Mapped[list[float]] = mapped_column(JSON, default=list, nullable=False)
     dependencies: Mapped[list[str]] = mapped_column(JSON, default=list, nullable=False)
     evidence_source: Mapped[str] = mapped_column(String, default="manual", nullable=False)
+    skill_id: Mapped[str | None] = mapped_column(
+        String, ForeignKey("cultivation_skills.id", ondelete="SET NULL"))
     created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
     updated_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
 

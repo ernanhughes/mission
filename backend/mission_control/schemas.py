@@ -1055,6 +1055,7 @@ class CultivationGoalCreate(RawModel):
     milestones: list[float] | None = None
     dependencies: list[str] = Field(default_factory=list)
     evidence_source: str = Field(default="manual", max_length=60)
+    skill_id: str | None = None
 
 
 class CultivationGoalUpdate(RawModel):
@@ -1078,6 +1079,7 @@ class CultivationGoalUpdate(RawModel):
     milestones: list[float] | None = None
     dependencies: list[str] | None = None
     evidence_source: str | None = Field(default=None, max_length=60)
+    skill_id: str | None = None
 
 
 class CultivationProgress(BaseModel):
@@ -1092,6 +1094,10 @@ class CultivationProgress(BaseModel):
     pipeline: dict[str, int] = Field(default_factory=dict)
     milestones_reached: list[float] = Field(default_factory=list)
     next_milestone: float | None = None
+    live_observed: float | None = None
+    live_sync_at: str | None = None
+    live_stale: bool = False
+    disagreement: str | None = None
 
 
 class CultivationGoalRead(BaseModel):
@@ -1116,6 +1122,8 @@ class CultivationGoalRead(BaseModel):
     milestones: list[float]
     dependencies: list[str]
     evidence_source: str
+    skill_id: str | None = None
+    skill_name: str | None = None
     created_at: str
     updated_at: str
     progress: CultivationProgress
@@ -1261,6 +1269,283 @@ class CultivationHudRead(BaseModel):
     rank: CultivationRankStatus | None
     recent_completions: list[CultivationEventRead]
     generated_at: str
+    cycle: "CultivationCycleRead | None" = None
+    pinned_skills: list["CultivationSkillRead"] = Field(default_factory=list)
+
+
+class CultivationSkillCreate(RawModel):
+    id: str | None = None
+    name: str = Field(min_length=1, max_length=120)
+    icon: str = Field(default="sprout", max_length=40)
+    category: str = Field(default="general", max_length=60)
+    description: str = ""
+    pinned: bool = False
+    pin_order: int = 100
+    state: str = Field(default="active", max_length=20)
+
+
+class CultivationSkillUpdate(RawModel):
+    name: str | None = Field(default=None, min_length=1, max_length=120)
+    icon: str | None = Field(default=None, max_length=40)
+    category: str | None = Field(default=None, max_length=60)
+    description: str | None = None
+    pinned: bool | None = None
+    pin_order: int | None = None
+    state: str | None = Field(default=None, max_length=20)
+
+
+class CultivationSkillGoalRead(BaseModel):
+    id: str
+    name: str
+    unit: str
+    state: str
+    progress: CultivationProgress
+
+
+class CultivationSkillRead(BaseModel):
+    id: str
+    name: str
+    icon: str
+    category: str
+    description: str
+    pinned: bool
+    pin_order: int
+    state: str
+    created_at: str
+    updated_at: str
+    goals_total: int = 0
+    goals_achieved: int = 0
+    item_completions: int = 0
+    goals: list[CultivationSkillGoalRead] = Field(default_factory=list)
+
+
+class CultivationProjectLinkRead(BaseModel):
+    id: str
+    name: str
+
+
+class CultivationRepoStateRead(BaseModel):
+    repo_id: str
+    repo_uid: str
+    name: str
+    path: str | None = None
+    root_path: str | None = None
+    branch: str | None = None
+    head_sha: str | None = None
+    accessible: bool = True
+    indexed: bool = False
+    total_commits: int = 0
+    first_commit_ts: int | None = None
+    last_commit_ts: int | None = None
+    backfill_complete: bool = False
+    last_indexed_at: str | None = None
+    has_agents: bool = False
+    has_description: bool = False
+    context_status: str = "missing"
+    projects: list[CultivationProjectLinkRead] = Field(default_factory=list)
+    qualification: str = "discovered"
+    lifecycle_stage: str | None = None
+    classification: str = "unclassified"
+    rationale: str = ""
+    evidence: dict[str, Any] = Field(default_factory=dict)
+    decided_by: str = "undecided"
+    decided_at: str | None = None
+    last_seen_at: str | None = None
+    created_at: str
+    updated_at: str
+    recent_commits: int = 0
+    review_count: int = 0
+
+
+class CultivationRepoClassify(RawModel):
+    classification: str | None = Field(default=None, max_length=40)
+    lifecycle_stage: str | None = Field(default=None, max_length=40)
+    qualification: str | None = Field(default=None, max_length=40)
+    rationale: str = Field(default="", max_length=2000)
+    evidence: dict[str, Any] | None = None
+    goal_id: str | None = None
+    completed_at: str | None = None
+
+
+class CultivationRepoBulk(RawModel):
+    repo_ids: list[str] = Field(default_factory=list, max_length=500)
+    qualification: str = Field(min_length=1, max_length=40)
+    rationale: str = Field(min_length=1, max_length=2000)
+    goal_id: str | None = None
+
+
+class CultivationAppCreate(RawModel):
+    id: str | None = None
+    name: str = Field(min_length=1, max_length=200)
+    description: str = ""
+    lifecycle_stage: str = Field(default="idea", max_length=40)
+    notes: str = ""
+    repo_ids: list[str] = Field(default_factory=list, max_length=50)
+
+
+class CultivationAppUpdate(RawModel):
+    name: str | None = Field(default=None, min_length=1, max_length=200)
+    description: str | None = None
+    lifecycle_stage: str | None = Field(default=None, max_length=40)
+    notes: str | None = None
+
+
+class CultivationAppRepoRead(BaseModel):
+    repo_id: str
+    name: str
+    path: str | None
+    qualification: str
+    accessible: bool
+
+
+class CultivationAppMembershipRead(BaseModel):
+    goal_id: str
+    goal_name: str | None
+    stage: str
+    completed_at: str | None
+    qualified: bool
+    evidence_status: str
+
+
+class CultivationAppRead(BaseModel):
+    id: str
+    name: str
+    description: str
+    lifecycle_stage: str
+    release_evidence: dict[str, Any] = Field(default_factory=dict)
+    completed_at: str | None
+    notes: str
+    created_at: str
+    updated_at: str
+    repos: list[CultivationAppRepoRead] = Field(default_factory=list)
+    memberships: list[CultivationAppMembershipRead] = Field(default_factory=list)
+
+
+class CultivationAppRepoAdd(RawModel):
+    repo_id: str = Field(min_length=1, max_length=120)
+
+
+class CultivationAppRelease(RawModel):
+    lifecycle: str = Field(default="released", max_length=40)
+    evidence: dict[str, Any] = Field(default_factory=dict)
+    completed_at: str | None = None
+    goal_id: str | None = None
+    note: str = Field(default="", max_length=2000)
+
+
+class CultivationAppUnrelease(RawModel):
+    note: str = Field(default="", max_length=2000)
+
+
+class CultivationSourceCreate(RawModel):
+    id: str | None = None
+    name: str = Field(min_length=1, max_length=120)
+    kind: str = Field(default="hugo_blog", max_length=40)
+    skill_id: str | None = None
+    goal_id: str | None = None
+    path: str | None = None
+    config: dict[str, Any] = Field(default_factory=dict)
+
+
+class CultivationSourceUpdate(RawModel):
+    name: str | None = Field(default=None, min_length=1, max_length=120)
+    path: str | None = None
+    skill_id: str | None = None
+    goal_id: str | None = None
+    config: dict[str, Any] | None = None
+
+
+class CultivationSourceRead(BaseModel):
+    id: str
+    name: str
+    kind: str
+    skill_id: str | None
+    goal_id: str | None
+    path: str
+    config: dict[str, Any]
+    last_sync_at: str | None
+    last_status: str
+    last_error: str | None
+    fingerprint: str
+    observed: dict[str, Any]
+    created_at: str
+    updated_at: str
+
+
+class CultivationSourceSyncRead(BaseModel):
+    source_id: str
+    status: str
+    observed: dict[str, Any]
+    stale: bool
+    error: str | None = None
+    goal_id: str | None = None
+    current: float | None = None
+    new_items: int = 0
+    fingerprint_changed: bool = True
+
+
+class CultivationCycleDayRead(BaseModel):
+    day: int | None
+    mode: str
+    length_days: int
+    past_length: bool = False
+    label: str
+
+
+class CultivationCycleFocusRead(BaseModel):
+    goal_id: str
+    goal_name: str
+    completions_in_window: int | None
+    started_in_window: int | None = None
+    current: float | None
+
+
+class CultivationCycleProgressRead(BaseModel):
+    window: dict[str, str] | None
+    focus: list[CultivationCycleFocusRead] = Field(default_factory=list)
+
+
+class CultivationCycleCreate(RawModel):
+    number: int | None = None
+    name: str = Field(default="", max_length=120)
+    length_days: int = Field(default=100, ge=1, le=3650)
+    start_date: str | None = None
+    snapshot_day: int | None = Field(default=None, ge=1)
+    snapshot_note: str = ""
+    state: str = Field(default="active", max_length=20)
+    notes: str = ""
+    focus_goal_ids: list[str] = Field(default_factory=list)
+
+
+class CultivationCycleUpdate(RawModel):
+    name: str | None = Field(default=None, max_length=120)
+    length_days: int | None = Field(default=None, ge=1, le=3650)
+    start_date: str | None = None
+    snapshot_day: int | None = Field(default=None, ge=1)
+    snapshot_note: str | None = None
+    state: str | None = Field(default=None, max_length=20)
+    notes: str | None = None
+
+
+class CultivationCycleFocusUpdate(RawModel):
+    goal_ids: list[str] = Field(default_factory=list, max_length=50)
+
+
+class CultivationCycleRead(BaseModel):
+    id: str
+    number: int
+    name: str
+    length_days: int
+    start_date: str | None
+    snapshot_day: int | None
+    snapshot_note: str
+    state: str
+    notes: str
+    created_at: str
+    updated_at: str
+    day: CultivationCycleDayRead
+    focus_goal_ids: list[str] = Field(default_factory=list)
+    progress: CultivationCycleProgressRead
 
 
 class CandidateRead(RepositoryRead):
@@ -1555,3 +1840,4 @@ class ResearchChatSessionSummary(BaseModel):
 
 BookRead.model_rebuild()
 ProjectDetail.model_rebuild()
+CultivationHudRead.model_rebuild()
