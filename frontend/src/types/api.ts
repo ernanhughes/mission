@@ -1000,6 +1000,10 @@ export type CultivationProgress = {
   pipeline: Record<string, number>;
   milestones_reached: number[];
   next_milestone: number | null;
+  live_observed: number | null;
+  live_sync_at: string | null;
+  live_stale: boolean;
+  disagreement: string | null;
 };
 
 export type CultivationGoal = {
@@ -1024,6 +1028,8 @@ export type CultivationGoal = {
   milestones: number[];
   dependencies: string[];
   evidence_source: string;
+  skill_id: string | null;
+  skill_name: string | null;
   created_at: string;
   updated_at: string;
   progress: CultivationProgress;
@@ -1117,6 +1123,123 @@ export type CultivationHud = {
   rank: CultivationRank | null;
   recent_completions: CultivationEvent[];
   generated_at: string;
+  cycle: CultivationCycle | null;
+  pinned_skills: CultivationSkill[];
+};
+
+export type CultivationSkillGoal = {
+  id: string;
+  name: string;
+  unit: string;
+  state: string;
+  progress: CultivationProgress;
+};
+
+export type CultivationSkill = {
+  id: string;
+  name: string;
+  icon: string;
+  category: string;
+  description: string;
+  pinned: boolean;
+  pin_order: number;
+  state: string;
+  created_at: string;
+  updated_at: string;
+  goals_total: number;
+  goals_achieved: number;
+  item_completions: number;
+  goals: CultivationSkillGoal[];
+};
+
+export type CultivationSource = {
+  id: string;
+  name: string;
+  kind: string;
+  skill_id: string | null;
+  goal_id: string | null;
+  path: string;
+  config: Record<string, any>;
+  last_sync_at: string | null;
+  last_status: string;
+  last_error: string | null;
+  fingerprint: string;
+  observed: Record<string, any>;
+  created_at: string;
+  updated_at: string;
+};
+
+export type CultivationCycleDay = {
+  day: number | null;
+  mode: string;
+  length_days: number;
+  past_length: boolean;
+  label: string;
+};
+
+export type CultivationCycle = {
+  id: string;
+  number: number;
+  name: string;
+  length_days: number;
+  start_date: string | null;
+  snapshot_day: number | null;
+  snapshot_note: string;
+  state: string;
+  notes: string;
+  created_at: string;
+  updated_at: string;
+  day: CultivationCycleDay;
+  focus_goal_ids: string[];
+  progress: {
+    window: { from: string; to: string } | null;
+    focus: Array<{ goal_id: string; goal_name: string; completions_in_window: number | null; started_in_window: number | null; current: number | null }>;
+  };
+};
+
+export type CultivationRepoState = {
+  repo_id: string;
+  repo_uid: string;
+  name: string;
+  path: string | null;
+  root_path: string | null;
+  branch: string | null;
+  head_sha: string | null;
+  accessible: boolean;
+  indexed: boolean;
+  total_commits: number;
+  first_commit_ts: number | null;
+  last_commit_ts: number | null;
+  backfill_complete: boolean;
+  last_indexed_at: string | null;
+  has_agents: boolean;
+  has_description: boolean;
+  context_status: string;
+  projects: Array<{ id: string; name: string }>;
+  qualification: string;
+  lifecycle_stage: string | null;
+  classification: string;
+  rationale: string;
+  evidence: Record<string, any>;
+  decided_by: string;
+  decided_at: string | null;
+  last_seen_at: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type CultivationApp = {
+  id: string;
+  name: string;
+  description: string;
+  lifecycle_stage: string;
+  release_evidence: Record<string, any>;
+  completed_at: string | null;
+  notes: string;
+  created_at: string;
+  updated_at: string;
+  repos: Array<{ repo_id: string; name: string; path: string | null; qualification: string; accessible: boolean }>;
+  memberships: Array<{ goal_id: string; goal_name: string | null; stage: string; completed_at: string | null; qualified: boolean; evidence_status: string }>;
 };
 
 export type CultivationConfig = {

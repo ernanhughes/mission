@@ -6579,14 +6579,29 @@ pre {
   padding: 12px 14px;
 }
 
-/* ------------------------------------------------- cultivation (MC-CULTIVATION-01) */
+/* ------------------------------------------------- cultivation (MC-CULTIVATION-02)
+   Blue-and-white progression-panel theme, scoped to Cultivation.
+   The rest of Mission Control keeps its own design. */
+:root {
+  --cultivation-background: #082657;
+  --cultivation-panel: #103b78;
+  --cultivation-border: #39c8ff;
+  --cultivation-text: #ffffff;
+  --cultivation-secondary: #b7e5ff;
+  --cultivation-progress: #37d9f3;
+  --cultivation-complete: #4ef0aa;
+  --cultivation-inactive: #637b9d;
+  --cultivation-warning: #f1bd62;
+}
+
 .cultivation-hud {
   position: fixed;
   top: 12px;
   right: 16px;
   z-index: 40;
-  width: 300px;
+  width: 320px;
   max-width: calc(100vw - 32px);
+  color: var(--cultivation-text);
 }
 
 .hud-compact {
@@ -6594,15 +6609,20 @@ pre {
   align-items: center;
   gap: 8px;
   width: 100%;
-  padding: 8px 12px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--panel);
-  box-shadow: var(--shadow-soft);
-  color: inherit;
+  padding: 10px 14px;
+  border: 1px solid var(--cultivation-border);
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(16, 59, 120, 0.96), rgba(8, 38, 87, 0.96));
+  box-shadow: 0 0 12px rgba(57, 200, 255, 0.35), inset 0 0 18px rgba(57, 200, 255, 0.08);
+  color: var(--cultivation-text);
   font: inherit;
   cursor: pointer;
   text-align: left;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
+}
+
+.hud-compact:hover {
+  box-shadow: 0 0 18px rgba(57, 200, 255, 0.55), inset 0 0 18px rgba(57, 200, 255, 0.12);
 }
 
 .hud-compact-copy {
@@ -6616,32 +6636,59 @@ pre {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 0.8rem;
+  font-size: 0.82rem;
+  letter-spacing: 0.02em;
+  color: var(--cultivation-text);
 }
 
 .hud-compact-detail {
-  color: var(--muted);
-  font-size: 0.7rem;
+  color: var(--cultivation-secondary);
+  font-size: 0.72rem;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.hud-cycle {
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  color: var(--cultivation-secondary);
+  text-transform: uppercase;
 }
 
 .hud-bar {
   display: inline-block;
   min-width: 56px;
   flex: 1;
-  height: 6px;
-  border-radius: 3px;
-  background: var(--line);
+  height: 8px;
+  border-radius: 4px;
+  background: rgba(183, 229, 255, 0.18);
+  border: 1px solid rgba(57, 200, 255, 0.5);
   overflow: hidden;
 }
 
 .hud-bar > span {
   display: block;
   height: 100%;
-  background: var(--accent);
+  background: linear-gradient(90deg, #1fa8d8, var(--cultivation-progress));
+  box-shadow: 0 0 8px rgba(55, 217, 243, 0.8);
   border-radius: 3px;
+}
+
+.hud-bar[data-state="achieved"] > span,
+.hud-bar[data-state="over"] > span {
+  background: linear-gradient(90deg, #2fbf85, var(--cultivation-complete));
+  box-shadow: 0 0 8px rgba(78, 240, 170, 0.8);
+}
+
+.hud-bar[data-state="unknown"] > span {
+  background: repeating-linear-gradient(45deg, var(--cultivation-inactive), var(--cultivation-inactive) 4px, transparent 4px, transparent 8px);
+  box-shadow: none;
+}
+
+.hud-bar[data-state="empty"] > span {
+  background: transparent;
+  box-shadow: none;
 }
 
 .hud-bar-block {
@@ -6657,20 +6704,31 @@ pre {
 .hud-panel {
   margin-top: 6px;
   padding: 12px 14px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--panel);
-  box-shadow: var(--shadow-soft);
+  border: 1px solid var(--cultivation-border);
+  border-radius: 10px;
+  background: linear-gradient(160deg, rgba(16, 59, 120, 0.97), rgba(8, 38, 87, 0.97));
+  box-shadow: 0 0 16px rgba(57, 200, 255, 0.35);
+  color: var(--cultivation-text);
   display: flex;
   flex-direction: column;
   gap: 10px;
   max-height: 60vh;
   overflow: auto;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%);
+}
+
+.hud-panel .muted {
+  color: var(--cultivation-secondary);
+}
+
+.hud-panel a {
+  color: var(--cultivation-text);
 }
 
 .hud-rank {
   margin: 0;
   font-size: 0.8rem;
+  color: var(--cultivation-text);
 }
 
 .hud-goal-head {
@@ -6679,17 +6737,122 @@ pre {
   gap: 8px;
 }
 
+.hud-goal-head .link-button {
+  color: var(--cultivation-text);
+}
+
 .hud-goal-progress {
   display: flex;
   align-items: center;
   gap: 8px;
   font-size: 0.72rem;
+  color: var(--cultivation-secondary);
 }
 
 .hud-recent ul {
   margin: 4px 0 0;
   padding-left: 18px;
   font-size: 0.75rem;
+  color: var(--cultivation-secondary);
+}
+
+.hud-skill-name {
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cultivation-secondary);
+}
+
+/* Full-page cultivation scope: blue panels, white text on navy. */
+.cultivation-scope .goal-card,
+.cultivation-scope .panel,
+.cultivation-scope .settings-section {
+  background: linear-gradient(160deg, var(--cultivation-panel), var(--cultivation-background));
+  border: 1px solid var(--cultivation-border);
+  color: var(--cultivation-text);
+  box-shadow: 0 0 10px rgba(57, 200, 255, 0.22);
+}
+
+.cultivation-scope .muted,
+.cultivation-scope .activity-type,
+.cultivation-scope .toolbar-count {
+  color: var(--cultivation-secondary);
+}
+
+.cultivation-scope .link-button {
+  color: var(--cultivation-text);
+}
+
+.cultivation-scope h1,
+.cultivation-scope h2,
+.cultivation-scope h3,
+.cultivation-scope h4,
+.cultivation-scope .eyebrow {
+  color: var(--cultivation-text);
+}
+
+.cultivation-scope .eyebrow {
+  color: var(--cultivation-progress);
+}
+
+.cultivation-scope code {
+  color: var(--cultivation-text);
+  background: rgba(8, 38, 87, 0.6);
+}
+
+.cultivation-scope .tag {
+  border: 1px solid var(--cultivation-border);
+  color: var(--cultivation-text);
+  background: transparent;
+}
+
+.cultivation-scope .tag-accent {
+  border-color: var(--cultivation-complete);
+  color: var(--cultivation-complete);
+}
+
+.cultivation-scope .stat-value {
+  color: var(--cultivation-text);
+}
+
+.cultivation-scope .stat-label,
+.cultivation-scope .stat-detail {
+  color: var(--cultivation-secondary);
+}
+
+.cultivation-scope .pre-wrap {
+  background: rgba(8, 38, 87, 0.6);
+  border-color: var(--cultivation-border);
+  color: var(--cultivation-text);
+}
+
+.cultivation-scope .inline-form input,
+.cultivation-scope .inline-form select,
+.cultivation-scope .field input,
+.cultivation-scope .field select,
+.cultivation-scope .field textarea,
+.cultivation-scope .search-field input,
+.cultivation-scope select {
+  background: rgba(8, 38, 87, 0.7);
+  border: 1px solid var(--cultivation-border);
+  color: var(--cultivation-text);
+}
+
+.cultivation-scope .search-field input::placeholder {
+  color: var(--cultivation-inactive);
+}
+
+.cultivation-cycle {
+  border: 1px solid var(--cultivation-border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  background: linear-gradient(135deg, rgba(16, 59, 120, 0.95), rgba(8, 38, 87, 0.95));
+  box-shadow: 0 0 12px rgba(57, 200, 255, 0.3);
+  color: var(--cultivation-text);
+}
+
+.cultivation-cycle .muted {
+  color: var(--cultivation-secondary);
 }
 
 .cultivation-grid {
@@ -6727,5 +6890,11 @@ pre {
   .cultivation-hud {
     top: auto;
     bottom: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hud-bar > span {
+    transition: none;
   }
 }
