@@ -19,6 +19,10 @@ from mission_control.models import GitRepository, GitReview, GitReviewFeedback
 from mission_control.persistence.db import now_iso
 from mission_control.schemas import (
     GitCommitRead,
+    GitDailyProjectRead,
+    GitDailyProjectsRead,
+    GitDailyPromptRequest,
+    GitDailyReviewRequest,
     GitRepoRead,
     GitReviewCreate,
     GitReviewFeedbackCreate,
@@ -255,7 +259,9 @@ async def request_review(request: Request, payload: GitReviewCreate,
     review = service.request_review(
         session, repo_id=payload.repo_id, sha=payload.sha,
         commit_shas=payload.commit_shas, base_sha=payload.base_sha,
-        target_sha=payload.target_sha, model=payload.model, profile=payload.profile)
+        target_sha=payload.target_sha, model=payload.model, profile=payload.profile,
+        daily_date=payload.daily_date, daily_timezone=payload.daily_timezone,
+        daily_mode=payload.daily_mode)
     review_id = review.id
     read = _review_read(session, review).model_dump()
     # Commit before scheduling background execution: the worker opens its own
@@ -302,6 +308,59 @@ def review_feedback(request: Request, review_id: str, payload: GitReviewFeedback
                                   rating=payload.rating, detail=payload.detail, created_at=now_iso()))
     session.flush()
     return _review_read(session, row)
+
+
+# ------------------------------------------------------- daily project
+@router.get("/daily/projects", response_model=GitDailyProjectsRead)
+def daily_projects(request: Request, session: Session = Depends(get_session),
+                   date: str = Query(...), timezone: str = Query(default="Europe/Dublin")) -> GitDailyProjectsRead:
+    data = _service(request).daily_projects(session, day=date, tz_name=timezone)
+    return GitDailyProjectsRead(
+        date=data["date"], timezone=data["timezone"], start_ts=data["start_ts"], end_ts=data["end_ts"],
+        total_commits=data["total_commits"], total_repos=data["total_repos"],
+        projects=[GitDailyProjectRead(**item) for item in data["projects"]],
+        partial=data["partial"], backfill_pending=data["backfill_pending"])
+
+
+@router.post("/daily/prompt")
+def daily_prompt(request: Request, payload: GitDailyPromptRequest,
+                 session: Session = Depends(get_session)) -> dict:
+    """Copy-prompt package for a whole project-day. Never starts a model call."""
+    service = _service(request)
+    package = service.build_daily_prompt(
+        session, payload.repo_id, payload.date, payload.timezone,
+        mode=payload.mode, profile=payload.profile)
+    diff = {"files": [], "mode": "project-day"}
+    return {**{k: v for k, v in package.items() if k != "diff"}, "files": diff["files"],
+            "diff_mode": "project-day", "diff_bytes": package["size_chars"]}
+
+
+@router.post("/daily/reviews", response_model=GitReviewRead, status_code=201)
+async def request_daily_review(request: Request, payload: GitDailyReviewRequest,
+                               session: Session = Depends(get_session)) -> GitReviewRead:
+    service = _service(request)
+    review = service.request_daily_review(
+        session, repo_id=payload.repo_id, day=payload.date, tz_name=payload.timezone,
+        mode=payload.mode, profile=payload.profile, model=payload.model)
+    review_id = review.id
+    read = _review_read(session, review).model_dump()
+    session.commit()
+    asyncio.create_task(service.execute_review(review_id))
+    return GitReviewRead(**read)
+
+
+@router.get("/daily/reviews", response_model=list[GitReviewRead])
+def list_daily_reviews(request: Request, session: Session = Depends(get_session),
+                       repo_id: str = Query(...), date: str = Query(...),
+                       timezone: str = Query(default="Europe/Dublin"),
+                       limit: int = Query(default=20, ge=1, le=100)) -> list[GitReviewRead]:
+    query = select(GitReview).where(
+        GitReview.repo_id == repo_id, GitReview.review_type == "daily").order_by(desc(GitReview.created_at))
+    rows = session.scalars(query.limit(limit)).all()
+    filtered = [row for row in rows
+                if (row.evidence_coverage or {}).get("daily_date") == date
+                and ((row.evidence_coverage or {}).get("timezone") or "Europe/Dublin") == (timezone or "Europe/Dublin")]
+    return [_review_read(session, row) for row in filtered]
 
 
 # ----------------------------------------------------------------- context

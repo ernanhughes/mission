@@ -22,6 +22,7 @@ import type {
   ActivityEvent,
   GitActivityRoot,
   GitCommit,
+  GitDailyProjects,
   GitRepo,
   GitReview,
   GitScanStatus,
@@ -30,6 +31,34 @@ import type {
   Project,
   ReviewModelCatalogue,
 } from "../types/api";
+
+function dublinToday(): string {
+  try {
+    const fmt = new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Europe/Dublin",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    });
+    return fmt.format(new Date());
+  } catch {
+    return new Date().toISOString().slice(0, 10);
+  }
+}
+
+function prettyDay(dateIso: string): string {
+  try {
+    const noon = new Date(`${dateIso}T12:00:00`);
+    return noon.toLocaleDateString(undefined, {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+  } catch {
+    return dateIso;
+  }
+}
 
 type Preset = "today" | "yesterday" | "7d" | "30d" | "custom";
 
@@ -407,6 +436,8 @@ function CommitsView(props: {
         </div>
       ) : null}
 
+      <DailyProjectPanel />
+
       <div className="toolbar">
         {(["today", "yesterday", "7d", "30d", "custom"] as Preset[]).map((item) => (
           <button
@@ -643,6 +674,375 @@ function CommitsView(props: {
         </aside>
       </div>
     </>
+  );
+}
+
+// ------------------------------------------------- daily project review
+function DailyProjectPanel() {
+  const toast = useToast();
+  const [date, setDate] = useState<string>(() => dublinToday());
+  const timezone = "Europe/Dublin";
+  const [selectedRepo, setSelectedRepo] = useState<string | null>(null);
+  const [promptFor, setPromptFor] = useState<{ repoId: string; mode: "explain" | "review" } | null>(null);
+  const [reviewFor, setReviewFor] = useState<{ repoId: string; mode: "explain" | "review" } | null>(null);
+
+  const daily = useApi<GitDailyProjects>(apiPath("/api/git-activity/daily/projects", { date, timezone }));
+
+  useEffect(() => {
+    if (selectedRepo && daily.data && !daily.data.projects.some((p) => p.repo_id === selectedRepo)) {
+      setSelectedRepo(null);
+    }
+  }, [daily.data, selectedRepo]);
+
+  const projects = daily.data?.projects ?? [];
+  const selected = projects.find((p) => p.repo_id === selectedRepo) ?? null;
+  const totalCommits = daily.data?.total_commits ?? 0;
+
+  function today() {
+    setDate(dublinToday());
+  }
+
+  return (
+    <Section
+      title={`Daily Project Review — ${prettyDay(date)}`}
+      description={`Timezone ${timezone} · start-inclusive / end-exclusive day bounds · server-side scope, not timeline pagination`}
+    >
+      <div className="toolbar">
+        <label className="date-field">
+          <span className="sr-only">Daily review date</span>
+          <input type="date" value={date} onChange={(e) => setDate(e.target.value)} aria-label="Daily review date" />
+        </label>
+        <button className="button button-ghost button-small" onClick={today}>
+          Today
+        </button>
+        <span className="toolbar-count">
+          {daily.loading && !daily.data ? "Loading…" : `${daily.data?.total_repos ?? 0} projects · ${totalCommits} commits`}
+        </span>
+        {daily.data?.partial ? <Tag>Partial index — backfill pending</Tag> : null}
+      </div>
+      {daily.error ? <InlineError message={daily.error.message} /> : null}
+      <div className="toolbar" role="tablist" aria-label="Active projects">
+        <button
+          role="tab"
+          aria-selected={selectedRepo === null}
+          className={`button button-small ${selectedRepo === null ? "button-primary" : "button-ghost"}`}
+          onClick={() => setSelectedRepo(null)}
+        >
+          All active{projects.length ? ` (${projects.length})` : ""}
+        </button>
+        {projects.map((p) => (
+          <button
+            key={p.repo_id}
+            role="tab"
+            aria-selected={selectedRepo === p.repo_id}
+            title={`${p.commit_count} commits · snapshot ${p.snapshot_fingerprint}`}
+            className={`button button-small ${selectedRepo === p.repo_id ? "button-primary" : "button-ghost"}`}
+            onClick={() => setSelectedRepo(p.repo_id)}
+          >
+            {p.repo_name} ({p.commit_count})
+          </button>
+        ))}
+      </div>
+      {projects.length === 0 && !daily.loading ? (
+        <p className="muted">No indexed commits on this day. The timeline below shows the current filter; the daily scope is computed server-side.</p>
+      ) : null}
+      {selectedRepo === null ? (
+        <div className="stat-strip">
+          <Stat label="Projects active" value={daily.data?.total_repos ?? 0} />
+          <Stat label="Commits" value={totalCommits} />
+          <Stat label="Daily reviews" value={projects.filter((p) => p.review_status !== "not_reviewed").length} />
+        </div>
+      ) : selected ? (
+        <div className="panel">
+          <div className="activity-head">
+            <strong>Selected: {selected.repo_name}</strong>
+            <Tag>{selected.commit_count} commits</Tag>
+            <Tag>
+              {selected.files_changed} files touched{selected.files_changed_estimated ? " (est.)" : ""}
+            </Tag>
+            {selected.review_status === "not_reviewed" ? (
+              <Tag>Not reviewed</Tag>
+            ) : (
+              <Tag tone="accent">
+                {selected.review_status}
+                {selected.review_mode ? ` · ${selected.review_mode}` : ""}
+                {selected.review_verdict ? ` · ${selected.review_verdict}` : ""}
+                {selected.review_stale ? " · stale" : ""}
+              </Tag>
+            )}
+          </div>
+          <p className="muted">
+            {selected.commit_count} commits · {selected.files_changed} changed-file touches · +{selected.insertions}/
+            -{selected.deletions} · snapshot {selected.snapshot_fingerprint}
+            {selected.coverage_warning ? ` · ${selected.coverage_warning}` : ""}
+          </p>
+          {selected.review_stale ? (
+            <p className="notice notice-warning">
+              Previous daily review is out of date — new commits were indexed after it completed. Run another review for
+              the current snapshot.
+            </p>
+          ) : null}
+          <p className="muted">Summarise the day&apos;s development, identify significant architectural changes, and highlight unfinished or potentially problematic work.</p>
+          <div className="toolbar">
+            <button
+              className="button button-secondary button-small"
+              disabled={!selected}
+              onClick={() => selected && setReviewFor({ repoId: selected.repo_id, mode: "explain" })}
+            >
+              <Sparkles size={13} /> Explain with AI
+            </button>
+            <button
+              className="button button-secondary button-small"
+              disabled={!selected}
+              onClick={() => selected && setReviewFor({ repoId: selected.repo_id, mode: "review" })}
+            >
+              <Sparkles size={13} /> Review with AI
+            </button>
+            <button
+              className="button button-ghost button-small"
+              disabled={!selected}
+              onClick={() => selected && setPromptFor({ repoId: selected.repo_id, mode: "review" })}
+            >
+              <Copy size={13} /> Create prompt
+            </button>
+          </div>
+        </div>
+      ) : null}
+      {promptFor ? (
+        <DailyPromptModal
+          repoId={promptFor.repoId}
+          date={date}
+          timezone={timezone}
+          initialMode={promptFor.mode}
+          onClose={() => setPromptFor(null)}
+        />
+      ) : null}
+      {reviewFor ? (
+        <DailyReviewModal
+          repoId={reviewFor.repoId}
+          date={date}
+          timezone={timezone}
+          initialMode={reviewFor.mode}
+          onClose={() => setReviewFor(null)}
+          onDone={() => daily.reload()}
+        />
+      ) : null}
+    </Section>
+  );
+}
+
+function DailyPromptModal(props: { repoId: string; date: string; timezone: string; initialMode: "explain" | "review"; onClose: () => void }) {
+  const toast = useToast();
+  const [mode, setMode] = useState<"explain" | "review">(props.initialMode);
+  const [profile, setProfile] = useState("code");
+  const [copying, setCopying] = useState(false);
+  type DailyPromptResult = {
+    markdown: string;
+    prompt_hash: string;
+    diff_hash: string;
+    context_fingerprint: string;
+    size_chars: number;
+    truncated: boolean;
+    redactions: string[];
+    redaction_count: number;
+    coverage: Record<string, unknown>;
+    commit_shas: string[];
+    snapshot_fingerprint: string;
+  };
+  // POST-based prompt builder: fetch on demand so no model call is ever made on open.
+  const [result, setResult] = useState<DailyPromptResult | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function build(currentMode: "explain" | "review", currentProfile: string) {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await api.post<DailyPromptResult>("/api/git-activity/daily/prompt", {
+        repo_id: props.repoId,
+        date: props.date,
+        timezone: props.timezone,
+        mode: currentMode,
+        profile: currentProfile,
+      });
+      setResult(data);
+    } catch (caught) {
+      setError(errorMessage(caught));
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    void build(mode, profile);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode, profile]);
+
+  async function copy() {
+    if (!result) return;
+    setCopying(true);
+    try {
+      await copyText(result.markdown);
+      toast.push("success", "Daily prompt copied", `${result.size_chars} chars — paste into any model.`);
+    } catch (caught) {
+      toast.push("error", "Copy failed", errorMessage(caught));
+    } finally {
+      setCopying(false);
+    }
+  }
+
+  function download() {
+    if (!result) return;
+    const blob = new Blob([result.markdown], { type: "text/markdown" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `daily-${mode}-${props.date}.md`;
+    link.click();
+    URL.revokeObjectURL(url);
+  }
+
+  return (
+    <Modal title={`Daily prompt — ${mode === "explain" ? "Explain" : "Review"} ${props.date}`} wide onClose={props.onClose}>
+      <p className="muted">No model call is made. Uses the same evidence package as direct AI execution for the full project-day.</p>
+      <div className="toolbar">
+        <label className="select-field">
+          <span className="sr-only">Mode</span>
+          <select value={mode} onChange={(e) => setMode(e.target.value as "explain" | "review")}>
+            <option value="explain">Explain with AI</option>
+            <option value="review">Review with AI</option>
+          </select>
+        </label>
+        <label className="select-field">
+          <span className="sr-only">Profile</span>
+          <select value={profile} onChange={(e) => setProfile(e.target.value)}>
+            <option value="code">Code review</option>
+            <option value="prose">Prose / manuscript review</option>
+          </select>
+        </label>
+        {result ? (
+          <>
+            <span className="toolbar-count">
+              {result.size_chars} chars{result.truncated ? " · partial coverage" : " · full coverage"} · {result.redaction_count} redactions ·{" "}
+              {result.commit_shas.length} commits · snapshot {(result.snapshot_fingerprint ?? "").slice(0, 8)}
+            </span>
+            <button className="button button-primary button-small" onClick={() => void copy()} disabled={copying}>
+              <Copy size={13} /> {copying ? "Copying…" : "Copy"}
+            </button>
+            <button className="button button-secondary button-small" onClick={download}>
+              Save .md
+            </button>
+          </>
+        ) : null}
+      </div>
+      {loading && !result ? <LoadingBlock label="Building daily package" /> : null}
+      {error ? <InlineError message={error} /> : null}
+      {result ? <pre className="diff-block">{result.markdown.slice(0, 20000)}</pre> : null}
+      {result && result.markdown.length > 20000 ? (
+        <p className="muted">Preview shows the first 20,000 characters; Copy and Save include the full package.</p>
+      ) : null}
+    </Modal>
+  );
+}
+
+function DailyReviewModal(props: {
+  repoId: string;
+  date: string;
+  timezone: string;
+  initialMode: "explain" | "review";
+  onClose: () => void;
+  onDone: () => void;
+}) {
+  const toast = useToast();
+  const catalogue = useApi<ReviewModelCatalogue>("/api/git-activity/models");
+  const [model, setModel] = useState("");
+  const [profile, setProfile] = useState("code");
+  const [mode, setMode] = useState<"explain" | "review">(props.initialMode);
+  const [submitting, setSubmitting] = useState(false);
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const active = useApi<GitReview>(activeId ? `/api/git-activity/reviews/${activeId}` : null, { pollMs: 2500 });
+  const previous = useApi<GitReview[]>(
+    apiPath("/api/git-activity/daily/reviews", { repo_id: props.repoId, date: props.date, timezone: props.timezone }),
+  );
+
+  useEffect(() => {
+    if (catalogue.data?.selected && !model) setModel(catalogue.data.selected);
+  }, [catalogue.data, model]);
+
+  useEffect(() => {
+    if (active.data && (active.data.status === "completed" || active.data.status === "failed")) {
+      previous.reload();
+      props.onDone();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [active.data?.status]);
+
+  async function submit() {
+    setSubmitting(true);
+    try {
+      const created = await api.post<GitReview>("/api/git-activity/daily/reviews", {
+        repo_id: props.repoId,
+        date: props.date,
+        timezone: props.timezone,
+        mode,
+        profile,
+        model: model || undefined,
+      });
+      setActiveId(created.id);
+      toast.push("success", mode === "explain" ? "Explanation requested" : "Review requested", "The local model is examining the full day.");
+    } catch (caught) {
+      toast.push("error", "Daily review failed", errorMessage(caught));
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  return (
+    <Modal title={`Daily ${mode === "explain" ? "explanation" : "review"} — ${props.date}`} wide onClose={props.onClose}>
+      <p className="muted">
+        {mode === "explain"
+          ? "Explains what the day's work accomplished, grouped into workstreams. Grounded in the full day's diffs."
+          : "Critically examines the day's combined changes for defects, regressions and architectural problems."}{" "}
+        Local-only execution; nothing is committed or pushed.
+      </p>
+      {!catalogue.data ? <LoadingBlock label="Loading models" compact /> : <p className="muted">{catalogue.data.detail}</p>}
+      <div className="form-stack">
+        <label className="field">
+          <span>Mode</span>
+          <select value={mode} onChange={(e) => setMode(e.target.value as "explain" | "review")}>
+            <option value="explain">Explain with AI</option>
+            <option value="review">Review with AI</option>
+          </select>
+        </label>
+        <label className="field">
+          <span>Model</span>
+          <select value={model} onChange={(e) => setModel(e.target.value)}>
+            <option value="">Select a model…</option>
+            {(catalogue.data?.models ?? []).map((item) => (
+              <option value={item.id} key={item.id}>
+                {item.label}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="field">
+          <span>Profile</span>
+          <select value={profile} onChange={(e) => setProfile(e.target.value)}>
+            <option value="code">Code review</option>
+            <option value="prose">Prose / manuscript review</option>
+          </select>
+        </label>
+        <button className="button button-primary" onClick={() => void submit()} disabled={submitting || !model}>
+          <Sparkles size={14} /> {submitting ? "Submitting…" : mode === "explain" ? "Explain day" : "Review day"}
+        </button>
+      </div>
+      {active.data ? <ReviewCard review={active.data} /> : null}
+      <Section title="Previous daily reviews" description={`${previous.data?.length ?? 0} recorded for this day`}>
+        {(previous.data ?? []).map((review) => (
+          <ReviewCard key={review.id} review={review} />
+        ))}
+      </Section>
+    </Modal>
   );
 }
 

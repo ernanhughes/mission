@@ -1,13 +1,21 @@
-"""Live source observation for cultivation (MC-CULTIVATION-02).
+"""Live source observation for cultivation (MC-CULTIVATION-02, numbered files).
 
 Read-only filesystem scanning. No model calls, no writes to the scanned tree,
-no network. Counts follow the site's actual publication conventions:
+no network.
 
-- standalone Markdown files and leaf-bundle ``index.md`` files are posts;
-- ``_index.md`` section files, attachments and dot-directories are excluded;
-- TOML (``+++``), YAML (``---``) or JSON front matter is parsed;
-- ``draft = true``, future dates and past expiry dates are not published;
-- missing or invalid metadata lands in ``unknown``, never silently counted.
+Hugo blogs: standalone Markdown files and leaf-bundle ``index.md`` files are
+posts; ``_index.md`` section files, attachments and dot-directories are
+excluded; TOML (``+++``), YAML (``---``) or JSON front matter is parsed;
+``draft = true``, future dates and past expiry dates are not published;
+missing or invalid metadata lands in ``unknown``, never silently counted.
+
+Numbered script files (e.g. ``Script001.md``): any Markdown file whose name
+starts with a numbered ``Script`` prefix counts as one published item.
+Identity is the repo-style relative path; the item date prefers the file's
+first git addition commit and falls back to filesystem mtime. Dating reads
+the repository only (two read-only git processes per scan, with timeouts);
+anything else — Morning files, notes, audio, non-Markdown — is excluded,
+not counted.
 """
 
 from __future__ import annotations
@@ -16,7 +24,9 @@ import hashlib
 import json
 import logging
 import os
+import re
 import stat
+import subprocess
 import tomllib
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
@@ -35,6 +45,9 @@ ATTACHMENT_SUFFIXES = {
 SECTION_INDEX = "_index.md"
 LEAF_INDEX = "index.md"
 MAX_FILES = 20000
+#: File names counted as numbered-script items (``Script001.md`` and variants
+#: such as ``Script052s.md`` or ``Script036 notes.md``).
+NUMBERED_SCRIPT_RE = re.compile(r"^Script\d+", re.IGNORECASE)
 
 
 def _is_reparse_point(path: Path) -> bool:
@@ -196,6 +209,144 @@ def _classify(path: Path, relpath: str, now: datetime) -> BlogPost | None:
                         state="draft", reason=f"expired {expiry.isoformat()}", date=date)
     return BlogPost(identity=identity, title=title, relpath=relpath,
                     state="published", reason=f"{fmt} front matter, dated {date.isoformat()}" if date else f"{fmt} front matter", date=date)
+
+
+def _prettify_script_name(stem: str) -> str:
+    """Human title from a script filename stem (``Script036 notes``)."""
+    return (stem.replace("_", " ").strip() or stem)[:300]
+
+
+def _git_add_dates(root: Path) -> dict[str, str]:
+    """Map repo-relative POSIX path -> oldest addition-commit ISO date.
+
+    Two read-only git processes for the whole tree (rev-parse to confirm the
+    source path is the repository root, log for addition commits); returns {}
+    when git is unavailable, the directory is not a repository, or any command
+    fails — callers fall back to filesystem mtime. Never writes.
+    """
+    try:
+        toplevel = subprocess.run(
+            ["git", "-C", str(root), "rev-parse", "--show-toplevel"],
+            capture_output=True, text=True, encoding="utf-8", errors="replace",
+            timeout=10, shell=False, check=False)
+    except (OSError, subprocess.SubprocessError) as exc:
+        logger.debug("Git toplevel lookup failed for %s: %s", root, exc)
+        return {}
+    if toplevel is None or toplevel.returncode != 0:
+        return {}
+    try:
+        if Path((toplevel.stdout or "").strip()).resolve() != root.resolve():
+            return {}
+    except OSError:
+        return {}
+    try:
+        proc = subprocess.run(
+            ["git", "-C", str(root), "log", "--diff-filter=A", "--reverse",
+             "--name-only", "--pretty=format:%aI", "--", "."],
+            capture_output=True, text=True, encoding="utf-8", errors="replace",
+            timeout=30, shell=False, check=False)
+    except (OSError, subprocess.SubprocessError) as exc:
+        logger.debug("Git add-date scan failed for %s: %s", root, exc)
+        return {}
+    if proc is None or proc.returncode != 0:
+        return {}
+    dates: dict[str, str] = {}
+    current: str | None = None
+    # Output is one ISO date line per addition commit followed by that
+    # commit's added paths; a date line always starts a new group.
+    for raw in (proc.stdout or "").splitlines():
+        line = raw.strip()
+        if not line:
+            continue
+        try:
+            current = datetime.fromisoformat(line.replace("Z", "+00:00")).isoformat()
+            continue
+        except ValueError:
+            pass
+        if current is not None:
+            # First (oldest, thanks to --reverse) addition wins.
+            dates.setdefault(line.strip('"'), current)
+    return dates
+
+
+def scan_numbered_files(root: str | Path) -> BlogScan:
+    """Count numbered script files (``Script001.md`` and variants).
+
+    Every matching file is one published item; anything else is excluded,
+    never counted. Identity is the relative path; the item date prefers the
+    file's first git addition commit and falls back to filesystem mtime.
+    """
+    base = Path(root)
+    scan = BlogScan()
+    if not base.is_dir():
+        scan.errors.append({"path": str(base), "error": "Source directory is missing or not a directory"})
+        return scan
+    add_dates = _git_add_dates(base)
+    try:
+        walker = os.walk(base, followlinks=False)
+        for directory, dirnames, filenames in walker:
+            current = Path(directory)
+            if _is_reparse_point(current):
+                dirnames[:] = []
+                continue
+            # Never descend into hidden/tooling directories.
+            dirnames[:] = sorted(name for name in dirnames
+                                 if not name.startswith(".") and not _is_reparse_point(current / name))
+            for filename in sorted(filenames):
+                if scan.candidates >= MAX_FILES:
+                    scan.errors.append({"path": str(current), "error": "File cap reached; scan truncated"})
+                    break
+                candidate = current / filename
+                if _is_reparse_point(candidate):
+                    continue
+                relpath = str(candidate.relative_to(base)).replace("\\", "/")
+                scan.candidates += 1
+                if candidate.suffix.casefold() != ".md" or not NUMBERED_SCRIPT_RE.match(candidate.stem):
+                    scan.excluded += 1
+                    continue
+                try:
+                    candidate.read_text(encoding="utf-8", errors="strict")
+                except (OSError, UnicodeDecodeError) as exc:
+                    scan.posts.append(BlogPost(
+                        identity=relpath, title=_prettify_script_name(candidate.stem),
+                        relpath=relpath, state="unknown",
+                        reason=f"unreadable file: {exc.__class__.__name__}"))
+                    scan.unknown += 1
+                    continue
+                try:
+                    info = candidate.stat()
+                    mtime_ns = info.st_mtime_ns
+                    size = info.st_size
+                except OSError:
+                    mtime_ns, size = 0, 0
+                date: datetime | None = None
+                raw_add = add_dates.get(relpath)
+                if raw_add:
+                    try:
+                        date = datetime.fromisoformat(raw_add.replace("Z", "+00:00"))
+                    except ValueError:
+                        date = None
+                if date is None and mtime_ns:
+                    date = datetime.fromtimestamp(mtime_ns / 1e9, tz=timezone.utc)
+                post = BlogPost(
+                    identity=relpath, title=_prettify_script_name(candidate.stem),
+                    relpath=relpath, state="published",
+                    reason=(f"numbered script, dated {date.isoformat()}" if date
+                            else "numbered script"),
+                    date=date,
+                    fingerprint=_fingerprint_file(candidate, relpath, mtime_ns, size),
+                    mtime_ns=mtime_ns, size=size)
+                scan.posts.append(post)
+                scan.published += 1
+    except OSError as exc:
+        scan.errors.append({"path": str(base), "error": str(exc)[:300]})
+    digest = hashlib.sha256()
+    for post in sorted(scan.posts, key=lambda item: item.identity):
+        digest.update(post.identity.encode("utf-8"))
+        digest.update(post.fingerprint.encode("utf-8"))
+        digest.update(post.state.encode("utf-8"))
+    scan.fingerprint = digest.hexdigest()[:24]
+    return scan
 
 
 def scan_hugo_blog(root: str | Path, *, now: datetime | None = None) -> BlogScan:

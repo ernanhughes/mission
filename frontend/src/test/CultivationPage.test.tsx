@@ -20,6 +20,7 @@ function makeGoal(overrides: Partial<CultivationGoal> = {}): CultivationGoal {
     baseline_provenance: "estimate",
     qualifying_stage: "published",
     window_days: null,
+    recurring_mode: "daily",
     priority: 10,
     state: "active",
     pinned: true,

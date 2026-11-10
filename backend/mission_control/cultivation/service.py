@@ -49,7 +49,7 @@ PROVENANCE_VALUES = {"human", "ai_assisted", "ai_workflow", "unclassified"}
 BASELINE_PROVENANCE = {"none", "estimate", "user_assertion", "verified"}
 EVIDENCE_STATUS = {"none", "claimed", "verified"}
 SKILL_STATES = {"active", "archived"}
-SOURCE_KINDS = {"hugo_blog", "activity_projects"}
+SOURCE_KINDS = {"hugo_blog", "activity_projects", "numbered_files"}
 CYCLE_STATES = {"active", "completed", "archived"}
 REPO_QUALIFICATIONS = {"discovered", "eligible", "pending", "qualified", "excluded", "archived", "unavailable"}
 REPO_CLASSIFICATIONS = {"application", "library", "infrastructure", "research", "website",
@@ -701,10 +701,10 @@ def _live_observation(session: Session, goal: CultivationGoal) -> dict[str, Any]
     disagree the milestone stays achieved (explicit state) while the progress
     honestly reports the observed value with a reconciliation note.
     """
-    if goal.evidence_source != "hugo_blog":
+    if goal.evidence_source not in ("hugo_blog", "numbered_files"):
         return None
     source = session.scalars(select(CultivationSource).where(
-        CultivationSource.goal_id == goal.id, CultivationSource.kind == "hugo_blog",
+        CultivationSource.goal_id == goal.id, CultivationSource.kind == goal.evidence_source,
         CultivationSource.last_sync_at.is_not(None)).order_by(
         desc(CultivationSource.last_sync_at)).limit(1)).first()
     if source is None or not isinstance(source.observed, dict):
@@ -1655,7 +1655,9 @@ def create_source(session: Session, payload: dict[str, Any]) -> CultivationSourc
     from mission_control.core.paths import require_existing_directory
     kind = str(payload.get("kind", "hugo_blog"))
     if kind not in SOURCE_KINDS:
-        raise ValidationProblem(f"Unsupported source kind: {kind}. Only hugo_blog and activity_projects are implemented.")
+        raise ValidationProblem(
+            "Unsupported source kind: {kind}. Only hugo_blog, activity_projects and numbered_files are implemented."
+            .format(kind=kind))
     raw_path = str(payload.get("path", "") or "")
     if kind == "activity_projects":
         # The index lives in the database; an explicit path is optional and,
@@ -1711,37 +1713,70 @@ def update_source(session: Session, source_id: str, payload: dict[str, Any]) -> 
     return source
 
 
-def _hugo_item_id(source_id: str, identity: str) -> str:
+def _observed_item_id(prefix: str, source_id: str, identity: str) -> str:
     import hashlib as _hashlib
-    return "hugo-" + _hashlib.sha1(f"{source_id}:{identity}".encode("utf-8")).hexdigest()[:16]
+    return prefix + _hashlib.sha1(f"{source_id}:{identity}".encode("utf-8")).hexdigest()[:16]
+
+
+def _hugo_item_id(source_id: str, identity: str) -> str:
+    return _observed_item_id("hugo-", source_id, identity)
+
+
+def _script_item_id(source_id: str, identity: str) -> str:
+    return _observed_item_id("script-", source_id, identity)
 
 
 def sync_source(session: Session, source_id: str) -> dict[str, Any]:
     """Dispatch to the kind-specific synchronizer.
 
     All synchronizers are read-only toward their evidence: the Hugo scanner
-    reads files; the Activity adapter reads indexed rows only.
+    and the numbered-file scanner read files; the Activity adapter reads
+    indexed rows only.
     """
     source = get_source(session, source_id)
     if source.kind == "hugo_blog":
         return _sync_hugo_blog(session, source)
+    if source.kind == "numbered_files":
+        return _sync_numbered_files(session, source)
     if source.kind == "activity_projects":
         return sync_activity_projects(session, source_id)
     raise ValidationProblem(f"Unsupported source kind: {source.kind}")
 
 
-def _sync_hugo_blog(session: Session, source: CultivationSource) -> dict[str, Any]:
-    from pathlib import Path as _Path
+def _feed_period_goal(session: Session, source: CultivationSource, post: Any) -> None:
+    """Record one output unit for a linked weekly-rhythm goal.
 
-    from mission_control.cultivation.sources import scan_hugo_blog
-    if not source.path or not _Path(source.path).is_dir():
-        source.last_status = "stale"
-        source.last_error = "Source directory unavailable; kept the last observation."
-        source.updated_at = now_iso()
-        session.flush()
-        return {"source_id": source.id, "status": "stale", "observed": dict(source.observed or {}),
-                "error": source.last_error, "stale": True}
-    scan = scan_hugo_blog(source.path)
+    A numbered-file source may name a recurring ``period`` goal in its config
+    (``period_goal_id``). Each newly observed script records a single
+    measurement dated at the script's own date, so the weekly goal counts
+    output inside its window. Only new items feed; resyncs dedupe on the
+    sync source + note and never double-count. Removals do not retract
+    history: the measurement stays as observed fact.
+    """
+    config = source.config if isinstance(source.config, dict) else {}
+    period_goal_id = config.get("period_goal_id")
+    if not period_goal_id or post.state != "published":
+        return
+    goal = session.get(CultivationGoal, str(period_goal_id))
+    if goal is None:
+        return
+    if goal.measurement_type != "recurring" or (goal.recurring_mode or "daily") != "period":
+        return
+    note = f"New script observed: {post.relpath}."
+    marker = f"sync:{source.id}"
+    existing = session.scalars(select(CultivationMeasurement).where(
+        CultivationMeasurement.goal_id == goal.id,
+        CultivationMeasurement.source == marker,
+        CultivationMeasurement.note == note)).first()
+    if existing is not None:
+        return
+    record_measurement(session, goal.id, value=1.0,
+                       observed_at=post.date.isoformat() if post.date else now_iso(),
+                       note=note, source=marker)
+
+
+def _store_scan_observation(session: Session, source: CultivationSource, scan: Any) -> dict[str, Any]:
+    """Persist a file-scan observation on the source (shared sync helper)."""
     observed = {"published": scan.published, "drafts": scan.drafts, "unknown": scan.unknown,
                 "excluded": scan.excluded, "candidates": scan.candidates,
                 "errors": scan.errors[:20], "fingerprint": scan.fingerprint}
@@ -1752,17 +1787,49 @@ def _sync_hugo_blog(session: Session, source: CultivationSource) -> dict[str, An
     source.last_error = "; ".join(error["error"] for error in scan.errors[:3]) or None
     source.updated_at = now_iso()
     session.flush()
+    return observed
 
-    goal = session.get(CultivationGoal, source.goal_id) if source.goal_id else None
-    if goal is None:
-        return {"source_id": source.id, "status": "ok", "observed": observed,
-                "stale": False, "goal_id": None}
-    if goal.evidence_source != "hugo_blog":
-        goal.evidence_source = "hugo_blog"
+
+def _mark_source_stale(session: Session, source: CultivationSource) -> dict[str, Any]:
+    """Keep the last observation when the source directory is unavailable."""
+    source.last_status = "stale"
+    source.last_error = "Source directory unavailable; kept the last observation."
+    source.updated_at = now_iso()
+    session.flush()
+    return {"source_id": source.id, "status": "stale", "observed": dict(source.observed or {}),
+            "error": source.last_error, "stale": True}
+
+
+def _attach_live_source(session: Session, source: CultivationSource, goal: CultivationGoal,
+                        evidence_kind: str) -> None:
+    """Point a goal at its live source, preserving the baseline as history."""
+    if goal.evidence_source != evidence_kind:
+        goal.evidence_source = evidence_kind
         goal.updated_at = now_iso()
         _record_event(session, goal_id=goal.id, event_type="goal_updated",
                       note=f"Live source '{source.name}' attached: progress now follows observed counts; "
                            "the user-attested baseline is preserved as history.")
+
+
+def _reconcile_observed_items(
+    session: Session,
+    source: CultivationSource,
+    goal: CultivationGoal,
+    scan: Any,
+    *,
+    item_type: str,
+    source_application: str,
+    item_id_fn: Any,
+    completed_label: str,
+) -> dict[str, Any]:
+    """Reconcile file-scan observations into items, memberships and events.
+
+    Shared by the Hugo blog and numbered-file synchronizers: the scan is the
+    observed truth, manual holds and human qualifications survive, history is
+    preserved as events, and a linked weekly-rhythm goal is fed one unit per
+    newly observed item.
+    """
+    observed = dict(source.observed or {})
     stages = get_config(session)["stages"]
     stage_ids = [str(stage["id"]) for stage in stages]
     first_stage = stage_ids[0] if stage_ids else "idea"
@@ -1770,14 +1837,14 @@ def _sync_hugo_blog(session: Session, source: CultivationSource) -> dict[str, An
     qualifying = goal.qualifying_stage if goal.qualifying_stage in stage_ids else None
     seen: set[str] = set()
     for post in scan.posts:
-        item_id = _hugo_item_id(source.id, post.identity)
+        item_id = item_id_fn(source.id, post.identity)
         seen.add(item_id)
         item = session.get(CultivationItem, item_id)
         if item is None:
             item = CultivationItem(
-                id=item_id, title=post.title or post.identity, item_type="blog_post",
+                id=item_id, title=post.title or post.identity, item_type=item_type,
                 notes=f"Observed in {source.name}.", provenance="unclassified",
-                source_application="hugo_blog",
+                source_application=source_application,
                 source_ref=f"{source.id}:{post.relpath}",
                 created_at=now_iso(), updated_at=now_iso())
             session.add(item)
@@ -1806,7 +1873,8 @@ def _sync_hugo_blog(session: Session, source: CultivationSource) -> dict[str, An
                           to_value=target, note=f"Observed '{item.title}' in {source.name} ({post.reason}).")
             if post.state == "published":
                 _record_event(session, goal_id=goal.id, item_id=item_id, event_type="completed",
-                              to_value=target, note=f"Published post observed: {post.relpath}.")
+                              to_value=target, note=f"{completed_label}: {post.relpath}.")
+                _feed_period_goal(session, source, post)
             continue
         membership.quality_evidence = {**dict(membership.quality_evidence or {}),
                                        "fingerprint": post.fingerprint,
@@ -1827,7 +1895,7 @@ def _sync_hugo_blog(session: Session, source: CultivationSource) -> dict[str, An
     for membership in session.scalars(select(CultivationMembership).where(
             CultivationMembership.goal_id == goal.id)).all():
         item = session.get(CultivationItem, membership.item_id)
-        if item is None or item.source_application != "hugo_blog":
+        if item is None or item.source_application != source_application:
             continue
         ref = str(item.source_ref or "")
         if not ref.startswith(f"{source.id}:") or membership.item_id in seen:
@@ -1852,6 +1920,52 @@ def _sync_hugo_blog(session: Session, source: CultivationSource) -> dict[str, An
                         f"{observed['candidates']} files."))
     return {"source_id": source.id, "status": "ok", "observed": observed,
             "stale": False, "goal_id": goal.id, "current": progress["current"]}
+
+
+def _sync_hugo_blog(session: Session, source: CultivationSource) -> dict[str, Any]:
+    from pathlib import Path as _Path
+
+    from mission_control.cultivation.sources import scan_hugo_blog
+    if not source.path or not _Path(source.path).is_dir():
+        return _mark_source_stale(session, source)
+    scan = scan_hugo_blog(source.path)
+    observed = _store_scan_observation(session, source, scan)
+
+    goal = session.get(CultivationGoal, source.goal_id) if source.goal_id else None
+    if goal is None:
+        return {"source_id": source.id, "status": "ok", "observed": observed,
+                "stale": False, "goal_id": None}
+    _attach_live_source(session, source, goal, "hugo_blog")
+    return _reconcile_observed_items(
+        session, source, goal, scan, item_type="blog_post",
+        source_application="hugo_blog", item_id_fn=_hugo_item_id,
+        completed_label="Published post observed")
+
+
+def _sync_numbered_files(session: Session, source: CultivationSource) -> dict[str, Any]:
+    """Sync a numbered-script directory (e.g. self-hypnosis ``ScriptNNN.md`` files).
+
+    Every matching file is one published item; everything else is excluded.
+    Read-only toward the scanned tree; a linked weekly-rhythm goal named in
+    the source config (``period_goal_id``) is fed one unit per new script.
+    """
+    from pathlib import Path as _Path
+
+    from mission_control.cultivation.sources import scan_numbered_files
+    if not source.path or not _Path(source.path).is_dir():
+        return _mark_source_stale(session, source)
+    scan = scan_numbered_files(source.path)
+    observed = _store_scan_observation(session, source, scan)
+
+    goal = session.get(CultivationGoal, source.goal_id) if source.goal_id else None
+    if goal is None:
+        return {"source_id": source.id, "status": "ok", "observed": observed,
+                "stale": False, "goal_id": None}
+    _attach_live_source(session, source, goal, "numbered_files")
+    return _reconcile_observed_items(
+        session, source, goal, scan, item_type="script",
+        source_application="numbered_files", item_id_fn=_script_item_id,
+        completed_label="New script observed")
 
 
 # ------------------------------------------------------------------ cycles

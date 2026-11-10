@@ -35,9 +35,9 @@ def test_multiple_simultaneous_goals(client: TestClient) -> None:
 
 
 def _unpin_seeded(client: TestClient) -> None:
-    """Seeded catalogue pins published_books/blog_posts; tests needing pin
+    """Seeded catalogue pins published_books/blog_posts/scripts; tests needing pin
     control start from a clean slate without touching user data."""
-    for goal_id in ("published_books", "blog_posts"):
+    for goal_id in ("published_books", "blog_posts", "scripts_published", "weekly_script"):
         response = client.patch(f"/api/cultivation/goals/{goal_id}", json={"pinned": False})
         assert response.status_code == 200, response.text
 

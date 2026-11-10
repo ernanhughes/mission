@@ -118,8 +118,9 @@ def test_no_second_scanner_in_adapter() -> None:
     from mission_control.cultivation import service as cultivation_service
 
     # The Activity adapter must read indexed rows only: no filesystem walk,
-    # no subprocess, no git binary. (The Hugo blog source legitimately walks
-    # its own configured content tree; that is a different source kind.)
+    # no subprocess, no git binary. (File observation lives in sources.py, a
+    # different layer: the Hugo blog source walks its own content tree and the
+    # numbered-file source dates files with read-only git.)
     for name in ("sync_activity_projects", "_scope_roots", "_project_map",
                  "_commit_aggregates", "_auto_qualification", "list_repo_states",
                  "repo_read", "_resolve_git_row"):
@@ -132,6 +133,25 @@ def test_no_second_scanner_in_adapter() -> None:
     assert "run_git" not in adapter
     assert "build_prompt" not in adapter
     assert "file_diff" not in adapter
+
+
+def test_service_syncs_do_not_shell_out() -> None:
+    import inspect
+
+    from mission_control.cultivation import service as cultivation_service
+
+    # Filesystem and git access live in cultivation/sources.py (read-only
+    # observation). The service layer orchestrates rows and events only: no
+    # shell, no directory walk of its own.
+    for name in ("sync_source", "_sync_hugo_blog", "_sync_numbered_files",
+                 "_reconcile_observed_items", "_feed_period_goal",
+                 "_store_scan_observation", "_mark_source_stale",
+                 "_attach_live_source"):
+        source = inspect.getsource(getattr(cultivation_service, name)).casefold()
+        assert "subprocess" not in source, name
+        assert "popen" not in source, name
+        assert "os.walk" not in source, name
+        assert "os.scandir" not in source, name
 
 
 def test_worktrees_and_moves_share_stable_identity(client: TestClient, activity_index: TestClient) -> None:
@@ -464,13 +484,17 @@ def test_rollover_preserves_lifetime_and_snapshot(client: TestClient) -> None:
 
 def test_no_model_calls_and_no_git_mutation(client: TestClient, activity_index: TestClient) -> None:
     import pathlib
-    # The adapter path must not shell out, infer, or touch repositories.
+    # The adapter path must not infer or touch repositories. Shelling out is
+    # banned in the service layer; the file scanners (sources.py) may use
+    # read-only git for observation (numbered-file dating) — the Activity
+    # adapter stays shell-free per test_no_second_scanner_in_adapter, and the
+    # no-mutation half below guards behavior.
     backend = pathlib.Path(__file__).resolve().parents[1] / "mission_control" / "cultivation"
     for relative in ("service.py", "sources.py"):
         lowered = (backend / relative).read_text(encoding="utf-8").casefold()
         assert "inference" not in lowered, relative
         assert "httpx" not in lowered, relative
-        assert "subprocess" not in lowered, relative
+    assert "subprocess" not in (backend / "service.py").read_text(encoding="utf-8").casefold()
     assert "chat/completions" not in (backend / "service.py").read_text(encoding="utf-8")
     with client.app.state.database.session() as session:
         _repo(session, repo_id="gitrepo-m", uid="git-m", path=r"C:\Projects\m",

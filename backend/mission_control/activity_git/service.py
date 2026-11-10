@@ -95,6 +95,66 @@ DEFAULT_CONFIG = {
 
 DUBLIN_TZ = "Europe/Dublin"
 
+DAILY_MODES = ("explain", "review")
+DAILY_PROFILES = ("code", "prose")
+_DAILY_DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+# Hard cap keeps the daily evidence package inside the inference slice
+# (execute_review sends prompt[:100_000]) so later commits cannot be silently
+# dropped by the model-call truncation.
+DAILY_PROMPT_HARD_CAP = 95_000
+DAILY_DIFF_PER_COMMIT_CAP = 15_000
+DAILY_DIFF_PER_COMMIT_FLOOR = 2_000
+
+
+def _validate_day(day: str) -> str:
+    text = (day or "").strip()
+    if not _DAILY_DATE_RE.match(text):
+        from mission_control.core.errors import ValidationProblem as _VP
+
+        raise _VP("date must be ISO YYYY-MM-DD")
+    try:
+        datetime.fromisoformat(text)
+    except ValueError:
+        from mission_control.core.errors import ValidationProblem as _VP
+
+        raise _VP("date must be ISO YYYY-MM-DD")
+    return text
+
+
+def _validate_timezone(tz_name: str | None) -> str:
+    from mission_control.core.errors import ValidationProblem as _VP
+
+    name = (tz_name or DUBLIN_TZ).strip() or DUBLIN_TZ
+    if len(name) > 80:
+        raise _VP("Unknown timezone")
+    try:
+        ZoneInfo(name)
+    except Exception:
+        raise _VP("Unknown timezone") from None
+    return name
+
+
+def _validate_daily_mode(mode: str | None) -> str:
+    from mission_control.core.errors import ValidationProblem as _VP
+
+    normalized = (mode or "review").strip().lower()
+    if normalized == "explanation":
+        normalized = "explain"
+    if normalized not in DAILY_MODES:
+        raise _VP("mode must be explain or review")
+    return normalized
+
+
+def _validate_daily_profile(profile: str | None) -> str:
+    normalized = (profile or "code").strip().lower()
+    if normalized not in DAILY_PROFILES:
+        normalized = "code"
+    return normalized
+
+
+def _snapshot_fingerprint(shas: list[str]) -> str:
+    return _fingerprint(",".join(sorted(shas)))
+
 
 def _utc_ts(value: str | None) -> int:
     if not value:
@@ -112,6 +172,28 @@ def _day_bounds(day: str, tz_name: str = DUBLIN_TZ) -> tuple[int, int]:
     start = base.replace(hour=0, minute=0, second=0, microsecond=0)
     end = start.replace(hour=23, minute=59, second=59, microsecond=999999)
     return int(start.timestamp()), int(end.timestamp())
+
+
+def _day_bounds_exclusive(day: str, tz_name: str = DUBLIN_TZ) -> tuple[int, int]:
+    """Start-inclusive / end-exclusive calendar-day bounds.
+
+    Both bounds are calendar midnights in the requested timezone, so days
+    spanning a DST transition are 23 h or 25 h long but never leak commits
+    into the neighbouring day. The UI and backend must use this pair to agree
+    on project-day membership.
+    """
+    validated = _validate_day(day)
+    tz_name = _validate_timezone(tz_name)
+    tz = ZoneInfo(tz_name)
+    year, month, dom = (int(part) for part in validated.split("-"))
+    start_dt = datetime(year, month, dom, 0, 0, 0, tzinfo=tz)
+    # Next calendar midnight, not start+24h, so DST transitions are exact.
+    from datetime import timedelta as _td
+
+    base_date = datetime(year, month, dom).date()
+    nxt = base_date + _td(days=1)
+    end_dt = datetime(nxt.year, nxt.month, nxt.day, 0, 0, 0, tzinfo=tz)
+    return int(start_dt.timestamp()), int(end_dt.timestamp())
 
 
 def _today_bounds(tz_name: str = DUBLIN_TZ) -> tuple[int, int]:
@@ -806,6 +888,465 @@ class GitActivityService:
             "generated_at": now_iso(),
         }
 
+    # ----------------------------------------------- daily project scope
+    def _daily_bounds(self, day: str, tz_name: str | None) -> tuple[str, str, int, int]:
+        validated_day = _validate_day(day)
+        validated_tz = _validate_timezone(tz_name)
+        start_ts, end_ts = _day_bounds_exclusive(validated_day, validated_tz)
+        return validated_day, validated_tz, start_ts, end_ts
+
+    def daily_scope_commits(self, session, repo_id: str, day: str,
+                            tz_name: str | None) -> tuple[GitRepository, list[Any], int, int, str, str]:
+        validated_day, validated_tz, start_ts, end_ts = self._daily_bounds(day, tz_name)
+        repo = self.get_repo(session, repo_id)
+        commits = session.scalars(
+            select(GitCommit)
+            .where(GitCommit.repo_id == repo_id,
+                   GitCommit.committer_ts >= start_ts,
+                   GitCommit.committer_ts < end_ts)
+            .order_by(GitCommit.committer_ts.asc(), GitCommit.sha.asc())
+        ).all()
+        return repo, list(commits), start_ts, end_ts, validated_day, validated_tz
+
+    def daily_projects(self, session, *, day: str, tz_name: str | None = None) -> dict[str, Any]:
+        validated_day, validated_tz, start_ts, end_ts = self._daily_bounds(day, tz_name)
+        agg = session.execute(
+            select(
+                GitCommit.repo_id,
+                func.count().label("commit_count"),
+                func.sum(GitCommit.insertions).label("insertions"),
+                func.sum(GitCommit.deletions).label("deletions"),
+                func.sum(GitCommit.files_changed).label("files_changed"),
+                func.min(GitCommit.committer_ts).label("first_ts"),
+                func.max(GitCommit.committer_ts).label("last_ts"),
+            )
+            .where(GitCommit.committer_ts >= start_ts, GitCommit.committer_ts < end_ts)
+            .group_by(GitCommit.repo_id)
+        ).all()
+        if not agg:
+            pending = session.scalar(
+                select(func.count(GitRepository.id)).where(GitRepository.backfill_complete.is_(False))) or 0
+            return {
+                "date": validated_day, "timezone": validated_tz,
+                "start_ts": start_ts, "end_ts": end_ts,
+                "total_commits": 0, "total_repos": 0, "projects": [],
+                "partial": bool(pending),
+                "backfill_pending": int(pending),
+            }
+        repo_ids = [row[0] for row in agg]
+        repos = {row.id: row for row in session.scalars(
+            select(GitRepository).where(GitRepository.id.in_(repo_ids))).all()}
+        # Existing daily reviews for staleness: small result set, filter in Python
+        # on the JSON evidence scope (no migration required).
+        daily_reviews = session.scalars(
+            select(GitReview)
+            .where(GitReview.repo_id.in_(repo_ids), GitReview.review_type == "daily")
+            .order_by(desc(GitReview.created_at))
+        ).all()
+        by_repo_reviews: dict[str, list[Any]] = {}
+        for review in daily_reviews:
+            cov = review.evidence_coverage or {}
+            if cov.get("daily_date") == validated_day and (cov.get("timezone") or DUBLIN_TZ) == validated_tz:
+                by_repo_reviews.setdefault(review.repo_id, []).append(review)
+        projects: list[dict[str, Any]] = []
+        for row in agg:
+            repo_id = row[0]
+            repo = repos.get(repo_id)
+            if repo is None:
+                continue
+            manifest = session.scalars(
+                select(GitCommit.sha)
+                .where(GitCommit.repo_id == repo_id,
+                       GitCommit.committer_ts >= start_ts,
+                       GitCommit.committer_ts < end_ts)
+                .order_by(GitCommit.committer_ts.asc(), GitCommit.sha.asc())
+            ).all()
+            manifest_list = list(manifest)
+            snapshot = _snapshot_fingerprint(manifest_list)
+            reviews = by_repo_reviews.get(repo_id, [])
+            latest = reviews[0] if reviews else None
+            latest_cov = (latest.evidence_coverage or {}) if latest else {}
+            stale = False
+            if latest is not None:
+                stale = latest_cov.get("snapshot_fingerprint") != snapshot
+            backfill_complete = bool(repo.backfill_complete)
+            projects.append({
+                "repo_id": repo.id, "repo_name": repo.name,
+                "date": validated_day, "timezone": validated_tz,
+                "start_ts": start_ts, "end_ts": end_ts,
+                "commit_count": int(row[1] or 0),
+                "insertions": int(row[2] or 0), "deletions": int(row[3] or 0),
+                "files_changed": int(row[4] or 0),
+                # Distinct file names are not indexed per file; the summed
+                # touch count is reported and flagged as an estimate.
+                "files_changed_distinct": None,
+                "files_changed_estimated": True,
+                "first_ts": int(row[5] or 0), "last_ts": int(row[6] or 0),
+                "backfill_complete": backfill_complete,
+                "index_complete": backfill_complete,
+                "coverage_warning": None if backfill_complete else "Backfill pending: counts may grow; a review is partial until indexing completes.",
+                "snapshot_fingerprint": snapshot,
+                "commit_shas": manifest_list,
+                "review_status": latest.status if latest else "not_reviewed",
+                "review_id": latest.id if latest else None,
+                "review_mode": latest_cov.get("daily_mode") if latest else None,
+                "review_verdict": latest.verdict if latest else None,
+                "review_completed_at": latest.completed_at if latest else None,
+                "review_stale": stale,
+                "review_count": len(reviews),
+            })
+        projects.sort(key=lambda item: (-item["commit_count"], item["repo_name"].casefold()))
+        pending = session.scalar(
+            select(func.count(GitRepository.id)).where(GitRepository.backfill_complete.is_(False))) or 0
+        total_commits = sum(item["commit_count"] for item in projects)
+        return {
+            "date": validated_day, "timezone": validated_tz,
+            "start_ts": start_ts, "end_ts": end_ts,
+            "total_commits": int(total_commits), "total_repos": len(projects),
+            "projects": projects,
+            "partial": bool(pending),
+            "backfill_pending": int(pending),
+        }
+
+    def build_daily_prompt(self, session, repo_id: str, day: str, tz_name: str | None,
+                           *, mode: str = "review", profile: str = "code") -> dict[str, Any]:
+        validated_mode = _validate_daily_mode(mode)
+        validated_profile = _validate_daily_profile(profile)
+        repo, commits, start_ts, end_ts, validated_day, validated_tz = self.daily_scope_commits(
+            session, repo_id, day, tz_name)
+        self._authorized_repo_path(session, repo)
+        if not commits:
+            from mission_control.core.errors import ValidationProblem as _VP
+
+            raise _VP("No indexed commits for this project on the selected day")
+        config = self.get_config(session)
+        total_budget = min(int(config["prompt_max_chars"]), DAILY_PROMPT_HARD_CAP)
+        manifest = [commit.sha for commit in commits]
+        snapshot = _snapshot_fingerprint(manifest)
+        branches: list[str] = sorted({b for commit in commits for b in (commit.branches or [])})
+        multi_branch = len(branches) > 1
+        has_merges = any(bool(commit.is_merge) for commit in commits)
+        total_ins = sum(int(commit.insertions or 0) for commit in commits)
+        total_dels = sum(int(commit.deletions or 0) for commit in commits)
+        total_files = sum(int(commit.files_changed or 0) for commit in commits)
+        # Project context: historical at the latest commit, labelled honestly.
+        anchor = commits[-1]
+        historical: dict[str, str | None] = {}
+        context_sources: list[str] = []
+        for name in ("AGENTS.md", "DESCRIPTION.md"):
+            at_rev = context_file_at(repo.path, anchor.sha, name)
+            if at_rev is not None:
+                historical[name] = at_rev
+                context_sources.append(f"{name}@{anchor.short_sha} (historical)")
+            else:
+                current = self._read_current_context(repo.path).get(name)
+                if isinstance(current, dict):
+                    historical[name] = current["text"]
+                    context_sources.append(f"{name} (current working tree; not historical fact)")
+                else:
+                    historical[name] = None
+        agents_text = (historical.get("AGENTS.md") or "").strip()
+        desc_text = (historical.get("DESCRIPTION.md") or "").strip()
+        context_fp = _fingerprint(f"{agents_text}\n---\n{desc_text}")
+        per_commit_cap = min(
+            DAILY_DIFF_PER_COMMIT_CAP,
+            max(DAILY_DIFF_PER_COMMIT_FLOOR, (max(10_000, total_budget - 15_000)) // max(1, len(commits))),
+        )
+        diff_budget = max(10_000, total_budget - 15_000)
+        sections: list[str] = []
+        history_lines: list[str] = []
+        all_redactions: list[str] = []
+        diff_fingerprints: list[str] = []
+        excluded_shas: list[str] = []
+        partial_files: list[str] = []
+        truncated_any = False
+        included_diff_chars = 0
+        for commit in commits:
+            history_lines.append(
+                f"- {commit.committer_ts} {commit.short_sha} {commit.subject} "
+                f"({commit.author_name}; +{commit.insertions}/-{commit.deletions}; "
+                f"{commit.files_changed} files; parents {', '.join(commit.parents) if commit.parents else '(root)'}; "
+                f"branches {', '.join(commit.branches) if commit.branches else '(none)'})"
+            )
+        for commit in commits:
+            diff = file_diff(repo.path, commit.sha, max_bytes=per_commit_cap)
+            redacted, redactions = redact_secrets(diff["patch"])
+            all_redactions.extend(redactions)
+            diff_fingerprints.append(diff.get("fingerprint", ""))
+            if diff.get("truncated"):
+                truncated_any = True
+            if diff.get("error"):
+                truncated_any = True
+                partial_files.append(commit.sha)
+            # Fair budgeting: every commit keeps metadata; diff bytes are shared.
+            # Overflow commits get a short preview and are listed explicitly —
+            # never silently dropped.
+            allowance = diff_budget - included_diff_chars
+            if allowance <= 0:
+                excluded_shas.append(commit.sha)
+                truncated_any = True
+                sections.append(
+                    f"## {commit.short_sha} — {commit.subject}\n"
+                    f"SHA: {commit.sha}\nParents: {', '.join(commit.parents) if commit.parents else '(root)'}\n"
+                    f"[Diff omitted: day-level diff budget exhausted. Metadata above is complete; "
+                    f"code changes for this commit were NOT reviewed. Partial coverage.]\n"
+                )
+                continue
+            if len(redacted) > allowance:
+                truncated_any = True
+                excluded_shas.append(commit.sha)
+                preview = redacted[: max(0, min(800, allowance))]
+                sections.append(
+                    f"## {commit.short_sha} — {commit.subject}\n"
+                    f"SHA: {commit.sha}\nParents: {', '.join(commit.parents) if commit.parents else '(root)'}\n"
+                    f"Branches: {', '.join(commit.branches) if commit.branches else '(none)'} | "
+                    f"Stats: {commit.files_changed} files +{commit.insertions}/-{commit.deletions} | "
+                    f"Merge: {bool(commit.is_merge)} Reachable: {bool(commit.reachable)}\n"
+                    f"Body: {(commit.body or '(no body)')[:800]}\n\n```diff\n{preview}\n```\n"
+                    f"[NOTE: diff truncated to fit the day-level budget; this commit is PARTIAL.]\n"
+                )
+                included_diff_chars += len(preview)
+                continue
+            sections.append(
+                f"## {commit.short_sha} — {commit.subject}\n"
+                f"SHA: {commit.sha}\nParents: {', '.join(commit.parents) if commit.parents else '(root)'}\n"
+                f"Author: {commit.author_name} <{commit.author_email}> | ts {commit.committer_ts} ({commit.committer_tz})\n"
+                f"Branches: {', '.join(commit.branches) if commit.branches else '(none)'} | "
+                f"Stats: {commit.files_changed} files +{commit.insertions}/-{commit.deletions} | "
+                f"Merge: {bool(commit.is_merge)} Reachable: {bool(commit.reachable)}\n"
+                f"Body: {(commit.body or '(no body)')[:1200]}\n\n```diff\n{redacted}\n```\n"
+            )
+            included_diff_chars += len(redacted)
+        if validated_mode == "explain":
+            objective = ("Explain what development work this project accomplished on this day. "
+                         "Group related commits into workstreams; do not repeat every commit message. "
+                         "Answer: (1) what the project was trying to accomplish, (2) major features/fixes/architectural "
+                         "changes, (3) how commits connect into larger work, (4) functionality added or altered, "
+                         "(5) important implementation decisions, (6) what is complete vs unfinished, "
+                         "(7) what the developer should know before continuing tomorrow. "
+                         "Ground every claim in the evidence; distinguish confirmed implementation from inferred intent.")
+            task_instructions = """## E. Explanation instructions
+1. Summarise the day's achievements in plain language, grouped by workstream.
+2. Identify significant changes and architectural decisions with file evidence.
+3. Highlight unfinished or potentially problematic work and next steps.
+4. Distinguish confirmed defects from hypotheses; do not invent test results.
+5. Do not give a pass/fail verdict; produce a day summary with workstreams, changes, unfinished work and next actions.
+"""
+        else:
+            objective = ("Critically review the whole day's combined changes for this project. "
+                         "Evaluate: (1) correctness and likely defects, (2) regressions introduced by later commits, "
+                         "(3) architectural consistency and project requirements, (4) API/model/schema/data-contract "
+                         "consistency, (5) security and unsafe data handling, (6) missing or inadequate tests, "
+                         "(7) unnecessary complexity and duplication, (8) incomplete implementations, "
+                         "(9) interactions between changes made during the day, (10) priority corrections and next actions. "
+                         "Pay special attention to problems invisible in isolated commit reviews "
+                         "(e.g. commit A introduces a service, commit B alters its contract, commit C changes a caller). "
+                         "Distinguish confirmed defects from hypotheses. Never claim tests were executed without evidence.")
+            task_instructions = """## E. Review instructions
+1. Identify genuine correctness defects across the combined changes.
+2. Detect regressions where a later commit breaks an earlier one.
+3. Check API, model, schema and data-contract consistency across the day.
+4. Identify security and data-boundary issues.
+5. Identify missing tests and tests that should have been added.
+6. Assess architectural compliance with AGENTS.md/DESCRIPTION.md.
+7. Flag unnecessary complexity, duplication and incomplete implementations.
+8. Distinguish confirmed defects from hypotheses with confidence levels.
+9. Cite files and changed lines for every finding.
+10. Give a final verdict using exactly one of: Accept, Accept with warnings, Request changes, Inconclusive.
+
+## Review output contract
+```
+Project day:
+Project:
+Review scope:
+Evidence coverage:
+Reviewer model:
+Review date:
+
+Verdict:
+- Accept
+- Accept with warnings
+- Request changes
+- Inconclusive
+
+Findings:
+- Severity
+- File and line
+- Observation
+- Why it matters
+- Supporting evidence
+- Suggested correction
+- Confidence
+
+Tests:
+- Observed executed tests
+- Missing tests
+- Tests recommended
+
+Architecture:
+- Compliance
+- Deviations
+- Risks
+
+Summary:
+- What changed
+- Main concerns
+- Recommended next action
+
+Limitations:
+- Files not reviewed
+- Context missing
+- Tests not executed
+- Unresolved uncertainties
+```
+"""
+        root_label = __import__("pathlib").Path(repo.root_path).name if repo.root_path else "unknown root"
+        try:
+            from mission_control.models import DiscoveryRoot as _DR
+
+            root_row = session.get(_DR, repo.root_path) if repo.root_path else None
+            if root_row is not None and (root_row.display_name or "").strip():
+                root_label = root_row.display_name.strip()
+        except Exception:
+            pass
+        manifest_block = "\n".join(f"- {sha}" for sha in manifest)
+        coverage = {
+            "kind": "daily-project",
+            "repo": repo.path, "repo_id": repo.id,
+            "daily_date": validated_day, "timezone": validated_tz,
+            "start_ts": start_ts, "end_ts": end_ts,
+            "commit_count": len(commits), "included_commits": len(commits),
+            "total_commits": len(commits),
+            "truncated": bool(truncated_any or excluded_shas),
+            "excluded_shas": excluded_shas,
+            "partial_files": partial_files,
+            "redactions": len(all_redactions),
+            "context_sources": context_sources,
+            "historical_context": any("historical" in source for source in context_sources),
+            "branches": branches, "multi_branch": multi_branch,
+            "has_merges": has_merges,
+            "mode": validated_mode, "profile": validated_profile,
+            "snapshot_fingerprint": snapshot,
+            "diff_fingerprints": diff_fingerprints,
+            "per_commit_cap": per_commit_cap,
+            "diff_budget": diff_budget,
+            "prompt_budget": total_budget,
+            "backfill_complete": bool(repo.backfill_complete),
+            "index_complete": bool(repo.backfill_complete),
+        }
+        header = f"""# Daily project {'explanation' if validated_mode == 'explain' else 'review'} request
+
+## A. Objective
+{objective}
+
+## A2. Scope and provenance
+Project: {repo.name} (root: {root_label})
+Date: {validated_day} Timezone: {validated_tz} (start-inclusive {start_ts}, end-exclusive {end_ts})
+Commits: {len(commits)} | Files touched (sum): {total_files} | +{total_ins}/-{total_dels}
+Branches: {', '.join(branches) if branches else '(none recorded)'} | Multi-branch: {multi_branch} | Merges: {has_merges}
+Snapshot fingerprint: {snapshot}
+Index complete (backfill): {bool(repo.backfill_complete)}
+Limitations: {'Backfill pending — counts may grow; treat as PARTIAL.' if not repo.backfill_complete else 'none reported.'}
+{'NOTE: commits span multiple branches; do NOT assume one linear cumulative diff. Each section below is an individual-commit diff with first-parent semantics for merges.' if multi_branch else 'Merge commits use the documented first-parent comparison.'}
+
+Exact SHA manifest ({len(manifest)} commits, chronological):
+{manifest_block}
+
+Evidence fingerprints: {', '.join([fp for fp in diff_fingerprints if fp][:20])}{'...' if len(diff_fingerprints) > 20 else ''}
+
+## B. Project context
+Context fingerprint: {context_fp}
+Context sources: {', '.join(context_sources) if context_sources else 'none found'}
+
+### DESCRIPTION.md
+{desc_text[:12000] if desc_text else '(missing — review proceeds without a project description)'}
+
+### AGENTS.md (applicable instructions)
+{agents_text[:15000] if agents_text else '(missing — no project-specific agent instructions found)'}
+
+## C. Chronological commit history
+{chr(10).join(history_lines)}
+
+## D. Actual code changes (individual first-parent diffs, chronological)
+{chr(10).join(sections)}
+"""
+        if validated_mode == "explain":
+            coverage_note = f"""
+## F. Coverage
+Included commits: {len(commits)}/{len(commits)} | Truncated: {coverage['truncated']} | Redactions: {len(all_redactions)}
+Excluded diffs: {', '.join(excluded_shas) if excluded_shas else 'none — full diffs included'}
+Snapshot: {snapshot} | Prompt budget: {total_budget} chars
+"""
+        else:
+            coverage_note = f"""
+## F. Coverage
+Included commits: {len(commits)}/{len(commits)} | Truncated: {coverage['truncated']} | Redactions: {len(all_redactions)}
+Excluded diffs: {', '.join(excluded_shas) if excluded_shas else 'none — full diffs included'}
+Snapshot: {snapshot} | Prompt budget: {total_budget} chars
+A test that was not actually executed must never be reported as passed.
+"""
+        markdown = header + task_instructions + coverage_note
+        if validated_profile == "prose":
+            markdown = markdown.replace("programming quality checks", "manuscript checks", 1) if validated_mode == "review" else markdown
+            if validated_mode == "review":
+                markdown = ("NOTE: profile=prose — examine the manuscript change for correctness, continuity, clarity and "
+                            "editorial soundness alongside the review contract below.\n\n" + markdown)
+        # Final guard: never exceed the hard cap; truncation here only trims
+        # trailing coverage text — the manifest above already lists every SHA.
+        truncated_final = False
+        if len(markdown) > total_budget:
+            markdown = markdown[:total_budget] + "\n[NOTE: package truncated to budget; manifest above is complete; review is PARTIAL.]\n"
+            truncated_final = True
+            coverage["truncated"] = True
+        combined_diff = _fingerprint("".join(diff_fingerprints))
+        return {
+            "markdown": markdown,
+            "prompt_hash": _fingerprint(markdown),
+            "diff_hash": combined_diff,
+            "context_fingerprint": context_fp,
+            "size_chars": len(markdown),
+            "truncated": bool(coverage["truncated"] or truncated_final),
+            "redactions": all_redactions[:50],
+            "redaction_count": len(all_redactions),
+            "coverage": coverage,
+            "commit_shas": manifest,
+            "snapshot_fingerprint": snapshot,
+            "date": validated_day, "timezone": validated_tz,
+            "mode": validated_mode, "profile": validated_profile,
+            "start_ts": start_ts, "end_ts": end_ts,
+        }
+
+    def request_daily_review(self, session, *, repo_id: str, day: str, tz_name: str | None,
+                             mode: str = "review", profile: str = "code", model: str = "") -> Any:
+        validated_mode = _validate_daily_mode(mode)
+        validated_profile = _validate_daily_profile(profile)
+        package = self.build_daily_prompt(session, repo_id, day, tz_name, mode=validated_mode, profile=validated_profile)
+        prompt_hash = package["prompt_hash"]
+        existing = session.scalar(select(GitReview).where(
+            GitReview.repo_id == repo_id, GitReview.prompt_hash == prompt_hash,
+            GitReview.status.in_(["queued", "running"])).order_by(desc(GitReview.created_at)).limit(1))
+        if existing is not None:
+            return existing
+        review = GitReview(
+            id=f"rev-{uuid.uuid4().hex[:16]}", repo_id=repo_id, review_type="daily",
+            commit_sha=None, base_sha=None, target_sha=None,
+            commit_shas=package["commit_shas"], reviewer_type="local",
+            requested_model=(model or "").strip()[:200],
+            model_route="configured-local-openai", profile=validated_profile, status="queued",
+            prompt=package["markdown"][:200_000], prompt_hash=prompt_hash,
+            diff_hash=package.get("diff_hash", ""), context_fingerprint=package.get("context_fingerprint", ""),
+            evidence_coverage={
+                **package.get("coverage", {}),
+                "daily_date": package["date"], "timezone": package["timezone"],
+                "daily_mode": package["mode"],
+                "snapshot_fingerprint": package["snapshot_fingerprint"],
+            },
+            created_at=now_iso(),
+        )
+        session.add(review)
+        session.flush()
+        return review
+
     # ----------------------------------------------------- diff + context
     def get_repo(self, session, repo_id: str) -> GitRepository:
         repo = session.get(GitRepository, repo_id)
@@ -1116,7 +1657,14 @@ Limitations:
     # ------------------------------------------------------------ reviews
     def request_review(self, session, *, repo_id: str, sha: str | None = None,
                        commit_shas: list[str] | None = None, base_sha: str | None = None,
-                       target_sha: str | None = None, model: str = "", profile: str = "code") -> GitReview:
+                       target_sha: str | None = None, model: str = "", profile: str = "code",
+                       daily_date: str | None = None, daily_timezone: str | None = None,
+                       daily_mode: str | None = None) -> GitReview:
+        if daily_date:
+            return self.request_daily_review(
+                session, repo_id=repo_id, day=daily_date,
+                tz_name=daily_timezone or DUBLIN_TZ,
+                mode=daily_mode or "review", profile=profile, model=model)
         self.get_repo(session, repo_id)  # validates existence; build_* re-checks authorization
         if profile not in {"code", "prose"}:
             profile = "code"
@@ -1200,15 +1748,44 @@ Limitations:
             if not model:
                 raise ValueError("No model selected and no default model is configured")
             with self.database.session() as chat_session:
+                # Daily project reviews reuse the same local-only execution path.
+                # Explain and Review use distinct system instructions; the daily
+                # package is already capped below the slice width so the tail
+                # (later commits) cannot be silently dropped here.
+                probe = chat_session.get(GitReview, review_id)
+                coverage = (probe.evidence_coverage or {}) if probe else {}
+                daily_mode = (coverage.get("daily_mode") or coverage.get("mode") or "").strip().lower()
+                is_daily = bool(probe and probe.review_type == "daily")
+                is_explain = is_daily and daily_mode == "explain"
+                if is_explain:
+                    system = ("You are a helpful senior engineer summarising a day's development work. "
+                              "Group related commits into workstreams. Ground every claim in the provided "
+                              "evidence. Distinguish confirmed implementation from inferred intent. "
+                              "Do not invent test results.")
+                elif is_daily:
+                    system = ("You are a rigorous code reviewer examining a full day's combined changes "
+                              "across multiple commits. Follow the review output contract exactly. "
+                              "Pay special attention to interactions between commits made during the day. "
+                              "Distinguish confirmed defects from hypotheses.")
+                else:
+                    system = "You are a rigorous code reviewer. Follow the review output contract exactly. Distinguish confirmed defects from hypotheses."
                 result = await complete_local_chat(
                     chat_session, model=model,
                     messages=[
-                        {"role": "system", "content": "You are a rigorous code reviewer. Follow the review output contract exactly. Distinguish confirmed defects from hypotheses."},
+                        {"role": "system", "content": system},
                         {"role": "user", "content": prompt[:100_000]},
                     ],
                 )
             content = str(result.get("content", ""))
-            verdict = self._parse_verdict(content)
+            with self.database.session() as session:
+                probe2 = session.get(GitReview, review_id)
+                probe_cov = (probe2.evidence_coverage or {}) if probe2 else {}
+                probe_mode = (probe_cov.get("daily_mode") or probe_cov.get("mode") or "").strip().lower()
+                probe_daily = bool(probe2 and probe2.review_type == "daily")
+            if probe_daily and probe_mode == "explain":
+                verdict = "Summary"
+            else:
+                verdict = self._parse_verdict(content)
             with self.database.session() as session:
                 review = session.get(GitReview, review_id)
                 if review is None:

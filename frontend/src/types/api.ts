@@ -982,6 +982,67 @@ export type ReviewModelCatalogue = {
   error: string | null;
 };
 
+export type GitDailyProject = {
+  repo_id: string;
+  repo_name: string;
+  date: string;
+  timezone: string;
+  start_ts: number;
+  end_ts: number;
+  commit_count: number;
+  insertions: number;
+  deletions: number;
+  files_changed: number;
+  files_changed_distinct: number | null;
+  files_changed_estimated: boolean;
+  first_ts: number;
+  last_ts: number;
+  backfill_complete: boolean;
+  index_complete: boolean;
+  coverage_warning: string | null;
+  snapshot_fingerprint: string;
+  commit_shas: string[];
+  review_status: string;
+  review_id: string | null;
+  review_mode: string | null;
+  review_verdict: string | null;
+  review_completed_at: string | null;
+  review_stale: boolean;
+  review_count: number;
+};
+
+export type GitDailyProjects = {
+  date: string;
+  timezone: string;
+  start_ts: number;
+  end_ts: number;
+  total_commits: number;
+  total_repos: number;
+  projects: GitDailyProject[];
+  partial: boolean;
+  backfill_pending: number;
+};
+
+export type GitDailyPrompt = {
+  markdown: string;
+  prompt_hash: string;
+  diff_hash: string;
+  context_fingerprint: string;
+  size_chars: number;
+  truncated: boolean;
+  redactions: string[];
+  redaction_count: number;
+  coverage: Record<string, unknown>;
+  commit_shas: string[];
+  snapshot_fingerprint: string;
+  date: string;
+  timezone: string;
+  mode: string;
+  profile: string;
+  start_ts: number;
+  end_ts: number;
+};
+
 export type CultivationStageDef = {
   id: string;
   label: string;
@@ -1019,6 +1080,7 @@ export type CultivationGoal = {
   baseline_provenance: string;
   qualifying_stage: string;
   window_days: number | null;
+  recurring_mode: string;
   priority: number;
   state: string;
   pinned: boolean;
