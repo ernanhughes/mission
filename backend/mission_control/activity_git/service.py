@@ -139,7 +139,8 @@ def redact_secrets(text: str) -> tuple[str, list[str]]:
     redacted = text
     for index, pattern in enumerate(SECRET_PATTERNS):
         def _replace(match: re.Match[str]) -> str:
-            redactions.append(f"pattern-{index}:{match.group(0)[:24]}…")
+            # Never echo matched text: even a prefix can reconstruct short secrets.
+            redactions.append(f"pattern-{index}:redacted-{len(match.group(0))}-chars")
             return "[REDACTED-SECRET]"
         redacted = pattern.sub(_replace, redacted)
     return redacted, redactions
@@ -816,11 +817,18 @@ class GitActivityService:
         sha = validate_sha(sha)
         repo = self.get_repo(session, repo_id)
         commit = session.get(GitCommit, (repo_id, sha))
-        # Fall back to prefix match for short SHAs pasted from the timeline.
+        # Fall back to prefix match for short SHAs pasted from the timeline,
+        # but never guess: an ambiguous prefix must resolve to exactly one commit.
         if commit is None and 4 <= len(sha) < 40:
-            commit = session.scalars(
-                select(GitCommit).where(GitCommit.repo_id == repo_id, GitCommit.sha.like(f"{sha}%")).limit(1)
-            ).first()
+            candidates = session.scalars(
+                select(GitCommit).where(GitCommit.repo_id == repo_id, GitCommit.sha.like(f"{sha}%")).limit(2)
+            ).all()
+            if len(candidates) > 1:
+                raise ValidationProblem(
+                    "Ambiguous commit prefix: it matches multiple indexed commits. "
+                    "Provide a longer prefix or the full 40-character SHA."
+                )
+            commit = candidates[0] if candidates else None
         if commit is None:
             raise NotFound("Commit is not in the activity index")
         return repo, commit
@@ -829,7 +837,10 @@ class GitActivityService:
         repo, commit = self.get_commit(session, repo_id, sha)
         self._authorized_repo_path(session, repo)
         if parent is not None:
-            parent = validate_sha(parent)
+            try:
+                parent = validate_sha(parent)
+            except ValueError:
+                raise ValidationProblem("Parent must be a hex commit identifier") from None
             if parent not in (commit.parents or []):
                 raise ValidationProblem("Parent must be one of the commit's recorded parents")
         config = self.get_config(session)
@@ -890,6 +901,13 @@ class GitActivityService:
                      profile: str = "code", max_bytes: int | None = None) -> dict[str, Any]:
         repo, commit = self.get_commit(session, repo_id, sha)
         self._authorized_repo_path(session, repo)
+        if parent is not None:
+            try:
+                parent = validate_sha(parent)
+            except ValueError:
+                raise ValidationProblem("Parent must be a hex commit identifier") from None
+            if parent not in (commit.parents or []):
+                raise ValidationProblem("Parent must be one of the commit's recorded parents")
         config = self.get_config(session)
         diff = file_diff(repo.path, commit.sha, parent=parent, max_bytes=int(max_bytes or config["diff_max_bytes"]))
         redacted_patch, redactions = redact_secrets(diff["patch"])
@@ -925,7 +943,7 @@ class GitActivityService:
             "files_included": len(diff["files"]), "patch_bytes": diff["total_bytes"],
             "truncated": diff["truncated"], "redactions": len(redactions),
             "context_sources": context_sources, "historical_context": any("historical" in source for source in context_sources),
-            "profile": profile,
+            "profile": profile, "diff_error": diff.get("error"),
         }
         # Absolute filesystem paths stay server-side: the exported prompt
         # identifies the project by name, never by absolute path.
@@ -965,6 +983,7 @@ Context sources: {', '.join(context_sources) if context_sources else 'none found
 ## D. Diff (redacted where secrets were detected)
 Redactions: {len(redactions)}
 Truncated: {diff['truncated']} (budget {config['diff_max_bytes']} chars)
+{f"[NOTE: diff unavailable ({diff['error']}); the changes below are empty and review coverage is PARTIAL.]" if diff.get("error") else ""}
 
 ```diff
 {redacted_patch[:prompt_max]}

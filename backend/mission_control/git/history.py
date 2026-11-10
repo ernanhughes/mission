@@ -345,10 +345,13 @@ def file_diff(
         # Documented first-parent comparison for merges; root commits show full addition.
         args = ["show", "--pretty=format:", "--no-ext-diff", "--no-textconv", "--first-parent", "--find-renames", "-M", sha, "--"]
     proc = run_git(repo, args, timeout=30.0)
+    mode = "first-parent" if not parent else "explicit-parent"
     if proc is None:
-        return {"patch": "", "truncated": True, "error": "Git diff timed out", "files": [], "mode": "first-parent" if not parent else "explicit-parent"}
+        return {"patch": "", "truncated": True, "total_bytes": 0, "fingerprint": "",
+                "error": "Git diff timed out", "files": [], "mode": mode}
     if proc.returncode != 0:
-        return {"patch": "", "truncated": True, "error": (proc.stderr or "Git diff failed")[:500], "files": [], "mode": "first-parent" if not parent else "explicit-parent"}
+        return {"patch": "", "truncated": True, "total_bytes": 0, "fingerprint": "",
+                "error": (proc.stderr or "Git diff failed")[:500], "files": [], "mode": mode}
     patch = proc.stdout or ""
     truncated = False
     if len(patch) > max_bytes:
