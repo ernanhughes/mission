@@ -9,8 +9,11 @@ import subprocess
 import time
 import uuid
 from pathlib import Path
+from types import SimpleNamespace
 from typing import Any
+from urllib.parse import urlparse
 
+import httpx
 import psutil
 from sqlalchemy import desc, func, select
 from sqlalchemy.orm import Session
@@ -49,6 +52,48 @@ if os.name == "nt":
     # kill their child when the event loop closes, so managed launches use a
     # native Popen plus psutil-based status observation instead.
     WINDOWS_FLAGS = subprocess.CREATE_NEW_PROCESS_GROUP | subprocess.DETACHED_PROCESS
+
+
+#: Bounded wait for a freshly launched browser application to answer.
+READINESS_TIMEOUT_SECONDS = 30.0
+READINESS_POLL_SECONDS = 0.5
+
+#: Marker that identifies the Workbench single-page UI. A responding port is
+#: evidence of availability, not proof that Workbench owns the listener.
+WORKBENCH_IDENTITY_MARKER = "<title>Workbench</title>"
+
+
+async def verify_workbench_identity(url: str, *, timeout: float = 3.0) -> tuple[bool, str]:
+    """Check that the HTTP service at *url* identifies itself as Workbench.
+
+    Returns a ``(matches, detail)`` pair. The destination always comes from
+    the stored application definition; this helper never accepts a URL from
+    the browser. Only loopback destinations are probed.
+    """
+    try:
+        parsed = urlparse(url)
+    except ValueError:
+        return False, f"Stored browser URL is not a valid URL: {url!r}"
+    if parsed.scheme not in {"http", "https"}:
+        return False, f"Stored browser URL is not http(s): {url!r}"
+    if (parsed.hostname or "") not in {"127.0.0.1", "localhost", "::1"}:
+        return False, f"Stored browser URL is not loopback: {url!r}"
+    try:
+        async with httpx.AsyncClient(timeout=timeout, follow_redirects=False, trust_env=False) as client:
+            response = await client.get(url)
+    except httpx.TimeoutException:
+        return False, f"Identity check timed out after {timeout:g}s for {url}"
+    except httpx.HTTPError as exc:
+        return False, f"Identity check failed: {exc.__class__.__name__} for {url}"
+    if not 200 <= response.status_code < 400:
+        return False, f"Identity check saw HTTP {response.status_code} from {url}"
+    if WORKBENCH_IDENTITY_MARKER in response.text:
+        return True, f"HTTP {response.status_code} from {url}; Workbench marker present"
+    return False, (
+        f"HTTP {response.status_code} from {url} but the Workbench marker "
+        f"({WORKBENCH_IDENTITY_MARKER!r}) was absent; refusing to adopt the listener"
+    )
+
 
 _ENV_ALLOWLIST = (
     "SYSTEMROOT",
@@ -135,10 +180,18 @@ class ProcessManager:
         self.database = database
         self.settings = settings
         self._live: dict[str, subprocess.Popen[bytes]] = {}
+        self._launch_locks: dict[str, asyncio.Lock] = {}
         self._stopping: set[str] = set()
         self._tasks: set[asyncio.Task[None]] = set()
         self._monitor_task: asyncio.Task[None] | None = None
         self._shutting_down = False
+
+    def _lock_for(self, application_id: str) -> asyncio.Lock:
+        lock = self._launch_locks.get(application_id)
+        if lock is None:
+            lock = asyncio.Lock()
+            self._launch_locks[application_id] = lock
+        return lock
 
     # ------------------------------------------------------------------ state
     def reconcile_live(self, session: Session, application_id: str | None = None) -> None:
@@ -245,166 +298,167 @@ class ProcessManager:
         launch_id: str | None = None,
         confirm: bool = False,
     ) -> ProcessInstance:
-        with self.database.session() as session:
-            application = session.get(Application, application_id)
-            if application is None:
-                raise NotFound("Application not found")
-            if not application.enabled or application.archived:
-                raise CapabilityUnavailable("Application is disabled or archived")
-            if application.control_policy.get("allow_launch") is False:
-                raise CapabilityUnavailable("Launching is disabled by this application's control policy")
-            definition = self._choose_definition(session, application, launch_id)
-            if application.control_policy.get("confirmation_required") and not confirm:
-                raise Conflict("This application requires explicit confirmation")
-            if definition.launch_type not in {"command", "server"}:
-                raise CapabilityUnavailable(
-                    f"Launch type '{definition.launch_type}' is not a managed process",
-                    detail="Use the URL or repository action instead.",
-                )
-            active = self.active_process(session, application_id)
-            if active:
-                raise Conflict(
-                    "This application already has a managed process",
-                    detail=f"Process {active.id} is running with PID {active.pid}.",
-                )
-            if self.running_count(session) >= self._max_managed():
-                raise Conflict("Managed process limit reached", detail="Stop a process or raise the limit in Settings.")
-            working_directory = (
-                definition.working_directory
-                or application.working_directory
-                or application.repository_path
-            )
-            if not working_directory:
-                raise LaunchProblem("No working directory is configured")
-            try:
-                working_directory = require_existing_directory(
-                    working_directory, field="working directory"
-                )
-            except ValidationProblem as exc:
-                self._record_failure(
-                    session,
-                    application,
-                    definition,
-                    exc.message,
-                    working_directory,
-                    definition.executable,
-                )
-                raise LaunchProblem(exc.message) from exc
-            executable_setting = definition.executable
-            if not executable_setting:
-                self._record_failure(
-                    session,
-                    application,
-                    definition,
-                    "No executable is configured for this launch definition",
-                    working_directory,
-                    None,
-                )
-                raise LaunchProblem("No executable is configured for this launch definition")
-            executable = resolve_executable(executable_setting)
-            if not executable:
-                message = f"Executable not found: {executable_setting}"
-                self._record_failure(
-                    session, application, definition, message, working_directory, executable_setting
-                )
-                raise LaunchProblem(
-                    message,
-                    detail="Check the executable name or path. Mission Control does not invoke a shell to resolve it.",
-                )
-            if definition.expected_port:
-                if port_is_open("127.0.0.1", definition.expected_port):
+        async with self._lock_for(application_id):
+            with self.database.session() as session:
+                application = session.get(Application, application_id)
+                if application is None:
+                    raise NotFound("Application not found")
+                if not application.enabled or application.archived:
+                    raise CapabilityUnavailable("Application is disabled or archived")
+                if application.control_policy.get("allow_launch") is False:
+                    raise CapabilityUnavailable("Launching is disabled by this application's control policy")
+                definition = self._choose_definition(session, application, launch_id)
+                if application.control_policy.get("confirmation_required") and not confirm:
+                    raise Conflict("This application requires explicit confirmation")
+                if definition.launch_type not in {"command", "server"}:
+                    raise CapabilityUnavailable(
+                        f"Launch type '{definition.launch_type}' is not a managed process",
+                        detail="Use the URL or repository action instead.",
+                    )
+                active = self.active_process(session, application_id)
+                if active:
                     raise Conflict(
-                        f"Port {definition.expected_port} is already in use",
-                        detail=(
-                            "Mission Control will not claim or terminate the existing listener. "
-                            "Use its health/URL action to inspect it instead."
-                        ),
+                        "This application already has a managed process",
+                        detail=f"Process {active.id} is running with PID {active.pid}.",
                     )
-            arguments = list(definition.arguments or [])
-            process_id = f"proc-{uuid.uuid4().hex[:16]}"
-            log_path = self.settings.log_dir / f"{process_id}.log"
-            command_preview = _command_preview(executable, arguments)
-            env = build_environment(list(definition.env_names or []))
-            started_at = now_iso()
-            header = (
-                f"Mission Control managed process {process_id}\n"
-                f"Application: {application.name} ({application.id})\n"
-                f"Command: {command_preview}\n"
-                f"Working directory: {working_directory}\n"
-                f"Started: {started_at}\n"
-                "Environment: allowlisted Windows variables plus explicitly named variables; values omitted.\n"
-                "---\n"
-            ).encode("utf-8", "replace")
-            try:
-                with open(log_path, "ab", buffering=0) as log_handle:
-                    log_handle.write(header)
-                    process = subprocess.Popen(
-                        [executable, *arguments],
-                        cwd=working_directory,
-                        env=env,
-                        stdin=subprocess.DEVNULL,
-                        stdout=log_handle,
-                        stderr=subprocess.STDOUT,
-                        shell=False,
-                        close_fds=True,
-                        creationflags=WINDOWS_FLAGS,
-                        start_new_session=os.name != "nt",
-                    )
-            except (OSError, ValueError) as exc:
-                message = f"Could not start process: {exc}"
-                self._record_failure(
-                    session,
-                    application,
-                    definition,
-                    message,
-                    working_directory,
-                    executable,
-                    log_path,
-                    command_preview,
+                if self.running_count(session) >= self._max_managed():
+                    raise Conflict("Managed process limit reached", detail="Stop a process or raise the limit in Settings.")
+                working_directory = (
+                    definition.working_directory
+                    or application.working_directory
+                    or application.repository_path
                 )
-                raise LaunchProblem(message) from exc
-            try:
-                create_time = psutil.Process(process.pid).create_time()
-            except (psutil.Error, OSError):
-                create_time = None
-            record = ProcessInstance(
-                id=process_id,
-                application_id=application.id,
-                launch_definition_id=definition.id,
-                pid=process.pid,
-                create_time=create_time,
-                status="running",
-                started_at=started_at,
-                log_path=str(log_path),
-                working_directory=working_directory,
-                command_preview=command_preview,
-                owned=True,
-                reattached=False,
+                if not working_directory:
+                    raise LaunchProblem("No working directory is configured")
+                try:
+                    working_directory = require_existing_directory(
+                        working_directory, field="working directory"
+                    )
+                except ValidationProblem as exc:
+                    self._record_failure(
+                        session,
+                        application,
+                        definition,
+                        exc.message,
+                        working_directory,
+                        definition.executable,
+                    )
+                    raise LaunchProblem(exc.message) from exc
+                executable_setting = definition.executable
+                if not executable_setting:
+                    self._record_failure(
+                        session,
+                        application,
+                        definition,
+                        "No executable is configured for this launch definition",
+                        working_directory,
+                        None,
+                    )
+                    raise LaunchProblem("No executable is configured for this launch definition")
+                executable = resolve_executable(executable_setting)
+                if not executable:
+                    message = f"Executable not found: {executable_setting}"
+                    self._record_failure(
+                        session, application, definition, message, working_directory, executable_setting
+                    )
+                    raise LaunchProblem(
+                        message,
+                        detail="Check the executable name or path. Mission Control does not invoke a shell to resolve it.",
+                    )
+                if definition.expected_port:
+                    if port_is_open("127.0.0.1", definition.expected_port):
+                        raise Conflict(
+                            f"Port {definition.expected_port} is already in use",
+                            detail=(
+                                "Mission Control will not claim or terminate the existing listener. "
+                                "Use its health/URL action to inspect it instead."
+                            ),
+                        )
+                arguments = list(definition.arguments or [])
+                process_id = f"proc-{uuid.uuid4().hex[:16]}"
+                log_path = self.settings.log_dir / f"{process_id}.log"
+                command_preview = _command_preview(executable, arguments)
+                env = build_environment(list(definition.env_names or []))
+                started_at = now_iso()
+                header = (
+                    f"Mission Control managed process {process_id}\n"
+                    f"Application: {application.name} ({application.id})\n"
+                    f"Command: {command_preview}\n"
+                    f"Working directory: {working_directory}\n"
+                    f"Started: {started_at}\n"
+                    "Environment: allowlisted Windows variables plus explicitly named variables; values omitted.\n"
+                    "---\n"
+                ).encode("utf-8", "replace")
+                try:
+                    with open(log_path, "ab", buffering=0) as log_handle:
+                        log_handle.write(header)
+                        process = subprocess.Popen(
+                            [executable, *arguments],
+                            cwd=working_directory,
+                            env=env,
+                            stdin=subprocess.DEVNULL,
+                            stdout=log_handle,
+                            stderr=subprocess.STDOUT,
+                            shell=False,
+                            close_fds=True,
+                            creationflags=WINDOWS_FLAGS,
+                            start_new_session=os.name != "nt",
+                        )
+                except (OSError, ValueError) as exc:
+                    message = f"Could not start process: {exc}"
+                    self._record_failure(
+                        session,
+                        application,
+                        definition,
+                        message,
+                        working_directory,
+                        executable,
+                        log_path,
+                        command_preview,
+                    )
+                    raise LaunchProblem(message) from exc
+                try:
+                    create_time = psutil.Process(process.pid).create_time()
+                except (psutil.Error, OSError):
+                    create_time = None
+                record = ProcessInstance(
+                    id=process_id,
+                    application_id=application.id,
+                    launch_definition_id=definition.id,
+                    pid=process.pid,
+                    create_time=create_time,
+                    status="running",
+                    started_at=started_at,
+                    log_path=str(log_path),
+                    working_directory=working_directory,
+                    command_preview=command_preview,
+                    owned=True,
+                    reattached=False,
+                )
+                session.add(record)
+                application.last_launch_success_at = started_at
+                application.updated_at = now_iso()
+                record_activity(
+                    session,
+                    event_type="application_launch",
+                    title=f"Launched {application.name}",
+                    detail=command_preview,
+                    application_id=application.id,
+                    process_id=record.id,
+                    source="mission-control",
+                    provenance="verified_observation",
+                    metadata={"pid": process.pid, "working_directory": working_directory},
+                )
+                session.flush()
+                session.expunge(record)
+            self._live[process_id] = process
+            task = asyncio.create_task(
+                self._watch(process_id, process, application_id, log_path),
+                name=f"mission-control-watch-{process_id}",
             )
-            session.add(record)
-            application.last_launch_success_at = started_at
-            application.updated_at = now_iso()
-            record_activity(
-                session,
-                event_type="application_launch",
-                title=f"Launched {application.name}",
-                detail=command_preview,
-                application_id=application.id,
-                process_id=record.id,
-                source="mission-control",
-                provenance="verified_observation",
-                metadata={"pid": process.pid, "working_directory": working_directory},
-            )
-            session.flush()
-            session.expunge(record)
-        self._live[process_id] = process
-        task = asyncio.create_task(
-            self._watch(process_id, process, application_id, log_path),
-            name=f"mission-control-watch-{process_id}",
-        )
-        self._tasks.add(task)
-        task.add_done_callback(self._tasks.discard)
-        return record
+            self._tasks.add(task)
+            task.add_done_callback(self._tasks.discard)
+            return record
 
     def _record_failure(
         self,
@@ -593,6 +647,200 @@ class ProcessManager:
             await self.stop(active.id)
             await asyncio.sleep(0.2)
         return await self.launch(application_id, launch_id=launch_id, confirm=confirm)
+
+    # ------------------------------------------------------------ ensure-open
+    def _browser_definition_snapshot(self, session: Session, application_id: str) -> SimpleNamespace:
+        """Resolve the stored browser launch definition without trusting the client.
+
+        The browser destination always comes from this stored definition; the
+        endpoint never accepts a URL, executable or working directory from the
+        browser.
+        """
+        application = session.get(Application, application_id)
+        if application is None:
+            raise NotFound("Application not found")
+        if not application.enabled or application.archived:
+            raise CapabilityUnavailable("Application is disabled or archived")
+        if application.control_policy.get("allow_launch") is False:
+            raise CapabilityUnavailable("Launching is disabled by this application's control policy")
+        definitions = session.scalars(
+            select(LaunchDefinition).where(
+                LaunchDefinition.application_id == application_id,
+                LaunchDefinition.enabled.is_(True),
+            )
+        ).all()
+        candidates = [item for item in definitions if item.browser_url]
+        if not candidates:
+            raise CapabilityUnavailable(
+                "No browser URL is configured for this application",
+                detail="Add a browser URL to a launch definition.",
+            )
+        primary = next((item for item in candidates if item.is_primary), candidates[0])
+        return SimpleNamespace(
+            application_name=application.name,
+            definition_id=primary.id,
+            launch_type=primary.launch_type,
+            browser_url=primary.browser_url,
+            health_type=primary.health_type,
+            health_url=primary.health_url,
+            expected_port=primary.expected_port,
+        )
+
+    async def _wait_for_readiness(
+        self,
+        application_id: str,
+        browser: SimpleNamespace,
+        *,
+        timeout: float = READINESS_TIMEOUT_SECONDS,
+    ) -> str:
+        """Poll until the application's HTTP service answers. Returns a detail string.
+
+        No database transaction is held while polling. Raises LaunchProblem
+        when the managed process dies or the timeout expires.
+        """
+        deadline = time.monotonic() + timeout
+        last_detail = "no probe attempted yet"
+        probe_target = SimpleNamespace(
+            health_type=browser.health_type,
+            health_url=browser.health_url,
+            expected_port=browser.expected_port,
+        )
+        while time.monotonic() < deadline:
+            with self.database.session() as session:
+                active = self.active_process(session, application_id)
+                if active is None:
+                    latest = session.scalar(
+                        select(ProcessInstance)
+                        .where(ProcessInstance.application_id == application_id)
+                        .order_by(desc(ProcessInstance.started_at))
+                    )
+                    failure = (latest.error or latest.status) if latest else "no process record"
+                    log_hint = latest.log_path if latest and latest.log_path else "no log file"
+                    raise LaunchProblem(
+                        f"{browser.application_name} stopped before it answered at {browser.browser_url}",
+                        detail=f"Last state: {failure}. Inspect the application logs ({log_hint}) via Applications.",
+                    )
+            if application_id == "workbench":
+                matches, identity_detail = await verify_workbench_identity(browser.browser_url)
+                last_detail = identity_detail
+                if matches:
+                    return identity_detail
+            else:
+                result = await probe(probe_target, timeout=2.0)
+                last_detail = result.detail
+                if result.state in {"healthy", "process_only"}:
+                    return result.detail
+                if browser.expected_port and port_is_open("127.0.0.1", browser.expected_port):
+                    return f"TCP listener accepting on port {browser.expected_port}"
+            await asyncio.sleep(READINESS_POLL_SECONDS)
+        with self.database.session() as session:
+            latest = session.scalar(
+                select(ProcessInstance)
+                .where(ProcessInstance.application_id == application_id)
+                .order_by(desc(ProcessInstance.started_at))
+            )
+            log_hint = latest.log_path if latest and latest.log_path else "no log file"
+            process_hint = latest.id if latest else "unknown"
+        raise LaunchProblem(
+            f"{browser.application_name} did not respond at {browser.browser_url} "
+            f"within {timeout:g}s ({last_detail})",
+            detail=(
+                f"Managed process {process_hint} may still be starting. Inspect the "
+                f"application logs ({log_hint}) via Applications, then use Stop/Restart there."
+            ),
+        )
+
+    async def ensure_open(
+        self,
+        application_id: str,
+        *,
+        readiness_timeout: float = READINESS_TIMEOUT_SECONDS,
+    ) -> dict[str, Any]:
+        """Start the registered application only when needed and return its verified URL.
+
+        Safe to call repeatedly: a managed process that is already running is
+        reused, and concurrent callers join the same startup instead of
+        launching a second copy.
+        """
+        with self.database.session() as session:
+            browser = self._browser_definition_snapshot(session, application_id)
+        with self.database.session() as session:
+            already = self.active_process(session, application_id)
+            already_id = already.id if already else None
+        if already_id is not None:
+            detail = await self._wait_for_readiness(
+                application_id, browser, timeout=readiness_timeout
+            )
+            return {
+                "url": browser.browser_url,
+                "application_id": application_id,
+                "state": "running",
+                "ownership": "managed",
+                "process_id": already_id,
+                "detail": detail,
+            }
+        if browser.expected_port and port_is_open("127.0.0.1", browser.expected_port):
+            if application_id == "workbench":
+                matches, identity_detail = await verify_workbench_identity(browser.browser_url)
+                if matches:
+                    try:
+                        await self.check_health(application_id, timeout=2.0)
+                    except Exception:  # pragma: no cover - observation only
+                        logger.warning("Workbench health observation failed", exc_info=True)
+                    return {
+                        "url": browser.browser_url,
+                        "application_id": application_id,
+                        "state": "running_external",
+                        "ownership": "external",
+                        "process_id": None,
+                        "detail": (
+                            f"{identity_detail}. A responding endpoint is evidence of "
+                            "availability; Mission Control does not own it and will not stop it."
+                        ),
+                    }
+                raise Conflict(
+                    f"Port {browser.expected_port} is already in use",
+                    detail=(
+                        f"{identity_detail}. Mission Control will not claim or terminate "
+                        "the existing listener."
+                    ),
+                )
+            raise Conflict(
+                f"Port {browser.expected_port} is already in use",
+                detail=(
+                    "Mission Control will not claim or terminate the existing listener. "
+                    "Use its health/URL action to inspect it instead."
+                ),
+            )
+        try:
+            # An explicit one-click request counts as confirmation.
+            record = await self.launch(application_id, confirm=True)
+        except Conflict as exc:
+            if "already has a managed process" in exc.message:
+                with self.database.session() as session:
+                    joined = self.active_process(session, application_id)
+                    joined_id = joined.id if joined else None
+                detail = await self._wait_for_readiness(
+                    application_id, browser, timeout=readiness_timeout
+                )
+                return {
+                    "url": browser.browser_url,
+                    "application_id": application_id,
+                    "state": "running",
+                    "ownership": "managed",
+                    "process_id": joined_id,
+                    "detail": f"Joined an in-progress startup. {detail}",
+                }
+            raise
+        detail = await self._wait_for_readiness(application_id, browser, timeout=readiness_timeout)
+        return {
+            "url": browser.browser_url,
+            "application_id": application_id,
+            "state": "started",
+            "ownership": "managed",
+            "process_id": record.id,
+            "detail": detail,
+        }
 
     # ------------------------------------------------------------------ health
     async def check_health(

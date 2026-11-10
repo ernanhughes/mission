@@ -14,6 +14,7 @@ from sqlalchemy import select
 
 from mission_control.activity.service import record_activity
 from mission_control.core.errors import Conflict
+from mission_control.discovery.books import sync_detected_books
 from mission_control.discovery.scanner import ScanResult, scan_roots
 from mission_control.models import (
     Application,
@@ -29,8 +30,9 @@ logger = logging.getLogger(__name__)
 
 
 class DiscoveryService:
-    def __init__(self, database: Database) -> None:
+    def __init__(self, database: Database, book_root: str | None = None) -> None:
         self.database = database
+        self.book_root = book_root or r"C:\books"
         self._task: asyncio.Task[None] | None = None
         self._cancel = threading.Event()
         self._status: dict[str, Any] = self._load_last_status()
@@ -117,6 +119,10 @@ class DiscoveryService:
                 cancel_event=self._cancel,
             )
             await asyncio.to_thread(self._persist, scan_id, result, roots)
+            try:
+                await asyncio.to_thread(self._detect_books)
+            except Exception:  # book detection must not fail the scan
+                logger.exception("Book detection failed")
             counts = Counter(candidate.classification for candidate in result.candidates)
             self._status.update(
                 {
@@ -162,6 +168,12 @@ class DiscoveryService:
                         setting.updated_at = now_iso()
             except Exception:  # pragma: no cover - defensive
                 logger.exception("Could not persist last discovery scan")
+
+    def _detect_books(self) -> None:
+        with self.database.session() as session:
+            detected = sync_detected_books(session, [self.book_root])
+            if detected:
+                logger.info("Detected %s book workspaces", len(detected))
 
     def _persist(self, scan_id: str, result: ScanResult, roots: list[str]) -> None:
         with self.database.session() as session:

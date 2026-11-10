@@ -305,6 +305,52 @@ pre {
   background: var(--accent);
 }
 
+button.nav-link {
+  width: 100%;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
+.workbench-action-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.workbench-action .workbench-copy {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.workbench-action .workbench-sub {
+  color: var(--faint);
+  font-size: 0.68rem;
+  font-weight: 400;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.workbench-action:disabled {
+  cursor: wait;
+  opacity: 0.85;
+}
+
+.workbench-error {
+  margin: 2px 12px 4px;
+  font-size: 0.72rem;
+  color: var(--bad);
+}
+
+.workbench-error a {
+  color: var(--accent-strong);
+}
+
 .sidebar-foot {
   margin-top: auto;
   padding: 16px 10px 2px;

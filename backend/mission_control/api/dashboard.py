@@ -77,7 +77,7 @@ def dashboard(
     adapters = adapter_service.list_adapters()
     books = list_books(session)
     stats = {
-        "priority_books": sum(1 for book in books if book.priority is not None),
+        "priority_books": sum(1 for book in books if book.pinned),
         "applications": len(applications),
         "running_applications": sum(1 for app in applications if app.status.state == "running"),
         "pending_reviews": len(pending_recommendations),

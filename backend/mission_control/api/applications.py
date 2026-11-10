@@ -30,6 +30,7 @@ from mission_control.schemas import (
     ApplicationCreate,
     ApplicationRead,
     ApplicationUpdate,
+    EnsureOpenResponse,
     HealthCheckResponse,
     LaunchRequest,
     LogRead,
@@ -252,6 +253,21 @@ def open_url(
     return OpenUrlResponse(
         url=url, application_id=app.id, opened_externally=opened_externally
     )
+
+
+@router.post("/applications/{application_id}/ensure-open", response_model=EnsureOpenResponse)
+async def ensure_open(
+    application_id: str,
+    session: Session = Depends(get_session),
+    request: Request = None,  # type: ignore[assignment]
+) -> EnsureOpenResponse:
+    """Start the registered application only when needed; return its verified URL.
+
+    The destination comes from the stored launch definition. The browser
+    never supplies a URL, executable or working directory.
+    """
+    result = await request.app.state.process_manager.ensure_open(application_id)
+    return EnsureOpenResponse(**result)
 
 
 @router.post("/applications/{application_id}/check-health", response_model=HealthCheckResponse)

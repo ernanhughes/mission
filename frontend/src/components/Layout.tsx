@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { useApi } from "../api/useApi";
 import { CultivationHud } from "../features/cultivation/CultivationHud";
+import { WorkbenchSidebarAction } from "../features/applications/WorkbenchSidebarAction";
 import { useTheme } from "./Theme";
 import { CommandPalette } from "./CommandPalette";
 import type { Health } from "../types/api";
@@ -118,6 +119,7 @@ export function Layout() {
           {navigation.map((group) => (
             <div className="nav-group" key={group.caption}>
               <span className="nav-caption">{group.caption}</span>
+              {group.caption === "Engines" ? <WorkbenchSidebarAction /> : null}
               {group.items.map(({ to, label, icon: Icon, end }) => (
                 <NavLink
                   key={to}

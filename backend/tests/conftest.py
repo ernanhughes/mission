@@ -23,6 +23,7 @@ def runtime(tmp_path: Path) -> RuntimeSettings:
         data_dir=tmp_path / "data",
         config_dir=REPO_ROOT / "config",
         frontend_dist=tmp_path / "dist",
+        book_root=tmp_path / "books",
         host="127.0.0.1",
         port=8790,
         start_monitor=False,

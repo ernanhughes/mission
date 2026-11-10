@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 
 from mission_control.api.deps import get_session
 from mission_control.core.errors import NotFound
+from mission_control.discovery.books import sync_detected_books
 from mission_control.models import ActivityEvent, Outcome, Project
 from mission_control.projects.service import (
     add_note,
@@ -42,6 +43,7 @@ from mission_control.schemas import (
     ActivityNoteCreate,
     ActivityRead,
     BookCreate,
+    BookDetectionRead,
     BookRead,
     BookUpdate,
     CheckpointCreate,
@@ -227,6 +229,14 @@ def add_book(payload: BookCreate, session: Session = Depends(get_session)) -> Bo
     book = create_book(session, payload)
     session.flush()
     return get_book_read(session, book.id)
+
+
+@router.post("/books/detect", response_model=BookDetectionRead)
+def detect_book_workspaces(
+    request: Request, session: Session = Depends(get_session)
+) -> BookDetectionRead:
+    created = sync_detected_books(session, [request.app.state.settings.book_root])
+    return BookDetectionRead(created=created, count=len(created))
 
 
 @router.get("/books/{book_id}", response_model=BookRead)

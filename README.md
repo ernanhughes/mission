@@ -7,10 +7,11 @@ Mission Control is a local-first control centre for an existing ecosystem of AI 
 ## What is implemented
 
 - **Three priority books** — Language, Inference and Math — with persistent workspaces, next actions, priorities and checkpoints.
+- **Detected book workspaces** — every `C:\books\<project>\content\books\<book>` manuscript tree is detected on startup and after discovery scans, deduplicated against aggregator copies, and added as an editable book workspace. Detected books stay unpinned until promoted; existing book state is never overwritten.
 - **A real application registry** — add or edit applications in the UI, including structured launch definitions, monitoring, documentation actions and relationships. No code change is required.
 - **Windows process control** — launch stored commands without a shell, capture logs, stop only Mission Control-owned process trees, detect port conflicts, and reattach to detached servers after a backend restart.
 - **Daily continuity** — project focus, checkpoints, tasks, decisions, activity and a resume card based on the latest saved checkpoint.
-- **Read-only discovery** — bounded scans of `C:\Projects` and `C:\books`, classification with evidence, exclusions, cancellation and persisted candidates. Discovery never enables a launch command.
+- **Read-only discovery** — bounded scans of `C:\Projects`, `C:\books` and `C:\book-projects`, classification with evidence, exclusions, cancellation and persisted candidates. Discovery never writes to scanned repositories and never enables a launch command; book detection only creates local book workspaces for `content/books` manuscript trees.
 - **Unified engine workspaces (MC09)** - Next, Work and CoCoder expose their real data inside Mission Control: candidates and evidence, opportunities and qualification, repository findings and review operations.
 - **Research export and contextual chat (MC-NEXT-CHAT-01)** - every Next opportunity can be copied as a structured critical-review package for another AI or discussed in a persisted, local-only conversation. The export and chat share one evidence snapshot; no Next writes occur.
 - **Unified inbox and federated search** - one attention queue and one search surface across Next, Work, CoCoder, projects, repositories, tasks, checkpoints and decisions. Source identity is preserved.
@@ -518,7 +519,7 @@ npm test
 npm run build
 ```
 
-Current result: **63 backend tests passing, 29 frontend tests passing, production build succeeds.** The suite includes real local process launch/stop/log capture, a backend restart reattachment test, real configured-editor invocation, discovery exclusions, migrations, checkpoint persistence, adapter failure isolation, integration decisions/inbox/search, action parameter and repository validation, workflow approval/scope/stale-approval/adverse-review/replay tests, Docker sandbox isolation, cancellation/duplicate-execution guards, two-template execution, Language observation tests, Writer adapter contract validation and Writer book/chapter presentation. MC-WRITER-01 additionally passed a real Chrome acceptance workflow; see [the MC-WRITER-01 report](docs/acceptance/MC-WRITER-01-REPORT.md).
+Current result: **87 backend tests passing (1 Docker test skipped when Docker is unavailable), 34 frontend tests passing, production build succeeds.** The suite includes real local process launch/stop/log capture, a backend restart reattachment test, real configured-editor invocation, discovery exclusions, migrations, checkpoint persistence, adapter failure isolation, integration decisions/inbox/search, action parameter and repository validation, workflow approval/scope/stale-approval/adverse-review/replay tests, Docker sandbox isolation, cancellation/duplicate-execution guards, two-template execution, Language observation tests, Writer adapter contract validation and Writer book/chapter presentation. MC-WRITER-01 additionally passed a real Chrome acceptance workflow; see [the MC-WRITER-01 report](docs/acceptance/MC-WRITER-01-REPORT.md).
 
 ## Troubleshooting
 

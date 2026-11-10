@@ -6,6 +6,7 @@ import {
   BookOpen,
   ExternalLink,
   FolderOpen,
+  RefreshCw,
   Save,
 } from "lucide-react";
 import { api, errorMessage } from "../api/client";
@@ -96,7 +97,9 @@ function BookEditor({ book, onSaved }: { book: Book; onSaved: () => void }) {
           <div className="inline-meta">
             <SimpleStatusBadge state={book.status} />
             <span>{book.project_name}</span>
-            <span>Priority {book.priority ?? "—"}</span>
+            <span>
+              {book.pinned ? `Priority ${book.priority ?? "—"}` : "Detected book"}
+            </span>
           </div>
         </div>
         <div className="button-row">
@@ -249,6 +252,7 @@ export function BooksPage() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const toast = useToast();
   const [reordering, setReordering] = useState(false);
+  const [detecting, setDetecting] = useState(false);
 
   useEffect(() => {
     if (books.data?.length && !books.data.some((book) => book.id === selectedId)) {
@@ -279,12 +283,40 @@ export function BooksPage() {
     }
   }
 
+  async function detectBooks() {
+    setDetecting(true);
+    try {
+      const result = await api.post<{ created: string[]; count: number }>("/api/books/detect");
+      toast.push(
+        "success",
+        result.count
+          ? `Detected ${result.count} new book${result.count === 1 ? "" : "s"}`
+          : "No new books detected",
+      );
+      books.reload();
+    } catch (caught) {
+      toast.push("error", "Could not detect books", errorMessage(caught));
+    } finally {
+      setDetecting(false);
+    }
+  }
+
   return (
     <div className="page">
       <PageHeader
         eyebrow="Books and publishing"
         title="Books"
-        description="The three priority books are first-class workspaces, not repository shortcuts."
+        description="Priority books stay first. Every detected content/books manuscript is added as a first-class workspace."
+        actions={
+          <button
+            className="button button-secondary button-small"
+            type="button"
+            onClick={() => void detectBooks()}
+            disabled={detecting}
+          >
+            <RefreshCw size={14} /> {detecting ? "Detecting…" : "Detect books"}
+          </button>
+        }
       />
 
       {books.loading && !books.data ? <LoadingBlock label="Loading books" /> : null}
@@ -292,7 +324,10 @@ export function BooksPage() {
       {books.data && books.data.length === 0 ? (
         <EmptyState
           title="No book workspaces"
-          description="Create a project with kind Book to add a manuscript workspace."
+          description={
+            "Create a book project, or add a manuscript at " +
+            "C:\\books\\<project>\\content\\books\\<book>."
+          }
           icon={<BookOpen size={20} />}
           action={
             <Link className="button button-primary button-small" to="/projects">
@@ -316,7 +351,7 @@ export function BooksPage() {
                   aria-pressed={selected?.id === book.id}
                   aria-label={`${book.project_name} — ${book.status.replace(/_/g, " ")}`}
                 >
-                  <span className="book-rank">0{index + 1}</span>
+                  <span className="book-rank">{String(index + 1).padStart(2, "0")}</span>
                   <span className="book-selector-copy">
                     <strong>{book.project_name}</strong>
                     <span>{book.status.replace(/_/g, " ")}</span>
