@@ -57,6 +57,7 @@ import type {
   QualityChapter,
   QualityDiscovery,
   QualityEvaluation,
+  QualityReview,
   QualityWorkspace,
   Recommendation,
   Task,
@@ -404,8 +405,31 @@ function invalidQuoteCount(evaluation: QualityEvaluation): number {
 }
 
 function QualityEvaluationCard({ evaluation }: { evaluation: QualityEvaluation }) {
+  const toast = useToast();
   const invalid = invalidQuoteCount(evaluation);
   const execution = evaluation.execution ?? {};
+  const writerFindings = Array.isArray(evaluation.findings) ? evaluation.findings : [];
+  const reviews = useApi<QualityReview[]>(`/api/quality/evaluations/${evaluation.id}/reviews`);
+  const [reviewBusy, setReviewBusy] = useState<string | null>(null);
+  const reviewByFinding = new Map((reviews.data ?? []).map((r) => [r.finding_id, r]));
+
+  async function recordReview(findingId: string, decision: string) {
+    setReviewBusy(findingId + decision);
+    try {
+      await api.post(`/api/quality/evaluations/${evaluation.id}/reviews`, {
+        evaluation_id: evaluation.id,
+        finding_id: findingId,
+        decision,
+        reason: "",
+        reviewer: "author",
+      });
+      reviews.reload();
+    } catch (caught) {
+      toast.push("error", "Could not record review", errorMessage(caught));
+    } finally {
+      setReviewBusy(null);
+    }
+  }
   return (
     <article className="writer-finding" id={`eval-${evaluation.id}`}>
       <div className="writer-finding-head">
@@ -450,6 +474,45 @@ function QualityEvaluationCard({ evaluation }: { evaluation: QualityEvaluation }
         <p className="warn-text small">
           {invalid} quotation{invalid === 1 ? "" : "s"} did not verify against the source and {invalid === 1 ? "is" : "are"} flagged, not repaired.
         </p>
+      ) : null}
+      {writerFindings.length ? (
+        <ul className="plain-list">
+          {writerFindings.map((finding, index) => {
+            const findingId = String(finding.finding_id ?? `finding-${index}`);
+            const existing = reviewByFinding.get(findingId);
+            const judgment = (execution.decisions ?? []).find(
+              (d: Record<string, any>) => d.finding_id === findingId,
+            );
+            const judgmentLabel = judgment
+              ? ` · judgment: ${judgment.outcome?.status ?? "unknown"} (${judgment.outcome?.policy?.source ?? "?"})`
+              : "";
+            return (
+              <li key={findingId}>
+                <strong>{String(finding.family ?? "finding")}</strong>
+                {" · "}
+                <span className="muted small">{String(finding.claim ?? "")}</span>
+                <br />
+                <span className="muted small">
+                  {(finding.evidence_ids ?? []).length} source span(s)
+                  {finding.verification ? ` · ${finding.verification}` : ""}
+                  {judgmentLabel}
+                  {existing ? ` · reviewed: ${existing.decision} (${existing.source_status})` : " · unreviewed"}
+                </span>
+                <br />
+                {(["ACCEPT", "REJECT", "DEFER", "INVESTIGATE"] as const).map((decision) => (
+                  <button
+                    key={decision}
+                    className="button button-secondary button-small"
+                    disabled={reviewBusy !== null}
+                    onClick={() => void recordReview(findingId, decision)}
+                  >
+                    {reviewBusy === findingId + decision ? "Saving…" : titleCase(decision.toLowerCase())}
+                  </button>
+                ))}
+              </li>
+            );
+          })}
+        </ul>
       ) : null}
       {evaluation.workbench_link ? (
         <a className="text-link" href={evaluation.workbench_link} target="_blank" rel="noreferrer">

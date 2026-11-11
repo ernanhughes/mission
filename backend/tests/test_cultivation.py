@@ -37,7 +37,7 @@ def test_multiple_simultaneous_goals(client: TestClient) -> None:
 def _unpin_seeded(client: TestClient) -> None:
     """Seeded catalogue pins published_books/blog_posts/scripts; tests needing pin
     control start from a clean slate without touching user data."""
-    for goal_id in ("published_books", "blog_posts", "scripts_published", "weekly_script"):
+    for goal_id in ("published_books", "blog_posts", "weekly_blog", "scripts_published", "weekly_script"):
         response = client.patch(f"/api/cultivation/goals/{goal_id}", json={"pinned": False})
         assert response.status_code == 200, response.text
 
@@ -287,7 +287,7 @@ def test_restart_persistence(client: TestClient, runtime) -> None:
 def test_starter_catalogue_seeded(client: TestClient) -> None:
     goals = {goal["id"]: goal for goal in client.get("/api/cultivation/goals").json()}
     for expected in ("published_books", "fiction_books", "technical_books", "blog_posts",
-                     "movies", "songs", "research_papers", "applications", "repositories",
+                     "weekly_blog", "movies", "songs", "research_papers", "applications", "repositories",
                      "perfect_repositories", "body_weight", "press_ups"):
         assert expected in goals, f"missing starter goal {expected}"
     books = goals["published_books"]
@@ -300,6 +300,13 @@ def test_starter_catalogue_seeded(client: TestClient) -> None:
     assert blog["progress"]["current"] == 100
     assert blog["progress"]["estimate_label"] is not None
     assert blog["baseline_provenance"] == "user_assertion"
+    weekly = goals["weekly_blog"]
+    assert weekly["skill_id"] == "blog-posts"
+    assert weekly["measurement_type"] == "recurring"
+    assert weekly["recurring_mode"] == "period"
+    assert weekly["window_days"] == 7
+    assert weekly["target_value"] == 1
+    assert weekly["pinned"] is True
     weight = goals["body_weight"]
     assert weight["privacy"] == "private"
     assert weight["progress"]["current"] is None  # no invented baseline

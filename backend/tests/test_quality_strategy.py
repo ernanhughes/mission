@@ -102,3 +102,53 @@ def test_evaluation_strategy_validated(client: TestClient, runtime) -> None:
     bad = _eval_payload("01-chapter.md", "rev-1", strategy="oracle")
     response = client.post("/api/quality/evaluations", json=bad)
     assert response.status_code in (400, 404, 422), response.text
+
+
+def test_campaign_usage_counts_cached_input_tokens(client: TestClient, runtime) -> None:
+    from mission_control.persistence.db import Database
+
+    _make_book(client, runtime)
+    created = client.post(
+        "/api/quality/campaigns",
+        json={
+            "project_id": "math",
+            "mode": "selected",
+            "chapters": ["01-chapter.md"],
+            "strategy": "bounded_judge",
+        },
+    )
+    assert created.status_code == 201, created.text
+    campaign_id = created.json()["id"]
+
+    def evaluate_fn(chapter_id: str) -> dict:
+        body = {
+            "status": "CURRENT",
+            "overall": None,
+            "dimensions": {},
+            "findings": [
+                {"family": "clarity", "claim": "c",
+                 "evidence_ids": ["a" * 20], "verification": "EXACT_MATCH"}
+            ],
+            "source_path": f"C:/books/{chapter_id}",
+            "chapter_revision": "rev-1",
+            "execution": {
+                "transport": "writer-cli",
+                "strategy": "bounded_judge",
+                "usage": [
+                    {"usage": {"input_tokens": 4, "cached_input_tokens": 12672,
+                               "output_tokens": 18020},
+                     "catalog_estimate_usd": 0.0109},
+                    {"usage": {"input_tokens": 324, "output_tokens": 165},
+                     "catalog_estimate_usd": 0.0001},
+                ],
+            },
+        }
+        return body
+
+    run_campaign(Database(runtime).session, campaign_id, evaluate_fn)
+    campaign = client.get(f"/api/quality/campaigns/{campaign_id}").json()
+    assert campaign["status"] == "completed"
+    assert campaign["usage"]["input_tokens"] == 4 + 12672 + 324
+    assert campaign["usage"]["output_tokens"] == 18020 + 165
+    assert campaign["usage"]["cost_usd"] == round(0.0109 + 0.0001, 4)
+    assert campaign["costs_unknown"] is False

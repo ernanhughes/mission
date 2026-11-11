@@ -29,7 +29,7 @@ import stat
 import subprocess
 import tomllib
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
@@ -44,6 +44,9 @@ ATTACHMENT_SUFFIXES = {
 }
 SECTION_INDEX = "_index.md"
 LEAF_INDEX = "index.md"
+BLOG_SUFFIXES = {".md", ".markdown"}
+LEAF_INDEXES = {"index.md", "index.markdown"}
+SECTION_INDEXES = {"_index.md", "_index.markdown"}
 MAX_FILES = 20000
 #: File names counted as numbered-script items (``Script001.md`` and variants
 #: such as ``Script052s.md`` or ``Script036 notes.md``).
@@ -138,6 +141,9 @@ class BlogPost:
     fingerprint: str = ""
     mtime_ns: int = 0
     size: int = 0
+    categories: list[str] = field(default_factory=list)
+    tags: list[str] = field(default_factory=list)
+    description: str = ""
 
 
 @dataclass(slots=True)
@@ -167,13 +173,119 @@ def _fingerprint_file(path: Path, relpath: str, mtime_ns: int, size: int) -> str
     return digest.hexdigest()[:24]
 
 
+def _as_str_list(value: Any) -> list[str]:
+    """Normalize Hugo taxonomy metadata to a clean string list."""
+    if value is None:
+        return []
+    if isinstance(value, str):
+        text = value.strip()
+        return [text[:120]] if text else []
+    if isinstance(value, (list, tuple)):
+        out: list[str] = []
+        for entry in value:
+            if isinstance(entry, str) and entry.strip():
+                out.append(entry.strip()[:120])
+            elif entry is not None:
+                text = str(entry).strip()
+                if text:
+                    out.append(text[:120])
+        return out[:50]
+    return []
+
+
+def _taxonomy(meta: dict[str, Any]) -> tuple[list[str], list[str], str]:
+    """Extract (categories, tags, description) from lower-cased front matter."""
+    categories = _as_str_list(meta.get("categories", meta.get("category")))
+    tags = _as_str_list(meta.get("tags", meta.get("tag")))
+    description = str(meta.get("description") or "")[:500]
+    return categories, tags, description
+
+
+TECHNOLOGY_TERMS = {
+    "technology", "tech", "ai", "agents", "programming", "systems",
+    "software", "computer", "data", "engineering", "machine learning",
+    "ml", "llm", "ai systems", "ai research", "systems thinking",
+    "architecture", "vector", "technical",
+}
+
+FINANCE_TERMS = {
+    "finance", "financial", "fintech", "economics", "economy",
+    "markets", "trading", "investment",
+}
+
+
+def _topic_terms(categories: list[str], tags: list[str]) -> list[str]:
+    return [str(term).casefold().strip() for term in [*categories, *tags] if str(term).strip()]
+
+
+def is_technology_post(categories: list[str], tags: list[str]) -> bool:
+    """Preferred subject, not a hard requirement. Deterministic, no AI."""
+    for term in _topic_terms(categories, tags):
+        if "techn" in term:
+            return True
+        if term in TECHNOLOGY_TERMS:
+            return True
+    return False
+
+
+def is_finance_post(categories: list[str], tags: list[str]) -> bool:
+    for term in _topic_terms(categories, tags):
+        if "financ" in term or "econ" in term:
+            return True
+        if term in FINANCE_TERMS:
+            return True
+    return False
+
+
+def classify_topic(categories: list[str], tags: list[str]) -> str:
+    tech = is_technology_post(categories, tags)
+    fin = is_finance_post(categories, tags)
+    if tech and fin:
+        return "both"
+    if tech:
+        return "technology"
+    if fin:
+        return "finance"
+    if not categories and not tags:
+        return "uncategorized"
+    return "other"
+
+
+def _dublin_now() -> datetime:
+    from zoneinfo import ZoneInfo
+
+    try:
+        return datetime.now(ZoneInfo("Europe/Dublin"))
+    except Exception:  # pragma: no cover - tzdata missing
+        return datetime.now(timezone.utc)
+
+
+def dublin_week_range(now: datetime | None = None) -> tuple[datetime, datetime]:
+    """Monday 00:00 -> Sunday 23:59:59.999 in Europe/Dublin."""
+    from zoneinfo import ZoneInfo
+
+    try:
+        tz = ZoneInfo("Europe/Dublin")
+    except Exception:  # pragma: no cover
+        tz = timezone.utc  # type: ignore[assignment]
+    moment = now or datetime.now(tz)
+    if moment.tzinfo is None:
+        moment = moment.replace(tzinfo=tz)
+    else:
+        moment = moment.astimezone(tz)
+    monday = (moment - timedelta(days=moment.weekday())).replace(
+        hour=0, minute=0, second=0, microsecond=0)
+    sunday = monday + timedelta(days=6, hours=23, minutes=59, seconds=59, microseconds=999000)
+    return monday, sunday
+
+
 def _classify(path: Path, relpath: str, now: datetime) -> BlogPost | None:
     """Classify one file. Returns None for excluded (non-post) files."""
     name = path.name
     suffix = path.suffix.casefold()
-    if name == SECTION_INDEX:
+    if name.casefold() in SECTION_INDEXES:
         return None
-    if suffix != ".md":
+    if suffix not in BLOG_SUFFIXES:
         return None
     if suffix in ATTACHMENT_SUFFIXES:
         return None
@@ -184,7 +296,7 @@ def _classify(path: Path, relpath: str, now: datetime) -> BlogPost | None:
                         state="unknown", reason=f"unreadable file: {exc.__class__.__name__}")
     fmt, meta, error = _parse_front_matter(text)
     identity = relpath
-    if name == LEAF_INDEX:
+    if name.casefold() in LEAF_INDEXES:
         # A leaf bundle: the directory is the post.
         parent = str(Path(relpath).parent).replace("\\", "/")
         identity = parent if parent != "." else relpath
@@ -192,23 +304,29 @@ def _classify(path: Path, relpath: str, now: datetime) -> BlogPost | None:
         return BlogPost(identity=identity, title=path.stem, relpath=relpath,
                         state="unknown", reason=error or "missing front matter")
     title = str(meta.get("title") or path.stem)[:300]
+    categories, tags, description = _taxonomy(meta)
     draft = meta.get("draft") is True
     date, date_error = _parse_date(meta.get("date", meta.get("publishdate")))
     expiry, _ = _parse_date(meta.get("expirydate"))
     if draft:
         return BlogPost(identity=identity, title=title, relpath=relpath,
-                        state="draft", reason="marked draft", date=date, draft=True)
+                        state="draft", reason="marked draft", date=date, draft=True,
+                        categories=categories, tags=tags, description=description)
     if date is not None and date > now:
         return BlogPost(identity=identity, title=title, relpath=relpath,
-                        state="draft", reason=f"scheduled for {date.isoformat()}", date=date)
+                        state="draft", reason=f"scheduled for {date.isoformat()}", date=date,
+                        categories=categories, tags=tags, description=description)
     if date_error:
         return BlogPost(identity=identity, title=title, relpath=relpath,
-                        state="unknown", reason=date_error, date=None)
+                        state="unknown", reason=date_error, date=None,
+                        categories=categories, tags=tags, description=description)
     if expiry is not None and expiry <= now:
         return BlogPost(identity=identity, title=title, relpath=relpath,
-                        state="draft", reason=f"expired {expiry.isoformat()}", date=date)
+                        state="draft", reason=f"expired {expiry.isoformat()}", date=date,
+                        categories=categories, tags=tags, description=description)
     return BlogPost(identity=identity, title=title, relpath=relpath,
-                    state="published", reason=f"{fmt} front matter, dated {date.isoformat()}" if date else f"{fmt} front matter", date=date)
+                    state="published", reason=f"{fmt} front matter, dated {date.isoformat()}" if date else f"{fmt} front matter", date=date,
+                    categories=categories, tags=tags, description=description)
 
 
 def _prettify_script_name(stem: str) -> str:
@@ -357,6 +475,7 @@ def scan_hugo_blog(root: str | Path, *, now: datetime | None = None) -> BlogScan
     if not base.is_dir():
         scan.errors.append({"path": str(base), "error": "Source directory is missing or not a directory"})
         return scan
+    seen: set[str] = set()
     try:
         walker = os.walk(base, followlinks=False)
         for directory, dirnames, filenames in walker:
@@ -376,13 +495,22 @@ def scan_hugo_blog(root: str | Path, *, now: datetime | None = None) -> BlogScan
                     continue
                 relpath = str(candidate.relative_to(base)).replace("\\", "/")
                 scan.candidates += 1
-                if candidate.suffix.casefold() != ".md" or candidate.name == SECTION_INDEX:
+                if candidate.suffix.casefold() not in BLOG_SUFFIXES or candidate.name.casefold() in SECTION_INDEXES:
                     scan.excluded += 1
                     continue
                 post = _classify(candidate, relpath, moment)
                 if post is None:
                     scan.excluded += 1
                     continue
+                # Duplicate prevention: leaf bundles and standalone files can map
+                # to the same identity (e.g. ``foo/index.md`` + ``foo/index.markdown``).
+                # Keep the first observation, count the rest as excluded, never double-count.
+                if post.identity in seen:
+                    scan.excluded += 1
+                    scan.errors.append({"path": relpath,
+                                        "error": f"Duplicate post identity '{post.identity}'; kept first observation"})
+                    continue
+                seen.add(post.identity)
                 try:
                     info = candidate.stat()
                     post.mtime_ns = info.st_mtime_ns
@@ -406,3 +534,112 @@ def scan_hugo_blog(root: str | Path, *, now: datetime | None = None) -> BlogScan
         digest.update(post.state.encode("utf-8"))
     scan.fingerprint = digest.hexdigest()[:24]
     return scan
+
+
+def blog_observation(scan: BlogScan, *, now: datetime | None = None) -> dict[str, Any]:
+    """Enriched, deterministic observation from a Hugo scan.
+
+    Keeps the legacy ``published``/``drafts``/``unknown``/``excluded``/
+    ``candidates`` keys for backwards compatibility and adds the cultivation
+    dimensions: scheduled, technology/finance, Dublin weekly windows, latest
+    publication and recent posts. No AI, no filesystem access.
+    """
+    from zoneinfo import ZoneInfo
+
+    try:
+        tz = ZoneInfo("Europe/Dublin")
+    except Exception:  # pragma: no cover
+        tz = timezone.utc  # type: ignore[assignment]
+    moment = now or datetime.now(tz)
+    if moment.tzinfo is None:
+        moment = moment.replace(tzinfo=tz)
+    else:
+        moment = moment.astimezone(tz)
+    week_start, week_end = dublin_week_range(moment)
+    prev_start = week_start - timedelta(days=7)
+    prev_end = week_start - timedelta(seconds=1)
+
+    def _in_dublin(dt: datetime | None) -> datetime | None:
+        if dt is None:
+            return None
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return dt.astimezone(tz)
+
+    scheduled = 0
+    tech = 0
+    finance = 0
+    latest_at: datetime | None = None
+    latest_post: BlogPost | None = None
+    this_week = 0
+    last_week = 0
+    this_week_posts: list[BlogPost] = []
+    for post in scan.posts:
+        if post.state == "draft" and post.reason.startswith("scheduled for"):
+            scheduled += 1
+        if post.state != "published":
+            continue
+        if is_technology_post(post.categories, post.tags):
+            tech += 1
+        if is_finance_post(post.categories, post.tags):
+            finance += 1
+        local = _in_dublin(post.date)
+        if local is None:
+            continue
+        if latest_at is None or (post.date is not None and post.date > latest_at):
+            latest_at = post.date
+            latest_post = post
+        if week_start <= local <= week_end:
+            this_week += 1
+            this_week_posts.append(post)
+        elif prev_start <= local <= prev_end:
+            last_week += 1
+
+    published_sorted = sorted(
+        (p for p in scan.posts if p.state == "published" and p.date is not None),
+        key=lambda p: p.date,  # type: ignore[arg-type]
+        reverse=True,
+    )
+    recent: list[dict[str, Any]] = []
+    for post in published_sorted[:10]:
+        local = _in_dublin(post.date)
+        recent.append({
+            "identity": post.identity,
+            "title": post.title,
+            "relpath": post.relpath,
+            "date": post.date.isoformat() if post.date else None,
+            "date_dublin": local.isoformat() if local else None,
+            "categories": list(post.categories),
+            "tags": list(post.tags),
+            "topic": classify_topic(post.categories, post.tags),
+        })
+    observed: dict[str, Any] = {
+        "published": scan.published,
+        "drafts": scan.drafts,
+        "unknown": scan.unknown,
+        "excluded": scan.excluded,
+        "candidates": scan.candidates,
+        "errors": scan.errors[:20],
+        "fingerprint": scan.fingerprint,
+        # Enriched cultivation dimensions.
+        "scheduled": scheduled,
+        "tech_published": tech,
+        "finance_published": finance,
+        "latest_published_at": latest_at.isoformat() if latest_at else None,
+        "latest_published_title": latest_post.title if latest_post else None,
+        "latest_published_relpath": latest_post.relpath if latest_post else None,
+        "week_start": week_start.isoformat(),
+        "week_end": week_end.isoformat(),
+        "week_start_date": week_start.date().isoformat(),
+        "week_end_date": week_end.date().isoformat(),
+        "timezone": "Europe/Dublin",
+        "this_week": this_week,
+        "last_week": last_week,
+        "recent_posts": recent,
+        "qualifying_this_week": [
+            {"identity": p.identity, "title": p.title, "relpath": p.relpath,
+             "date": p.date.isoformat() if p.date else None} for p in sorted(
+                this_week_posts, key=lambda p: p.date or datetime.min.replace(tzinfo=timezone.utc))
+        ],
+    }
+    return observed

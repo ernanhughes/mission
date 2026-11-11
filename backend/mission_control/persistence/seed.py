@@ -169,7 +169,7 @@ def seed_cultivation(session) -> None:
          "milestones": [1.0, 10.0, 25.0, 50.0, 75.0, 100.0],
          "priority": 200, "pinned": False, "evidence_source": "manual"},
         {"id": "blog_posts", "name": "Blog Posts",
-         "description": "Published blog posts.",
+         "description": "Published blog posts. Lifetime achievement; live-counted from programmer.ie.",
          "category": "writing", "unit": "posts", "target_value": 100,
          "measurement_type": "count", "qualifying_stage": "published",
          "baseline_value": 100.0,
@@ -179,6 +179,17 @@ def seed_cultivation(session) -> None:
          "milestones": [1.0, 10.0, 25.0, 50.0, 75.0, 100.0],
          "priority": 20, "pinned": True, "pin_order": 10,
          "state": "achieved", "evidence_source": "manual"},
+        {"id": "weekly_blog", "name": "Weekly Blog Post",
+         "description": ("Publish at least one blog post every Monday-Sunday week (Europe/Dublin). "
+                         "Fed automatically when the blog source observes a new published post. "
+                         "Technology and Finance are preferred subjects, not hard requirements."),
+         "category": "writing", "unit": "posts", "target_value": 1,
+         "measurement_type": "recurring", "recurring_mode": "period", "window_days": 7,
+         "milestones": [1.0],
+         "completion_criteria": ("One published Markdown post with an effective publication date "
+                                 "inside the current week. Drafts, scheduled future posts and "
+                                 "unknown files never count."),
+         "priority": 21, "pinned": True, "pin_order": 11, "evidence_source": "manual"},
         {"id": "movies", "name": "Movies",
          "description": "Completed/released films.",
          "category": "film", "unit": "films", "target_value": 100,
@@ -294,6 +305,7 @@ def seed_cultivation(session) -> None:
     assignments = {
         "published_books": "books", "fiction_books": "fiction-writing",
         "technical_books": "technical-writing", "blog_posts": "blog-posts",
+        "weekly_blog": "blog-posts",
         "movies": "films", "songs": "music", "research_papers": "research",
         "applications": "software-development", "repositories": "software-development",
         "perfect_repositories": "software-development", "body_weight": "physical-training",
@@ -335,8 +347,18 @@ def seed_cultivation(session) -> None:
     if existing_blog is None and Path(blog_path).is_dir():
         create_source(session, {"id": "src-blog-posts", "name": "programmer.ie posts",
                                 "kind": "hugo_blog", "skill_id": "blog-posts",
-                                "goal_id": "blog_posts", "path": blog_path})
+                                "goal_id": "blog_posts", "path": blog_path,
+                                "config": {"period_goal_id": "weekly_blog"}})
         logger.info("Seeded cultivation blog source (not yet synced)")
+    elif existing_blog is not None:
+        # Backfill the weekly-rhythm link on existing databases without
+        # touching user customization: only add the key when missing.
+        config = dict(existing_blog.config or {})
+        if "period_goal_id" not in config and session.get(CultivationGoal, "weekly_blog") is not None:
+            config["period_goal_id"] = "weekly_blog"
+            existing_blog.config = config
+            existing_blog.updated_at = now_iso()
+            logger.info("Linked blog source to weekly_blog goal")
     if session.get(CultivationSource, "src-activity-projects") is None:
         create_source(session, {"id": "src-activity-projects", "name": "Activity projects",
                                 "kind": "activity_projects", "skill_id": "software-development",
