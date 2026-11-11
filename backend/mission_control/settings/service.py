@@ -172,11 +172,12 @@ def update_settings(session: Session, payload: SettingsPatch) -> SettingsRead:
         )
         merged = {**current_ai, **patch}
         # Validate the resulting configuration, not just the patch.
+        # Pi-first: enabled+consent is sufficient (Pi default needs no base_url).
+        # A loopback base_url+model is only required when the caller explicitly
+        # selects the local override route.
         if merged.get("enabled"):
             if not merged.get("consent"):
                 raise ValidationProblem("AI features require explicit consent")
-            if not merged.get("base_url") or not merged.get("model"):
-                raise ValidationProblem("AI features require a base_url and model")
         _merge(session, "ai", patch, {"enabled", "consent", "provider", "base_url", "model", "api_key_env", "timeout_seconds"})
     if payload.startup is not None:
         patch = dict(payload.startup)
@@ -195,6 +196,11 @@ def update_settings(session: Session, payload: SettingsPatch) -> SettingsRead:
             patch,
             {"profile_enabled", "profile_applications"},
         )
+    if payload.scripts is not None:
+        from mission_control.scripts.service import validate_scripts_patch
+
+        patch = validate_scripts_patch(dict(payload.scripts))
+        _merge(session, "scripts", patch, {"root", "extensions"})
     if payload.ui is not None:
         patch = dict(payload.ui)
         if "theme" in patch and patch["theme"] not in {"system", "light", "dark"}:
@@ -214,7 +220,7 @@ def update_settings(session: Session, payload: SettingsPatch) -> SettingsRead:
 
 def get_settings(session: Session) -> SettingsRead:
     values: dict[str, dict[str, Any]] = {}
-    for key in ("discovery", "editor", "browser", "processes", "adapters", "retention", "ai", "startup", "ui"):
+    for key in ("discovery", "editor", "browser", "processes", "adapters", "retention", "ai", "startup", "scripts", "ui"):
         setting = session.get(Setting, key)
         values[key] = dict(setting.value) if setting and isinstance(setting.value, dict) else dict(DEFAULT_SETTINGS.get(key, {}))
     roots = [
@@ -222,7 +228,7 @@ def get_settings(session: Session) -> SettingsRead:
         for root in session.scalars(select(DiscoveryRoot).order_by(DiscoveryRoot.path)).all()
     ]
     ai = values["ai"]
-    ai_configured = bool(ai.get("enabled") and ai.get("consent") and ai.get("base_url") and ai.get("model"))
+    ai_configured = bool(ai.get("enabled") and ai.get("consent"))
     env_name = str(ai.get("api_key_env") or "")
     ai_key_present = bool(env_name and os.environ.get(env_name))
     return SettingsRead(

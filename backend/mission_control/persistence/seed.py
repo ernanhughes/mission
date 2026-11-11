@@ -104,6 +104,10 @@ DEFAULT_SETTINGS: dict[str, Any] = {
         "profile_enabled": False,
         "profile_applications": [],
     },
+    "scripts": {
+        "root": r"C:\script",
+        "extensions": [".md"],
+    },
 }
 
 
@@ -340,19 +344,22 @@ def seed_cultivation(session) -> None:
                                 "config": {"included_roots": [r"C:\Projects"], "min_commits": 2}})
         logger.info("Seeded cultivation Activity source (not yet synced)")
 
-    # Seeded numbered-file source: self-hypnosis scripts. Path-gated like the
-    # blog source and never synced automatically. The config names the
-    # weekly-rhythm goal the sync feeds with one unit per new script.
+    # Seeded registry-backed scripts source. Path-gated like the blog source
+    # and never synced automatically. Completion comes only from explicit
+    # script records; file existence never counts and weekly units are
+    # recorded on explicit completion, never from file dates.
     scripts_path = r"C:\script"
-    existing_scripts = session.scalars(
-        select(CultivationSource).where(CultivationSource.kind == "numbered_files",
-                                        CultivationSource.goal_id == "scripts_published")).first()
+    existing_scripts = session.get(CultivationSource, "src-scripts")
     if existing_scripts is None and Path(scripts_path).is_dir():
         create_source(session, {"id": "src-scripts", "name": "Self-hypnosis scripts",
-                                "kind": "numbered_files", "skill_id": "scripts",
+                                "kind": "script_registry", "skill_id": "scripts",
                                 "goal_id": "scripts_published", "path": scripts_path,
-                                "config": {"period_goal_id": "weekly_script"}})
+                                "config": {}})
         logger.info("Seeded cultivation scripts source (not yet synced)")
+    elif existing_scripts is not None and existing_scripts.kind == "numbered_files":
+        from mission_control.cultivation.service import ensure_script_source_retired
+        if ensure_script_source_retired(session):
+            logger.info("Retired legacy numbered-file scripts source to script_registry")
 
     # 100-day Cycle 5: reported position only. No start date is invented, so
     # the day does not auto-advance until the owner sets one.

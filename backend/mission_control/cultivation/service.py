@@ -49,7 +49,7 @@ PROVENANCE_VALUES = {"human", "ai_assisted", "ai_workflow", "unclassified"}
 BASELINE_PROVENANCE = {"none", "estimate", "user_assertion", "verified"}
 EVIDENCE_STATUS = {"none", "claimed", "verified"}
 SKILL_STATES = {"active", "archived"}
-SOURCE_KINDS = {"hugo_blog", "activity_projects", "numbered_files"}
+SOURCE_KINDS = {"hugo_blog", "activity_projects", "numbered_files", "script_registry"}
 CYCLE_STATES = {"active", "completed", "archived"}
 REPO_QUALIFICATIONS = {"discovered", "eligible", "pending", "qualified", "excluded", "archived", "unavailable"}
 REPO_CLASSIFICATIONS = {"application", "library", "infrastructure", "research", "website",
@@ -701,7 +701,7 @@ def _live_observation(session: Session, goal: CultivationGoal) -> dict[str, Any]
     disagree the milestone stays achieved (explicit state) while the progress
     honestly reports the observed value with a reconciliation note.
     """
-    if goal.evidence_source not in ("hugo_blog", "numbered_files"):
+    if goal.evidence_source not in ("hugo_blog", "numbered_files", "script_registry"):
         return None
     source = session.scalars(select(CultivationSource).where(
         CultivationSource.goal_id == goal.id, CultivationSource.kind == goal.evidence_source,
@@ -718,6 +718,8 @@ def _live_observation(session: Session, goal: CultivationGoal) -> dict[str, Any]
     label = f"{current:g} / {goal.target_value:g} {goal.unit} observed {(source.last_sync_at or '')[:10]}"
     if stale:
         label += " (stale — source unavailable, last known kept)"
+    if goal.evidence_source == "script_registry" and isinstance(observed.get("discovered"), int):
+        label += f" · {int(observed['discovered'])} discovered"
     disagreement = None
     if goal.baseline_value is not None:
         label += f" · user-attested milestone {goal.baseline_value:g} preserved"
@@ -725,13 +727,18 @@ def _live_observation(session: Session, goal: CultivationGoal) -> dict[str, Any]
         kind = "estimate" if goal.baseline_provenance == "estimate" else "user-attested prior achievements"
         disagreement = (f"Source observes {current:g} but {goal.baseline_value:g} {kind} are recorded. "
                         "Milestone history is preserved; reconciliation required.")
+    pipeline: dict[str, int] = {"published": int(observed.get("published", 0)),
+                       "draft": int(observed.get("drafts", 0)),
+                       "unknown": int(observed.get("unknown", 0))}
+    if goal.evidence_source == "script_registry":
+        for key in ("discovered", "completed", "ready", "needs_review", "archived", "missing"):
+            if isinstance(observed.get(key), int):
+                pipeline[key] = int(observed[key])
     return {"current": current, "target": goal.target_value, "unit": goal.unit,
             "percent": min(100.0, current / goal.target_value * 100.0) if goal.target_value > 0 else None,
             "unknown_reason": None, "achieved": current >= goal.target_value,
             "estimate_label": label, "item_count": int(observed.get("published", 0)),
-            "pipeline": {"published": int(observed.get("published", 0)),
-                         "draft": int(observed.get("drafts", 0)),
-                         "unknown": int(observed.get("unknown", 0))},
+            "pipeline": pipeline,
             "milestones_reached": reached, "next_milestone": upcoming[0] if upcoming else None,
             "live_observed": current, "live_sync_at": source.last_sync_at, "live_stale": stale,
             "disagreement": disagreement}
@@ -1656,13 +1663,12 @@ def create_source(session: Session, payload: dict[str, Any]) -> CultivationSourc
     kind = str(payload.get("kind", "hugo_blog"))
     if kind not in SOURCE_KINDS:
         raise ValidationProblem(
-            "Unsupported source kind: {kind}. Only hugo_blog, activity_projects and numbered_files are implemented."
+            "Unsupported source kind: {kind}. Only hugo_blog, activity_projects, numbered_files and script_registry are implemented."
             .format(kind=kind))
     raw_path = str(payload.get("path", "") or "")
-    if kind == "activity_projects":
-        # The index lives in the database; an explicit path is optional and,
-        # when given, must exist (it only documents intent, roots come from
-        # the source config plus DiscoveryRoot rows).
+    if kind in ("activity_projects", "script_registry"):
+        # The registry lives in the database and reads the configured scripts
+        # root; an explicit path is optional and only documents intent.
         path = require_existing_directory(raw_path, field="source path") if raw_path else ""
     else:
         path = require_existing_directory(raw_path, field="source path")
@@ -1692,7 +1698,7 @@ def update_source(session: Session, source_id: str, payload: dict[str, Any]) -> 
         source.name = str(payload["name"]).strip()[:120] or source.name
     if "path" in payload and payload["path"] is not None:
         raw = str(payload["path"] or "")
-        if source.kind == "activity_projects" and not raw:
+        if source.kind in ("activity_projects", "script_registry") and not raw:
             source.path = ""
         else:
             source.path = require_existing_directory(raw or str(source.path), field="source path")
@@ -1731,16 +1737,47 @@ def sync_source(session: Session, source_id: str) -> dict[str, Any]:
 
     All synchronizers are read-only toward their evidence: the Hugo scanner
     and the numbered-file scanner read files; the Activity adapter reads
-    indexed rows only.
+    indexed rows only. The script registry reads the configured scripts root
+    through the registry reconciler and never invents completions.
     """
     source = get_source(session, source_id)
+    # Controlled retirement: the legacy numbered-file scripts source becomes
+    # the registry-backed source on first sync. History is preserved; the old
+    # file-counts-as-completed logic can no longer run for script goals.
+    if source.id == "src-scripts" and source.kind == "numbered_files":
+        ensure_script_source_retired(session)
+        source = get_source(session, source_id)
     if source.kind == "hugo_blog":
         return _sync_hugo_blog(session, source)
     if source.kind == "numbered_files":
         return _sync_numbered_files(session, source)
+    if source.kind == "script_registry":
+        return _sync_script_registry(session, source)
     if source.kind == "activity_projects":
         return sync_activity_projects(session, source_id)
     raise ValidationProblem(f"Unsupported source kind: {source.kind}")
+
+
+def ensure_script_source_retired(session: Session) -> bool:
+    """Migrate the seeded scripts source to the registry-backed kind.
+
+    Returns True when a migration happened. Never deletes the source row,
+    never invents completions, never touches the filesystem.
+    """
+    source = session.get(CultivationSource, "src-scripts")
+    if source is None or source.kind == "script_registry":
+        return False
+    if source.kind != "numbered_files":
+        return False
+    source.kind = "script_registry"
+    config = dict(source.config or {})
+    config.pop("period_goal_id", None)
+    source.config = config
+    source.updated_at = now_iso()
+    session.flush()
+    _record_event(session, goal_id=source.goal_id, event_type="source_retired",
+                  note="Legacy numbered-file interpretation retired; the script registry is now authoritative. File existence no longer counts as completion.")
+    return True
 
 
 def _feed_period_goal(session: Session, source: CultivationSource, post: Any) -> None:
@@ -1948,6 +1985,8 @@ def _sync_numbered_files(session: Session, source: CultivationSource) -> dict[st
     Every matching file is one published item; everything else is excluded.
     Read-only toward the scanned tree; a linked weekly-rhythm goal named in
     the source config (``period_goal_id``) is fed one unit per new script.
+    NOTE: script goals must use the ``script_registry`` kind instead; this
+    legacy path is kept only for non-script numbered collections.
     """
     from pathlib import Path as _Path
 
@@ -1966,6 +2005,73 @@ def _sync_numbered_files(session: Session, source: CultivationSource) -> dict[st
         session, source, goal, scan, item_type="script",
         source_application="numbered_files", item_id_fn=_script_item_id,
         completed_label="New script observed")
+
+
+def _sync_script_registry(session: Session, source: CultivationSource) -> dict[str, Any]:
+    """Registry-backed script sync: completion comes from explicit records.
+
+    Reconciles the configured scripts root into stable records, then reports
+    completed vs discovered. Never treats file existence as completion and
+    never feeds the weekly goal from file dates; weekly units are recorded
+    when a script is explicitly marked completed.
+    """
+    from mission_control.scripts import service as _scripts
+
+    try:
+        result = _scripts.sync_scripts(session)
+    except ValidationProblem as exc:
+        source.last_status = "stale"
+        source.last_error = exc.message
+        source.updated_at = now_iso()
+        session.flush()
+        return {"source_id": source.id, "status": "stale",
+                "observed": dict(source.observed or {}), "stale": True,
+                "error": exc.message, "goal_id": source.goal_id}
+    if result.get("status") in ("stale", "unavailable"):
+        source.last_status = "stale"
+        source.last_error = result.get("error") or "Script directory unavailable; kept the last observation."
+        source.updated_at = now_iso()
+        session.flush()
+        return {"source_id": source.id, "status": "stale",
+                "observed": dict(source.observed or {}), "stale": True,
+                "error": source.last_error, "goal_id": source.goal_id}
+    counts = result.get("counts", {}) or {}
+    completed = int(counts.get("completed", 0))
+    total = int(counts.get("total", 0))
+    present = int(counts.get("present", total))
+    ready = int(counts.get("ready", 0))
+    needs_review = int(counts.get("needs_review", 0))
+    archived = int(counts.get("archived", 0))
+    missing = int(counts.get("missing", 0))
+    drafts = max(0, present - completed)
+    observed = {"published": completed, "drafts": drafts, "unknown": missing,
+                "excluded": int(result.get("observed", {}).get("excluded", 0)),
+                "candidates": int(result.get("observed", {}).get("candidates", total)),
+                "discovered": total, "completed": completed, "ready": ready,
+                "needs_review": needs_review, "archived": archived, "missing": missing,
+                "library_key": result.get("library_key", ""),
+                "fingerprint": result.get("fingerprint", "")}
+    source.observed = observed
+    source.fingerprint = str(result.get("fingerprint", "") or "")
+    source.last_sync_at = now_iso()
+    source.last_status = "ok"
+    source.last_error = None
+    source.updated_at = now_iso()
+    session.flush()
+    goal = session.get(CultivationGoal, source.goal_id) if source.goal_id else None
+    if goal is None:
+        return {"source_id": source.id, "status": "ok", "observed": observed,
+                "stale": False, "goal_id": None}
+    _attach_live_source(session, source, goal, "script_registry")
+    progress = goal_progress(session, goal)
+    _check_milestones(session, goal, progress["current"])
+    _record_event(session, goal_id=goal.id, event_type="synced",
+                  to_value=str(completed),
+                  note=(f"Source '{source.name}': {completed} completed, "
+                        f"{total} discovered ({ready} ready, {needs_review} need review, "
+                        f"{missing} missing, {archived} archived)."))
+    return {"source_id": source.id, "status": "ok", "observed": observed,
+            "stale": False, "goal_id": goal.id, "current": progress["current"]}
 
 
 # ------------------------------------------------------------------ cycles

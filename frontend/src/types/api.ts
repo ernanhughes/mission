@@ -357,6 +357,10 @@ export type Settings = {
     profile_enabled: boolean;
     profile_applications: string[];
   };
+  scripts: {
+    root: string;
+    extensions: string[];
+  };
   ui: { theme: string };
   discovery_roots: Array<{ path: string; enabled: boolean; added_at: string }>;
   ai_configured: boolean;
@@ -765,6 +769,163 @@ export type WriterWorkspace = {
     note: string;
   };
   books: WriterBook[];
+  limitations: string[];
+};
+
+export type QualityDimension = {
+  dimension: string;
+  score: number;
+  evidence: string;
+  evidence_validated: boolean;
+};
+
+export type QualityEvaluation = {
+  id: string;
+  project_id: string | null;
+  book_id: string;
+  chapter_id: string;
+  source_path: string;
+  chapter_revision: string;
+  rubric_id: string;
+  rubric_version: number;
+  prompt_version: string;
+  requested_model: string | null;
+  actual_model: string | null;
+  status: string;
+  derived_state: string;
+  overall: number | null;
+  aggregation_method: string;
+  dimensions: Record<string, QualityDimension>;
+  findings: Array<Record<string, any>>;
+  uncertainty: string;
+  limitations: string[];
+  execution: Record<string, any>;
+  previous_evaluation_id: string | null;
+  supersedes: string | null;
+  workbench_url: string | null;
+  workbench_link: string | null;
+  section_id: string | null;
+  section_title: string | null;
+  char_span: Array<any>;
+  section_sha: string | null;
+  created_at: string;
+};
+
+export type QualityChapter = {
+  chapter_id: string;
+  chapter_title: string | null;
+  evaluations: QualityEvaluation[];
+  sections: QualityEvaluation[];
+  current: QualityEvaluation | null;
+};
+
+export type QualityWorkspace = {
+  project_id: string;
+  book_id: string;
+  chapters_total: number;
+  chapters_evaluated: number;
+  chapters_current: number;
+  chapters: QualityChapter[];
+  limitations: string[];
+};
+
+export type QualityDiscovery = {
+  chapter_id: string;
+  title: string | null;
+  source_path: string;
+  revision: string;
+  has_current: boolean;
+  current_model: string | null;
+  current_id: string | null;
+  compatible: boolean;
+  eligibility: string;
+};
+
+export type QualityCampaign = {
+  id: string;
+  project_id: string | null;
+  book_id: string;
+  book_root: string;
+  mode: string;
+  chapter_selection: string[];
+  fingerprints: Record<string, string>;
+  rubric_id: string;
+  rubric_version: number;
+  prompt_version: string;
+  model: string | null;
+  status: string;
+  total: number;
+  completed: number;
+  skipped: number;
+  failed: number;
+  remaining: number;
+  usage: Record<string, any>;
+  costs_unknown: boolean;
+  current_chapter: string | null;
+  error: string | null;
+  heartbeat_at: string | null;
+  created_at: string;
+  updated_at: string;
+  completed_at: string | null;
+};
+
+export type ArtifactLoadObservation = {
+  id: string;
+  project_id: string | null;
+  book_id: string;
+  chapter_id: string;
+  source_path: string;
+  chapter_revision: string;
+  aggregation_version: string;
+  detector_version: string;
+  status: string;
+  derived_state: string;
+  assessment_state: string;
+  assessment_policy: string;
+  eligible_words: number;
+  evaluated_units: number;
+  total_candidates: number;
+  confirmed: number;
+  high: number;
+  medium: number;
+  low: number;
+  unreviewed: number;
+  invalid_evidence: number;
+  affected_regions: number;
+  findings_per_1k: number | null;
+  findings_per_100_units: number | null;
+  region_rate: number | null;
+  coverage_mechanical: number;
+  coverage_semantic: number;
+  weighted_load: number | null;
+  mechanical_pressure: number | null;
+  baseline_eligible_words: number;
+  revised_eligible_words: number;
+  findings: Array<Record<string, any>>;
+  regions: Array<Record<string, any>>;
+  limitations: string[];
+  execution: Record<string, any>;
+  previous_observation_id: string | null;
+  supersedes: string | null;
+  workbench_url: string | null;
+  workbench_link: string | null;
+  compatible_basis: string;
+  created_at: string;
+};
+
+export type ArtifactLoadChapter = {
+  chapter_id: string;
+  observations: ArtifactLoadObservation[];
+  current: ArtifactLoadObservation | null;
+};
+
+export type ArtifactLoadWorkspace = {
+  project_id: string;
+  book_id: string;
+  chapters_total: number;
+  chapters_observed: number;
+  chapters_current: number;
+  chapters: ArtifactLoadChapter[];
   limitations: string[];
 };
 
@@ -1315,6 +1476,245 @@ export type ApiErrorPayload = {
     message?: string;
     detail?: unknown;
   };
+};
+
+export type ScriptRecord = {
+  id: string;
+  library_key: string;
+  current_relpath: string;
+  original_relpath: string;
+  script_number: number | null;
+  title: string;
+  content_sha256: string;
+  file_size: number;
+  mtime_ns: number;
+  status: string;
+  archived: boolean;
+  missing: boolean;
+  discovered_at: string;
+  last_seen_at: string | null;
+  completed_at: string | null;
+  review_status: string;
+  last_review_at: string | null;
+  legacy_item_id: string | null;
+  created_at: string;
+  updated_at: string;
+  duplicate_number_group: string[] | null;
+  duplicate_content_group: string[] | null;
+  events: Array<{
+    id: string;
+    event_type: string;
+    from_value: string | null;
+    to_value: string | null;
+    note: string;
+    created_at: string;
+  }>;
+  links: Array<{
+    source_id: string;
+    target_id: string;
+    kind: string;
+    confirmed: boolean;
+    note: string;
+    evidence?: string;
+    confidence?: string;
+    updated_at?: string;
+  }>;
+  usage_count: number;
+  personal_rating: number | null;
+  personal_target: string;
+  personal_effect: string;
+  last_used_at: string | null;
+  latest_review: {
+    id: string;
+    created_at: string;
+    freshness: string;
+    purpose: string;
+    readiness: string;
+    model: string;
+  } | null;
+};
+
+export type ScriptContent = {
+  id: string;
+  relpath: string;
+  title: string;
+  content: string;
+  truncated: boolean;
+  content_sha256: string;
+  stored_sha256: string;
+  matches_stored: boolean;
+};
+
+export type ScriptStatus = {
+  root: string;
+  library_key: string;
+  configured: boolean;
+  exists: boolean;
+  is_dir: boolean;
+  readable: boolean;
+  writable: boolean;
+  status: string;
+  last_sync_at: string | null;
+  last_error: string | null;
+  fingerprint: string;
+  observed: Record<string, unknown>;
+  counts: {
+    total: number;
+    by_status: Record<string, number>;
+    completed: number;
+    ready?: number;
+    needs_review?: number;
+    present?: number;
+    archived: number;
+    missing: number;
+  };
+  duplicate_numbers: Record<string, string[]>;
+  duplicate_content: Record<string, string[]>;
+  extensions: string[];
+  week: { week_start: string; week_end: string; week_start_date: string; week_end_date: string; label: string; timezone: string };
+  libraries: string[];
+};
+
+export type ScriptRelationship = {
+  source_id: string;
+  target_id: string;
+  kind: string;
+  confirmed: boolean;
+  note: string;
+  evidence: string;
+  confidence: string;
+  updated_at?: string;
+  created_at?: string;
+};
+
+export type ScriptWork = {
+  work_id: string;
+  root_id: string;
+  member_ids: string[];
+  members: Array<{
+    id: string;
+    relpath: string;
+    number: number | null;
+    status: string;
+    completed_at: string | null;
+    archived: boolean;
+  }>;
+  canonical_id: string;
+  canonical_number: number | null;
+  size: number;
+  work_number: number;
+};
+
+export type ScriptMigrationItem = {
+  id: string;
+  current: string;
+  proposed: string;
+  current_number: number | null;
+  proposed_number: number;
+  sha256: string;
+  status: string;
+  archived: boolean;
+  completed_at: string | null;
+  work_hint: { kinds: string[]; confirmed: boolean } | null;
+};
+
+export type ScriptMigration = {
+  id: string;
+  library_key: string;
+  status: string;
+  manifest_hash: string;
+  approved_at: string | null;
+  applied_at: string | null;
+  rolled_back_at: string | null;
+  error: string | null;
+  report: Record<string, unknown>;
+  item_count: number;
+  created_at: string;
+  updated_at: string;
+};
+
+export type ScriptReview = {
+  id: string;
+  script_id: string;
+  content_sha256: string;
+  model: string;
+  route: string;
+  provider: string;
+  assessment: Record<string, unknown>;
+  review_schema: string;
+  freshness: string;
+  latency_ms: number;
+  created_at: string;
+};
+
+export type ScriptBatchItem = {
+  script_id: string;
+  relpath: string | null;
+  title: string | null;
+  status: string;
+  review_id: string | null;
+  reused: boolean;
+  attempts: number;
+  error: string | null;
+};
+
+export type ScriptBatch = {
+  id: string;
+  library_key: string;
+  status: string;
+  model: string;
+  rubric_version: string;
+  schema_version: string;
+  selection: Record<string, unknown>;
+  counts: { total: number; pending: number; reviewed: number; failed: number; skipped: number; reused: number };
+  error: string | null;
+  items: ScriptBatchItem[];
+  created_at: string;
+  updated_at: string;
+};
+
+export type LibrarySynthesis = {
+  id: string;
+  library_key: string;
+  kind: string;
+  status: string;
+  manifest: Record<string, unknown>;
+  manifest_hash: string;
+  report: Record<string, unknown>;
+  error: string | null;
+  freshness: string;
+  created_at: string;
+};
+
+export type ScriptCandidate = {
+  id: string;
+  library_key: string;
+  title: string;
+  version: string;
+  kind: string;
+  status: string;
+  content: string;
+  word_count: number;
+  est_seconds: number;
+  validation: Record<string, unknown>;
+  critique: Record<string, unknown>;
+  source_manifest: Record<string, unknown>;
+  provenance: Record<string, unknown>;
+  parent_candidate_id: string | null;
+  promoted_script_id: string | null;
+  promoted_relpath: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type IntelligenceCoverage = {
+  total: number;
+  current: number;
+  stale: number;
+  never: number;
+  by_script: Record<string, string>;
+  durations: { samples: number; median_seconds: number | null; min_seconds: number | null; max_seconds: number | null };
+  completed: number;
 };
 
 export type EnsureOpenResult = {

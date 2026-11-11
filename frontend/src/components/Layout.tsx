@@ -39,6 +39,7 @@ const navigation = [
       { to: "/projects", label: "Projects", icon: Crosshair },
       { to: "/activity", label: "Activity", icon: Activity },
       { to: "/cultivation", label: "Cultivation", icon: Sprout },
+      { to: "/scripts", label: "Scripts", icon: Moon },
     ],
   },
   {

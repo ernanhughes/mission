@@ -354,6 +354,7 @@ export function makeSettings(overrides: Partial<Settings> = {}): Settings {
       timeout_seconds: 45,
     },
     startup: { profile_enabled: false, profile_applications: [] },
+    scripts: { root: "C:\\script", extensions: [".md"] },
     ui: { theme: "system" },
     discovery_roots: [
       { path: "C:\\Projects", enabled: true, added_at: now },

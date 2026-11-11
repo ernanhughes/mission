@@ -35,6 +35,7 @@ import type {
 
 export function SettingsPage() {
   const settings = useApi<Settings>("/api/settings");
+  const scriptsStatus = useApi<import("../types/api").ScriptStatus>("/api/scripts/status");
   const scan = useApi<DiscoveryScan>("/api/discovery/scan", {
     pollMs: 2500,
   });
@@ -69,11 +70,13 @@ export function SettingsPage() {
   const [aiTimeout, setAiTimeout] = useState(45);
   const [profileEnabled, setProfileEnabled] = useState(false);
   const [profileApplications, setProfileApplications] = useState<string[]>([]);
+  const [scriptsRoot, setScriptsRoot] = useState("");
   const [newRoot, setNewRoot] = useState("");
   const [candidateFilter, setCandidateFilter] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [rootBusy, setRootBusy] = useState<string | null>(null);
+  const [scriptsBusy, setScriptsBusy] = useState(false);
 
   useEffect(() => {
     if (!settings.data) return;
@@ -103,6 +106,7 @@ export function SettingsPage() {
     setAiTimeout(data.ai.timeout_seconds);
     setProfileEnabled(data.startup.profile_enabled);
     setProfileApplications(data.startup.profile_applications);
+    setScriptsRoot((data.scripts?.root ?? "") as string);
   }, [settings.data]);
 
   const filteredCandidates = useMemo(() => {
@@ -167,9 +171,13 @@ export function SettingsPage() {
           profile_enabled: profileEnabled,
           profile_applications: profileApplications,
         },
+        scripts: {
+          root: scriptsRoot,
+        },
       });
       toast.push("success", "Settings saved");
       settings.reload();
+      scriptsStatus.reload();
       applications.reload();
     } catch (caught) {
       const message = errorMessage(caught);
@@ -268,6 +276,19 @@ export function SettingsPage() {
     setProfileApplications((current) =>
       current.includes(appId) ? current.filter((id) => id !== appId) : [...current, appId],
     );
+  }
+
+  async function syncScripts() {
+    setScriptsBusy(true);
+    try {
+      await api.post("/api/scripts/sync");
+      toast.push("success", "Script library synced");
+      scriptsStatus.reload();
+    } catch (caught) {
+      toast.push("error", "Script sync failed", errorMessage(caught));
+    } finally {
+      setScriptsBusy(false);
+    }
   }
 
   if (settings.loading && !settings.data) {
@@ -651,6 +672,43 @@ export function SettingsPage() {
               <Play size={14} /> Activate profile now
             </button>
             <span className="muted small">Activation is explicit; nothing is started at login automatically.</span>
+          </div>
+        </Section>
+
+        <Section
+          title="Scripts"
+          description="Configurable script library root. Reads are confined to this directory; completion is explicit."
+          className="settings-section"
+        >
+          <label className="field">
+            <span>Script library root</span>
+            <input value={scriptsRoot} onChange={(event) => setScriptsRoot(event.target.value)} placeholder="C:\script" />
+            <small>Absolute local path. Changing it switches libraries without merging records.</small>
+          </label>
+          {scriptsStatus.data ? (
+            <div className="scan-summary">
+              <div className="inline-meta">
+                <SimpleStatusBadge
+                  state={scriptsStatus.data.status === "ok" || scriptsStatus.data.status === "ok_empty" ? "running" : "stale"}
+                  label={scriptsStatus.data.status}
+                />
+                <span>{scriptsStatus.data.counts.total} discovered</span>
+                <span>{scriptsStatus.data.counts.completed} completed</span>
+                {scriptsStatus.data.last_sync_at ? <span>synced {formatDateTime(scriptsStatus.data.last_sync_at)}</span> : <span>never synced</span>}
+              </div>
+              {scriptsStatus.data.last_error ? <p className="warn-text small">{scriptsStatus.data.last_error}</p> : null}
+              <p className="muted small">
+                Extensions: {(scriptsStatus.data.extensions ?? []).join(", ")} · Libraries tracked: {(scriptsStatus.data.libraries ?? []).length}
+              </p>
+            </div>
+          ) : null}
+          <div className="settings-actions">
+            <button className="button button-secondary button-small" onClick={() => void syncScripts()} disabled={scriptsBusy}>
+              <RefreshCw size={14} /> {scriptsBusy ? "Syncing…" : "Sync library now"}
+            </button>
+            <a className="button button-ghost button-small" href="/scripts">
+              Open Scripts library
+            </a>
           </div>
         </Section>
 
