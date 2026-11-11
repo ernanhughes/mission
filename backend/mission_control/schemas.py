@@ -704,6 +704,26 @@ class QualityEvaluationCreate(RawModel):
     strategy: str = "direct"
 
 
+class QualityReviewCreate(RawModel):
+    evaluation_id: str = Field(min_length=1)
+    finding_id: str = Field(min_length=1)
+    decision: str = "ACCEPT"
+    reason: str = ""
+    reviewer: str = ""
+
+
+class QualityReviewRead(BaseModel):
+    id: str
+    evaluation_id: str | None
+    finding_id: str
+    decision: str
+    reason: str = ""
+    reviewer: str = ""
+    source_digest: str = ""
+    source_status: str = "CURRENT"
+    created_at: str
+
+
 class ArtifactLoadFinding(RawModel):
     family: str = "EXPOSITORY_OVERLOAD"
     subtype: str = "EXPO_COMPRESSION"
@@ -2284,6 +2304,7 @@ class WriterWorkspaceRead(BaseModel):
     books: list[dict[str, Any]] = Field(default_factory=list)
     limitations: list[str] = Field(default_factory=list)
     self_repair: dict[str, Any] = Field(default_factory=dict)
+    chapter_improvement: dict[str, Any] = Field(default_factory=dict)
 
 
 class WriterAuditRequest(RawModel):

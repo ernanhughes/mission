@@ -990,6 +990,27 @@ class QualityCampaign(Base):
     completed_at: Mapped[str | None] = mapped_column(String)
 
 
+class QualityReview(Base):
+    """Author decision on one finding (WRITER-QUALITY-02).
+
+    Append-only and stored separately from AI judgments and policy outcomes.
+    The finding, evidence and model verdict are never mutated by a review.
+    """
+
+    __tablename__ = "quality_reviews"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    evaluation_id: Mapped[str | None] = mapped_column(
+        String, ForeignKey("quality_evaluations.id", ondelete="CASCADE")
+    )
+    finding_id: Mapped[str] = mapped_column(String, nullable=False)
+    decision: Mapped[str] = mapped_column(String, nullable=False)
+    reason: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    reviewer: Mapped[str] = mapped_column(String, default="", nullable=False)
+    source_digest: Mapped[str] = mapped_column(String, default="", nullable=False)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
 class ArtifactLoadObservation(Base):
     """Independent Artifact Load burden observation (ARTIFACT-EXPO-01 Stage 08).
 

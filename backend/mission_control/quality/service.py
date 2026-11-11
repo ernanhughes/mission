@@ -14,7 +14,7 @@ from sqlalchemy import Select, desc, func, select
 from sqlalchemy.orm import Session
 
 from mission_control.core.errors import NotFound, ValidationProblem
-from mission_control.models import Project, QualityCampaign, QualityEvaluation
+from mission_control.models import Project, QualityCampaign, QualityEvaluation, QualityReview
 from mission_control.schemas import (
     QualityCampaignCreate,
     QualityCampaignRead,
@@ -23,6 +23,8 @@ from mission_control.schemas import (
     QualityDimensionRead,
     QualityEvaluationCreate,
     QualityEvaluationRead,
+    QualityReviewCreate,
+    QualityReviewRead,
     QualityWorkspaceRead,
 )
 
@@ -30,6 +32,12 @@ DIMENSIONS = ("clarity", "argument", "precision", "economy", "voice", "structure
 SCORED_STATES = ("CURRENT", "PARTIAL", "STALE")
 UNSCORABLE_STATES = ("NOT_RUN", "RUNNING", "BLOCKED", "ERROR", "CANCELLED")
 ALL_STATES = SCORED_STATES + UNSCORABLE_STATES
+# WRITER-QUALITY-02: findings observations. Writer-commanded strategies
+# record validated portable findings instead of 1-5 rubric scores: no scores
+# are invented, so dimensions stay empty and overall stays None on a scored
+# status. The guard below only opens for records that carry Writer execution
+# provenance (transport "writer-cli") with item-wise validated findings.
+WRITER_STRATEGIES = ("deterministic", "direct", "bounded_judge")
 # WRITER-QUALITY-01: peer evaluation strategies. deterministic dispatches no
 # model; direct is one bounded review; bounded_judge adds typed judgment.
 STRATEGIES = ("deterministic", "direct", "bounded_judge")
@@ -62,6 +70,46 @@ def _check_record(status: str, dimensions: dict[str, Any], overall: float | None
     _check_dimensions(dimensions, overall)
 
 
+def _check_writer_findings(
+    strategy: str | None, execution: dict[str, Any], findings: list[Any]
+) -> bool:
+    """True when this record is a Writer findings observation.
+
+    Scored status with empty dimensions and no overall is accepted only for
+    Writer-commanded strategies carrying Writer execution provenance and
+    item-wise valid findings (family + claim each). Anything else keeps the
+    six-dimension rule.
+    """
+    if (strategy or "") not in WRITER_STRATEGIES:
+        return False
+    if not isinstance(execution, dict) or execution.get("transport") != "writer-cli":
+        return False
+    for item in findings or []:
+        if not isinstance(item, dict) or not item.get("family") or not item.get("claim"):
+            raise ValidationProblem(
+                "writer findings observations require family + claim per finding"
+            )
+    return True
+
+
+def _check_record_full(
+    status: str,
+    dimensions: dict[str, Any],
+    overall: float | None,
+    strategy: str | None,
+    execution: dict[str, Any],
+    findings: list[Any],
+) -> None:
+    if (
+        status in SCORED_STATES
+        and not dimensions
+        and overall is None
+        and _check_writer_findings(strategy, execution, findings)
+    ):
+        return
+    _check_record(status, dimensions, overall)
+
+
 def _check_dimensions(dimensions: dict[str, Any], overall: float | None) -> None:
     if set(dimensions) != set(DIMENSIONS):
         raise ValidationProblem("dimensions must contain exactly the six rubric dimensions")
@@ -86,7 +134,10 @@ def record_evaluation(session: Session, payload: QualityEvaluationCreate) -> Qua
         name: (entry.model_dump() if hasattr(entry, "model_dump") else dict(entry))
         for name, entry in payload.dimensions.items()
     }
-    _check_record(payload.status, dims, payload.overall)
+    _check_record_full(
+        payload.status, dims, payload.overall, payload.strategy,
+        dict(payload.execution or {}), list(payload.findings or []),
+    )
     if payload.previous_evaluation_id and session.get(
         QualityEvaluation, payload.previous_evaluation_id
     ) is None:
@@ -201,6 +252,59 @@ def get_evaluation(session: Session, evaluation_id: str) -> QualityEvaluation:
     if record is None:
         raise NotFound("Evaluation does not exist")
     return record
+
+
+REVIEW_DECISIONS = ("ACCEPT", "REJECT", "DEFER", "INVESTIGATE")
+
+
+def record_review(session: Session, payload: QualityReviewCreate) -> QualityReview:
+    if payload.decision not in REVIEW_DECISIONS:
+        raise ValidationProblem(
+            f"decision must be one of {', '.join(REVIEW_DECISIONS)}; got {payload.decision!r}"
+        )
+    evaluation = session.get(QualityEvaluation, payload.evaluation_id)
+    if evaluation is None:
+        raise NotFound("Evaluation does not exist")
+    record = QualityReview(
+        id=f"mqrev:{uuid.uuid4().hex[:12]}",
+        evaluation_id=payload.evaluation_id,
+        finding_id=payload.finding_id,
+        decision=payload.decision,
+        reason=payload.reason or "",
+        reviewer=payload.reviewer or "",
+        source_digest=evaluation.chapter_revision or "",
+    )
+    session.add(record)
+    session.flush()
+    return record
+
+
+def list_reviews(session: Session, evaluation_id: str) -> list[QualityReview]:
+    get_evaluation(session, evaluation_id)
+    stmt = select(QualityReview).where(
+        QualityReview.evaluation_id == evaluation_id
+    ).order_by(QualityReview.created_at)
+    return list(session.scalars(stmt).all())
+
+
+def to_review_read(record: QualityReview, current_digest: str = "") -> QualityReviewRead:
+    return QualityReviewRead(
+        id=record.id,
+        evaluation_id=record.evaluation_id,
+        finding_id=record.finding_id,
+        decision=record.decision,
+        reason=record.reason or "",
+        reviewer=record.reviewer or "",
+        source_digest=record.source_digest or "",
+        source_status=(
+            "CURRENT"
+            if current_digest and record.source_digest == current_digest
+            else "STALE"
+            if current_digest
+            else "CURRENT"
+        ),
+        created_at=record.created_at,
+    )
 
 
 def workspace(session: Session, project_id: str) -> QualityWorkspaceRead:
@@ -646,7 +750,12 @@ def run_campaign(session_factory, campaign_id: str, evaluate_fn) -> QualityCampa
                 with session_factory() as chapter_session:
                     campaign_row = get_campaign(chapter_session, record.id)
                     status = str(outcome.get("status", "ERROR"))
-                    if status in ("CURRENT", "PARTIAL") and outcome.get("overall") is not None:
+                    writer_observation = (
+                        isinstance(outcome.get("execution"), dict)
+                        and outcome["execution"].get("transport") == "writer-cli"
+                        and status in ("CURRENT", "PARTIAL")
+                    )
+                    if (status in ("CURRENT", "PARTIAL") and outcome.get("overall") is not None) or writer_observation:
                         payload = QualityEvaluationCreate(
                             project_id=record.project_id,
                             book_id=record.book_id,
@@ -682,8 +791,25 @@ def run_campaign(session_factory, campaign_id: str, evaluate_fn) -> QualityCampa
                             out_tokens += int(execution["output_tokens"])
                         if isinstance(execution.get("cost_usd"), (int, float)):
                             costs.append(float(execution["cost_usd"]))
-                        if execution.get("token_usage", "unknown") == "unknown":
+                        if execution.get("token_usage", "unknown") == "unknown" and execution.get("transport") != "writer-cli":
                             usage_unknown = True
+                        if execution.get("transport") == "writer-cli":
+                            # Writer usage records are ingested once, verbatim:
+                            # one list entry per Worker dispatch. Cached input
+                            # tokens are real billed usage at the cached rate.
+                            for record_usage in execution.get("usage", []) or []:
+                                if not isinstance(record_usage, dict):
+                                    continue
+                                detail = record_usage.get("usage") or {}
+                                if isinstance(detail, dict):
+                                    in_tokens += int(detail.get("input_tokens", 0) or 0)
+                                    in_tokens += int(detail.get("cached_input_tokens", 0) or 0)
+                                    out_tokens += int(detail.get("output_tokens", 0) or 0)
+                                estimate = record_usage.get("catalog_estimate_usd")
+                                if isinstance(estimate, (int, float)):
+                                    costs.append(float(estimate))
+                                else:
+                                    usage_unknown = True
                     else:
                         failed += 1
                         reason = str(outcome.get("error", "evaluation failed"))

@@ -58,6 +58,14 @@ class RuntimeSettings:
     quality_eval_python: str | None = field(
         default_factory=lambda: os.environ.get("MISSION_CONTROL_QUALITY_EVAL_PYTHON")
     )
+    # Writer quality runner for strategy-commanded chapters (WRITER-QUALITY-02):
+    # "<python> | <writer repo root> | <db url or empty>". The python must
+    # import writer_cli from the Writer checkout; the repo root is the CLI
+    # working directory (config/models.yaml, writer.toml). Unset means
+    # Writer-commanded execution is unavailable (blocked, never faked).
+    writer_quality_runner: str | None = field(
+        default_factory=lambda: os.environ.get("MISSION_CONTROL_WRITER_QUALITY_RUNNER")
+    )
     dev_origins: tuple[str, ...] = (
         "http://127.0.0.1:5173",
         "http://localhost:5173",

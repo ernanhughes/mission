@@ -20,6 +20,7 @@ from mission_control.writer.decisions import (
     summary as decision_summary,
 )
 from mission_control.writer.queue import build_decision_queue
+from mission_control.writer.improvement_summary import summarize_improvement
 from mission_control.writer.self_repair import summarize_self_repair
 
 _STATUS_RANK = {
@@ -120,6 +121,7 @@ class WriterService:
                 "books": books,
                 "limitations": limitations,
                 "self_repair": summarize_self_repair(self.settings.book_root),
+                "chapter_improvement": summarize_improvement(self.settings.book_root),
             }
 
     @staticmethod

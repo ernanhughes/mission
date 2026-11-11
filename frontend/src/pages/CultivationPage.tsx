@@ -599,6 +599,21 @@ function GoalDetail(props: {
             {Number(observed.candidates ?? 0)} files
             {props.source.last_sync_at ? ` · Last sync: ${formatDateTime(props.source.last_sync_at)}` : " · Never synced"}
           </p>
+          {typeof observed.scheduled === "number" ? (
+            <p className="muted">
+              Scheduled: {Number(observed.scheduled ?? 0)} · Technology: {Number((observed as Record<string, unknown>).tech_published ?? 0)} · Finance:{" "}
+              {Number((observed as Record<string, unknown>).finance_published ?? 0)}
+              {(observed as Record<string, unknown>).latest_published_at ? (
+                <> · Last published: {String((observed as Record<string, unknown>).latest_published_at).slice(0, 10)} {(observed as Record<string, unknown>).latest_published_title ? `— ${String((observed as Record<string, unknown>).latest_published_title)}` : ""}</>
+              ) : null}
+            </p>
+          ) : null}
+          {typeof (observed as Record<string, unknown>).this_week === "number" ? (
+            <p className="muted">
+              This week ({String((observed as Record<string, unknown>).week_start_date ?? "")} → {String((observed as Record<string, unknown>).week_end_date ?? "")}, Europe/Dublin):{" "}
+              {Number((observed as Record<string, unknown>).this_week ?? 0)}/1 · Last week: {Number((observed as Record<string, unknown>).last_week ?? 0)} · Technology / Finance preferred, other topics still count
+            </p>
+          ) : null}
           {props.source.last_error ? <p className="muted">Note: {props.source.last_error}</p> : null}
           {goal.progress.disagreement ? <p className="muted">Reconciliation required: {goal.progress.disagreement}</p> : null}
           <div className="toolbar">
@@ -606,11 +621,27 @@ function GoalDetail(props: {
               {syncing ? "Syncing…" : "Refresh from source"}
             </button>
           </div>
+          {Array.isArray((observed as Record<string, unknown>).recent_posts) && ((observed as Record<string, unknown>).recent_posts as Array<Record<string, unknown>>).length > 0 ? (
+            <div>
+              <h4>Recent published posts</h4>
+              {((observed as Record<string, unknown>).recent_posts as Array<Record<string, unknown>>).slice(0, 10).map((post) => (
+                <p key={String(post.identity ?? post.relpath)} className="row-line">
+                  <strong>{String(post.title ?? post.identity)}</strong>
+                  <span className="muted"> · {String(post.date ?? "").slice(0, 10)}{post.topic ? ` · ${String(post.topic)}` : ""}</span>
+                  <br />
+                  <code>{String(post.relpath ?? "")}</code>
+                </p>
+              ))}
+            </div>
+          ) : null}
         </div>
       ) : null}
 
       {(goal.id === "scripts_published" || goal.id === "weekly_script") && (
         <ScriptGoalExtras goalId={goal.id} />
+      )}
+      {(goal.id === "blog_posts" || goal.id === "weekly_blog") && (
+        <BlogGoalExtras goalId={goal.id} observed={observed as Record<string, unknown>} />
       )}
 
       <div className="stat-strip">
@@ -782,6 +813,41 @@ function ScriptGoalExtras(props: { goalId: string }) {
           Needs review
         </a>
       </div>
+    </div>
+  );
+}
+
+function BlogGoalExtras(props: { goalId: string; observed: Record<string, unknown> }) {
+  const observed = props.observed ?? {};
+  if (props.goalId === "weekly_blog") {
+    const thisWeek = Number(observed.this_week ?? 0);
+    const required = 1;
+    const remaining = Math.max(0, required - thisWeek);
+    const status = thisWeek >= required ? "Complete" : "In Progress";
+    return (
+      <div className="panel review-card">
+        <div className="activity-head">
+          <strong>Weekly publication</strong>
+          <Tag tone={thisWeek >= required ? "accent" : undefined}>{status}</Tag>
+        </div>
+        <p className="muted">
+          Week {String(observed.week_start_date ?? "—")} → {String(observed.week_end_date ?? "—")} (Europe/Dublin, Monday–Sunday) · {thisWeek}/{required} · {remaining} remaining
+        </p>
+        <p className="muted">Technology / Finance preferred, other topics still count. A future-scheduled post never counts early. Current week is never marked missed before Sunday ends.</p>
+      </div>
+    );
+  }
+  return (
+    <div className="panel review-card">
+      <div className="activity-head">
+        <strong>Publication overview</strong>
+        <Tag tone="accent">Live</Tag>
+      </div>
+      <p className="muted">
+        Published: <strong>{Number(observed.published ?? 0)}</strong> · Drafts: <strong>{Number(observed.drafts ?? 0)}</strong> · Scheduled:{" "}
+        {Number(observed.scheduled ?? 0)} · Technology: {Number(observed.tech_published ?? 0)} · Finance: {Number(observed.finance_published ?? 0)}
+      </p>
+      <p className="muted">Lifetime achievement (total published) is separate from weekly discipline (one per week). Filesystem is authoritative; stored observations are supporting evidence.</p>
     </div>
   );
 }

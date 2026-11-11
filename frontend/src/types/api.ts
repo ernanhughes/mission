@@ -813,6 +813,18 @@ export type QualityEvaluation = {
   created_at: string;
 };
 
+export type QualityReview = {
+  id: string;
+  evaluation_id: string | null;
+  finding_id: string;
+  decision: string;
+  reason: string;
+  reviewer: string;
+  source_digest: string;
+  source_status: string;
+  created_at: string;
+};
+
 export type QualityChapter = {
   chapter_id: string;
   chapter_title: string | null;

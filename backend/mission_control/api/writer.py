@@ -39,6 +39,14 @@ def read_writer_self_repair(request: Request) -> dict[str, Any]:
     return summarize_self_repair(request.app.state.settings.book_root)
 
 
+@router.get("/improvement")
+def read_writer_improvement(request: Request) -> dict[str, Any]:
+    """Read-only chapter-improvement process summary. No scores, no writes."""
+    from mission_control.writer.improvement_summary import summarize_improvement
+
+    return summarize_improvement(request.app.state.settings.book_root)
+
+
 @router.post("/refresh", response_model=WriterWorkspaceRead)
 async def refresh_writer(request: Request) -> WriterWorkspaceRead:
     await AdapterService(
