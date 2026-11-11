@@ -52,6 +52,12 @@ class RuntimeSettings:
             "MISSION_CONTROL_WORKBENCH_URL", "http://127.0.0.1:7420"
         )
     )
+    # Python executable whose environment provides the `ai` package for
+    # manuscript quality evaluation subprocesses. Unset means evaluation
+    # execution is unavailable (recorded as blocked, never silently skipped).
+    quality_eval_python: str | None = field(
+        default_factory=lambda: os.environ.get("MISSION_CONTROL_QUALITY_EVAL_PYTHON")
+    )
     dev_origins: tuple[str, ...] = (
         "http://127.0.0.1:5173",
         "http://localhost:5173",

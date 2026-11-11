@@ -1,0 +1,31 @@
+{
+ "id": "P15",
+ "sha": "4df001fc29fa2a3a",
+ "detector_version": "expo-v1",
+ "prompt_version": "expo-sem-v1+d40fa9e4",
+ "requested_model": "opencode-go/deepseek-v4.1-flash",
+ "actual_model": "opencode-go/deepseek-v4.1-flash",
+ "route_resolution": "configured",
+ "transport": "file",
+ "latency_s": 23.4,
+ "usage": {
+  "input_tokens": 4530,
+  "output_tokens": 371,
+  "total_tokens": 4901,
+  "cost_usd": 0.0,
+  "accounting": "provider_reported"
+ },
+ "provider_status": "ok",
+ "provider_error": null,
+ "status": "ok",
+ "score": 0.0,
+ "verdict": "NO_ISSUE",
+ "severity": "NONE",
+ "confidence": null,
+ "main_explanation": "",
+ "diagnosis": "SEMANTICALLY_REJECTED",
+ "quote": "",
+ "validation_state": "SEMANTICALLY_REJECTED",
+ "model": "opencode-go/deepseek-v4.1-flash",
+ "raw_response": "# rationale\nThe passage is compact and purpose-built: it states the observed output, immediately identifies the toy as a test fixture, and closes with a scope limitation that prevents misreading. The qualification is essential and arrives at the right point; there is no compression, interruption, or avoidable difficulty.\n\n# score\n0.05\n\n# answer\n```json\n{\n  \"verdict\": \"NO_ISSUE\",\n  \"severity\": \"NONE\",\n  \"confidence\": 0.94,\n  \"main_explanation\": \"To explain that the toy's garbled output is expected and that the toy serves only as a test fixture for the interface and timing harness, not as evidence about model quality or serving.\",\n  \"diagnosis\": \"The passage makes one point in four short sentences, with the scope limitation placed at the end where it prevents overreading without interrupting the explanation. The apparent oddity (meaningless output) is explicitly framed as intentional, so no reordering or simplification is warranted.\",\n  \"essential_qualifications\": [\n    \"The toy is a test fixture for the interface and the timing harness.\",\n    \"It is not evidence about model quality, hardware or serving.\"\n  ],\n  \"premature_or_repeated_qualifications\": [],\n  \"proposed_strategy\": \"NO_CHANGE\",\n  \"quote\": \"For seed 7 the eight generated characters are `RWPFdyxf`. That output is meaningless as language, and that is the point. The toy is a test fixture for the interface and the timing harness. It is not evidence about model quality, hardware or serving.\",\n  \"uncertainty\": \"Minimal; the only possible concern is that the final limitation is broad, but in context it is a necessary scope clarification rather than an obstruction.\"\n}\n```"
+}

@@ -1,0 +1,31 @@
+{
+ "id": "P01",
+ "sha": "4307d22c54b5cdfe",
+ "detector_version": "expo-v1",
+ "prompt_version": "expo-sem-v1+d40fa9e4",
+ "requested_model": "opencode-go/deepseek-v4.1-flash",
+ "actual_model": "opencode-go/deepseek-v4.1-flash",
+ "route_resolution": "configured",
+ "transport": "file",
+ "latency_s": 19.8,
+ "usage": {
+  "input_tokens": 4586,
+  "output_tokens": 439,
+  "total_tokens": 5025,
+  "cost_usd": 0.0,
+  "accounting": "provider_reported"
+ },
+ "provider_status": "ok",
+ "provider_error": null,
+ "status": "ok",
+ "score": 0.0,
+ "verdict": "NO_ISSUE",
+ "severity": "NONE",
+ "confidence": null,
+ "main_explanation": "",
+ "diagnosis": "SEMANTICALLY_REJECTED",
+ "quote": "",
+ "validation_state": "SEMANTICALLY_REJECTED",
+ "model": "opencode-go/deepseek-v4.1-flash",
+ "raw_response": "# rationale\nThe passage is compact but well ordered: it states that the three observations answer different questions, presents each observation, then immediately limits the evidential force of the repeatability observation. The repeatability-versus-correctness distinction is essential and correctly placed before the closing statement about what establishing correctness requires. There is no interruption of an unfinished explanation and no avoidable compression; the technical density is doing necessary work.\n\n# score\n0.05\n\n# answer\n{\n  \"verdict\": \"NO_ISSUE\",\n  \"severity\": \"NONE\",\n  \"confidence\": 0.87,\n  \"main_explanation\": \"To distinguish what the three observations of the run establish—latency, output quality, and repeatability—from what would be required to establish implementation correctness.\",\n  \"diagnosis\": \"The paragraph uses a clear sequence: it announces that the observations answer different questions, presents the three observations, qualifies the evidential scope of the repeatability result, and closes with the requirements for a correctness claim. The qualification is essential and follows the claim it limits, so the reader is not misled. No reordering or splitting is needed.\",\n  \"essential_qualifications\": [\n    \"Repeatability under the recorded conditions is evidence of consistency, not proof that every part of the implementation is correct.\",\n    \"The timing and repeatability observations are bounded by the recorded CPU configuration and the recorded repeat runs.\",\n    \"Establishing correctness requires specifying the operation, checking the implementation against it, and reporting the scope of the check.\"\n  ],\n  \"premature_or_repeated_qualifications\": [],\n  \"proposed_strategy\": \"NO_CHANGE\",\n  \"quote\": \"That last observation is evidence of repeatability under these conditions, not proof that every part of the implementation is correct. To establish correctness we must specify the operation, check the implementation against it, and report the scope of the check.\",\n  \"uncertainty\": \"A profile that treats any mention of multiple observations plus a caveat as compression pressure might score this slightly higher, but the distinctions are clearly sequenced and none is left unsupported.\"\n}"
+}

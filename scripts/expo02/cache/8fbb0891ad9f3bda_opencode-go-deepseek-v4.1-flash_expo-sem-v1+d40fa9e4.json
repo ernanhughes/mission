@@ -1,0 +1,31 @@
+{
+ "id": "P14",
+ "sha": "8fbb0891ad9f3bda",
+ "detector_version": "expo-v1",
+ "prompt_version": "expo-sem-v1+d40fa9e4",
+ "requested_model": "opencode-go/deepseek-v4.1-flash",
+ "actual_model": "opencode-go/deepseek-v4.1-flash",
+ "route_resolution": "configured",
+ "transport": "file",
+ "latency_s": 32.3,
+ "usage": {
+  "input_tokens": 741,
+  "output_tokens": 277,
+  "total_tokens": 1018,
+  "cost_usd": 0.0,
+  "accounting": "provider_reported"
+ },
+ "provider_status": "ok",
+ "provider_error": null,
+ "status": "ok",
+ "score": 0.0,
+ "verdict": "NO_ISSUE",
+ "severity": "NONE",
+ "confidence": null,
+ "main_explanation": "",
+ "diagnosis": "SEMANTICALLY_REJECTED",
+ "quote": "",
+ "validation_state": "SEMANTICALLY_REJECTED",
+ "model": "opencode-go/deepseek-v4.1-flash",
+ "raw_response": "# rationale\nThe passage’s purpose is to prevent readers from mistaking three benchmark labels for real transformer operations. Each bullet pairs a label with its actual referent and blocks a specific misreading. The technical density is necessary, and the parallel bullet structure carries the distinctions without interruption or premature caveats.\n\n# score\n0.05\n\n# answer\n{\n  \"verdict\": \"NO_ISSUE\",\n  \"severity\": \"NONE\",\n  \"confidence\": 0.93,\n  \"main_explanation\": \"\",\n  \"diagnosis\": \"The three bullets are parallel, self-contained corrections: each names a label, states what it actually denotes, and prevents a concrete misinterpretation. Nothing interrupts an unestablished claim, and reordering would not materially improve comprehension.\",\n  \"essential_qualifications\": [\n    \"The `forward_pass` surrogate-computation disclaimer\",\n    \"The `sampling_distribution` artificial-scores disclaimer\",\n    \"The `kv_cache` absent-capability and no-cache-timed disclaimer\"\n  ],\n  \"premature_or_repeated_qualifications\": [],\n  \"proposed_strategy\": \"NO_CHANGE\",\n  \"quote\": \"\",\n  \"uncertainty\": \"Only whether the 57-character detail is necessary for every reader, though it directly supports the surrogate-computation claim.\"\n}"
+}

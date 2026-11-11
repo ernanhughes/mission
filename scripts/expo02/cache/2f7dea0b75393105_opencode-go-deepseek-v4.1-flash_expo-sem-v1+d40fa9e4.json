@@ -1,0 +1,31 @@
+{
+ "id": "P10",
+ "sha": "2f7dea0b75393105",
+ "detector_version": "expo-v1",
+ "prompt_version": "expo-sem-v1+d40fa9e4",
+ "requested_model": "opencode-go/deepseek-v4.1-flash",
+ "actual_model": "opencode-go/deepseek-v4.1-flash",
+ "route_resolution": "configured",
+ "transport": "file",
+ "latency_s": 45.1,
+ "usage": {
+  "input_tokens": 4548,
+  "output_tokens": 481,
+  "total_tokens": 5029,
+  "cost_usd": 0.0,
+  "accounting": "provider_reported"
+ },
+ "provider_status": "ok",
+ "provider_error": null,
+ "status": "ok",
+ "score": 0.0,
+ "verdict": "NO_ISSUE",
+ "severity": "NONE",
+ "confidence": null,
+ "main_explanation": "",
+ "diagnosis": "SEMANTICALLY_REJECTED",
+ "quote": "",
+ "validation_state": "SEMANTICALLY_REJECTED",
+ "model": "opencode-go/deepseek-v4.1-flash",
+ "raw_response": "# rationale\nThe passage follows a clear three-move explanation: mechanism, comparative strength, and limitation. The opening qualifier, “in a fresh, isolated Python interpreter,” is operationally necessary, and “an import **is still only a preflight**” directly prevents overreading the probe. The final sentence then specifies what full qualification requires. The five requirements are dense but form one compact list, not repeated methodological interruptions, and the caveat is correctly placed before the reader can infer that an import probe is sufficient. Reordering would not improve comprehension.\n\n# score\n0.05\n\n# answer\n{\n  \"verdict\": \"NO_ISSUE\",\n  \"severity\": \"NONE\",\n  \"confidence\": 0.93,\n  \"main_explanation\": \"To define what the availability gate's import probe establishes and to prevent treating it as sufficient evidence that a server is fully runnable and qualified.\",\n  \"diagnosis\": \"The passage is coherent and compact: mechanism, comparative strength, and limitation follow in order, while the five requirements specify the limitation rather than interrupt the explanation. For a technical reader, the density is manageable and the caveat is correctly placed before any conclusion about qualification.\",\n  \"essential_qualifications\": [\n    \"in a fresh, isolated Python interpreter\",\n    \"This is stronger than checking whether a distribution is installed\",\n    \"but an import **is still only a preflight**\",\n    \"A fully runnable server needs validated model loading, hardware support, request execution, cleanup and a completed reference-quality test before its benchmark row can be marked qualified.\"\n  ],\n  \"premature_or_repeated_qualifications\": [],\n  \"proposed_strategy\": \"NO_CHANGE\",\n  \"quote\": \"The availability gate runs an import probe in a fresh, isolated Python interpreter and captures its outcome. This is stronger than checking whether a distribution is installed, but an import **is still only a preflight**. A fully runnable server needs validated model loading, hardware support, request execution, cleanup and a completed reference-quality test before its benchmark row can be marked qualified.\",\n  \"uncertainty\": \"Whether the five-item requirement list could feel dense to a non-specialist reader; for the stated technical profile, it remains scannable and does not obscure the main point.\"\n}"
+}

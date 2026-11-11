@@ -105,7 +105,7 @@ class ResearchChatService:
         self.database = database
         self.settings = settings
         self.discovery = discovery or inference.discover_local_models
-        self.completion = completion or inference.complete_local_chat
+        self.completion = completion or inference.complete_chat
         self._locks: dict[str, asyncio.Lock] = {}
 
     # --------------------------------------------------------------- records
@@ -168,9 +168,26 @@ class ResearchChatService:
     async def _require_model(
         self, model_id: str, model_route: str
     ) -> ResearchModelCatalogue:
-        if model_route != inference.LOCAL_ROUTE:
+        from mission_control.research import pi_backend as _pi
+
+        if model_route not in (inference.LOCAL_ROUTE, _pi.PI_ROUTE):
             raise CapabilityUnavailable(
-                "Research chat only supports the configured local route."
+                "Research chat only supports the configured local route or Pi."
+            )
+        if model_route == _pi.PI_ROUTE:
+            if not model_id.strip() or "/" not in model_id:
+                raise ValidationProblem("The Pi model must look like provider/model-id.")
+            return ResearchModelCatalogue(
+                provider=model_id.partition("/")[0],
+                route=_pi.PI_ROUTE,
+                configured=True,
+                local=False,
+                available=True,
+                endpoint="pi",
+                selected=model_id,
+                models=[],
+                detail="Pi route selected; availability is proven at execution, not by listing.",
+                error=None,
             )
         catalogue = await self.models()
         if not catalogue.local:
@@ -310,7 +327,7 @@ class ResearchChatService:
             )
         lock = self._locks.setdefault(session_id, asyncio.Lock())
         async with lock:
-            user_id, assistant_id, messages, chat_model = self._prepare_turn(
+            user_id, assistant_id, messages, chat_model, chat_route = self._prepare_turn(
                 session_id, text, request_key
             )
             if messages is None:
@@ -319,11 +336,19 @@ class ResearchChatService:
                 return self.get_session(session_id)
             try:
                 with self.database.session() as model_session:
-                    result = await self.completion(
-                        model_session,
-                        model=chat_model,
-                        messages=messages,
-                    )
+                    try:
+                        result = await self.completion(
+                            model_session,
+                            model=chat_model,
+                            messages=messages,
+                            route=chat_route,
+                        )
+                    except TypeError:
+                        result = await self.completion(
+                            model_session,
+                            model=chat_model,
+                            messages=messages,
+                        )
             except asyncio.CancelledError:
                 self._fail_turn(
                     session_id,
@@ -372,7 +397,7 @@ class ResearchChatService:
 
     def _prepare_turn(
         self, session_id: str, text: str, request_key: str | None
-    ) -> tuple[str, str, list[dict[str, str]] | None, str]:
+    ) -> tuple[str, str, list[dict[str, str]] | None, str, str]:
         with self.database.session() as session:
             chat = session.get(ResearchChatSession, session_id)
             if chat is None:
@@ -389,7 +414,7 @@ class ResearchChatService:
                         raise ValidationProblem(
                             "This request key is already associated with a different message."
                         )
-                    return existing.id, "", None, chat.model_id
+                    return existing.id, "", None, chat.model_id, chat.model_route
             next_sequence = int(
                 session.scalar(
                     select(func.max(ResearchChatMessage.sequence)).where(
@@ -444,7 +469,7 @@ class ResearchChatService:
                 {"role": "user", "content": text},
             ]
             session.flush()
-            return user.id, assistant.id, messages, chat.model_id
+            return user.id, assistant.id, messages, chat.model_id, chat.model_route
 
     def _history(
         self, session: Session, session_id: str, *, before_sequence: int

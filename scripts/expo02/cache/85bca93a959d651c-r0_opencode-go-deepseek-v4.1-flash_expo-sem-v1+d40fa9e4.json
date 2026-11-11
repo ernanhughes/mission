@@ -1,0 +1,31 @@
+{
+ "id": "P27",
+ "sha": "85bca93a959d651c",
+ "detector_version": "expo-v1",
+ "prompt_version": "expo-sem-v1+d40fa9e4",
+ "requested_model": "opencode-go/deepseek-v4.1-flash",
+ "actual_model": "opencode-go/deepseek-v4.1-flash",
+ "route_resolution": "configured",
+ "transport": "file",
+ "latency_s": 18.0,
+ "usage": {
+  "input_tokens": 719,
+  "output_tokens": 263,
+  "total_tokens": 982,
+  "cost_usd": 0.0,
+  "accounting": "provider_reported"
+ },
+ "provider_status": "ok",
+ "provider_error": null,
+ "status": "ok",
+ "score": 0.0,
+ "verdict": "NO_ISSUE",
+ "severity": "NONE",
+ "confidence": null,
+ "main_explanation": "",
+ "diagnosis": "SEMANTICALLY_REJECTED",
+ "quote": "",
+ "validation_state": "SEMANTICALLY_REJECTED",
+ "model": "opencode-go/deepseek-v4.1-flash",
+ "raw_response": "# rationale\n\nThe passage follows one clear explanatory thread: purpose determines what a reader needs and what counts as a successful response, but it does not license factual distortion. The engineer/student examples are brief and functional. The final limit is an essential boundary stated after the main claim, not a premature interruption. No reordering or splitting is needed.\n\n# score\n\n0.0\n\n# answer\n\n{\n  \"verdict\": \"NO_ISSUE\",\n  \"severity\": \"NONE\",\n  \"confidence\": 0.93,\n  \"main_explanation\": \"\",\n  \"diagnosis\": \"The explanation is compact and well ordered: it defines purpose through examples, states the success criterion, then adds a necessary limit. The qualification is brief and prevents a relativistic misreading rather than interrupting an unfinished claim.\",\n  \"essential_qualifications\": [\n    \"It does not authorise the mediator to change the underlying facts to make the task easier.\"\n  ],\n  \"premature_or_repeated_qualifications\": [],\n  \"proposed_strategy\": \"NO_CHANGE\",\n  \"quote\": \"\",\n  \"uncertainty\": \"The final sentence could be read as a slight thematic shift, but it directly qualifies the success-criterion claim and does not create overload.\"\n}"
+}

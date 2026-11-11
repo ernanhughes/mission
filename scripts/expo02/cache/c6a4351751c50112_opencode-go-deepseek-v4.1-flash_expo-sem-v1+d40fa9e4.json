@@ -1,0 +1,31 @@
+{
+ "id": "P18",
+ "sha": "c6a4351751c50112",
+ "detector_version": "expo-v1",
+ "prompt_version": "expo-sem-v1+d40fa9e4",
+ "requested_model": "opencode-go/deepseek-v4.1-flash",
+ "actual_model": "opencode-go/deepseek-v4.1-flash",
+ "route_resolution": "configured",
+ "transport": "file",
+ "latency_s": 25.1,
+ "usage": {
+  "input_tokens": 5339,
+  "output_tokens": 633,
+  "total_tokens": 5972,
+  "cost_usd": 0.0,
+  "accounting": "provider_reported"
+ },
+ "provider_status": "ok",
+ "provider_error": null,
+ "status": "ok",
+ "score": 0.0,
+ "verdict": "NO_ISSUE",
+ "severity": "NONE",
+ "confidence": null,
+ "main_explanation": "",
+ "diagnosis": "SEMANTICALLY_REJECTED",
+ "quote": "",
+ "validation_state": "SEMANTICALLY_REJECTED",
+ "model": "opencode-go/deepseek-v4.1-flash",
+ "raw_response": "# rationale\n\nThe passage consists of two short, parallel lead-ins, each ending in a colon and introducing a route the reader may take: rebuilding the summary from stored artifacts (no GPU), or rerunning a single GPU experiment (with prerequisites and a stated time cost). There is no chain of claims, no nested distinctions, and no mid-explanation rebuttal or defensive framing. The only density is a single parenthetical listing environment requirements plus the one-hour runtime — scope-setting information that belongs with the option it qualifies, so readers can judge cost before choosing. Difficulty here is minimal and not avoidable-by-reordering, because there is nothing to reorder. No overload signal rises above noise; NO_ISSUE is the correct call.\n\nOne caveat: the excerpt appears to stop at the second colon, so the lists the lead-ins announce are not included. The judgment applies to the two lead-in sentences as shown.\n\n# score\n\n0.12\n\n# answer\n\n```json\n{\n  \"verdict\": \"NO_ISSUE\",\n  \"severity\": \"NONE\",\n  \"confidence\": 0.62,\n  \"main_explanation\": \"To introduce the two routes for regenerating the chapter's summary: rebuilding it from existing measurement artifacts without GPU work, or rerunning a single GPU experiment with its prerequisites and runtime.\",\n  \"diagnosis\": \"Two short, parallel lead-ins with no chained claims, nesting, or interruption. The only added density is a brief parenthetical stating required environment components and the roughly one-hour runtime, which is scope-setting for the option it accompanies rather than premature or excessive qualification.\",\n  \"essential_qualifications\": [\n    \"device, packages, model weights and a reproducible environment required\",\n    \"the original full suite took about an hour on the reference machine\"\n  ],\n  \"premature_or_repeated_qualifications\": [],\n  \"proposed_strategy\": \"NO_CHANGE\",\n  \"quote\": \"To rebuild the chapter's summary from the existing measurement artifacts (without repeating GPU execution): To repeat one GPU experiment (device, packages, model weights and a reproducible environment required; the original full suite took about an hour on the reference machine):\",\n  \"uncertainty\": \"The excerpt ends at the second colon, so the lists each lead-in announces are absent; if those lists are dense or interleaved, an overload judgment would need to consider them, and it is also unclear whether the two lead-ins are alternatives or steps in sequence.\"\n}\n```"
+}

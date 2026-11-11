@@ -1,0 +1,31 @@
+{
+ "id": "P04",
+ "sha": "49ce11db1ad65e94",
+ "detector_version": "expo-v1",
+ "prompt_version": "expo-sem-v1+d40fa9e4",
+ "requested_model": "opencode-go/deepseek-v4.1-flash",
+ "actual_model": "opencode-go/deepseek-v4.1-flash",
+ "route_resolution": "configured",
+ "transport": "file",
+ "latency_s": 18.9,
+ "usage": {
+  "input_tokens": 782,
+  "output_tokens": 254,
+  "total_tokens": 1036,
+  "cost_usd": 0.0,
+  "accounting": "provider_reported"
+ },
+ "provider_status": "ok",
+ "provider_error": null,
+ "status": "ok",
+ "score": 0.0,
+ "verdict": "NO_ISSUE",
+ "severity": "NONE",
+ "confidence": null,
+ "main_explanation": "",
+ "diagnosis": "SEMANTICALLY_REJECTED",
+ "quote": "",
+ "validation_state": "SEMANTICALLY_REJECTED",
+ "model": "opencode-go/deepseek-v4.1-flash",
+ "raw_response": "# rationale\nThe paragraph opens with a clear organising claim, defines three evaluation axes in parallel, illustrates their independence, and then shows the practical cost of conflating them before signposting later material. The density is proportionate to the distinction being introduced, and no caveat interrupts the explanation. Any difficulty is conceptual rather than structural.\n\n# score\n0.08\n\n# answer\n{\n  \"verdict\": \"NO_ISSUE\",\n  \"severity\": \"NONE\",\n  \"confidence\": 0.9,\n  \"main_explanation\": \"The passage distinguishes performance, output quality, and implementation correctness as separate evaluation axes and warns that conflating them leads to misguided interventions.\",\n  \"diagnosis\": \"The paragraph is dense but well ordered: a topic sentence, three parallel definitions, illustrative combinations, consequences of confusion, and a forward reference. The structure carries the claims without premature caveats or repeated interruptions.\",\n  \"essential_qualifications\": [],\n  \"premature_or_repeated_qualifications\": [],\n  \"proposed_strategy\": \"NO_CHANGE\",\n  \"quote\": \"\",\n  \"uncertainty\": \"The final forward-looking sentence adds some compression, but it does not obstruct the central distinction.\"\n}"
+}

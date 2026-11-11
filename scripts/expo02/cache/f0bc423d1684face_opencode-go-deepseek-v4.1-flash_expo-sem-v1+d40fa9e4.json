@@ -1,0 +1,31 @@
+{
+ "id": "P25",
+ "sha": "f0bc423d1684face",
+ "detector_version": "expo-v1",
+ "prompt_version": "expo-sem-v1+d40fa9e4",
+ "requested_model": "opencode-go/deepseek-v4.1-flash",
+ "actual_model": "opencode-go/deepseek-v4.1-flash",
+ "route_resolution": "configured",
+ "transport": "file",
+ "latency_s": 37.2,
+ "usage": {
+  "input_tokens": 2255,
+  "output_tokens": 444,
+  "total_tokens": 2699,
+  "cost_usd": 0.0,
+  "accounting": "provider_reported"
+ },
+ "provider_status": "ok",
+ "provider_error": null,
+ "status": "ok",
+ "score": 0.0,
+ "verdict": "NO_ISSUE",
+ "severity": "NONE",
+ "confidence": null,
+ "main_explanation": "",
+ "diagnosis": "SEMANTICALLY_REJECTED",
+ "quote": "",
+ "validation_state": "SEMANTICALLY_REJECTED",
+ "model": "opencode-go/deepseek-v4.1-flash",
+ "raw_response": "# rationale\nThe paragraph makes one architectural distinction in a clear order: it defines the logits-level contract, states when that contract fits, contrasts it with production serving engines and Hugging Face's `generate`, then concludes that those belong under a separate generation-level contract. The qualifications prevent a false equivalence; they do not interrupt a claim that is still being established.\n\n# score\n0.08\n\n# answer\n{\n  \"verdict\": \"NO_ISSUE\",\n  \"severity\": \"NONE\",\n  \"confidence\": 0.88,\n  \"main_explanation\": \"\",\n  \"diagnosis\": \"The progression is contract, applicability, contrasting implementation, then consequence, with one main job per sentence. Technical density is high but controlled, and the caveats are load-bearing rather than premature or repetitive.\",\n  \"essential_qualifications\": [\n    \"Production serving engines and hosted providers own scheduling, cache management, and token selection.\",\n    \"Wrapping such systems as though they exposed per-step logits would invent a capability.\",\n    \"Hugging Face's `generate` also owns a decoding loop and sampling.\"\n  ],\n  \"premature_or_repeated_qualifications\": [],\n  \"proposed_strategy\": \"NO_CHANGE\",\n  \"quote\": \"\",\n  \"uncertainty\": \"The separate generation-level contract is not elaborated here, but that is a scope limit rather than an overload defect.\"\n}"
+}

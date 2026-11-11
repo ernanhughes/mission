@@ -1,0 +1,31 @@
+{
+ "id": "P31",
+ "sha": "64df121e2d60b4af",
+ "detector_version": "expo-v1",
+ "prompt_version": "expo-sem-v1+d40fa9e4",
+ "requested_model": "opencode-go/deepseek-v4.1-flash",
+ "actual_model": "opencode-go/deepseek-v4.1-flash",
+ "route_resolution": "configured",
+ "transport": "file",
+ "latency_s": 32.0,
+ "usage": {
+  "input_tokens": 719,
+  "output_tokens": 660,
+  "total_tokens": 1379,
+  "cost_usd": 0.0,
+  "accounting": "provider_reported"
+ },
+ "provider_status": "ok",
+ "provider_error": null,
+ "status": "ok",
+ "score": 0.35,
+ "verdict": "EXPO_COMPRESSION",
+ "severity": "LOW",
+ "confidence": 0.5,
+ "main_explanation": "To specify the measurement and reporting protocol for a source-selection study so that evaluation rests on correct selection under budget rather than on headline metrics.",
+ "diagnosis": "A single sentence carries an eight-item enumeration of mixed granularity (error types, counting outcomes, timing, behaviour, subjective measures) with no hierarchy or list structure, and three additional procedural requirements follow in quick succession, so the reader must retain the whole set before the governing pre-registration rule arrives in sentence three. The difficulty is structural (packing and placement), not conceptual: no claim is obscure, no terminology is undefined, and the closing caveat is brief and correctly placed at the end rather than interrupting a developing argument. Reformatting the enumeration as a list and leading with the pre-run declaration would remove nearly all of the friction.",
+ "quote": "Record consequential false skips, ordinary false skips, false opens, sources selected within the budget, time to decision, source-opening behaviour, subjective preference and unwarranted confidence. Report denominators and uncertainty, and inspect errors by task and by document class.",
+ "validation_state": "SEMANTICALLY_CONFIRMED",
+ "model": "opencode-go/deepseek-v4.1-flash",
+ "raw_response": "# rationale\nThe passage is a compact methods instruction: it tells the reader which outcomes to record, how to report them, what to pre-declare, and what conclusion not to draw. Nothing repeatedly interrupts it — there is exactly one closing caveat, and it sits where a guardrail belongs (after the requirements, before anyone acts on them). The real friction is not interruption but packing: a single sentence carries an eight-item, undifferentiated enumeration whose members sit at different levels of abstraction (\"consequential false skips\" vs. \"subjective preference\" vs. \"unwarranted confidence\"), followed immediately by three further procedural requirements in thirty-odd words. A reader has to hold the whole set in working memory before learning, in sentence three, what governs it. That is mild, structural compression rather than conceptual confusion, and a checklist format (or one item per clause) would relieve it without losing any content. The density itself is warranted: these are genuinely distinct dependent measures, and the qualification about denominators and the caveat about headline metrics are load-bearing, not defensive padding.\n\n# score\n0.35\n\n# answer\n```json\n{\n  \"verdict\": \"EXPO_COMPRESSION\",\n  \"severity\": \"LOW\",\n  \"confidence\": 0.5,\n  \"main_explanation\": \"To specify the measurement and reporting protocol for a source-selection study so that evaluation rests on correct selection under budget rather than on headline metrics.\",\n  \"diagnosis\": \"A single sentence carries an eight-item enumeration of mixed granularity (error types, counting outcomes, timing, behaviour, subjective measures) with no hierarchy or list structure, and three additional procedural requirements follow in quick succession, so the reader must retain the whole set before the governing pre-registration rule arrives in sentence three. The difficulty is structural (packing and placement), not conceptual: no claim is obscure, no terminology is undefined, and the closing caveat is brief and correctly placed at the end rather than interrupting a developing argument. Reformatting the enumeration as a list and leading with the pre-run declaration would remove nearly all of the friction.\",\n  \"essential_qualifications\": [\n    \"Report denominators and uncertainty, and inspect errors by task and by document class.\",\n    \"Before the run, declare the primary selection measure and any cost weighting.\",\n    \"A headline improvement in clicks or satisfaction does not replace an improvement in correct selection under the budget.\"\n  ],\n  \"premature_or_repeated_qualifications\": [],\n  \"proposed_strategy\": \"SPLIT_PARAGRAPHS\",\n  \"quote\": \"Record consequential false skips, ordinary false skips, false opens, sources selected within the budget, time to decision, source-opening behaviour, subjective preference and unwarranted confidence. Report denominators and uncertainty, and inspect errors by task and by document class.\",\n  \"uncertainty\": \"Whether this belongs to a numbered protocol or checklist in the source document, in which case the run-on enumeration may already be visually broken up and the compression signal largely disappears; also whether the three-question separation of recording, reporting and pre-declaration is intended as an ordering that a reader is expected to apply in sequence.\"\n}\n```"
+}

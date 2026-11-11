@@ -601,6 +601,7 @@ class QualityEvaluationRead(BaseModel):
     section_sha: str | None = None
     campaign_id: str | None = None
     compatible_basis: str = ""
+    strategy: str = "direct"
     created_at: str
 
 
@@ -641,6 +642,7 @@ class QualityCampaignCreate(RawModel):
     mode: str = "missing"
     chapters: list[str] = Field(default_factory=list)
     model: str | None = None
+    strategy: str = "direct"
 
 
 class QualityCampaignRead(BaseModel):
@@ -655,6 +657,7 @@ class QualityCampaignRead(BaseModel):
     rubric_version: int
     prompt_version: str
     model: str | None
+    strategy: str = "direct"
     status: str
     total: int
     completed: int
@@ -698,6 +701,7 @@ class QualityEvaluationCreate(RawModel):
     char_span: list[Any] = Field(default_factory=list)
     section_sha: str | None = None
     campaign_id: str | None = None
+    strategy: str = "direct"
 
 
 class ArtifactLoadFinding(RawModel):
@@ -2279,6 +2283,7 @@ class WriterWorkspaceRead(BaseModel):
     workbench: dict[str, Any] = Field(default_factory=dict)
     books: list[dict[str, Any]] = Field(default_factory=list)
     limitations: list[str] = Field(default_factory=list)
+    self_repair: dict[str, Any] = Field(default_factory=dict)
 
 
 class WriterAuditRequest(RawModel):

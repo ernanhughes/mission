@@ -947,6 +947,7 @@ class QualityEvaluation(Base):
     campaign_id: Mapped[str | None] = mapped_column(
         String, ForeignKey("quality_campaigns.id", ondelete="SET NULL")
     )
+    strategy: Mapped[str] = mapped_column(String, default="direct", nullable=False)
     created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
 
 
@@ -983,6 +984,7 @@ class QualityCampaign(Base):
     current_chapter: Mapped[str | None] = mapped_column(String)
     error: Mapped[str | None] = mapped_column(Text)
     heartbeat_at: Mapped[str | None] = mapped_column(String)
+    strategy: Mapped[str] = mapped_column(String, default="direct", nullable=False)
     created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
     updated_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
     completed_at: Mapped[str | None] = mapped_column(String)

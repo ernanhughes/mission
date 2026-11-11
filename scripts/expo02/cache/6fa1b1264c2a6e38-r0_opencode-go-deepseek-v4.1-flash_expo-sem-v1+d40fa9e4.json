@@ -1,0 +1,31 @@
+{
+ "id": "P46",
+ "sha": "6fa1b1264c2a6e38",
+ "detector_version": "expo-v1",
+ "prompt_version": "expo-sem-v1+d40fa9e4",
+ "requested_model": "opencode-go/deepseek-v4.1-flash",
+ "actual_model": "opencode-go/deepseek-v4.1-flash",
+ "route_resolution": "configured",
+ "transport": "file",
+ "latency_s": 32.0,
+ "usage": {
+  "input_tokens": 741,
+  "output_tokens": 743,
+  "total_tokens": 1484,
+  "cost_usd": 0.0,
+  "accounting": "provider_reported"
+ },
+ "provider_status": "ok",
+ "provider_error": null,
+ "status": "ok",
+ "score": 0.87,
+ "verdict": "EXPO_INTERRUPTION",
+ "severity": "HIGH",
+ "confidence": 0.86,
+ "main_explanation": "To explain that batching works by grouping requests together so they share a single model pass.",
+ "diagnosis": "The core explanation is deferred to the last clause of a single ~90-word sentence, behind three accumulated caveats and a meta-instruction to 'keep all of that in mind while reading the next sentence.' The reader must retain unresolved prohibitions (not a benchmark, not optimal, not an implementation) before learning what batching actually is, so the definition lands with no working context. The individual caveats are reasonable and partly necessary; the obstruction is their placement and piling-up ahead of the claim, not the technical density itself.",
+ "quote": "Before explaining batching, note this is not a benchmark and must not be quoted as one, and do not conclude the scheduler is optimal, because optimality would require a proof we do not have, although the basic idea is simple: group requests together. But even that description, which sounds straightforward, should not be mistaken for an implementation, since the implementation details, which we have not verified, could differ in ways that matter, so keep all of that in mind while reading the next sentence: batching shares one model pass across requests.",
+ "validation_state": "SEMANTICALLY_CONFIRMED",
+ "model": "opencode-go/deepseek-v4.1-flash",
+ "raw_response": "# rationale\n\nThe passage contains one genuine explanation — *batching shares one model pass across requests* — but withholds it until the final clause of a single long sentence. Before that, the reader is issued three stacked prohibitions (don't quote as a benchmark, don't conclude optimality, don't mistake the description for an implementation) plus a meta-instruction (\"keep all of that in mind while reading the next sentence\"). Each caveat is individually defensible and some are substantively necessary; the defect is not density or qualification per se, but that the definition arrives only after the reader has been asked to hold several unresolved injunctions in working memory. This is interruption of the main explanation rather than mere compression: the load comes from ordering and defensive framing, not from the number of technical distinctions. Reordering would very likely help — state the mechanism first, then append the caveats — but a shorter quote-scoped fix (moving the implementation caveat later) addresses most of it.\n\n# score\n\n0.87\n\n# answer\n\n```json\n{\n  \"verdict\": \"EXPO_INTERRUPTION\",\n  \"severity\": \"HIGH\",\n  \"confidence\": 0.86,\n  \"main_explanation\": \"To explain that batching works by grouping requests together so they share a single model pass.\",\n  \"diagnosis\": \"The core explanation is deferred to the last clause of a single ~90-word sentence, behind three accumulated caveats and a meta-instruction to 'keep all of that in mind while reading the next sentence.' The reader must retain unresolved prohibitions (not a benchmark, not optimal, not an implementation) before learning what batching actually is, so the definition lands with no working context. The individual caveats are reasonable and partly necessary; the obstruction is their placement and piling-up ahead of the claim, not the technical density itself.\",\n  \"essential_qualifications\": [\n    \"The passage is not a benchmark and must not be quoted as one.\",\n    \"Optimality would require a proof the authors do not have, so the scheduler should not be called optimal.\"\n  ],\n  \"premature_or_repeated_qualifications\": [\n    \"The implementation-details caveat ('the implementation details, which we have not verified, could differ in ways that matter') is raised before the basic mechanism is stated.\",\n    \"The meta-instruction 'keep all of that in mind while reading the next sentence' adds procedural load without content.\",\n    \"The nested hedge 'even that description, which sounds straightforward' restates the same anti-overreading point already covered by the preceding clauses.\"\n  ],\n  \"proposed_strategy\": \"MOVE_CAVEAT_LATER\",\n  \"quote\": \"Before explaining batching, note this is not a benchmark and must not be quoted as one, and do not conclude the scheduler is optimal, because optimality would require a proof we do not have, although the basic idea is simple: group requests together. But even that description, which sounds straightforward, should not be mistaken for an implementation, since the implementation details, which we have not verified, could differ in ways that matter, so keep all of that in mind while reading the next sentence: batching shares one model pass across requests.\",\n  \"uncertainty\": \"I cannot tell whether the benchmark and optimality caveats are required up front by the surrounding document's conventions (for example a compliance or safety-sensitive context), which would make their early placement functional rather than obstructive. Because the source is a single sentence, the effects of ordering and of sheer sentence length are hard to separate.\"\n}\n```"
+}

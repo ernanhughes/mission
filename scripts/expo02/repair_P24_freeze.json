@@ -1,0 +1,24 @@
+{
+ "passage_id": "P24",
+ "source": "inference-39-chapter.md",
+ "chapter": "39-chapter.md",
+ "start_line": 161,
+ "end_line": 161,
+ "sha": "1fe71f6ad94dd61a",
+ "original_text": "Implementation follow-up: add a dedicated literal-byte equality operation, include an explicit `complete`/`missing` gate for manifests, and correct `flip_probability_bound` for a per-logit epsilon assumption (or rename its argument to the proven pairwise perturbation bound). These are recommended code changes, not features already implemented.",
+ "rule": {
+  "flagged": false,
+  "subtype": "NONE",
+  "compression": 4.63,
+  "interruption": 0.15
+ },
+ "semantic": {
+  "verdict": "EXPO_COMPRESSION",
+  "severity": "LOW",
+  "confidence": 0.62,
+  "diagnosis": "Three independent deliverables plus a parenthetical either/or repair are compressed into one parallel-clause sentence, so each item's scope and the third item's alternative fix must be parsed while holding the others in memory; a list structure would carry the same content with much less load. The density is real but modest, and the closing status disclaimer is correctly placed rather than intrusive.",
+  "prompt_version": "expo-sem-v1+d40fa9e4",
+  "requested_model": "opencode-go/deepseek-v4.1-flash",
+  "actual_model": "opencode-go/deepseek-v4.1-flash"
+ }
+}

@@ -20,6 +20,7 @@ from mission_control.writer.decisions import (
     summary as decision_summary,
 )
 from mission_control.writer.queue import build_decision_queue
+from mission_control.writer.self_repair import summarize_self_repair
 
 _STATUS_RANK = {
     "ERROR": 0,
@@ -118,6 +119,7 @@ class WriterService:
                 "workbench": workbench,
                 "books": books,
                 "limitations": limitations,
+                "self_repair": summarize_self_repair(self.settings.book_root),
             }
 
     @staticmethod

@@ -1,0 +1,31 @@
+{
+ "id": "P01",
+ "sha": "4307d22c54b5cdfe",
+ "detector_version": "expo-v1",
+ "prompt_version": "expo-sem-v1+d40fa9e4",
+ "requested_model": "opencode-go/deepseek-v4.1-flash",
+ "actual_model": "opencode-go/deepseek-v4.1-flash",
+ "route_resolution": "configured",
+ "transport": "file",
+ "latency_s": 17.3,
+ "usage": {
+  "input_tokens": 746,
+  "output_tokens": 560,
+  "total_tokens": 1306,
+  "cost_usd": 0.0,
+  "accounting": "provider_reported"
+ },
+ "provider_status": "ok",
+ "provider_error": null,
+ "status": "ok",
+ "score": 0.0,
+ "verdict": "NO_ISSUE",
+ "severity": "NONE",
+ "confidence": null,
+ "main_explanation": "",
+ "diagnosis": "SEMANTICALLY_REJECTED",
+ "quote": "",
+ "validation_state": "SEMANTICALLY_REJECTED",
+ "model": "opencode-go/deepseek-v4.1-flash",
+ "raw_response": "# rationale\n\nThe passage is a short, well-ordered inference report, not an overloaded one. It opens with an explicit structural promise (\"Three observations describe this run, but they answer different questions\"), then delivers exactly three observations in order: latency/throughput, output quality, and rule-consistency. Each claim is tied to a distinct question, so the reader is never asked to hold competing distinctions in suspension. The single qualification — that repeatability is not proof of full implementation correctness — arrives immediately after the claim it limits, which is precisely where it belongs: it prevents a reader from inferring a correctness conclusion the evidence does not support. It is not premature, defensive padding, and it is not repeated. The closing sentence gives a compact three-step prescription that follows from the qualification. Technical density is moderate, terminology is used consistently, and the sequence (observations → bounded inference → method) is already the comprehension-friendly order. No reordering or splitting would plausibly improve understanding.\n\n# score\n\n0.12\n\n# answer\n\n```json\n{\n  \"verdict\": \"NO_ISSUE\",\n  \"severity\": \"NONE\",\n  \"confidence\": 0.86,\n  \"main_explanation\": \"The passage separates three distinct observations about a single run and explicitly bounds what the strongest of them can be taken to prove before stating how correctness would have to be established.\",\n  \"diagnosis\": \"The structure is announced up front and then honored: three observations, each answering a different question, followed by one narrowly scoped qualification and a short methodological prescription. The qualification is placed directly after the claim it constrains, which is the correct position, since removing it would license a false correctness inference. Nothing is interrupted mid-explanation, no caveat is stated before its claim exists, and no distinction is introduced without immediately being used. Length and technical density are proportionate to the content.\",\n  \"essential_qualifications\": [\n    \"That last observation is evidence of repeatability under these conditions, not proof that every part of the implementation is correct.\"\n  ],\n  \"premature_or_repeated_qualifications\": [],\n  \"proposed_strategy\": \"NO_CHANGE\",\n  \"quote\": \"And it was *consistent with* the requested decoding rule: greedy selection returned the same sequence across the recorded repeat runs. That last observation is evidence of repeatability under these conditions, not proof that every part of the implementation is correct.\",\n  \"uncertainty\": \"Whether the surrounding document frames these observations as a correctness argument elsewhere; read in isolation, the scoping sentence is clearly sufficient and correctly placed, but an adjacent section making a stronger claim could change the assessment of what this paragraph must pre-empt.\"\n}\n```"
+}
