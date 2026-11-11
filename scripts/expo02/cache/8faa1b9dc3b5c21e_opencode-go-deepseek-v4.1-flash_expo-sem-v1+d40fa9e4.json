@@ -1,0 +1,31 @@
+{
+ "id": "P32",
+ "sha": "8faa1b9dc3b5c21e",
+ "detector_version": "expo-v1",
+ "prompt_version": "expo-sem-v1+d40fa9e4",
+ "requested_model": "opencode-go/deepseek-v4.1-flash",
+ "actual_model": "opencode-go/deepseek-v4.1-flash",
+ "route_resolution": "configured",
+ "transport": "file",
+ "latency_s": 18.7,
+ "usage": {
+  "input_tokens": 4564,
+  "output_tokens": 578,
+  "total_tokens": 5142,
+  "cost_usd": 0.0,
+  "accounting": "provider_reported"
+ },
+ "provider_status": "ok",
+ "provider_error": null,
+ "status": "ok",
+ "score": 0.0,
+ "verdict": "NO_ISSUE",
+ "severity": "NONE",
+ "confidence": null,
+ "main_explanation": "",
+ "diagnosis": "SEMANTICALLY_REJECTED",
+ "quote": "",
+ "validation_state": "SEMANTICALLY_REJECTED",
+ "model": "opencode-go/deepseek-v4.1-flash",
+ "raw_response": "# rationale\n\nThe passage is short, single-purpose, and moves in a straight line: it gives three contrasting cases (attention without relevance judgment; correct open-decision without conveyed content; correct comprehension without actionable evidence), names the four outcomes those cases distinguish, and draws one prescriptive conclusion — measure selection when studying selection, and don't borrow the vocabulary of understanding or safety until those are tested. The list \"selection, comprehension, inference and action\" is the only compressed moment, but it is immediately framed by the three preceding sentences, each of which maps onto one distinction, so the reader has scaffolding rather than a bare enumeration. No defensive framing, no methodological throat-clearing, and no rebuttal interrupts the claim; the limiting clause about not borrowing terminology arrives last, where it functions as the conclusion rather than a premature caveat. Density is modest and the qualifications are load-bearing. This reads as tight, deliberate expository prose, so no overload verdict is warranted.\n\n# score\n\n0.13\n\n# answer\n\n```json\n{\n  \"verdict\": \"NO_ISSUE\",\n  \"severity\": \"NONE\",\n  \"confidence\": 0.79,\n  \"main_explanation\": \"To distinguish four separate reader outcomes (selection, comprehension, inference, action) and argue that a study of selection must measure selection rather than borrow the language of understanding or safety.\",\n  \"diagnosis\": \"The paragraph is brief and sequentially built: three concrete contrast cases establish that attention, correct open-decisions, and correct comprehension each fall short of a different downstream outcome, after which the four-way distinction is named and a single prescriptive conclusion follows. The enumerated list is the only dense moment, but it is supported by the preceding sentences, so it summarizes rather than compresses. The scope-limiting final sentence is the argument's conclusion, not an interrupting caveat, and no defensive or methodological framing delays the claim.\",\n  \"essential_qualifications\": [\n    \"It can lead to a correct decision to open a page without conveying what the page says.\",\n    \"A reader may also understand a short preview correctly and still lack the evidence needed to act safely.\",\n    \"It should not borrow the language of understanding or safety until those outcomes have been tested separately.\"\n  ],\n  \"premature_or_repeated_qualifications\": [],\n  \"proposed_strategy\": \"NO_CHANGE\",\n  \"quote\": \"These are different outcomes: selection, comprehension, inference and action. A study of selection should measure selection.\",\n  \"uncertainty\": \"The four-outcome list is asserted rather than exemplified individually — inference in particular is named but not illustrated — so a reader unfamiliar with the measurement literature may need a second pass; I judged this acceptable given the three preceding contrast cases, but a stricter reviewer could call it mildly compressed.\"\n}\n```"
+}

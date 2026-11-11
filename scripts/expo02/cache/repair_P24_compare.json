@@ -1,0 +1,21 @@
+{
+ "tag": "P24_compare",
+ "prompt_version": "expo-repair-v1",
+ "requested_model": "opencode-go/deepseek-v4.1-flash",
+ "actual_model": "opencode-go/deepseek-v4.1-flash",
+ "transport": "file",
+ "latency_s": 24.6,
+ "usage": {
+  "input_tokens": 438,
+  "output_tokens": 405,
+  "total_tokens": 843,
+  "cost_usd": 0.0,
+  "accounting": "provider_reported"
+ },
+ "provider_status": "ok",
+ "provider_error": null,
+ "output": "# rationale\nX is easier to follow because its numbered list separates the three independent follow-up actions, while Y compresses them into one long compound sentence whose final parenthetical is easy to lose.\n\n# score\n0.25\n\n# answer\n{\n  \"clearer\": \"X\",\n  \"order\": \"Same semantic order in both: literal-byte equality, manifest complete/missing gate, then flip_probability_bound correction; X enumerates them, Y runs them together.\",\n  \"effort\": \"X is lower effort to scan and track; Y is shorter but requires more parsing because three actions share one sentence.\",\n  \"preserved\": true,\n  \"lost_or_changed\": [],\n  \"voice\": \"Both are neutral technical recommendations; X is list-like and Y is a single condensed sentence.\",\n  \"remaining_overload\": \"Y's final clause is still dense, packing the per-logit epsilon correction and the parenthetical renaming alternative into the same sentence.\",\n  \"comprehension\": [\n    {\n      \"q\": \"Are these changes already implemented?\",\n      \"answer_from_X\": \"No; they are recommended code changes, not features already implemented.\",\n      \"answer_from_Y\": \"No; they are recommended code changes, not features already implemented.\",\n      \"match\": true\n    },\n    {\n      \"q\": \"What should be added for manifests?\",\n      \"answer_from_X\": \"An explicit complete/missing gate.\",\n      \"answer_from_Y\": \"An explicit complete/missing gate.\",\n      \"match\": true\n    },\n    {\n      \"q\": \"What should be done about flip_probability_bound?\",\n      \"answer_from_X\": \"Correct it for a per-logit epsilon assumption, or rename its argument to the proven pairwise perturbation bound.\",\n      \"answer_from_Y\": \"Correct it for a per-logit epsilon assumption, or rename its argument to the proven pairwise perturbation bound.\",\n      \"match\": true\n    }\n  ]\n}",
+ "prompt_sha": "f875974743d88e7d",
+ "prompt_chars": 1419,
+ "cache_hit": false
+}

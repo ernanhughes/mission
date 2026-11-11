@@ -1,0 +1,21 @@
+{
+ "tag": "P24_ledger",
+ "prompt_version": "expo-repair-v1",
+ "requested_model": "opencode-go/deepseek-v4.1-flash",
+ "actual_model": "opencode-go/deepseek-v4.1-flash",
+ "transport": "file",
+ "latency_s": 19.4,
+ "usage": {
+  "input_tokens": 295,
+  "output_tokens": 232,
+  "total_tokens": 527,
+  "cost_usd": 0.0,
+  "accounting": "provider_reported"
+ },
+ "provider_status": "ok",
+ "provider_error": null,
+ "output": "{\"claims\":[\"These are recommended code changes, not features already implemented.\"],\"definitions\":[],\"numbers_with_units\":[],\"statistical_qualifiers\":[],\"conditions\":[\"for a per-logit epsilon assumption\"],\"caveats\":[\"These are recommended code changes, not features already implemented.\",\"(or rename its argument to the proven pairwise perturbation bound)\"],\"equations_or_formalisms\":[],\"experimental_results\":[],\"evidence_status\":[\"recommended\",\"not features already implemented\",\"proven\"],\"references\":[],\"technical_terms\":[\"literal-byte equality operation\",\"`complete`/`missing` gate\",\"manifests\",\"`flip_probability_bound`\",\"per-logit epsilon assumption\",\"pairwise perturbation bound\",\"argument\"],\"authorial_commitments\":[\"add a dedicated literal-byte equality operation, include an explicit `complete`/`missing` gate for manifests, and correct `flip_probability_bound` for a per-logit epsilon assumption (or rename its argument to the proven pairwise perturbation bound)\",\"These are recommended code changes, not features already implemented.\"]}",
+ "prompt_sha": "fd3a02a11a39e585",
+ "prompt_chars": 906,
+ "cache_hit": false
+}

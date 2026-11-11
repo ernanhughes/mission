@@ -1,0 +1,31 @@
+{
+ "id": "P16",
+ "sha": "3c8d79f2f47b7821",
+ "detector_version": "expo-v1",
+ "prompt_version": "expo-sem-v1+d40fa9e4",
+ "requested_model": "opencode-go/deepseek-v4.1-flash",
+ "actual_model": "opencode-go/deepseek-v4.1-flash",
+ "route_resolution": "configured",
+ "transport": "file",
+ "latency_s": 37.0,
+ "usage": {
+  "input_tokens": 4810,
+  "output_tokens": 716,
+  "total_tokens": 5526,
+  "cost_usd": 0.0,
+  "accounting": "provider_reported"
+ },
+ "provider_status": "ok",
+ "provider_error": null,
+ "status": "ok",
+ "score": 0.0,
+ "verdict": "NO_ISSUE",
+ "severity": "NONE",
+ "confidence": null,
+ "main_explanation": "",
+ "diagnosis": "SEMANTICALLY_REJECTED",
+ "quote": "",
+ "validation_state": "SEMANTICALLY_REJECTED",
+ "model": "opencode-go/deepseek-v4.1-flash",
+ "raw_response": "# rationale\n\nThe paragraph has a clear job: it distinguishes the **toy** timing path from the **real-model** timing path and draws the practical consequence that a shared `GenerationResult` type does not license stage-by-stage comparison. The reader should come away knowing which stages the toy path times (seven, including `request_parse` and `response_format`), that the real-model path folds tokenisation and encoding into `tokenize_and_encode` and omits two measurements, and that definitions must be aligned before comparing. Every sentence advances that contrast; the closing sentence is the warranted conclusion, not a defensive caveat. Density is high, but this is terminology and exactness, not clutter: the stage names *are* the content, and each is doing discriminating work. The one soft spot is the opening sentence about production concerns (scheduling, batching, cache management, memory allocation, streaming, telemetry), which is not developed in the span and sits awkwardly next to \"These seven stages,\" a reference whose antecedent lies outside this excerpt. That creates a moment of referential ambiguity but not a failure of the explanation, and no qualification is premature or repeated. Ordering is already sensible (instance, then contrast, then rule), so reordering would yield little.\n\n# score\n0.22\n\n# answer\n{\n  \"verdict\": \"NO_ISSUE\",\n  \"severity\": \"NONE\",\n  \"confidence\": 0.62,\n  \"main_explanation\": \"\",\n  \"diagnosis\": \"The passage is dense but linearly coherent: it states the toy path's seven timed stages, then the real-model path's collapsed/omitted stages, then the comparison rule those differences entail. The closing qualification (common result type != identical instrumentation) is essential and correctly placed after the evidence. The only friction is the undeveloped opening sentence about production concerns adjacent to the anaphoric 'These seven stages', which briefly muddies the antecedent but does not obstruct the contrast.\",\n  \"essential_qualifications\": [\n    \"A common result type does not imply identical instrumentation, so stage-by-stage comparisons must first align definitions.\"\n  ],\n  \"premature_or_repeated_qualifications\": [],\n  \"proposed_strategy\": \"NO_CHANGE\",\n  \"quote\": \"These seven stages describe the **toy** path: it times `request_parse`, `tokenize`, `encode`, per-token `forward_pass` and `sample`, `decode`, and `response_format`. The **real-model** path uses the same `GenerationResult` protocol but combines tokenisation and encoding into `tokenize_and_encode`, times per-token `forward_pass` and `sample`, and times `decode`. It does not report `request_parse` or `response_format` as separate measurements.\",\n  \"uncertainty\": \"The antecedent of 'These seven stages' and the bearing of the opening production-system sentence are not recoverable from this excerpt alone; if preceding text never established the seven-stage list, a reader encountering this cold would face avoidable ambiguity.\"\n}"
+}

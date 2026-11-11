@@ -1,0 +1,31 @@
+{
+ "id": "P30",
+ "sha": "212df5de5a6b72e8",
+ "detector_version": "expo-v1",
+ "prompt_version": "expo-sem-v1+d40fa9e4",
+ "requested_model": "opencode-go/deepseek-v4.1-flash",
+ "actual_model": "opencode-go/deepseek-v4.1-flash",
+ "route_resolution": "configured",
+ "transport": "file",
+ "latency_s": 45.1,
+ "usage": {
+  "input_tokens": 759,
+  "output_tokens": 439,
+  "total_tokens": 1198,
+  "cost_usd": 0.0,
+  "accounting": "provider_reported"
+ },
+ "provider_status": "ok",
+ "provider_error": null,
+ "status": "ok",
+ "score": 0.0,
+ "verdict": "NO_ISSUE",
+ "severity": "NONE",
+ "confidence": null,
+ "main_explanation": "",
+ "diagnosis": "SEMANTICALLY_REJECTED",
+ "quote": "",
+ "validation_state": "SEMANTICALLY_REJECTED",
+ "model": "opencode-go/deepseek-v4.1-flash",
+ "raw_response": "# rationale\nThe paragraph’s purpose is to delimit Cao, Jiang and Xia’s problem: coordinating several application-specific models for an evolving cross-application task, as distinct from merely having fixed schemas or no custom views. The opening contrast and the correction about frozen models are load-bearing qualifications, not digressions; they block the obvious misreading that the issue is just dashboard rigidity. The example is compact, and the sequence from background to existing alternatives to remaining gap to symptom to precise limitation is coherent. Any difficulty is conceptual and largely necessary; moving the final positive claim earlier might foreground the thesis, but it would weaken the contrast that makes the gap intelligible.\n\n# score\n0.08\n\n# answer\n{\n  \"verdict\": \"NO_ISSUE\",\n  \"severity\": \"NONE\",\n  \"confidence\": 0.8,\n  \"main_explanation\": \"\",\n  \"diagnosis\": \"The passage is a tightly sequenced delimitation: background contrast, the narrower research problem, a concrete symptom, and a corrective distinction between frozen views and the need to design new task structures. The qualifications prevent a predictable misreading rather than interrupting an established claim. The difficulty comes from the conceptual distinction, not from avoidable compression or defensive digression.\",\n  \"essential_qualifications\": [\n    \"The contrast with conventional fixed schemas and with systems that already support custom views and dashboards is needed to locate the narrower remaining problem.\",\n    \"The clarification that the limitation is not frozen models or views but the design or programming work required for a new task structure is needed to prevent the wrong diagnosis.\"\n  ],\n  \"premature_or_repeated_qualifications\": [],\n  \"proposed_strategy\": \"NO_CHANGE\",\n  \"quote\": \"The limitation is not that all models and views are frozen. It is that inventing a new task structure and turning it into a usable interface still often requires design or programming work.\",\n  \"uncertainty\": \"The opening two sentences delay the central claim slightly; a stricter reader might call that mild interruption, but they supply the contrast needed to understand what narrower refers to.\"\n}"
+}

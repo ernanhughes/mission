@@ -1,0 +1,31 @@
+{
+ "id": "P25",
+ "sha": "f0bc423d1684face",
+ "detector_version": "expo-v1",
+ "prompt_version": "expo-sem-v1+d40fa9e4",
+ "requested_model": "opencode-go/deepseek-v4.1-flash",
+ "actual_model": "opencode-go/deepseek-v4.1-flash",
+ "route_resolution": "configured",
+ "transport": "file",
+ "latency_s": 17.0,
+ "usage": {
+  "input_tokens": 759,
+  "output_tokens": 462,
+  "total_tokens": 1221,
+  "cost_usd": 0.0,
+  "accounting": "provider_reported"
+ },
+ "provider_status": "ok",
+ "provider_error": null,
+ "status": "ok",
+ "score": 0.0,
+ "verdict": "NO_ISSUE",
+ "severity": "NONE",
+ "confidence": null,
+ "main_explanation": "",
+ "diagnosis": "SEMANTICALLY_REJECTED",
+ "quote": "",
+ "validation_state": "SEMANTICALLY_REJECTED",
+ "model": "opencode-go/deepseek-v4.1-flash",
+ "raw_response": "# rationale\nThe passage has a single, clear job: define `ModelBackend` as a logits-level contract and explain why generation-owning implementations need a different contract. It does this in four sentences with a clean progression — definition, scope condition, counterexamples, resolution. The one qualification (\"This is useful when we control the forward pass\") is placed immediately after the definition, where it prevents overgeneralization, and the counterexamples are concrete rather than defensive. Density is high but load-bearing; there is no interruption of an unfinished explanation and no claim that the structure cannot carry.\n\n# score\n0.12\n\n# answer\n{\n  \"verdict\": \"NO_ISSUE\",\n  \"severity\": \"NONE\",\n  \"confidence\": 0.8,\n  \"main_explanation\": \"The passage defines ModelBackend as a logits-level contract and explains why systems that own their own decoding loop are compared under a separate generation-level contract.\",\n  \"diagnosis\": \"Four sentences, one topic, and a clear definition-to-scope-to-counterexample progression. The only qualification ('This is useful when we control the forward pass') is positioned immediately after the definition, where it prevents readers from overgeneralizing. The counterexamples (serving engines, hosted providers, Hugging Face generate) support the distinction rather than interrupt it. Technical density is inherent to the contract distinction, not obstruction.\",\n  \"essential_qualifications\": [\n    \"This is useful when we control the forward pass.\",\n    \"wrapping it as though it exposed per-step logits would be an invented capability\"\n  ],\n  \"premature_or_repeated_qualifications\": [],\n  \"proposed_strategy\": \"NO_CHANGE\",\n  \"quote\": \"This is useful when we control the forward pass. A production-style serving engine or hosted provider generally owns its scheduling, cache management and token selection; wrapping it as though it exposed per-step logits would be an invented capability.\",\n  \"uncertainty\": \"The passage assumes the reader already knows what a 'generation-level' contract is; if that term is introduced only later, a brief pointer here would help, but this is a local-context question rather than an overload defect.\"\n}"
+}

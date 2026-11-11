@@ -1,0 +1,31 @@
+{
+ "id": "P28",
+ "sha": "1b02951896953387",
+ "detector_version": "expo-v1",
+ "prompt_version": "expo-sem-v1+d40fa9e4",
+ "requested_model": "opencode-go/deepseek-v4.1-flash",
+ "actual_model": "opencode-go/deepseek-v4.1-flash",
+ "route_resolution": "configured",
+ "transport": "file",
+ "latency_s": 24.4,
+ "usage": {
+  "input_tokens": 4573,
+  "output_tokens": 291,
+  "total_tokens": 4864,
+  "cost_usd": 0.0,
+  "accounting": "provider_reported"
+ },
+ "provider_status": "ok",
+ "provider_error": null,
+ "status": "ok",
+ "score": 0.0,
+ "verdict": "NO_ISSUE",
+ "severity": "NONE",
+ "confidence": null,
+ "main_explanation": "",
+ "diagnosis": "SEMANTICALLY_REJECTED",
+ "quote": "",
+ "validation_state": "SEMANTICALLY_REJECTED",
+ "model": "opencode-go/deepseek-v4.1-flash",
+ "raw_response": "# rationale\nThe passage is brief and its structure matches its content: Weaver’s three levels are presented as three questions, then Shannon’s limited scope and the book’s scope are clearly distinguished. The qualifications prevent overclaiming and arrive after the distinctions they qualify; no explanation is interrupted before its claim is established.\n\n# score\n0.03\n\n# answer\n{\n  \"verdict\": \"NO_ISSUE\",\n  \"severity\": \"NONE\",\n  \"confidence\": 0.93,\n  \"main_explanation\": \"\",\n  \"diagnosis\": \"The passage is short and orderly: three questions define the levels, then the scope limits are stated directly. The caveats are load-bearing rather than defensive and do not obstruct comprehension.\",\n  \"essential_qualifications\": [\n    \"Shannon offers a mathematical treatment of the technical problem, not a general solution to the other two.\",\n    \"All three levels can fail.\",\n    \"it refuses to infer semantic success from technically successful delivery\"\n  ],\n  \"premature_or_repeated_qualifications\": [],\n  \"proposed_strategy\": \"NO_CHANGE\",\n  \"quote\": \"This book concentrates on the second and third, and it refuses to infer semantic success from technically successful delivery.\",\n  \"uncertainty\": \"Minimal; the referent of \\\"the second and third\\\" is clear from the immediately preceding questions.\"\n}"
+}

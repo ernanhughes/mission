@@ -1,0 +1,31 @@
+{
+ "id": "P03",
+ "sha": "4ec1bf3b0b2587fc",
+ "detector_version": "expo-v1",
+ "prompt_version": "expo-sem-v1+d40fa9e4",
+ "requested_model": "opencode-go/deepseek-v4.1-flash",
+ "actual_model": "opencode-go/deepseek-v4.1-flash",
+ "route_resolution": "configured",
+ "transport": "file",
+ "latency_s": 169.6,
+ "usage": {
+  "input_tokens": 16450,
+  "output_tokens": 1248,
+  "total_tokens": 17698,
+  "cost_usd": 0.0,
+  "accounting": "provider_reported"
+ },
+ "provider_status": "ok",
+ "provider_error": null,
+ "status": "ok",
+ "score": 0.0,
+ "verdict": "NO_ISSUE",
+ "severity": "NONE",
+ "confidence": null,
+ "main_explanation": "",
+ "diagnosis": "SEMANTICALLY_REJECTED",
+ "quote": "",
+ "validation_state": "SEMANTICALLY_REJECTED",
+ "model": "opencode-go/deepseek-v4.1-flash",
+ "raw_response": "# rationale\n\nThe passage is not obstructed. It announces three observations, delivers them in parallel sentences, and places the repeatability caveat immediately after the observation it limits. That caveat is essential: without it, the third observation would invite a correctness inference the evidence does not support. The second paragraph then supplies the general frame with one definition per sentence, followed by compact illustrations of independence and confusion. The supporting claims are the three observations, the caveat, and the definitions; the scope conditions—repeatability under the recorded conditions, a declared workload, and specified rules—are essential. No qualification is premature or repeated. The difficulty is conceptual rather than structural, and the concrete-to-abstract order plus short sentences make it manageable; reordering would likely separate the observations from the taxonomy that explains them.\n\n# score\n\n0.16\n\n# answer\n\n{\n  \"verdict\": \"NO_ISSUE\",\n  \"severity\": \"NONE\",\n  \"confidence\": 0.78,\n  \"main_explanation\": \"The passage explains how to separate performance, output quality, and implementation correctness when interpreting one inference run, while limiting what repeatable decoding can prove.\",\n  \"diagnosis\": \"The passage is clear and well ordered. It states that three observations answer different questions, gives each observation its own short sentence, and attaches the repeatability caveat directly to the claim it limits. The second paragraph then defines the three axes in parallel and illustrates their independence with compact examples. No caveat is repeated or placed before its claim, and no sentence carries an excessive number of nested distinctions. The conceptual density is inherent in the three-axis distinction, but the concrete-to-abstract order keeps it manageable.\",\n  \"essential_qualifications\": [\n    \"That last observation is evidence of repeatability under these conditions, not proof that every part of the implementation is correct.\",\n    \"Performance asks how long and at what resource cost the computation ran under a declared workload.\",\n    \"Correctness asks whether tokenisation, forward computation, token selection and stopping followed their specified rules.\"\n  ],\n  \"premature_or_repeated_qualifications\": [],\n  \"proposed_strategy\": \"NO_CHANGE\",\n  \"quote\": \"Three observations describe this run, but they answer different questions. The request took about 2.7 seconds to produce sixteen new tokens on the recorded CPU configuration. The continuation was repetitive and of little use to a reader. And it was *consistent with* the requested decoding rule: greedy selection returned the same sequence across the recorded repeat runs. That last observation is evidence of repeatability under these conditions, not proof that every part of the implementation is correct.\",\n  \"uncertainty\": \"The main uncertainty is whether the second paragraph's three-axis taxonomy will feel redundant after the opening observations; the parallel definitions and concrete illustrations keep any redundancy from becoming an obstruction.\"\n}"
+}

@@ -1,0 +1,21 @@
+{
+ "tag": "P24_candidate",
+ "prompt_version": "expo-repair-v1",
+ "requested_model": "opencode-go/deepseek-v4.1-flash",
+ "actual_model": "opencode-go/deepseek-v4.1-flash",
+ "transport": "file",
+ "latency_s": 7.6,
+ "usage": {
+  "input_tokens": 1266,
+  "output_tokens": 73,
+  "total_tokens": 1339,
+  "cost_usd": 0.0,
+  "accounting": "provider_reported"
+ },
+ "provider_status": "ok",
+ "provider_error": null,
+ "output": "Implementation follow-up:\n\n1. Add a dedicated literal-byte equality operation.\n2. Include an explicit `complete`/`missing` gate for manifests.\n3. Correct `flip_probability_bound` for a per-logit epsilon assumption (or rename its argument to the proven pairwise perturbation bound).\n\nThese are recommended code changes, not features already implemented.",
+ "prompt_sha": "df59df6719d3d06a",
+ "prompt_chars": 5523,
+ "cache_hit": false
+}

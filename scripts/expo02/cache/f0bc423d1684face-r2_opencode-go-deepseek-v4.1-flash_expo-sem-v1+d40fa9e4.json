@@ -1,0 +1,31 @@
+{
+ "id": "P25",
+ "sha": "f0bc423d1684face",
+ "detector_version": "expo-v1",
+ "prompt_version": "expo-sem-v1+d40fa9e4",
+ "requested_model": "opencode-go/deepseek-v4.1-flash",
+ "actual_model": "opencode-go/deepseek-v4.1-flash",
+ "route_resolution": "configured",
+ "transport": "file",
+ "latency_s": 23.8,
+ "usage": {
+  "input_tokens": 760,
+  "output_tokens": 622,
+  "total_tokens": 1382,
+  "cost_usd": 0.0,
+  "accounting": "provider_reported"
+ },
+ "provider_status": "ok",
+ "provider_error": null,
+ "status": "ok",
+ "score": 0.0,
+ "verdict": "NO_ISSUE",
+ "severity": "NONE",
+ "confidence": null,
+ "main_explanation": "",
+ "diagnosis": "SEMANTICALLY_REJECTED",
+ "quote": "",
+ "validation_state": "SEMANTICALLY_REJECTED",
+ "model": "opencode-go/deepseek-v4.1-flash",
+ "raw_response": "# rationale\n\nThe paragraph makes one move and completes it: it defines `ModelBackend` as a logits-level contract, then explains why certain implementations (production serving engines, hosted providers, HF `generate`) cannot be forced into that contract because they own scheduling, caching, and token selection, and closes with the consequence — a separate generation-level contract. The apparent \"qualifications\" are not defensive interruptions; they are the load-bearing justification for the distinction, and they arrive after the definition they qualify. Density is high (several technical commitments per sentence), but each sentence adds one step in a linear chain: definition → condition of use → counter-case → second counter-case → resolution. No claim is left mid-air, no caveat pre-empts a thesis that hasn't been stated, and reordering would break the natural \"why not the obvious approach\" progression. Difficulty here is domain difficulty, not structural obstruction.\n\n# score\n\n0.15\n\n# answer\n\n```json\n{\n  \"verdict\": \"NO_ISSUE\",\n  \"severity\": \"NONE\",\n  \"confidence\": 0.7,\n  \"main_explanation\": \"To define `ModelBackend` as a logits-level contract and explain why implementations that own their own decoding loop require a separate generation-level contract instead.\",\n  \"diagnosis\": \"The paragraph's density comes from the subject matter, not from structural overload. Each sentence performs exactly one function in a linear chain: state the contract, state when it applies, give two concrete counter-cases that own sampling/scheduling, then state the resolution. The counter-cases function as evidence for the distinction rather than as defensive interruptions, and they follow the definition they qualify, so no thesis is delayed or suspended. Reordering would weaken the 'why the obvious wrapper is wrong' progression, and paragraph splitting would separate the conclusion from the justification it depends on.\",\n  \"essential_qualifications\": [\n    \"A production-style serving engine or hosted provider generally owns its scheduling, cache management and token selection; wrapping it as though it exposed per-step logits would be an invented capability.\",\n    \"Hugging Face's `generate` also owns a decoding loop and sampling.\"\n  ],\n  \"premature_or_repeated_qualifications\": [],\n  \"proposed_strategy\": \"NO_CHANGE\",\n  \"quote\": \"A production-style serving engine or hosted provider generally owns its scheduling, cache management and token selection; wrapping it as though it exposed per-step logits would be an invented capability. Hugging Face's `generate` also owns a decoding loop and sampling. Accordingly, the runtime compares such implementations through a separate **generation-level** contract rather than pretending the two levels are identical.\",\n  \"uncertainty\": \"Whether a reader without background in inference serving would recognize 'scheduling, cache management and token selection' as a single coherent capability boundary; if the target audience is assumed unfamiliar, a short gloss might help, but that is an audience question rather than an overload defect.\"\n}\n```"
+}

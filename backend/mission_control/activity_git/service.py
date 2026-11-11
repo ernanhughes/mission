@@ -1327,12 +1327,14 @@ A test that was not actually executed must never be reported as passed.
             GitReview.status.in_(["queued", "running"])).order_by(desc(GitReview.created_at)).limit(1))
         if existing is not None:
             return existing
+        from mission_control.research.inference import resolve_model
+        _, resolved_route = resolve_model(session, model)
         review = GitReview(
             id=f"rev-{uuid.uuid4().hex[:16]}", repo_id=repo_id, review_type="daily",
             commit_sha=None, base_sha=None, target_sha=None,
-            commit_shas=package["commit_shas"], reviewer_type="local",
+            commit_shas=package["commit_shas"], reviewer_type="pi" if resolved_route == "pi-default" else "local",
             requested_model=(model or "").strip()[:200],
-            model_route="configured-local-openai", profile=validated_profile, status="queued",
+            model_route=resolved_route, profile=validated_profile, status="queued",
             prompt=package["markdown"][:200_000], prompt_hash=prompt_hash,
             diff_hash=package.get("diff_hash", ""), context_fingerprint=package.get("context_fingerprint", ""),
             evidence_coverage={
@@ -1690,13 +1692,15 @@ Limitations:
             GitReview.status.in_(["queued", "running"])).order_by(desc(GitReview.created_at)).limit(1))
         if existing is not None:
             return existing
+        from mission_control.research.inference import resolve_model as _resolve_route
+        _, resolved_route = _resolve_route(session, model)
         review = GitReview(
             id=f"rev-{uuid.uuid4().hex[:16]}", repo_id=repo_id, review_type=review_type,
             commit_sha=anchor if review_type == "single" else None,
             base_sha=validate_sha(base_sha) if base_sha else None,
             target_sha=validate_sha(target_sha) if target_sha else None,
-            commit_shas=shas, reviewer_type="local", requested_model=(model or "").strip()[:200],
-            model_route="configured-local-openai", profile=profile, status="queued",
+            commit_shas=shas, reviewer_type="pi" if resolved_route == "pi-default" else "local", requested_model=(model or "").strip()[:200],
+            model_route=resolved_route, profile=profile, status="queued",
             prompt=package["markdown"][:200_000], prompt_hash=prompt_hash,
             diff_hash=package.get("diff_hash", ""), context_fingerprint=package.get("context_fingerprint", ""),
             evidence_coverage=package.get("coverage", {}), created_at=now_iso(),
@@ -1733,25 +1737,26 @@ Limitations:
                     if review is None or review.status not in {"queued"}:
                         return
                     review.status = "running"
-            from mission_control.research.inference import complete_local_chat
+            from mission_control.research.inference import complete_chat, resolve_model
             with self.database.session() as session:
                 review = session.get(GitReview, review_id)
                 if review is None:
                     return
-                model = (review.requested_model or "").strip()
+                requested = (review.requested_model or "").strip()
                 prompt = review.prompt
-            if not model:
+            if not requested:
                 # Resolve the configured default inside a fresh session.
-                from mission_control.research.inference import read_config
                 with self.database.session() as session:
-                    model = read_config(session).model
-            if not model:
+                    requested, _ = resolve_model(session, "")
+            if not requested:
                 raise ValueError("No model selected and no default model is configured")
             with self.database.session() as chat_session:
-                # Daily project reviews reuse the same local-only execution path.
+                # Daily project reviews reuse the unified Pi-first execution path.
                 # Explain and Review use distinct system instructions; the daily
                 # package is already capped below the slice width so the tail
                 # (later commits) cannot be silently dropped here.
+                # Remote Pi inference is never local: consent is required and
+                # the recorded route distinguishes pi-default from loopback.
                 probe = chat_session.get(GitReview, review_id)
                 coverage = (probe.evidence_coverage or {}) if probe else {}
                 daily_mode = (coverage.get("daily_mode") or coverage.get("mode") or "").strip().lower()
@@ -1769,8 +1774,9 @@ Limitations:
                               "Distinguish confirmed defects from hypotheses.")
                 else:
                     system = "You are a rigorous code reviewer. Follow the review output contract exactly. Distinguish confirmed defects from hypotheses."
-                result = await complete_local_chat(
-                    chat_session, model=model,
+                model, route = resolve_model(chat_session, requested)
+                result = await complete_chat(
+                    chat_session, model=model, route=route,
                     messages=[
                         {"role": "system", "content": system},
                         {"role": "user", "content": prompt[:100_000]},
@@ -1792,6 +1798,8 @@ Limitations:
                     return
                 review.status = "completed"
                 review.observed_model = str(result.get("model") or model)[:200]
+                review.model_route = str(result.get("route") or route)[:120]
+                review.reviewer_type = "pi" if str(result.get("route") or route) == "pi-default" else "local"
                 review.verdict = verdict
                 review.summary = content[:50_000]
                 review.findings = self._parse_findings(content)[:100]

@@ -1,0 +1,31 @@
+{
+ "id": "P42",
+ "sha": "c029f966112f68ba",
+ "detector_version": "expo-v1",
+ "prompt_version": "expo-sem-v1+d40fa9e4",
+ "requested_model": "opencode-go/deepseek-v4.1-flash",
+ "actual_model": "opencode-go/deepseek-v4.1-flash",
+ "route_resolution": "configured",
+ "transport": "file",
+ "latency_s": 16.2,
+ "usage": {
+  "input_tokens": 4511,
+  "output_tokens": 389,
+  "total_tokens": 4900,
+  "cost_usd": 0.0,
+  "accounting": "provider_reported"
+ },
+ "provider_status": "ok",
+ "provider_error": null,
+ "status": "ok",
+ "score": 0.0,
+ "verdict": "NO_ISSUE",
+ "severity": "NONE",
+ "confidence": null,
+ "main_explanation": "",
+ "diagnosis": "SEMANTICALLY_REJECTED",
+ "quote": "",
+ "validation_state": "SEMANTICALLY_REJECTED",
+ "model": "opencode-go/deepseek-v4.1-flash",
+ "raw_response": "# rationale\n\nThe passage is short and single-purpose: it states the requirements for calibration, denies that token probabilities satisfy them, and draws the practical consequence. The three sentences form a clean premise → qualification → instruction sequence. The middle sentence is not an interruption; it is the load-bearing distinction that justifies the final directive, and it arrives before the reader could act on the wrong assumption. There is no competing sub-claim, no methodological digression, and no caveat stacked ahead of the main point. Density is moderate and terminology (\"prediction target,\" \"calibrated probability\") is used consistently. Difficulty here is inherent to the topic, not an artifact of ordering or compression.\n\n# score\n\n0.05\n\n# answer\n\n```json\n{\n  \"verdict\": \"NO_ISSUE\",\n  \"severity\": \"NONE\",\n  \"confidence\": 0.93,\n  \"main_explanation\": \"\",\n  \"diagnosis\": \"Three sentences, one throughline: state the requirements for calibration, deny that token probabilities meet them, then give the actionable consequence. The negative middle sentence is an essential distinction, correctly positioned before the instruction it licenses, not a defensive detour. No redundant qualification, no swallowed steps, no competing claims vying for the same structure.\",\n  \"essential_qualifications\": [\n    \"Token probabilities alone do not establish that a sentence is true.\"\n  ],\n  \"premature_or_repeated_qualifications\": [],\n  \"proposed_strategy\": \"NO_CHANGE\",\n  \"quote\": \"Calibration requires a specified prediction target and an empirical test. Token probabilities alone do not establish that a sentence is true.\",\n  \"uncertainty\": \"The passage is very short, so judgments about ordering have little room to be wrong; the main residual question is whether a grader considers the final imperative under-explained rather than merely terse.\"\n}\n```"
+}

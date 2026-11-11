@@ -1,0 +1,31 @@
+{
+ "id": "P25",
+ "sha": "f0bc423d1684face",
+ "detector_version": "expo-v1",
+ "prompt_version": "expo-sem-v1+d40fa9e4",
+ "requested_model": "opencode-go/deepseek-v4.1-flash",
+ "actual_model": "opencode-go/deepseek-v4.1-flash",
+ "route_resolution": "configured",
+ "transport": "file",
+ "latency_s": 12.5,
+ "usage": {
+  "input_tokens": 2422,
+  "output_tokens": 439,
+  "total_tokens": 2861,
+  "cost_usd": 0.0,
+  "accounting": "provider_reported"
+ },
+ "provider_status": "ok",
+ "provider_error": null,
+ "status": "ok",
+ "score": 0.0,
+ "verdict": "NO_ISSUE",
+ "severity": "NONE",
+ "confidence": null,
+ "main_explanation": "",
+ "diagnosis": "SEMANTICALLY_REJECTED",
+ "quote": "",
+ "validation_state": "SEMANTICALLY_REJECTED",
+ "model": "opencode-go/deepseek-v4.1-flash",
+ "raw_response": "# rationale\n\nThe passage has a clear explanatory arc: it defines `ModelBackend` as a logits-level contract, states when that contract applies, contrasts it with systems that own their own decoding and sampling, and concludes that those systems need a separate generation-level contract. The qualifications are not interruptions; they are the distinction the paragraph exists to draw. Density is high but manageable, and the example follows the general claim rather than delaying it.\n\n# score\n\n0.08\n\n# answer\n\n{\n  \"verdict\": \"NO_ISSUE\",\n  \"severity\": \"NONE\",\n  \"confidence\": 0.9,\n  \"main_explanation\": \"To distinguish the capstone's logits-level ModelBackend contract from a generation-level contract used for systems that own their own decoding and sampling.\",\n  \"diagnosis\": \"The paragraph is dense but coherently ordered: it defines the logits-level contract, gives its condition of use, explains why production engines and Hugging Face generate cannot be wrapped at that level, and draws the conclusion that a separate generation-level contract is needed. The qualifications are essential to the distinction rather than premature or defensive.\",\n  \"essential_qualifications\": [\n    \"This is useful when we control the forward pass.\",\n    \"A production-style serving engine or hosted provider generally owns its scheduling, cache management and token selection\",\n    \"Hugging Face's `generate` also owns a decoding loop and sampling.\"\n  ],\n  \"premature_or_repeated_qualifications\": [],\n  \"proposed_strategy\": \"NO_CHANGE\",\n  \"quote\": \"A production-style serving engine or hosted provider generally owns its scheduling, cache management and token selection; wrapping it as though it exposed per-step logits would be an invented capability. Hugging Face's `generate` also owns a decoding loop and sampling. Accordingly, the runtime compares such implementations through a separate **generation-level** contract rather than pretending the two levels are identical.\",\n  \"uncertainty\": \"Whether readers already know the logits-level versus generation-level distinction; the passage is dense, but its structure makes the contrast explicit.\"\n}"
+}
