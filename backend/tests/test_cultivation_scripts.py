@@ -299,9 +299,9 @@ def test_seed_adds_scripts_skill_goals_and_source(client: TestClient) -> None:
     assert goals["weekly_script"]["window_days"] == 7
     sources = client.get("/api/cultivation/sources").json()
     seeded = next(row for row in sources if row["id"] == "src-scripts")
-    assert seeded["kind"] == "numbered_files"
+    assert seeded["kind"] == "script_registry"
     assert seeded["goal_id"] == "scripts_published"
-    assert seeded["config"].get("period_goal_id") == "weekly_script"
+    assert "period_goal_id" not in (seeded["config"] or {})
 
 
 def test_scripts_sync_makes_no_model_calls(client: TestClient, script_dir: Path) -> None:

@@ -900,3 +900,372 @@ class Briefing(Base):
     items: Mapped[list[dict[str, Any]]] = mapped_column(JSON, default=list, nullable=False)
     observations: Mapped[list[dict[str, Any]]] = mapped_column(JSON, default=list, nullable=False)
     error: Mapped[str | None] = mapped_column(Text)
+
+
+class QualityEvaluation(Base):
+    """One manuscript-quality evaluation observation (MC-QUALITY-02).
+
+    Append-only history: a new observation never overwrites an old one.
+    Staleness is derived at read time by comparing chapter_revision values,
+    never by mutation.
+    """
+
+    __tablename__ = "quality_evaluations"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    project_id: Mapped[str | None] = mapped_column(
+        String, ForeignKey("projects.id", ondelete="CASCADE")
+    )
+    book_id: Mapped[str] = mapped_column(String, default="", nullable=False)
+    chapter_id: Mapped[str] = mapped_column(String, nullable=False)
+    source_path: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    chapter_revision: Mapped[str] = mapped_column(String, nullable=False)
+    rubric_id: Mapped[str] = mapped_column(String, default="manuscript-prose-v1", nullable=False)
+    rubric_version: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
+    prompt_version: Mapped[str] = mapped_column(String, default="1", nullable=False)
+    requested_model: Mapped[str | None] = mapped_column(String)
+    actual_model: Mapped[str | None] = mapped_column(String)
+    status: Mapped[str] = mapped_column(String, default="CURRENT", nullable=False)
+    overall: Mapped[float | None] = mapped_column(Float, nullable=True)
+    aggregation_method: Mapped[str] = mapped_column(
+        String, default="mean_equal_weights_v1", nullable=False
+    )
+    dimensions: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict, nullable=False)
+    findings: Mapped[list[Any]] = mapped_column(JSON, default=list, nullable=False)
+    uncertainty: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    limitations: Mapped[list[str]] = mapped_column(JSON, default=list, nullable=False)
+    execution: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict, nullable=False)
+    previous_evaluation_id: Mapped[str | None] = mapped_column(
+        String, ForeignKey("quality_evaluations.id", ondelete="SET NULL")
+    )
+    supersedes: Mapped[str | None] = mapped_column(String)
+    workbench_url: Mapped[str | None] = mapped_column(Text)
+    section_id: Mapped[str | None] = mapped_column(String)
+    section_title: Mapped[str | None] = mapped_column(String)
+    char_span: Mapped[list[Any]] = mapped_column(JSON, default=list, nullable=False)
+    section_sha: Mapped[str | None] = mapped_column(String)
+    campaign_id: Mapped[str | None] = mapped_column(
+        String, ForeignKey("quality_campaigns.id", ondelete="SET NULL")
+    )
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class QualityCampaign(Base):
+    """Durable whole-book evaluation campaign (MC-QUALITY-03A).
+
+    Per-chapter observations stay in quality_evaluations; the campaign row
+    carries selection, progress and recovery state only.
+    """
+
+    __tablename__ = "quality_campaigns"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    project_id: Mapped[str | None] = mapped_column(
+        String, ForeignKey("projects.id", ondelete="CASCADE")
+    )
+    book_id: Mapped[str] = mapped_column(String, default="", nullable=False)
+    book_root: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    mode: Mapped[str] = mapped_column(String, default="missing", nullable=False)
+    chapter_selection: Mapped[list[str]] = mapped_column(JSON, default=list, nullable=False)
+    fingerprints: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict, nullable=False)
+    rubric_id: Mapped[str] = mapped_column(String, default="manuscript-prose-v1", nullable=False)
+    rubric_version: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
+    prompt_version: Mapped[str] = mapped_column(String, default="1", nullable=False)
+    model: Mapped[str | None] = mapped_column(String)
+    status: Mapped[str] = mapped_column(String, default="pending", nullable=False)
+    total: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    completed: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    skipped: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    failed: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    remaining: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    usage: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict, nullable=False)
+    costs_unknown: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    current_chapter: Mapped[str | None] = mapped_column(String)
+    error: Mapped[str | None] = mapped_column(Text)
+    heartbeat_at: Mapped[str | None] = mapped_column(String)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+    updated_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+    completed_at: Mapped[str | None] = mapped_column(String)
+
+
+class ArtifactLoadObservation(Base):
+    """Independent Artifact Load burden observation (ARTIFACT-EXPO-01 Stage 08).
+
+    Append-only history: a new observation never overwrites an old one.
+    Kept fully separate from the six-dimension prose-quality scores.
+    Higher weighted_load means more confirmed burden; it is never a
+    percentage and never a 0-100 health score.
+    """
+
+    __tablename__ = "artifact_load_observations"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    project_id: Mapped[str | None] = mapped_column(
+        String, ForeignKey("projects.id", ondelete="CASCADE")
+    )
+    book_id: Mapped[str] = mapped_column(String, default="", nullable=False)
+    chapter_id: Mapped[str] = mapped_column(String, nullable=False)
+    source_path: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    chapter_revision: Mapped[str] = mapped_column(String, nullable=False)
+    aggregation_version: Mapped[str] = mapped_column(
+        String, default="artifact-load-v1", nullable=False
+    )
+    detector_version: Mapped[str] = mapped_column(String, default="expo-v1", nullable=False)
+    status: Mapped[str] = mapped_column(String, default="CURRENT", nullable=False)
+    eligible_words: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    evaluated_units: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    total_candidates: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    confirmed: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    high: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    medium: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    low: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    unreviewed: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    invalid_evidence: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    affected_regions: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    findings_per_1k: Mapped[float | None] = mapped_column(Float, nullable=True)
+    findings_per_100_units: Mapped[float | None] = mapped_column(Float, nullable=True)
+    region_rate: Mapped[float | None] = mapped_column(Float, nullable=True)
+    coverage_mechanical: Mapped[float] = mapped_column(Float, default=0.0, nullable=False)
+    coverage_semantic: Mapped[float] = mapped_column(Float, default=0.0, nullable=False)
+    weighted_load: Mapped[float | None] = mapped_column(Float, nullable=True)
+    mechanical_pressure: Mapped[float | None] = mapped_column(Float, nullable=True)
+    baseline_eligible_words: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    revised_eligible_words: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    findings: Mapped[list[Any]] = mapped_column(JSON, default=list, nullable=False)
+    regions: Mapped[list[Any]] = mapped_column(JSON, default=list, nullable=False)
+    limitations: Mapped[list[str]] = mapped_column(JSON, default=list, nullable=False)
+    execution: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict, nullable=False)
+    previous_observation_id: Mapped[str | None] = mapped_column(
+        String, ForeignKey("artifact_load_observations.id", ondelete="SET NULL")
+    )
+    supersedes: Mapped[str | None] = mapped_column(String)
+    workbench_url: Mapped[str | None] = mapped_column(Text)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class ScriptRecord(Base):
+    """Stable script identity (MC-SCRIPTS-02 Phase B).
+
+    The filename is observation, not identity: ``current_relpath`` moves on
+    rename while ``id`` and ``original_relpath`` stay fixed. Two files may
+    share a content hash and remain separate historical records.
+    Identity is scoped to a library (MC-SCRIPTS-03): different roots never
+    share records even when relative paths match.
+    """
+
+    __tablename__ = "script_records"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    library_key: Mapped[str] = mapped_column(String, default="", nullable=False)
+    current_relpath: Mapped[str] = mapped_column(Text, nullable=False)
+    original_relpath: Mapped[str] = mapped_column(Text, nullable=False)
+    script_number: Mapped[int | None] = mapped_column(Integer)
+    title: Mapped[str] = mapped_column(String, default="", nullable=False)
+    content_sha256: Mapped[str] = mapped_column(String, default="", nullable=False)
+    file_size: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    mtime_ns: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    status: Mapped[str] = mapped_column(String, default="discovered", nullable=False)
+    archived: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    missing: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    discovered_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+    last_seen_at: Mapped[str | None] = mapped_column(String)
+    completed_at: Mapped[str | None] = mapped_column(String)
+    review_status: Mapped[str] = mapped_column(String, default="none", nullable=False)
+    last_review_at: Mapped[str | None] = mapped_column(String)
+    legacy_item_id: Mapped[str | None] = mapped_column(String)
+    usage_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    personal_rating: Mapped[float | None] = mapped_column(Float)
+    personal_target: Mapped[str] = mapped_column(String, default="", nullable=False)
+    personal_effect: Mapped[str] = mapped_column(String, default="", nullable=False)
+    last_used_at: Mapped[str | None] = mapped_column(String)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+    updated_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class ScriptReview(Base):
+    """One AI review of a script (MC-SCRIPTS-05 Phase E1).
+
+    Append-only: a new review never overwrites an old one. Freshness is
+    derived at read time by comparing ``content_sha256`` with the record's
+    current hash (CURRENT vs STALE). Reviews never change lifecycle,
+    completion, or effectiveness — those need explicit human action.
+    """
+
+    __tablename__ = "script_reviews"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    script_id: Mapped[str] = mapped_column(
+        String, ForeignKey("script_records.id", ondelete="CASCADE"), nullable=False
+    )
+    content_sha256: Mapped[str] = mapped_column(String, default="", nullable=False)
+    model: Mapped[str] = mapped_column(String, default="", nullable=False)
+    route: Mapped[str] = mapped_column(String, default="", nullable=False)
+    provider: Mapped[str] = mapped_column(String, default="", nullable=False)
+    assessment: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict, nullable=False)
+    raw_response: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    latency_ms: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class ScriptEvent(Base):
+    """Append-only script history. Completion is recorded here, never inferred."""
+
+    __tablename__ = "script_events"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    script_id: Mapped[str] = mapped_column(
+        String, ForeignKey("script_records.id", ondelete="CASCADE"), nullable=False
+    )
+    event_type: Mapped[str] = mapped_column(String, nullable=False)
+    from_value: Mapped[str | None] = mapped_column(Text)
+    to_value: Mapped[str | None] = mapped_column(Text)
+    note: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class ScriptLink(Base):
+    """Unconfirmed or confirmed relationships: revision, alternative, duplicate."""
+
+    __tablename__ = "script_links"
+
+    source_id: Mapped[str] = mapped_column(
+        String, ForeignKey("script_records.id", ondelete="CASCADE"), primary_key=True
+    )
+    target_id: Mapped[str] = mapped_column(
+        String, ForeignKey("script_records.id", ondelete="CASCADE"), primary_key=True
+    )
+    kind: Mapped[str] = mapped_column(String, default="possible_duplicate", primary_key=True)
+    confirmed: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    note: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    evidence: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    confidence: Mapped[str] = mapped_column(String, default="unconfirmed", nullable=False)
+    updated_at: Mapped[str] = mapped_column(String, default="", nullable=False)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class ScriptMigration(Base):
+    """Durable renumbering manifest (MC-SCRIPTS-04 Phase D).
+
+    Preview first: the manifest binds exact source fingerprints so a stale
+    preview cannot be applied. Filesystem renames and SQLite updates are not
+    one atomic transaction, so the row also carries step-by-step recovery
+    state for resume and rollback.
+    """
+
+    __tablename__ = "script_migrations"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    library_key: Mapped[str] = mapped_column(String, default="", nullable=False)
+    status: Mapped[str] = mapped_column(String, default="preview", nullable=False)
+    manifest: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict, nullable=False)
+    manifest_hash: Mapped[str] = mapped_column(String, default="", nullable=False)
+    approved_at: Mapped[str | None] = mapped_column(String)
+    applied_at: Mapped[str | None] = mapped_column(String)
+    rolled_back_at: Mapped[str | None] = mapped_column(String)
+    error: Mapped[str | None] = mapped_column(Text)
+    report: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict, nullable=False)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+    updated_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class ScriptBatch(Base):
+    """Bounded, resumable review batch (MC-SCRIPTS-05 Phase E2).
+
+    Items carry their own status so a cancelled or failed batch resumes
+    without duplicating successful reviews. No lifecycle, completion, or
+    effectiveness changes ever result from batch execution.
+    """
+
+    __tablename__ = "script_batches"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    library_key: Mapped[str] = mapped_column(String, default="", nullable=False)
+    status: Mapped[str] = mapped_column(String, default="open", nullable=False)
+    model: Mapped[str] = mapped_column(String, default="", nullable=False)
+    rubric_version: Mapped[str] = mapped_column(String, default="", nullable=False)
+    schema_version: Mapped[str] = mapped_column(String, default="", nullable=False)
+    selection: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict, nullable=False)
+    counts: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict, nullable=False)
+    error: Mapped[str | None] = mapped_column(Text)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+    updated_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class ScriptBatchItem(Base):
+    __tablename__ = "script_batch_items"
+
+    batch_id: Mapped[str] = mapped_column(
+        String, ForeignKey("script_batches.id", ondelete="CASCADE"), primary_key=True
+    )
+    script_id: Mapped[str] = mapped_column(
+        String, ForeignKey("script_records.id", ondelete="CASCADE"), primary_key=True
+    )
+    status: Mapped[str] = mapped_column(String, default="pending", nullable=False)
+    review_id: Mapped[str | None] = mapped_column(String)
+    reused: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    attempts: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    error: Mapped[str | None] = mapped_column(Text)
+    updated_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class ScriptTag(Base):
+    """Purpose/effect tags with origin. AI-inferred vs user-confirmed stay distinct."""
+
+    __tablename__ = "script_tags"
+
+    script_id: Mapped[str] = mapped_column(
+        String, ForeignKey("script_records.id", ondelete="CASCADE"), primary_key=True
+    )
+    tag: Mapped[str] = mapped_column(String, primary_key=True)
+    origin: Mapped[str] = mapped_column(String, default="ai", primary_key=True)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class LibrarySynthesis(Base):
+    """Versioned whole-library synthesis (MC-SCRIPTS-05 Phase E2).
+
+    Append-only: a new synthesis never rewrites history. Freshness is derived
+    from the source manifest (review IDs + content hashes), never by mutation.
+    """
+
+    __tablename__ = "library_syntheses"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    library_key: Mapped[str] = mapped_column(String, default="", nullable=False)
+    kind: Mapped[str] = mapped_column(String, default="full", nullable=False)
+    status: Mapped[str] = mapped_column(String, default="complete", nullable=False)
+    manifest: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict, nullable=False)
+    manifest_hash: Mapped[str] = mapped_column(String, default="", nullable=False)
+    report: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict, nullable=False)
+    error: Mapped[str | None] = mapped_column(Text)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class ScriptCandidate(Base):
+    """Versioned script candidate (MC-SCRIPTS-06 Phase E3).
+
+    Drafts live here, never in the numbered library, until an explicit
+    promotion allocates the next safe filename and registers (not completes)
+    the new script. Revision chains link through parent_candidate_id.
+    """
+
+    __tablename__ = "script_candidates"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    library_key: Mapped[str] = mapped_column(String, default="", nullable=False)
+    title: Mapped[str] = mapped_column(String, default="", nullable=False)
+    version: Mapped[str] = mapped_column(String, default="v1", nullable=False)
+    kind: Mapped[str] = mapped_column(String, default="ascendance", nullable=False)
+    status: Mapped[str] = mapped_column(String, default="draft", nullable=False)
+    content: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    word_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    est_seconds: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    validation: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict, nullable=False)
+    critique: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict, nullable=False)
+    source_manifest: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict, nullable=False)
+    provenance: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict, nullable=False)
+    parent_candidate_id: Mapped[str | None] = mapped_column(String)
+    promoted_script_id: Mapped[str | None] = mapped_column(String)
+    promoted_relpath: Mapped[str | None] = mapped_column(Text)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+    updated_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)

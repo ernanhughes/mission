@@ -374,6 +374,7 @@ export function CultivationPage() {
 
 function GoalRow(props: { goal: CultivationGoal; active: boolean; onSelect: (id: string) => void }) {
   const { goal } = props;
+  const isScripts = goal.id === "scripts_published" || goal.id === "weekly_script";
   return (
     <div className={props.active ? "goal-card goal-card-active" : "goal-card"}>
       <div className="activity-head">
@@ -387,6 +388,11 @@ function GoalRow(props: { goal: CultivationGoal; active: boolean; onSelect: (id:
         ) : null}
         {goal.state !== "active" ? <Tag>{goal.state}</Tag> : null}
         {goal.progress.achieved ? <Tag tone="accent">Achieved</Tag> : null}
+        {isScripts ? (
+          <a className="button button-ghost button-small" href="/scripts">
+            Open library
+          </a>
+        ) : null}
       </div>
       <div className="muted">{progressText(goal)}</div>
       <GoalBar goal={goal} />
@@ -533,6 +539,11 @@ function GoalDetail(props: {
       description={`${progressText(goal)}${goal.baseline_note ? ` · ${goal.baseline_note}` : ""}`}
       actions={
         <>
+          {(goal.id === "scripts_published" || goal.id === "weekly_script") && (
+            <a className="button button-secondary button-small" href="/scripts">
+              Open library
+            </a>
+          )}
           {goal.state === "active" ? (
             <button className="button button-ghost button-small" onClick={() => props.onArchive("paused")}>
               Pause
@@ -597,6 +608,10 @@ function GoalDetail(props: {
           </div>
         </div>
       ) : null}
+
+      {(goal.id === "scripts_published" || goal.id === "weekly_script") && (
+        <ScriptGoalExtras goalId={goal.id} />
+      )}
 
       <div className="stat-strip">
         <Stat label="Progress" value={progressText(goal)} />
@@ -723,6 +738,51 @@ function GoalDetail(props: {
         ))}
       </Section>
     </Section>
+  );
+}
+
+function ScriptGoalExtras(props: { goalId: string }) {
+  const status = useApi<import("../types/api").ScriptStatus>("/api/scripts/status");
+  const counts = status.data?.counts;
+  if (props.goalId === "weekly_script") {
+    return (
+      <div className="panel review-card">
+        <div className="activity-head">
+          <strong>Weekly completion evidence</strong>
+          {status.data?.status === "stale" ? <Tag>Stale</Tag> : null}
+        </div>
+        <p className="muted">
+          {status.data?.week?.label ?? "Week of —"} · Counts only explicit completions, never file dates.
+        </p>
+        <div className="toolbar">
+          <a className="button button-secondary button-small" href="/scripts">
+            Open Scripts library
+          </a>
+        </div>
+      </div>
+    );
+  }
+  return (
+    <div className="panel review-card">
+      <div className="activity-head">
+        <strong>Script inventory</strong>
+        {status.data?.status === "stale" ? <Tag>Stale</Tag> : status.data?.status === "never_synced" ? <Tag>Never synced</Tag> : <Tag tone="accent">Live</Tag>}
+      </div>
+      <p className="muted">
+        Discovered: <strong>{counts?.total ?? "—"}</strong> · Completed: <strong>{counts?.completed ?? "—"} / 100</strong>
+        {" · "}Ready: {counts?.ready ?? counts?.by_status?.ready ?? 0} · Needs review: {counts?.needs_review ?? 0} · Missing: {counts?.missing ?? 0}
+        {status.data?.last_sync_at ? ` · Last sync ${formatDateTime(status.data.last_sync_at)}` : " · Never synced"}
+      </p>
+      <p className="muted">Existence is inventory; only explicit acceptance counts toward the goal.</p>
+      <div className="toolbar">
+        <a className="button button-secondary button-small" href="/scripts">
+          Open Scripts library
+        </a>
+        <a className="button button-ghost button-small" href="/scripts?completed=incomplete">
+          Needs review
+        </a>
+      </div>
+    </div>
   );
 }
 

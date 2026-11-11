@@ -22,7 +22,9 @@ LaunchType = Literal["none", "command", "server", "url", "editor"]
 HealthType = Literal["none", "http", "tcp", "process"]
 ProjectKind = Literal["book", "project", "application", "research", "outcome", "supporting"]
 ProjectStatus = Literal["active", "paused", "waiting", "complete", "archived"]
-BookStatus = Literal["planned", "drafting", "editorial_review", "verification", "production", "published"]
+BookStatus = Literal[
+    "planned", "drafting", "editorial_review", "verification", "production", "published"
+]
 TaskStatus = Literal["open", "in_progress", "done", "blocked", "cancelled"]
 ReviewState = Literal["pending", "accepted", "deferred", "rejected"]
 ApplicationState = Literal[
@@ -103,7 +105,11 @@ class LaunchDefinitionInput(RawModel):
             raise ValueError("An executable is required for command and server launches")
         if self.launch_type == "url" and not self.browser_url:
             raise ValueError("A browser_url is required for URL launches")
-        if self.health_type == "http" and self.health_url and not self.health_url.startswith(("http://", "https://")):
+        if (
+            self.health_type == "http"
+            and self.health_url
+            and not self.health_url.startswith(("http://", "https://"))
+        ):
             raise ValueError("HTTP health checks require an http(s) URL")
         return self
 
@@ -556,6 +562,246 @@ class ActivityNoteCreate(RawModel):
     evidence_ref: str | None = None
 
 
+class QualityDimensionRead(BaseModel):
+    dimension: str
+    score: int
+    evidence: str = ""
+    evidence_validated: bool = False
+
+
+class QualityEvaluationRead(BaseModel):
+    id: str
+    project_id: str | None
+    book_id: str = ""
+    chapter_id: str
+    chapter_title: str | None = None
+    source_path: str = ""
+    chapter_revision: str
+    rubric_id: str
+    rubric_version: int
+    prompt_version: str
+    requested_model: str | None
+    actual_model: str | None
+    status: str
+    derived_state: str = ""
+    overall: float | None = None
+    aggregation_method: str
+    dimensions: dict[str, QualityDimensionRead]
+    findings: list[dict[str, Any]]
+    uncertainty: str = ""
+    limitations: list[str]
+    execution: dict[str, Any]
+    previous_evaluation_id: str | None
+    supersedes: str | None
+    workbench_url: str | None
+    workbench_link: str | None = None
+    section_id: str | None = None
+    section_title: str | None = None
+    char_span: list[Any] = Field(default_factory=list)
+    section_sha: str | None = None
+    campaign_id: str | None = None
+    compatible_basis: str = ""
+    created_at: str
+
+
+class QualityChapterSummary(BaseModel):
+    chapter_id: str
+    chapter_title: str | None = None
+    evaluations: list[QualityEvaluationRead]
+    sections: list[QualityEvaluationRead] = Field(default_factory=list)
+    current: QualityEvaluationRead | None = None
+
+
+class QualityWorkspaceRead(BaseModel):
+    project_id: str
+    book_id: str = ""
+    chapters_total: int = 0
+    chapters_evaluated: int = 0
+    chapters_current: int = 0
+    chapters: list[QualityChapterSummary]
+    limitations: list[str] = Field(default_factory=list)
+
+
+class QualityChapterDiscovery(BaseModel):
+    chapter_id: str
+    title: str | None = None
+    source_path: str = ""
+    revision: str
+    has_current: bool = False
+    current_model: str | None = None
+    current_id: str | None = None
+    compatible: bool = False
+    eligibility: str = "missing"
+
+
+class QualityCampaignCreate(RawModel):
+    project_id: str | None = None
+    book_id: str = ""
+    book_root: str = ""
+    mode: str = "missing"
+    chapters: list[str] = Field(default_factory=list)
+    model: str | None = None
+
+
+class QualityCampaignRead(BaseModel):
+    id: str
+    project_id: str | None
+    book_id: str
+    book_root: str
+    mode: str
+    chapter_selection: list[str]
+    fingerprints: dict[str, str]
+    rubric_id: str
+    rubric_version: int
+    prompt_version: str
+    model: str | None
+    status: str
+    total: int
+    completed: int
+    skipped: int
+    failed: int
+    remaining: int
+    usage: dict[str, Any]
+    costs_unknown: bool
+    current_chapter: str | None
+    error: str | None
+    heartbeat_at: str | None
+    created_at: str
+    updated_at: str
+    completed_at: str | None
+
+
+class QualityEvaluationCreate(RawModel):
+    project_id: str | None = None
+    book_id: str = ""
+    chapter_id: str = Field(min_length=1)
+    source_path: str = ""
+    chapter_revision: str = Field(min_length=1)
+    rubric_id: str = "manuscript-prose-v1"
+    rubric_version: int = 1
+    prompt_version: str = "1"
+    requested_model: str | None = None
+    actual_model: str | None = None
+    status: str = "CURRENT"
+    overall: float | None = None
+    aggregation_method: str = "mean_equal_weights_v1"
+    dimensions: dict[str, QualityDimensionRead]
+    findings: list[dict[str, Any]] = Field(default_factory=list)
+    uncertainty: str = ""
+    limitations: list[str] = Field(default_factory=list)
+    execution: dict[str, Any] = Field(default_factory=dict)
+    previous_evaluation_id: str | None = None
+    supersedes: str | None = None
+    workbench_url: str | None = None
+    section_id: str | None = None
+    section_title: str | None = None
+    char_span: list[Any] = Field(default_factory=list)
+    section_sha: str | None = None
+    campaign_id: str | None = None
+
+
+class ArtifactLoadFinding(RawModel):
+    family: str = "EXPOSITORY_OVERLOAD"
+    subtype: str = "EXPO_COMPRESSION"
+    severity: str = "UNASSESSED"
+    priority: str = "LOW"
+    status: str = "MECHANICALLY_FLAGGED"
+    chapter: str = ""
+    section_id: str | None = None
+    start_line: int = 0
+    end_line: int = 0
+    fingerprint: str = ""
+    main_explanation: str = ""
+    diagnosis: str = ""
+    quote: str = ""
+    proposed_strategy: str = "REORDER_EXPLANATION"
+    detector_version: str = "expo-v1"
+    model: str | None = None
+    confidence: float | None = None
+
+
+class ArtifactLoadCreate(RawModel):
+    project_id: str | None = None
+    book_id: str = ""
+    chapter_id: str = Field(min_length=1)
+    source_path: str = ""
+    chapter_revision: str = Field(min_length=1)
+    status: str = "CURRENT"
+    eligible_words: int = Field(ge=0)
+    evaluated_units: int = Field(ge=0)
+    coverage_mechanical: float = Field(ge=0.0, le=1.0)
+    coverage_semantic: float = Field(ge=0.0, le=1.0)
+    findings: list[dict[str, Any]] = Field(default_factory=list)
+    detector_version: str = "expo-v1"
+    limitations: list[str] = Field(default_factory=list)
+    execution: dict[str, Any] = Field(default_factory=dict)
+    previous_observation_id: str | None = None
+    supersedes: str | None = None
+    workbench_url: str | None = None
+    baseline_eligible_words: int = Field(ge=0, default=0)
+    revised_eligible_words: int = Field(ge=0, default=0)
+
+
+class ArtifactLoadRead(BaseModel):
+    id: str
+    project_id: str | None
+    book_id: str = ""
+    chapter_id: str
+    source_path: str = ""
+    chapter_revision: str
+    aggregation_version: str
+    detector_version: str
+    status: str
+    derived_state: str = ""
+    assessment_state: str = ""
+    assessment_policy: str = ""
+    eligible_words: int
+    evaluated_units: int
+    total_candidates: int
+    confirmed: int
+    high: int
+    medium: int
+    low: int
+    unreviewed: int
+    invalid_evidence: int
+    affected_regions: int
+    findings_per_1k: float | None = None
+    findings_per_100_units: float | None = None
+    region_rate: float | None = None
+    coverage_mechanical: float
+    coverage_semantic: float
+    weighted_load: float | None = None
+    mechanical_pressure: float | None = None
+    baseline_eligible_words: int
+    revised_eligible_words: int
+    findings: list[dict[str, Any]]
+    regions: list[dict[str, Any]]
+    limitations: list[str]
+    execution: dict[str, Any]
+    previous_observation_id: str | None
+    supersedes: str | None
+    workbench_url: str | None
+    workbench_link: str | None = None
+    compatible_basis: str = ""
+    created_at: str
+
+
+class ArtifactLoadChapterSummary(BaseModel):
+    chapter_id: str
+    observations: list[ArtifactLoadRead]
+    current: ArtifactLoadRead | None = None
+
+
+class ArtifactLoadWorkspaceRead(BaseModel):
+    project_id: str
+    book_id: str = ""
+    chapters_total: int = 0
+    chapters_observed: int = 0
+    chapters_current: int = 0
+    chapters: list[ArtifactLoadChapterSummary]
+    limitations: list[str] = Field(default_factory=list)
+
+
 class OutcomeRead(BaseModel):
     id: str
     name: str
@@ -653,6 +899,7 @@ class SettingsPatch(RawModel):
     retention: dict[str, Any] | None = None
     ai: dict[str, Any] | None = None
     startup: dict[str, Any] | None = None
+    scripts: dict[str, Any] | None = None
     ui: dict[str, Any] | None = None
 
 
@@ -665,6 +912,7 @@ class SettingsRead(BaseModel):
     retention: dict[str, Any]
     ai: dict[str, Any]
     startup: dict[str, Any]
+    scripts: dict[str, Any]
     ui: dict[str, Any]
     discovery_roots: list[dict[str, Any]]
     ai_configured: bool
@@ -1669,6 +1917,202 @@ class CultivationCycleRead(BaseModel):
 
 class CandidateRead(RepositoryRead):
     pass
+
+
+class ScriptStatusUpdate(RawModel):
+    status: str = Field(min_length=1, max_length=40)
+    note: str = Field(default="", max_length=2000)
+    completed_at: str | None = None
+
+
+class ScriptArchiveUpdate(RawModel):
+    archived: bool
+    note: str = Field(default="", max_length=2000)
+
+
+class ScriptBulkUpdate(RawModel):
+    script_ids: list[str] = Field(min_length=1, max_length=200)
+    status: str = Field(min_length=1, max_length=40)
+    note: str = Field(default="", max_length=2000)
+    completed_at: str | None = None
+    as_historical: bool = False
+
+
+class ScriptLibraryMigrate(RawModel):
+    source_key: str = Field(min_length=1, max_length=1024)
+    dest_key: str = Field(min_length=1, max_length=1024)
+    dry_run: bool = True
+
+
+class ScriptRelationshipConfirm(RawModel):
+    source_id: str = Field(min_length=1, max_length=80)
+    target_id: str = Field(min_length=1, max_length=80)
+    kind: str = Field(min_length=1, max_length=40)
+    confirmed: bool = True
+    note: str = Field(default="", max_length=2000)
+
+
+class ScriptMigrationApprove(RawModel):
+    expected_hash: str = Field(min_length=1, max_length=128)
+
+
+class ScriptMigrationApply(RawModel):
+    expected_hash: str = Field(min_length=1, max_length=128)
+
+
+class ScriptBatchCreate(RawModel):
+    scope: str = Field(default="missing", min_length=1, max_length=20)
+    script_ids: list[str] = Field(default_factory=list, max_length=2000)
+    status: str | None = None
+    model: str = Field(default="", max_length=200)
+    force: bool = False
+
+
+class ScriptBatchStep(RawModel):
+    limit: int = Field(default=1, ge=1, le=5)
+
+
+class ScriptTagSet(RawModel):
+    tags: list[str] = Field(min_length=1, max_length=8)
+    origin: str = "user"
+
+
+class ScriptCandidateCreate(RawModel):
+    title: str = Field(min_length=1, max_length=200)
+    content: str = Field(min_length=1, max_length=60000)
+    kind: str = Field(default="ascendance", min_length=1, max_length=40)
+    version: str = Field(default="v1", min_length=1, max_length=40)
+    source_manifest: dict[str, Any] = Field(default_factory=dict)
+    provenance: dict[str, Any] = Field(default_factory=dict)
+
+
+class ScriptCandidateRevise(RawModel):
+    content: str = Field(min_length=1, max_length=60000)
+    note: str = Field(default="", max_length=2000)
+    version: str | None = None
+
+
+class ScriptCandidateStatus(RawModel):
+    status: str = Field(min_length=1, max_length=40)
+    note: str = Field(default="", max_length=2000)
+
+
+class ScriptCandidateRead(BaseModel):
+    id: str
+    library_key: str = ""
+    title: str
+    version: str
+    kind: str
+    status: str
+    content: str
+    word_count: int = 0
+    est_seconds: int = 0
+    validation: dict[str, Any] = Field(default_factory=dict)
+    critique: dict[str, Any] = Field(default_factory=dict)
+    source_manifest: dict[str, Any] = Field(default_factory=dict)
+    provenance: dict[str, Any] = Field(default_factory=dict)
+    parent_candidate_id: str | None = None
+    promoted_script_id: str | None = None
+    promoted_relpath: str | None = None
+    created_at: str
+    updated_at: str
+
+
+class ScriptSynthesisCreate(RawModel):
+    kind: str = Field(default="full", min_length=1, max_length=20)
+    model: str = Field(default="", max_length=200)
+
+
+class ScriptReviewCreate(RawModel):
+    model: str = Field(default="", max_length=200)
+
+
+class ScriptEffectivenessUpdate(RawModel):
+    usage_count: int | None = None
+    personal_rating: float | None = None
+    personal_target: str | None = Field(default=None, max_length=200)
+    personal_effect: str | None = Field(default=None, max_length=200)
+    last_used_at: str | None = None
+
+
+class ScriptReviewRead(BaseModel):
+    id: str
+    script_id: str
+    content_sha256: str
+    model: str
+    route: str
+    provider: str
+    assessment: dict[str, Any]
+    review_schema: str = "script-review-v1"
+    freshness: str = "CURRENT"
+    latency_ms: int = 0
+    created_at: str
+
+
+class ScriptRead(BaseModel):
+    id: str
+    library_key: str = ""
+    current_relpath: str
+    original_relpath: str
+    script_number: int | None
+    title: str
+    content_sha256: str
+    file_size: int
+    mtime_ns: int
+    status: str
+    archived: bool
+    missing: bool
+    discovered_at: str
+    last_seen_at: str | None
+    completed_at: str | None
+    review_status: str
+    last_review_at: str | None
+    legacy_item_id: str | None
+    created_at: str
+    updated_at: str
+    duplicate_number_group: list[str] | None = None
+    duplicate_content_group: list[str] | None = None
+    usage_count: int = 0
+    personal_rating: float | None = None
+    personal_target: str = ""
+    personal_effect: str = ""
+    last_used_at: str | None = None
+    latest_review: dict[str, Any] | None = None
+    tags: list[dict[str, Any]] = Field(default_factory=list)
+    events: list[dict[str, Any]] = Field(default_factory=list)
+    links: list[dict[str, Any]] = Field(default_factory=list)
+
+
+class ScriptContentRead(BaseModel):
+    id: str
+    relpath: str
+    title: str
+    content: str
+    truncated: bool
+    content_sha256: str
+    stored_sha256: str
+    matches_stored: bool
+
+
+class ScriptStatusRead(BaseModel):
+    root: str
+    library_key: str = ""
+    configured: bool
+    exists: bool
+    is_dir: bool
+    readable: bool
+    writable: bool
+    status: str
+    last_sync_at: str | None
+    last_error: str | None
+    fingerprint: str
+    observed: dict[str, Any]
+    counts: dict[str, Any]
+    duplicate_numbers: dict[str, list[str]]
+    duplicate_content: dict[str, list[str]]
+    extensions: list[str]
+    week: dict[str, str] = Field(default_factory=dict)
+    libraries: list[str] = Field(default_factory=list)
 
 
 class ResumeRead(BaseModel):
