@@ -1,0 +1,31 @@
+{
+ "id": "P45",
+ "sha": "989c78603be17b44",
+ "detector_version": "expo-v1",
+ "prompt_version": "expo-sem-v1+d40fa9e4",
+ "requested_model": "opencode-go/deepseek-v4.1-flash",
+ "actual_model": "opencode-go/deepseek-v4.1-flash",
+ "route_resolution": "configured",
+ "transport": "file",
+ "latency_s": 17.5,
+ "usage": {
+  "input_tokens": 4519,
+  "output_tokens": 241,
+  "total_tokens": 4760,
+  "cost_usd": 0.0,
+  "accounting": "provider_reported"
+ },
+ "provider_status": "ok",
+ "provider_error": null,
+ "status": "ok",
+ "score": 0.0,
+ "verdict": "NO_ISSUE",
+ "severity": "NONE",
+ "confidence": null,
+ "main_explanation": "",
+ "diagnosis": "SEMANTICALLY_REJECTED",
+ "quote": "",
+ "validation_state": "SEMANTICALLY_REJECTED",
+ "model": "opencode-go/deepseek-v4.1-flash",
+ "raw_response": "# rationale\n\nThe passage is brief and syntactically simple. Its difficulty comes from vagueness and self-contradiction, not from compressed exposition or repeated interruption of an established explanation. No substantive explanatory claim is developed, so the overload framework does not meaningfully apply.\n\n# score\n\n0.05\n\n# answer\n\n```json\n{\n  \"verdict\": \"NO_ISSUE\",\n  \"severity\": \"NONE\",\n  \"confidence\": 0.78,\n  \"main_explanation\": \"\",\n  \"diagnosis\": \"There is no expository overload to diagnose: the passage is short, uses simple sentences, and contains no dense sequence of claims, distinctions, or steps. Its opacity is caused by vagueness and contradiction, not by compression or interruption of a main explanation.\",\n  \"essential_qualifications\": [],\n  \"premature_or_repeated_qualifications\": [],\n  \"proposed_strategy\": \"NO_CHANGE\",\n  \"quote\": \"\",\n  \"uncertainty\": \"Whether the passage's repeated hedging should be treated as EXPO_INTERRUPTION despite the absence of any actual explanation being interrupted.\"\n}\n```"
+}

@@ -7,6 +7,8 @@ never supplies an executable or command.
 
 from __future__ import annotations
 
+from typing import Any
+
 from fastapi import APIRouter, Request
 
 from mission_control.adapters.service import AdapterService
@@ -27,6 +29,22 @@ def list_writer_books(request: Request) -> WriterWorkspaceRead:
             request.app.state.database, request.app.state.settings
         ).workspace()
     )
+
+
+@router.get("/self-repair")
+def read_writer_self_repair(request: Request) -> dict[str, Any]:
+    """Read-only self-repair process summary. No scores, no writes."""
+    from mission_control.writer.self_repair import summarize_self_repair
+
+    return summarize_self_repair(request.app.state.settings.book_root)
+
+
+@router.get("/improvement")
+def read_writer_improvement(request: Request) -> dict[str, Any]:
+    """Read-only chapter-improvement process summary. No scores, no writes."""
+    from mission_control.writer.improvement_summary import summarize_improvement
+
+    return summarize_improvement(request.app.state.settings.book_root)
 
 
 @router.post("/refresh", response_model=WriterWorkspaceRead)

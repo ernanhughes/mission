@@ -1,0 +1,31 @@
+{
+ "id": "P04",
+ "sha": "49ce11db1ad65e94",
+ "detector_version": "expo-v1",
+ "prompt_version": "expo-sem-v1+d40fa9e4",
+ "requested_model": "opencode-go/deepseek-v4.1-flash",
+ "actual_model": "opencode-go/deepseek-v4.1-flash",
+ "route_resolution": "configured",
+ "transport": "file",
+ "latency_s": 19.2,
+ "usage": {
+  "input_tokens": 4620,
+  "output_tokens": 572,
+  "total_tokens": 5192,
+  "cost_usd": 0.0,
+  "accounting": "provider_reported"
+ },
+ "provider_status": "ok",
+ "provider_error": null,
+ "status": "ok",
+ "score": 0.0,
+ "verdict": "NO_ISSUE",
+ "severity": "NONE",
+ "confidence": null,
+ "main_explanation": "",
+ "diagnosis": "SEMANTICALLY_REJECTED",
+ "quote": "",
+ "validation_state": "SEMANTICALLY_REJECTED",
+ "model": "opencode-go/deepseek-v4.1-flash",
+ "raw_response": "# rationale\n\nThe paragraph has a single, clear job: separate three evaluation axes (performance, quality, correctness) so readers do not conflate them. It executes that job in a stable order — framing sentence, one definition per axis, a combinatorial illustration, then the practical cost of confusion, then a forward pointer to later chapters. Nothing interrupts the explanation before the claim lands: the only qualifier (\"under a declared workload\") is attached directly to the performance definition where it prevents a genuine misreading, and it arrives with the claim rather than ahead of it. The technical density is real but load-bearing — each term (tokenisation, forward computation, token selection, stopping) names a distinct stage whose conflation is exactly what the paragraph warns against. Reordering would not help, because the sequence already moves from definition to consequence to what comes next. This reads as controlled, well-qualified expository prose, not overload.\n\n# score\n\n0.08\n\n# answer\n\n```json\n{\n  \"verdict\": \"NO_ISSUE\",\n  \"severity\": \"NONE\",\n  \"confidence\": 0.86,\n  \"main_explanation\": \"To establish performance, output quality and implementation correctness as three distinct evaluation axes that must not be substituted for one another.\",\n  \"diagnosis\": \"The structure carries the content comfortably: a framing claim, three parallel one-sentence definitions, one sentence showing the axes can vary independently, one sentence on the practical cost of confusing them, and a closing pointer to later chapters. The single qualifier ('under a declared workload') is placed where it prevents a misreading rather than ahead of the claim, and the four-stage correctness list is a specification of one rule, not a stack of extra claims. Density is necessary because the terms name the very distinctions the paragraph exists to protect.\",\n  \"essential_qualifications\": [\n    \"under a declared workload\"\n  ],\n  \"premature_or_repeated_qualifications\": [],\n  \"proposed_strategy\": \"NO_CHANGE\",\n  \"quote\": \"Most of this book is about keeping **performance**, **output quality** and **implementation correctness** separate. Performance asks how long and at what resource cost the computation ran under a declared workload. Quality asks whether the generated text was useful for its task. Correctness asks whether tokenisation, forward computation, token selection and stopping followed their specified rules.\",\n  \"uncertainty\": \"The closing promise about later chapters is a forward reference rather than support for the current claim; I treat it as a harmless signpost, but a stricter reader might call it a slight deferral. I am also unsure whether a grader would read the four-item correctness enumeration as compression, though each item is a stage of one process rather than a separate thesis.\"\n}\n```"
+}

@@ -115,6 +115,59 @@ def _completions_url(base_url: str) -> str:
     return base_url + "/chat/completions"
 
 
+def resolve_model(session: Session, requested: str = "") -> tuple[str, str]:
+    """Central Pi-first resolver: explicit task model > explicit local config > Pi default.
+
+    Returns (model, route). Never rewrites provider/model IDs and never
+    substitutes an unrelated provider. Pi default prefers the validated
+    ``opencode-go/deepseek-v4.1-flash`` when no explicit choice exists.
+    """
+    from mission_control.research import pi_backend as _pi
+
+    explicit = (requested or "").strip()
+    if explicit:
+        config = read_config(session)
+        if config.configured and explicit == config.model:
+            return explicit, LOCAL_ROUTE
+        if "/" in explicit:
+            return explicit, _pi.PI_ROUTE
+        return explicit, LOCAL_ROUTE
+    config = read_config(session)
+    if config.configured and config.model:
+        return config.model, LOCAL_ROUTE
+    return _pi.PI_DEFAULT_MODEL, _pi.PI_ROUTE
+
+
+async def complete_chat(
+    session: Session,
+    *,
+    model: str,
+    messages: list[dict[str, str]],
+    route: str | None = None,
+) -> dict[str, Any]:
+    """Execute one chat completion through the unified Pi-first layer.
+
+    Local loopback remains an explicit override. Otherwise Pi is used when
+    AI is enabled and consent is recorded. Remote Pi inference is never
+    local: callers must keep the consent distinction explicit in the UI.
+    No silent provider switching on billing/auth failures.
+    """
+    from mission_control.research import pi_backend as _pi
+
+    config = read_config(session)
+    if not config.enabled or not config.consent:
+        raise CapabilityUnavailable(
+            "AI is disabled or consent has not been recorded. Enable AI in Settings and record consent."
+        )
+    selected = (model or "").strip() or config.model or _pi.PI_DEFAULT_MODEL
+    use_route = (route or "").strip()
+    if not use_route:
+        use_route = LOCAL_ROUTE if (config.configured and selected == config.model) else _pi.PI_ROUTE
+    if use_route == LOCAL_ROUTE:
+        return await complete_local_chat(session, model=selected, messages=messages)
+    return _pi.complete_pi_chat(model=selected, messages=messages, timeout=config.timeout_seconds)
+
+
 async def discover_local_models(session: Session) -> dict[str, Any]:
     """Return the explicit local model catalogue and a truthful diagnostic.
 

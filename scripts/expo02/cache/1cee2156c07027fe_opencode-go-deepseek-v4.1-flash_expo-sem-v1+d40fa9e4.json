@@ -1,0 +1,31 @@
+{
+ "id": "P23",
+ "sha": "1cee2156c07027fe",
+ "detector_version": "expo-v1",
+ "prompt_version": "expo-sem-v1+d40fa9e4",
+ "requested_model": "opencode-go/deepseek-v4.1-flash",
+ "actual_model": "opencode-go/deepseek-v4.1-flash",
+ "route_resolution": "configured",
+ "transport": "file",
+ "latency_s": 48.9,
+ "usage": {
+  "input_tokens": 2997,
+  "output_tokens": 753,
+  "total_tokens": 3750,
+  "cost_usd": 0.0,
+  "accounting": "provider_reported"
+ },
+ "provider_status": "ok",
+ "provider_error": null,
+ "status": "ok",
+ "score": 0.0,
+ "verdict": "NO_ISSUE",
+ "severity": "NONE",
+ "confidence": null,
+ "main_explanation": "",
+ "diagnosis": "SEMANTICALLY_REJECTED",
+ "quote": "",
+ "validation_state": "SEMANTICALLY_REJECTED",
+ "model": "opencode-go/deepseek-v4.1-flash",
+ "raw_response": "# rationale\nThe passage's job is inventory plus one mandatory warning: it lists what `repro_lab.py` adds, then states the `generate()` seeding convention that governs any comparison against individually seeded runs, and hands off to a rebuild procedure. The identifier list is dense but irreducible — those are exact experiment names, and a list is the right container for them. The caveat is not defensive padding; it is placed exactly where it prevents misreading (immediately after `generate()` is introduced, before any comparison claim), so early qualification here is correct. The only real friction is local: `and \\`decode_batch\\` and \\`gumbel_choice\\`, the batched decode with fixed shapes and per-request streams` makes the appositive's scope ambiguous (does it describe one experiment, both, or the earlier group?). That is a wording/attachment problem in a single clause, not evidence that the structure cannot carry the content. Difficulty is therefore avoidable only at the micro level, not the paragraph level; reordering would not help, and splitting the three-sentence hand-off would break the list → caveat → procedure sequence.\n\n# score\n0.15\n\n# answer\n{\n  \"verdict\": \"NO_ISSUE\",\n  \"severity\": \"NONE\",\n  \"confidence\": 0.62,\n  \"main_explanation\": \"To specify which experiments `repro_lab.py` adds and to establish the batch-seeding convention that governs any comparison with individually seeded runs.\",\n  \"diagnosis\": \"Short reference-style exposition: one enumerated inventory, one essential procedural caveat, one hand-off to a rebuild recipe. The enumeration is irreducible identifier density rather than piled-up claims, and the caveat appears precisely where it prevents a misreading of batch-vs-individual comparisons. The only friction is a local attachment ambiguity in 'and `decode_batch` and `gumbel_choice`, the batched decode with fixed shapes and per-request streams', where the appositive's scope is unclear; that is a micro-level wording issue, not structural overload, and does not justify reordering or splitting.\",\n  \"essential_qualifications\": [\n    \"the note that `generate()` seeds each eight-row batch with the first request's seed, and that comparisons with individually seeded runs must be read under that procedure\"\n  ],\n  \"premature_or_repeated_qualifications\": [],\n  \"proposed_strategy\": \"NO_CHANGE\",\n  \"quote\": \"`decode_batch` and `gumbel_choice`, the batched decode with fixed shapes and per-request streams\",\n  \"uncertainty\": \"Whether the appositive was intended to describe only `gumbel_choice` or both new experiments; the source file `examples/ch39/repro_lab.py` is not present in this workspace, so the grouping cannot be verified. Also unclear whether the trailing colon leads into a code block whose structure absorbs part of the density.\"\n}"
+}

@@ -1,0 +1,31 @@
+{
+ "id": "P06",
+ "sha": "ab47fbf6df469ed5",
+ "detector_version": "expo-v1",
+ "prompt_version": "expo-sem-v1+d40fa9e4",
+ "requested_model": "opencode-go/deepseek-v4.1-flash",
+ "actual_model": "opencode-go/deepseek-v4.1-flash",
+ "route_resolution": "configured",
+ "transport": "file",
+ "latency_s": 26.3,
+ "usage": {
+  "input_tokens": 4617,
+  "output_tokens": 290,
+  "total_tokens": 4907,
+  "cost_usd": 0.0,
+  "accounting": "provider_reported"
+ },
+ "provider_status": "ok",
+ "provider_error": null,
+ "status": "ok",
+ "score": 0.0,
+ "verdict": "NO_ISSUE",
+ "severity": "NONE",
+ "confidence": null,
+ "main_explanation": "",
+ "diagnosis": "SEMANTICALLY_REJECTED",
+ "quote": "",
+ "validation_state": "SEMANTICALLY_REJECTED",
+ "model": "opencode-go/deepseek-v4.1-flash",
+ "raw_response": "# rationale\nNo obstruction. The first paragraph states the chapter’s goal and lists the specific things the reader will be able to report; the second gives compact series context and explains why model calls are a background dependency here. The enumeration is functional rather than burdensome, the qualifications set scope instead of defending against objections, and the prose proceeds in a clear sequence.\n\n# score\n0.05\n\n# answer\n{\n  \"verdict\": \"NO_ISSUE\",\n  \"severity\": \"NONE\",\n  \"confidence\": 0.9,\n  \"main_explanation\": \"\",\n  \"diagnosis\": \"This is a short chapter-opening orientation. It states the goal, lists the outcomes the chapter will deliver, and then provides series context. The outcome list is parallel and directly useful, and the series paragraph does not interrupt an explanation already underway. The boundary on what the measurement cannot establish is appropriately placed alongside the goal rather than introduced prematurely.\",\n  \"essential_qualifications\": [\n    \"what the measurement does not let you conclude\"\n  ],\n  \"premature_or_repeated_qualifications\": [],\n  \"proposed_strategy\": \"NO_CHANGE\",\n  \"quote\": \"\",\n  \"uncertainty\": \"Only the chapter opening is available, so this does not assess whether later sections overload the reader; some readers may also regard the series-context paragraph as unnecessary front matter.\"\n}"
+}

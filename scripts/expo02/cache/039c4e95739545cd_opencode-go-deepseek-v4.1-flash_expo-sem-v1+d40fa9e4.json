@@ -1,0 +1,31 @@
+{
+ "id": "P11",
+ "sha": "039c4e95739545cd",
+ "detector_version": "expo-v1",
+ "prompt_version": "expo-sem-v1+d40fa9e4",
+ "requested_model": "opencode-go/deepseek-v4.1-flash",
+ "actual_model": "opencode-go/deepseek-v4.1-flash",
+ "route_resolution": "configured",
+ "transport": "file",
+ "latency_s": 18.1,
+ "usage": {
+  "input_tokens": 1098,
+  "output_tokens": 724,
+  "total_tokens": 1822,
+  "cost_usd": 0.0,
+  "accounting": "provider_reported"
+ },
+ "provider_status": "ok",
+ "provider_error": null,
+ "status": "ok",
+ "score": 0.0,
+ "verdict": "NO_ISSUE",
+ "severity": "NONE",
+ "confidence": null,
+ "main_explanation": "",
+ "diagnosis": "SEMANTICALLY_REJECTED",
+ "quote": "",
+ "validation_state": "SEMANTICALLY_REJECTED",
+ "model": "opencode-go/deepseek-v4.1-flash",
+ "raw_response": "# rationale\n\nThe passage is a seven-item ordered list describing the stages of a request/inference pipeline. Each item has one job, follows a uniform `name` — verb phrase shape, and appears in execution order, so the reader can track it linearly. Density is high in the sense that seven distinct stages are named, but the list format, not prose, carries that load, and no step is asked to do two things at once. There is no defensive framing, no methodological caveat, and no rebuttal interrupting the sequence — nothing qualifies step 2 before step 2 is established, because nothing is qualified at all. The only mild friction is that `tokenize`/`encode` and `decode`/`response_format` are adjacent stages whose distinction a reader may need to infer, but that is a terminology density issue rather than structural overload, and the rules bar treating terminology alone as proof of a defect. A numbered list of seven short, parallel, single-clause steps is close to the ideal form for this content; splitting or reordering would not improve comprehension and could break the causal chain the order encodes.\n\n# score\n\n0.2\n\n# answer\n\n```json\n{\n  \"verdict\": \"NO_ISSUE\",\n  \"severity\": \"NONE\",\n  \"confidence\": 0.82,\n  \"main_explanation\": \"To enumerate, in execution order, the stages a request passes through from parsing to response formatting.\",\n  \"diagnosis\": \"Seven short, parallel, single-clause steps presented as a numbered list. The list form carries the enumeration cleanly, ordering is semantically meaningful, and there are no caveats, rebuttals, or defensive asides interrupting any step. Density is real but is the necessary content of a pipeline description, not an avoidable structural burden; the only soft friction is terminological overlap between adjacent stages (tokenize/encode, decode/response_format), which is not itself an overload defect.\",\n  \"essential_qualifications\": [],\n  \"premature_or_repeated_qualifications\": [],\n  \"proposed_strategy\": \"NO_CHANGE\",\n  \"quote\": \"1. `request_parse` validates and normalises the request. 2. `tokenize` splits text into model-facing symbols. 3. `encode` maps symbols to integer ids. 4. `forward_pass` computes scores for the next token. 5. `sample` selects a token. 6. `decode` maps ids back to text. 7. `response_format` assembles the response.\",\n  \"uncertainty\": \"The passage as supplied is a bare list with no surrounding prose, so it is unclear whether the list sits inside a longer explanatory paragraph whose framing might alter the diagnosis; I also cannot verify the exact source file (P11 inference-01-chapter.md was not present in the workspace), so the quote is taken from the passage text supplied in the prompt rather than confirmed against the repository file.\"\n}\n```"
+}

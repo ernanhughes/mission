@@ -808,6 +808,20 @@ export type QualityEvaluation = {
   section_title: string | null;
   char_span: Array<any>;
   section_sha: string | null;
+  campaign_id: string | null;
+  strategy: string;
+  created_at: string;
+};
+
+export type QualityReview = {
+  id: string;
+  evaluation_id: string | null;
+  finding_id: string;
+  decision: string;
+  reason: string;
+  reviewer: string;
+  source_digest: string;
+  source_status: string;
   created_at: string;
 };
 
@@ -853,6 +867,7 @@ export type QualityCampaign = {
   rubric_version: number;
   prompt_version: string;
   model: string | null;
+  strategy: string;
   status: string;
   total: number;
   completed: number;

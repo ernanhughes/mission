@@ -1,0 +1,31 @@
+{
+ "id": "P46",
+ "sha": "6fa1b1264c2a6e38",
+ "detector_version": "expo-v1",
+ "prompt_version": "expo-sem-v1+d40fa9e4",
+ "requested_model": "opencode-go/deepseek-v4.1-flash",
+ "actual_model": "opencode-go/deepseek-v4.1-flash",
+ "route_resolution": "configured",
+ "transport": "file",
+ "latency_s": 34.9,
+ "usage": {
+  "input_tokens": 4581,
+  "output_tokens": 495,
+  "total_tokens": 5076,
+  "cost_usd": 0.0,
+  "accounting": "provider_reported"
+ },
+ "provider_status": "ok",
+ "provider_error": null,
+ "status": "ok",
+ "score": 0.92,
+ "verdict": "EXPO_INTERRUPTION",
+ "severity": "HIGH",
+ "confidence": 0.95,
+ "main_explanation": "To explain that batching works by sharing one model pass across multiple requests.",
+ "diagnosis": "The main claim is delayed until the end of one long sentence and is repeatedly interrupted by benchmark, optimality, implementation, and meta-reading caveats. These qualifications may be valid, but they arrive before the reader has been told what batching is, so the reader must hold several unresolved warnings in mind before receiving the explanatory payoff.",
+ "quote": "Before explaining batching, note this is not a benchmark and must not be quoted as one, and do not conclude the scheduler is optimal, because optimality would require a proof we do not have, although the basic idea is simple: group requests together. But even that description, which sounds straightforward, should not be mistaken for an implementation, since the implementation details, which we have not verified, could differ in ways that matter, so keep all of that in mind while reading the next sentence: batching shares one model pass across requests.",
+ "validation_state": "SEMANTICALLY_CONFIRMED",
+ "model": "opencode-go/deepseek-v4.1-flash",
+ "raw_response": "# rationale\nThe core explanation is withheld until the final clause, while the reader is walked through three defensive caveats and a meta-instruction first. The qualifications are substantively reasonable, but placing them before the basic definition makes the passage harder to understand than necessary.\n\n# score\n0.92\n\n# answer\n{\n  \"verdict\": \"EXPO_INTERRUPTION\",\n  \"severity\": \"HIGH\",\n  \"confidence\": 0.95,\n  \"main_explanation\": \"To explain that batching works by sharing one model pass across multiple requests.\",\n  \"diagnosis\": \"The main claim is delayed until the end of one long sentence and is repeatedly interrupted by benchmark, optimality, implementation, and meta-reading caveats. These qualifications may be valid, but they arrive before the reader has been told what batching is, so the reader must hold several unresolved warnings in mind before receiving the explanatory payoff.\",\n  \"essential_qualifications\": [\n    \"The passage is not a benchmark and should not be cited as one.\",\n    \"The scheduler's optimality has not been proven.\",\n    \"Implementation details have not been verified and may differ materially.\"\n  ],\n  \"premature_or_repeated_qualifications\": [\n    \"The benchmark disclaimer is raised before batching is defined.\",\n    \"The optimality rebuttal interrupts the explanation before the basic claim is established.\",\n    \"The implementation caveat appears before the reader knows what implementation is being discussed.\",\n    \"The instruction to keep all prior caveats in mind adds another layer of interruption before the main point.\"\n  ],\n  \"proposed_strategy\": \"MOVE_CAVEAT_LATER\",\n  \"quote\": \"Before explaining batching, note this is not a benchmark and must not be quoted as one, and do not conclude the scheduler is optimal, because optimality would require a proof we do not have, although the basic idea is simple: group requests together. But even that description, which sounds straightforward, should not be mistaken for an implementation, since the implementation details, which we have not verified, could differ in ways that matter, so keep all of that in mind while reading the next sentence: batching shares one model pass across requests.\",\n  \"uncertainty\": \"The caveats may be necessary in the surrounding document's evidentiary context, but their placement before the core definition still obstructs comprehension in this passage.\"\n}"
+}

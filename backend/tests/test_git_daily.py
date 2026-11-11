@@ -328,15 +328,15 @@ def test_review_execution_fail_closed_and_persists_scope(client: TestClient, git
     assert final["review_type"] == "daily"
     assert final["evidence_coverage"]["daily_date"] == "2026-11-10"
 
-    # With a stubbed local model the exact result persists with the full scope.
-    async def _fake_chat(session, *, model, messages):
+    # With a stubbed model the exact result persists with the full scope.
+    async def _fake_chat(session, *, model, messages, route=None):
         assert messages and "2026-11-10" in messages[-1]["content"][:200000]
         if "workstream" in messages[-1]["content"].lower() or "expl accomplished" in messages[-1]["content"].lower() or "Explain" in messages[-1]["content"]:
-            return {"content": "Day summary:\n- Workstream A shipped\n", "model": model, "usage": {}}
-        return {"content": "Verdict: Accept\nFindings:\n- none\n", "model": model, "usage": {}}
+            return {"content": "Day summary:\n- Workstream A shipped\n", "model": model, "route": route or "configured-local-openai", "usage": {}}
+        return {"content": "Verdict: Accept\nFindings:\n- none\n", "model": model, "route": route or "configured-local-openai", "usage": {}}
 
     import mission_control.research.inference as inference
-    monkeypatch.setattr(inference, "complete_local_chat", _fake_chat)
+    monkeypatch.setattr(inference, "complete_chat", _fake_chat)
     review2_resp = client.post("/api/git-activity/daily/reviews", json={
         "repo_id": repo_id, "date": "2026-11-10", "timezone": "Europe/Dublin",
         "mode": "review", "profile": "code", "model": "stub-model"})

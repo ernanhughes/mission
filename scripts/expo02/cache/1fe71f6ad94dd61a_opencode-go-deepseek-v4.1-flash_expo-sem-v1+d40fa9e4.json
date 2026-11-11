@@ -1,0 +1,31 @@
+{
+ "id": "P24",
+ "sha": "1fe71f6ad94dd61a",
+ "detector_version": "expo-v1",
+ "prompt_version": "expo-sem-v1+d40fa9e4",
+ "requested_model": "opencode-go/deepseek-v4.1-flash",
+ "actual_model": "opencode-go/deepseek-v4.1-flash",
+ "route_resolution": "configured",
+ "transport": "file",
+ "latency_s": 19.6,
+ "usage": {
+  "input_tokens": 700,
+  "output_tokens": 564,
+  "total_tokens": 1264,
+  "cost_usd": 0.0,
+  "accounting": "provider_reported"
+ },
+ "provider_status": "ok",
+ "provider_error": null,
+ "status": "ok",
+ "score": 0.42,
+ "verdict": "EXPO_COMPRESSION",
+ "severity": "LOW",
+ "confidence": 0.62,
+ "main_explanation": "To hand off three distinct recommended code changes and state clearly that none of them are yet implemented.",
+ "diagnosis": "Three independent deliverables plus a parenthetical either/or repair are compressed into one parallel-clause sentence, so each item's scope and the third item's alternative fix must be parsed while holding the others in memory; a list structure would carry the same content with much less load. The density is real but modest, and the closing status disclaimer is correctly placed rather than intrusive.",
+ "quote": "Implementation follow-up: add a dedicated literal-byte equality operation, include an explicit `complete`/`missing` gate for manifests, and correct `flip_probability_bound` for a per-logit epsilon assumption (or rename its argument to the proven pairwise perturbation bound). These are recommended code changes, not features already implemented.",
+ "validation_state": "SEMANTICALLY_CONFIRMED",
+ "model": "opencode-go/deepseek-v4.1-flash",
+ "raw_response": "# rationale\n\nThe passage's job is narrow and transactional: it hands off three concrete implementation tasks. The obstruction is not conceptual depth but packing three independent work items — each with a different object (equality op, manifest status gate, `flip_probability_bound` correction) and a nested either/or repair (\"correct … or rename its argument\") — into a single parallel-clause sentence. The reader must hold three separate to-do items in working memory while the third item's correctness condition (\"per-logit epsilon assumption\" vs \"proven pairwise perturbation bound\") is specified only as an unresolved alternative. The trailing sentence (\"These are recommended code changes, not features already implemented\") is a status clarification, not a caveat interrupting an explanation, and it is genuinely necessary: without it a reader could take the three items as descriptions of shipped behavior. So the qualification placement is sound; the compression is the issue, and it is mild because the items are parallel and short. This is a compression signal, not an interruption pattern, and it is far from unreadable — a bulleted rendering would resolve it without any rewriting of content.\n\n# score\n\n0.42\n\n# answer\n\n```json\n{\n  \"verdict\": \"EXPO_COMPRESSION\",\n  \"severity\": \"LOW\",\n  \"confidence\": 0.62,\n  \"main_explanation\": \"To hand off three distinct recommended code changes and state clearly that none of them are yet implemented.\",\n  \"diagnosis\": \"Three independent deliverables plus a parenthetical either/or repair are compressed into one parallel-clause sentence, so each item's scope and the third item's alternative fix must be parsed while holding the others in memory; a list structure would carry the same content with much less load. The density is real but modest, and the closing status disclaimer is correctly placed rather than intrusive.\",\n  \"essential_qualifications\": [\n    \"These are recommended code changes, not features already implemented.\"\n  ],\n  \"premature_or_repeated_qualifications\": [],\n  \"proposed_strategy\": \"SPLIT_PARAGRAPHS\",\n  \"quote\": \"Implementation follow-up: add a dedicated literal-byte equality operation, include an explicit `complete`/`missing` gate for manifests, and correct `flip_probability_bound` for a per-logit epsilon assumption (or rename its argument to the proven pairwise perturbation bound). These are recommended code changes, not features already implemented.\",\n  \"uncertainty\": \"Whether the reader already knows the `flip_probability_bound` context; if so, the parenthetical alternative is cheap and the overload signal drops toward NO_ISSUE. The LOW-vs-MED line is also a judgment call at this length.\"\n}\n```"
+}

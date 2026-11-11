@@ -61,6 +61,32 @@ async def _startup_refresh(app: FastAPI) -> None:
     try:
         count = await asyncio.to_thread(refresh_repositories, app.state.database)
         logger.info("Observed Git metadata for %s repositories", count)
+        # Best-effort live cultivation sync (read-only, idempotent, never fails startup).
+        # Blog posts behave like the Self-Hypnosis track: the filesystem is authoritative,
+        # the last valid observation is kept as stale when the source is unavailable.
+        try:
+            from mission_control.cultivation import service as _cult
+
+            def _sync_blogs() -> int:
+                synced = 0
+                with app.state.database.session() as session:
+                    for source in _cult.list_sources(session):
+                        if source.kind != "hugo_blog":
+                            continue
+                        try:
+                            _cult.sync_source(session, source.id)
+                            synced += 1
+                        except Exception:
+                            logger.exception("Blog source sync failed for %s; kept last observation", source.id)
+                return synced
+
+            synced = await asyncio.to_thread(_sync_blogs)
+            if synced:
+                logger.info("Synced %s blog source(s) on startup", synced)
+        except asyncio.CancelledError:
+            raise
+        except Exception:
+            logger.exception("Startup blog sync failed; kept last observations")
         await app.state.adapter_service.refresh_all(force=False)
     except asyncio.CancelledError:
         raise

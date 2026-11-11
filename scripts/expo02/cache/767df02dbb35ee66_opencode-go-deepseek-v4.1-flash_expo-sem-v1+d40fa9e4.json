@@ -1,0 +1,31 @@
+{
+ "id": "P44",
+ "sha": "767df02dbb35ee66",
+ "detector_version": "expo-v1",
+ "prompt_version": "expo-sem-v1+d40fa9e4",
+ "requested_model": "opencode-go/deepseek-v4.1-flash",
+ "actual_model": "opencode-go/deepseek-v4.1-flash",
+ "route_resolution": "configured",
+ "transport": "file",
+ "latency_s": 47.0,
+ "usage": {
+  "input_tokens": 4518,
+  "output_tokens": 352,
+  "total_tokens": 4870,
+  "cost_usd": 0.0,
+  "accounting": "provider_reported"
+ },
+ "provider_status": "ok",
+ "provider_error": null,
+ "status": "ok",
+ "score": 0.0,
+ "verdict": "NO_ISSUE",
+ "severity": "NONE",
+ "confidence": null,
+ "main_explanation": "",
+ "diagnosis": "SEMANTICALLY_REJECTED",
+ "quote": "",
+ "validation_state": "SEMANTICALLY_REJECTED",
+ "model": "opencode-go/deepseek-v4.1-flash",
+ "raw_response": "# rationale\nThe passage is a chain of content-free hedges (\"It depends.\", \"Things change.\", \"Results vary.\") that never states a claim, mechanism, or distinction. It is under-specified rather than over-loaded: there are no dense claims to compress and no established main explanation being interrupted. The difficulty is vacuity, not expository density, so it falls outside the EXPOSITORY_OVERLOAD construct.\n\n# score\n0.05\n\n# answer\n{\n  \"verdict\": \"NO_ISSUE\",\n  \"severity\": \"NONE\",\n  \"confidence\": 0.72,\n  \"main_explanation\": \"\",\n  \"diagnosis\": \"No overload signal. The passage makes no substantive claim, so there is nothing to compress and no explanation to interrupt; the hedge sentences are not qualifications of an existing claim, so they cannot be scored as premature or repeated. Its real weakness is emptiness, which is outside the EXPOSITORY_OVERLOAD family rather than an instance of it.\",\n  \"essential_qualifications\": [],\n  \"premature_or_repeated_qualifications\": [],\n  \"proposed_strategy\": \"NO_CHANGE\",\n  \"quote\": \"It depends. Sometimes the cache helps a lot. Sometimes it does not help at all. Things change. Results vary. It is complicated. There are trade-offs. More work is needed. The details matter. Context decides.\",\n  \"uncertainty\": \"The passage is plainly defective as prose, but the defect is lack of content, not overload; the schema has no option for vacuity, so NO_ISSUE reflects the absence of an overload signal rather than approval of the writing.\"\n}"
+}

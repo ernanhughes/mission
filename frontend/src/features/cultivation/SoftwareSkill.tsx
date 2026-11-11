@@ -61,6 +61,10 @@ export function SkillDetail(props: {
     () => (sources.data ?? []).find((row) => row.skill_id === props.skillId && row.kind === "activity_projects") ?? null,
     [sources.data, props.skillId],
   );
+  const blogSource = useMemo(
+    () => (sources.data ?? []).find((row) => row.skill_id === props.skillId && row.kind === "hugo_blog") ?? null,
+    [sources.data, props.skillId],
+  );
 
   return (
     <>
@@ -103,6 +107,9 @@ export function SkillDetail(props: {
       ) : null}
       {source ? (
         <RepoInventory key={source.id} source={source} onChanged={() => { sources.reload(); props.onChanged(); }} />
+      ) : null}
+      {blogSource ? (
+        <BlogInventory key={blogSource.id} source={blogSource} goals={goals.data ?? []} onChanged={() => { sources.reload(); props.onChanged(); }} />
       ) : null}
       <ApplicationsPanel onChanged={props.onChanged} />
     </>
@@ -341,6 +348,111 @@ function RepoInventory(props: { source: CultivationSource; onChanged: () => void
           }}
         />
       ) : null}
+    </Section>
+  );
+}
+
+// ---------------------------------------------------------- blog inventory
+function BlogInventory(props: { source: CultivationSource; goals: CultivationGoal[]; onChanged: () => void }) {
+  const toast = useToast();
+  const [editingPath, setEditingPath] = useState(false);
+  const [path, setPath] = useState(props.source.path);
+  const [editingTarget, setEditingTarget] = useState(false);
+  const [target, setTarget] = useState("1");
+  const weekly = props.goals.find((goal) => goal.id === "weekly_blog") ?? null;
+  const lifetime = props.goals.find((goal) => goal.id === "blog_posts") ?? null;
+  const observed = (props.source.observed ?? {}) as Record<string, unknown>;
+  const recent = (observed.recent_posts ?? []) as Array<Record<string, unknown>>;
+
+  async function sync() {
+    try {
+      const result = await api.post<{ status: string }>(`/api/cultivation/sources/${props.source.id}/sync`, {});
+      toast.push(result.status === "ok" ? "success" : "info", result.status === "ok" ? "Blog source synced" : "Blog source stale — kept last observation");
+      props.onChanged();
+    } catch (caught) {
+      toast.push("error", "Sync failed", errorMessage(caught));
+    }
+  }
+
+  async function savePath() {
+    try {
+      await api.patch(`/api/cultivation/sources/${props.source.id}`, { path });
+      toast.push("success", "Source directory updated");
+      setEditingPath(false);
+      props.onChanged();
+    } catch (caught) {
+      toast.push("error", "Path update failed", errorMessage(caught));
+    }
+  }
+
+  async function saveTarget() {
+    if (!weekly) return;
+    try {
+      await api.patch(`/api/cultivation/goals/${weekly.id}`, { target_value: Number(target) });
+      toast.push("success", "Weekly requirement updated");
+      setEditingTarget(false);
+      props.onChanged();
+    } catch (caught) {
+      toast.push("error", "Target update failed", errorMessage(caught));
+    }
+  }
+
+  return (
+    <Section
+      title="Publication overview"
+      description="Live filesystem counts from programmer.ie. Lifetime achievement is separate from weekly discipline."
+      actions={
+        <button className="button button-secondary button-small" onClick={() => void sync()}>
+          Refresh from source
+        </button>
+      }
+    >
+      <p className="muted">
+        Published: <strong>{Number(observed.published ?? 0)}</strong> · Drafts: <strong>{Number(observed.drafts ?? 0)}</strong> · Scheduled: {Number(observed.scheduled ?? 0)} · Unknown: {Number(observed.unknown ?? 0)}
+        {props.source.last_sync_at ? ` · Last sync: ${formatDateTime(props.source.last_sync_at)}` : " · Never synced"}
+        {props.source.last_status === "stale" ? " · Stale — showing last known" : ""}
+      </p>
+      <p className="muted">
+        Technology: {Number(observed.tech_published ?? 0)} · Finance: {Number(observed.finance_published ?? 0)} · Technology / Finance preferred, other topics still count
+      </p>
+      <p className="muted">
+        This week ({String(observed.week_start_date ?? "—")} → {String(observed.week_end_date ?? "—")}, Europe/Dublin): {Number(observed.this_week ?? 0)}/{weekly?.target_value ?? 1} · Last week: {Number(observed.last_week ?? 0)} · Last published: {String(observed.latest_published_at ?? "—").slice(0, 10)}
+      </p>
+      {lifetime ? <p className="muted">Lifetime: {currentLabel(lifetime.progress)} · {lifetime.description}</p> : null}
+      {weekly ? <p className="muted">Weekly: {currentLabel(weekly.progress)} · {weekly.description}</p> : null}
+      {props.source.last_error ? <p className="muted">Note: {props.source.last_error}</p> : null}
+      <div className="toolbar">
+        <span className="muted">Source: <code>{props.source.path}</code></span>
+        {editingPath ? (
+          <>
+            <input value={path} onChange={(event) => setPath(event.target.value)} aria-label="Source directory" style={{ minWidth: "280px" }} />
+            <button className="button button-primary button-small" onClick={() => void savePath()}>Save directory</button>
+            <button className="button button-ghost button-small" onClick={() => setEditingPath(false)}>Cancel</button>
+          </>
+        ) : (
+          <button className="button button-ghost button-small" onClick={() => { setPath(props.source.path); setEditingPath(true); }}>Edit directory</button>
+        )}
+      </div>
+      <div className="toolbar">
+        <span className="muted">Required posts per week: {weekly?.target_value ?? 1} · Week starts Monday (Europe/Dublin) · Tracking from first sync, no retrospective backfill</span>
+        {editingTarget ? (
+          <>
+            <input value={target} onChange={(event) => setTarget(event.target.value)} inputMode="decimal" aria-label="Required posts per week" style={{ width: "80px" }} />
+            <button className="button button-primary button-small" onClick={() => void saveTarget()}>Save requirement</button>
+            <button className="button button-ghost button-small" onClick={() => setEditingTarget(false)}>Cancel</button>
+          </>
+        ) : weekly ? (
+          <button className="button button-ghost button-small" onClick={() => { setTarget(String(weekly.target_value ?? 1)); setEditingTarget(true); }}>Edit requirement</button>
+        ) : null}
+      </div>
+      {recent.slice(0, 5).map((post) => (
+        <p key={String(post.identity ?? post.relpath)} className="row-line">
+          <strong>{String(post.title ?? post.identity)}</strong>
+          <span className="muted"> · {String(post.date ?? "").slice(0, 10)}{post.topic ? ` · ${String(post.topic)}` : ""}</span>
+          <br />
+          <code>{String(post.relpath ?? "")}</code>
+        </p>
+      ))}
     </Section>
   );
 }

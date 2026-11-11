@@ -1,0 +1,31 @@
+{
+ "id": "P40",
+ "sha": "48573f3d96634223",
+ "detector_version": "expo-v1",
+ "prompt_version": "expo-sem-v1+d40fa9e4",
+ "requested_model": "opencode-go/deepseek-v4.1-flash",
+ "actual_model": "opencode-go/deepseek-v4.1-flash",
+ "route_resolution": "configured",
+ "transport": "file",
+ "latency_s": 17.9,
+ "usage": {
+  "input_tokens": 4522,
+  "output_tokens": 295,
+  "total_tokens": 4817,
+  "cost_usd": 0.0,
+  "accounting": "provider_reported"
+ },
+ "provider_status": "ok",
+ "provider_error": null,
+ "status": "ok",
+ "score": 0.0,
+ "verdict": "NO_ISSUE",
+ "severity": "NONE",
+ "confidence": null,
+ "main_explanation": "",
+ "diagnosis": "SEMANTICALLY_REJECTED",
+ "quote": "",
+ "validation_state": "SEMANTICALLY_REJECTED",
+ "model": "opencode-go/deepseek-v4.1-flash",
+ "raw_response": "# rationale\nThe passage is short, linear, and self-contained: it defines greedy decoding, states the immediate consequence for the next forward pass, and illustrates the cost with one concrete example. There are no competing distinctions, defensive caveats, or interruptions, so the conceptual load is proportionate to the explanation.\n\n# score\n0.02\n\n# answer\n{\n  \"verdict\": \"NO_ISSUE\",\n  \"severity\": \"NONE\",\n  \"confidence\": 0.96,\n  \"main_explanation\": \"The passage explains why greedy decoding is sequential and illustrates the resulting per-token forward-pass cost.\",\n  \"diagnosis\": \"The explanation is compact and well ordered: definition, causal consequence, then a concrete example. No qualification interrupts the main claim, and the technical dependency is stated immediately after the definition.\",\n  \"essential_qualifications\": [],\n  \"premature_or_repeated_qualifications\": [],\n  \"proposed_strategy\": \"NO_CHANGE\",\n  \"quote\": \"Greedy decoding selects the highest-scoring token at each step and appends it to the input. The next forward pass therefore conditions on all previously selected tokens. Example: generating sixteen tokens requires sixteen sequential forward passes plus one for the prompt.\",\n  \"uncertainty\": \"None material; the example assumes standard naive autoregressive decoding without caching or parallel decoding, but the passage's scope makes that assumption reasonable.\"\n}"
+}

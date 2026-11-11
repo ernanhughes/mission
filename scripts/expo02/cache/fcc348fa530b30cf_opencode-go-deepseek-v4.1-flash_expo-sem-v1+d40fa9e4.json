@@ -1,0 +1,31 @@
+{
+ "id": "P05",
+ "sha": "fcc348fa530b30cf",
+ "detector_version": "expo-v1",
+ "prompt_version": "expo-sem-v1+d40fa9e4",
+ "requested_model": "opencode-go/deepseek-v4.1-flash",
+ "actual_model": "opencode-go/deepseek-v4.1-flash",
+ "route_resolution": "configured",
+ "transport": "file",
+ "latency_s": 23.4,
+ "usage": {
+  "input_tokens": 4679,
+  "output_tokens": 710,
+  "total_tokens": 5389,
+  "cost_usd": 0.0,
+  "accounting": "provider_reported"
+ },
+ "provider_status": "ok",
+ "provider_error": null,
+ "status": "ok",
+ "score": 0.0,
+ "verdict": "NO_ISSUE",
+ "severity": "NONE",
+ "confidence": null,
+ "main_explanation": "",
+ "diagnosis": "SEMANTICALLY_REJECTED",
+ "quote": "",
+ "validation_state": "SEMANTICALLY_REJECTED",
+ "model": "opencode-go/deepseek-v4.1-flash",
+ "raw_response": "# rationale\n\n**Main explanatory purpose:** To establish that performance, output quality and implementation correctness are three separate axes for evaluating a single request to a model, and to preview that this chapter supplies the vocabulary and first measurement for that separation.\n\n**What the reader should understand:** That \"fast,\" \"useful\" and \"correct\" are independent properties; that conflating them produces specific errors (tuning the sampler for latency, optimising a kernel for a prompt, treating repeatability as soundness); and that the chapter equips them to report, for one request, which stages ran, what was real versus simulated computation, where time went, and what the measurement cannot establish.\n\n**Supporting claims:** The three definitions in sequence (performance = time/resource cost under a declared workload; quality = usefulness of generated text for its task; correctness = adherence of tokenisation, forward computation, token selection and stopping to specified rules), plus the independence illustration (\"One run can be fast but wrong, slow but correct, or correct yet unhelpful\") and the engineer-confusion example that makes the cost of conflation concrete.\n\n**Qualifications:** The forward reference to later chapters adding \"explicit tests and task metrics\" and the closing clause \"what the measurement does not let you conclude\" are essential, not premature — they are scoped as chapter goals and placed after the distinction is established, so they prevent overclaiming rather than interrupting the explanation.\n\n**Necessity of difficulty:** The density is genuine but earned: three technical axes require three definitions and their independence must be shown by example. No sentence is burdened by defensive framing, methodological caveats or rebuttal before the claim lands; the caveats arrive only at the end, where they belong.\n\n**Reordering:** The passage already runs purpose → definitions → independence → misuse consequence → chapter preview → learning outcomes, which is close to optimal. Reordering would not materially help.\n\nNo obstruction found.\n\n# score\n\n0.12\n\n# answer\n\n```json\n{\n  \"verdict\": \"NO_ISSUE\",\n  \"severity\": \"NONE\",\n  \"confidence\": 0.88,\n  \"main_explanation\": \"To establish performance, output quality and implementation correctness as three independent axes for evaluating one model request, and to preview the vocabulary and first measurement the chapter supplies.\",\n  \"diagnosis\": \"The passage is dense but structurally disciplined: it names three axes, defines each in one sentence, demonstrates their independence with a compact example, shows the practical cost of conflating them, then closes with a scoped forward reference and concrete learning outcomes. Qualifications appear only after the distinction is established, so they do not pre-empt the claim. Nothing is defensive, digressive, or prematurely hedged; the technical density is required by the subject matter rather than imposed on it.\",\n  \"essential_qualifications\": [\n    \"Later chapters will add explicit tests and task metrics instead of treating any one of these observations as a substitute for the others.\",\n    \"what the measurement does not let you conclude\"\n  ],\n  \"premature_or_repeated_qualifications\": [],\n  \"proposed_strategy\": \"NO_CHANGE\",\n  \"quote\": \"\",\n  \"uncertainty\": \"Whether the opening sentence's emphasis on keeping the three axes separate reads as a fourth claim needing support, rather than as a framing sentence licensed by the definitions that immediately follow; a stricter evaluator might score slightly higher on density alone.\"\n}\n```"
+}

@@ -1,0 +1,31 @@
+{
+ "id": "P30",
+ "sha": "212df5de5a6b72e8",
+ "detector_version": "expo-v1",
+ "prompt_version": "expo-sem-v1+d40fa9e4",
+ "requested_model": "opencode-go/deepseek-v4.1-flash",
+ "actual_model": "opencode-go/deepseek-v4.1-flash",
+ "route_resolution": "configured",
+ "transport": "file",
+ "latency_s": 59.4,
+ "usage": {
+  "input_tokens": 4728,
+  "output_tokens": 449,
+  "total_tokens": 5177,
+  "cost_usd": 0.0,
+  "accounting": "provider_reported"
+ },
+ "provider_status": "ok",
+ "provider_error": null,
+ "status": "ok",
+ "score": 0.0,
+ "verdict": "NO_ISSUE",
+ "severity": "NONE",
+ "confidence": null,
+ "main_explanation": "",
+ "diagnosis": "SEMANTICALLY_REJECTED",
+ "quote": "",
+ "validation_state": "SEMANTICALLY_REJECTED",
+ "model": "opencode-go/deepseek-v4.1-flash",
+ "raw_response": "# rationale\nThe paragraph has a clear expository arc: it establishes the flexibility of existing schema/view systems, narrows to the cross-application coordination problem, illustrates that gap with a spreadsheet beside a dashboard, and closes by correcting the likely misreading that models and views are simply frozen. The final clarification sharpens the claim rather than interrupting it. The density is moderate, and the distinctions are few, ordered, and motivated.\n\n# score\n0.08\n\n# answer\n{\n  \"verdict\": \"NO_ISSUE\",\n  \"severity\": \"NONE\",\n  \"confidence\": 0.93,\n  \"main_explanation\": \"To identify a remaining gap: even when applications support pre-designed schemas, custom views, dashboards, or ad hoc queries, coordinating application-specific models for evolving cross-application tasks and turning new task structures into usable interfaces still requires design or programming work.\",\n  \"diagnosis\": \"No overload. The passage moves from background to the specific problem, then to an example, then to a corrective clarification. The 'not frozen' caveat is essential and positioned late enough to prevent misreading without interrupting the main claim. No repetition or defensive digression obstructs comprehension.\",\n  \"essential_qualifications\": [\n    \"In many conventional applications\",\n    \"even while the *data* changes continually\",\n    \"a narrower remaining problem\",\n    \"The limitation is not that all models and views are frozen.\"\n  ],\n  \"premature_or_repeated_qualifications\": [],\n  \"proposed_strategy\": \"NO_CHANGE\",\n  \"quote\": \"What Cao, Jiang and Xia identify is a narrower remaining problem: people often have to coordinate several application-specific models to complete an evolving, cross-application information task. A spreadsheet assembled beside a dashboard is one familiar symptom. The limitation is not that all models and views are frozen. It is that inventing a new task structure and turning it into a usable interface still often requires design or programming work.\",\n  \"uncertainty\": \"Whether the reference to Cao, Jiang and Xia is clear enough without the surrounding chapter; within this passage, that is the only possible source of mild friction.\"\n}"
+}

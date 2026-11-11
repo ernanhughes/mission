@@ -1,0 +1,31 @@
+{
+ "id": "P29",
+ "sha": "2701465aee1526eb",
+ "detector_version": "expo-v1",
+ "prompt_version": "expo-sem-v1+d40fa9e4",
+ "requested_model": "opencode-go/deepseek-v4.1-flash",
+ "actual_model": "opencode-go/deepseek-v4.1-flash",
+ "route_resolution": "configured",
+ "transport": "file",
+ "latency_s": 14.8,
+ "usage": {
+  "input_tokens": 4839,
+  "output_tokens": 283,
+  "total_tokens": 5122,
+  "cost_usd": 0.0,
+  "accounting": "provider_reported"
+ },
+ "provider_status": "ok",
+ "provider_error": null,
+ "status": "ok",
+ "score": 0.0,
+ "verdict": "NO_ISSUE",
+ "severity": "NONE",
+ "confidence": null,
+ "main_explanation": "",
+ "diagnosis": "SEMANTICALLY_REJECTED",
+ "quote": "",
+ "validation_state": "SEMANTICALLY_REJECTED",
+ "model": "opencode-go/deepseek-v4.1-flash",
+ "raw_response": "# rationale\nThe paragraph is dense but not obstructive. It moves coherently from the candidate/interface distinction, to two control examples, to their shared limit, to the reader operations required, and finally to the claim that correction demands revalidation. The qualifications are load-bearing rather than premature, and the order is logical.\n\n# score\n0.1\n\n# answer\n{\n  \"verdict\": \"NO_ISSUE\",\n  \"severity\": \"NONE\",\n  \"confidence\": 0.78,\n  \"main_explanation\": \"\",\n  \"diagnosis\": \"Technical density is high, but each sentence advances one claim; the caveats are the argument itself, not interruptions, and no reordering would materially improve comprehension.\",\n  \"essential_qualifications\": [\n    \"These are different forms of control, and neither alone establishes factual correctness.\",\n    \"A changed layout is not evidence that a mistaken relation has been repaired.\",\n    \"Correction requires a fresh check against the same preservation obligations.\"\n  ],\n  \"premature_or_repeated_qualifications\": [],\n  \"proposed_strategy\": \"NO_CHANGE\",\n  \"quote\": \"\",\n  \"uncertainty\": \"Whether 'preservation obligations' is defined earlier in the chapter; if not, that term may warrant a brief gloss, but that is a local clarity issue rather than expository overload.\"\n}"
+}

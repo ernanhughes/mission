@@ -1,0 +1,31 @@
+{
+ "id": "P27",
+ "sha": "85bca93a959d651c",
+ "detector_version": "expo-v1",
+ "prompt_version": "expo-sem-v1+d40fa9e4",
+ "requested_model": "opencode-go/deepseek-v4.1-flash",
+ "actual_model": "opencode-go/deepseek-v4.1-flash",
+ "route_resolution": "configured",
+ "transport": "file",
+ "latency_s": 15.5,
+ "usage": {
+  "input_tokens": 720,
+  "output_tokens": 246,
+  "total_tokens": 966,
+  "cost_usd": 0.0,
+  "accounting": "provider_reported"
+ },
+ "provider_status": "ok",
+ "provider_error": null,
+ "status": "ok",
+ "score": 0.0,
+ "verdict": "NO_ISSUE",
+ "severity": "NONE",
+ "confidence": null,
+ "main_explanation": "",
+ "diagnosis": "SEMANTICALLY_REJECTED",
+ "quote": "",
+ "validation_state": "SEMANTICALLY_REJECTED",
+ "model": "opencode-go/deepseek-v4.1-flash",
+ "raw_response": "# rationale\nThe passage makes one explanatory point—purpose determines what a reader needs—then illustrates it with two contrasting examples and closes with a limit on the claim. The qualification comes after the main point is established, and the density is low; there is no avoidable compression or interruption.\n\n# score\n0.0\n\n# answer\n{\n  \"verdict\": \"NO_ISSUE\",\n  \"severity\": \"NONE\",\n  \"confidence\": 0.93,\n  \"main_explanation\": \"\",\n  \"diagnosis\": \"The passage is concise and well ordered: claim, concrete examples, implication, then qualification. The final caveat is necessary and correctly placed after the explanation, not before it.\",\n  \"essential_qualifications\": [\n    \"It does not authorise the mediator to change the underlying facts to make the task easier.\"\n  ],\n  \"premature_or_repeated_qualifications\": [],\n  \"proposed_strategy\": \"NO_CHANGE\",\n  \"quote\": \"\",\n  \"uncertainty\": \"Whether the final sentence is a qualification or part of the main claim depends on surrounding context, but within this excerpt it is well placed.\"\n}"
+}

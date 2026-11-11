@@ -1,0 +1,31 @@
+{
+ "id": "P19",
+ "sha": "8aeb0d644e19e161",
+ "detector_version": "expo-v1",
+ "prompt_version": "expo-sem-v1+d40fa9e4",
+ "requested_model": "opencode-go/deepseek-v4.1-flash",
+ "actual_model": "opencode-go/deepseek-v4.1-flash",
+ "route_resolution": "configured",
+ "transport": "file",
+ "latency_s": 19.6,
+ "usage": {
+  "input_tokens": 708,
+  "output_tokens": 329,
+  "total_tokens": 1037,
+  "cost_usd": 0.0,
+  "accounting": "provider_reported"
+ },
+ "provider_status": "ok",
+ "provider_error": null,
+ "status": "ok",
+ "score": 0.0,
+ "verdict": "NO_ISSUE",
+ "severity": "NONE",
+ "confidence": null,
+ "main_explanation": "",
+ "diagnosis": "SEMANTICALLY_REJECTED",
+ "quote": "",
+ "validation_state": "SEMANTICALLY_REJECTED",
+ "model": "opencode-go/deepseek-v4.1-flash",
+ "raw_response": "# rationale\nThe passage is brief and well-structured: it introduces pseudocode, immediately explains the abstraction represented by `forward_last_position`, notes the extra requirements of a real implementation, and points to a runnable example. The qualifications are necessary to prevent the pseudocode from being mistaken for a complete implementation. There is no repeated interruption or excessive compression.\n\n# score\n0.05\n\n# answer\n{\n  \"verdict\": \"NO_ISSUE\",\n  \"severity\": \"NONE\",\n  \"confidence\": 0.95,\n  \"main_explanation\": \"\",\n  \"diagnosis\": \"The passage is compact and appropriately qualified for a technical audience. It clearly distinguishes pseudocode from a real Hugging Face implementation and directs the reader to executable code.\",\n  \"essential_qualifications\": [\n    \"`forward_last_position` stands for a backend-specific call that returns next-token logits\",\n    \"a real Hugging Face implementation needs tensors, batch dimensions, the model's output structure and a decision about caching\"\n  ],\n  \"premature_or_repeated_qualifications\": [],\n  \"proposed_strategy\": \"NO_CHANGE\",\n  \"quote\": \"The dependency can be written as short **pseudocode**. `forward_last_position` stands for a backend-specific call that returns next-token logits; a real Hugging Face implementation needs tensors, batch dimensions, the model's output structure and a decision about caching.\",\n  \"uncertainty\": \"Minimal; the isolated passage provides limited surrounding context, but nothing within it is structurally obstructive.\"\n}"
+}
