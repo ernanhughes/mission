@@ -1,0 +1,31 @@
+{
+ "id": "P22",
+ "sha": "4584b005cc00df7c",
+ "detector_version": "expo-v1",
+ "prompt_version": "expo-sem-v1+d40fa9e4",
+ "requested_model": "opencode-go/deepseek-v4.1-flash",
+ "actual_model": "opencode-go/deepseek-v4.1-flash",
+ "route_resolution": "configured",
+ "transport": "file",
+ "latency_s": 31.3,
+ "usage": {
+  "input_tokens": 1569,
+  "output_tokens": 631,
+  "total_tokens": 2200,
+  "cost_usd": 0.0,
+  "accounting": "provider_reported"
+ },
+ "provider_status": "ok",
+ "provider_error": null,
+ "status": "ok",
+ "score": 0.0,
+ "verdict": "NO_ISSUE",
+ "severity": "NONE",
+ "confidence": null,
+ "main_explanation": "",
+ "diagnosis": "SEMANTICALLY_REJECTED",
+ "quote": "",
+ "validation_state": "SEMANTICALLY_REJECTED",
+ "model": "opencode-go/deepseek-v4.1-flash",
+ "raw_response": "# rationale\n\nThe passage has a single, explicit thesis — the three `simulated_stages` labels mark three *different kinds* of substitution — stated in its first two sentences, then cashed out in three strictly parallel bullets. Each bullet leads with the label, names its epistemic status in bold, and gives one supporting clarification. There is no re-interruption of an unfinished claim, no defensive framing, and no caveat planted before the reader knows what is being caveated: the clarifications (\"not learned transformer layers\", \"artificial scores rather than a trained distribution\", \"absent capability\") *are* the explanation, not digressions from it. The technical density is inherent to the subject and is controlled by the enumeration, so the difficulty is necessary rather than avoidable. No reordering would improve on claim-then-item-then-gloss.\n\n# score\n\n0.08\n\n# answer\n\n```json\n{\n  \"verdict\": \"NO_ISSUE\",\n  \"severity\": \"NONE\",\n  \"confidence\": 0.85,\n  \"main_explanation\": \"\",\n  \"diagnosis\": \"This is a short, parallel three-item taxonomy: the framing claim is stated up front, and each bullet names one label, assigns it a category, then gives a single supporting clarification. The qualifications are the substance of the explanation rather than interruptions to it, and no claim is left dangling while a caveat is inserted. Density is intrinsic to distinguishing surrogate from real computation and is handled by the list structure, so there is no compression or interruption defect.\",\n  \"essential_qualifications\": [\n    \"a table lookup, bias addition and softmax over 57 characters\",\n    \"selects from artificial scores rather than a trained language-model distribution\",\n    \"The toy only examines the preceding character and has no attention history to cache.\"\n  ],\n  \"premature_or_repeated_qualifications\": [],\n  \"proposed_strategy\": \"NO_CHANGE\",\n  \"quote\": \"The toy result's `simulated_stages` field contains three labels. They do not all describe the same kind of substitution:\",\n  \"uncertainty\": \"Whether the source file separates the bullet items with blank lines; I restricted the quote to the first single-line span to avoid a whitespace mismatch. Also whether the grader treats the three absences/negations as qualifications rather than as the claims themselves.\"\n}\n```"
+}

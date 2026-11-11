@@ -1,0 +1,31 @@
+{
+ "id": "P26",
+ "sha": "25e1cff655276aa1",
+ "detector_version": "expo-v1",
+ "prompt_version": "expo-sem-v1+d40fa9e4",
+ "requested_model": "opencode-go/deepseek-v4.1-flash",
+ "actual_model": "opencode-go/deepseek-v4.1-flash",
+ "route_resolution": "configured",
+ "transport": "file",
+ "latency_s": 18.1,
+ "usage": {
+  "input_tokens": 726,
+  "output_tokens": 498,
+  "total_tokens": 1224,
+  "cost_usd": 0.0,
+  "accounting": "provider_reported"
+ },
+ "provider_status": "ok",
+ "provider_error": null,
+ "status": "ok",
+ "score": 0.0,
+ "verdict": "NO_ISSUE",
+ "severity": "NONE",
+ "confidence": null,
+ "main_explanation": "",
+ "diagnosis": "SEMANTICALLY_REJECTED",
+ "quote": "",
+ "validation_state": "SEMANTICALLY_REJECTED",
+ "model": "opencode-go/deepseek-v4.1-flash",
+ "raw_response": "# rationale\n\nThe passage is short (four sentences) and each sentence performs exactly one move: (1) identify the backend, (2) state what it does, (3) state that it passes the declared tolerance while noting the bit-level difference, (4) draw the one conclusion that difference licenses. The single qualification (\"the batched arithmetic can differ in its least significant bits...\") is not a defensive interruption — it is the premise the final sentence depends on, and it is placed immediately before that conclusion. No caveat is repeated, none is front-loaded before the claim it protects, and the compressed density is appropriate to a technical reference note where the reader is presumed to know what float64 tolerance and bitwise invariance mean. Difficulties here are inherent to the subject (numerical precision, batch vs. single-row equivalence), not artifacts of ordering or padding.\n\n# score\n\n0.10\n\n# answer\n\n```json\n{\n  \"verdict\": \"NO_ISSUE\",\n  \"severity\": \"NONE\",\n  \"confidence\": 0.87,\n  \"main_explanation\": \"\",\n  \"diagnosis\": \"Four sentences, four discrete moves, with the tolerance caveat positioned directly before the conclusion it supports; the density is domain-necessary rather than structurally overloaded.\",\n  \"essential_qualifications\": [\n    \"It satisfies the batched checks within the declared float64 tolerance, but the batched arithmetic can differ in its least significant bits from an otherwise equivalent single-row call.\",\n    \"even when token choices happen to agree\"\n  ],\n  \"premature_or_repeated_qualifications\": [],\n  \"proposed_strategy\": \"NO_CHANGE\",\n  \"quote\": \"`BatchedTinyBackend` supplies a CPU reference path. It groups projections and feed-forward work into matrix operations across rows while evaluating attention against each sequence's separate cache. It satisfies the batched checks within the declared float64 tolerance, but the batched arithmetic can differ in its least significant bits from an otherwise equivalent single-row call. That is enough to forbid an unqualified **bitwise batch invariance** claim, even when token choices happen to agree.\",\n  \"uncertainty\": \"The third sentence bundles a pass/fail result with a precision caveat in one compound clause, which a stricter reading could call mild compression; I judged it as a single warranted qualification because the final sentence consumes it directly.\"\n}\n```"
+}

@@ -1,0 +1,99 @@
+{
+ "n_passages": 46,
+ "n_semantic_evaluated": 46,
+ "n_missing": 0,
+ "missing_ids": [],
+ "approaches": [
+  {
+   "approach": "deterministic-only",
+   "n_adjudicated": 37,
+   "tp": 3,
+   "fp": 4,
+   "fn": 5,
+   "tn": 25,
+   "precision": 0.429,
+   "recall": 0.375
+  },
+  {
+   "approach": "semantic-only",
+   "n_adjudicated": 37,
+   "tp": 1,
+   "fp": 2,
+   "fn": 7,
+   "tn": 27,
+   "precision": 0.333,
+   "recall": 0.125
+  },
+  {
+   "approach": "hybrid",
+   "n_adjudicated": 37,
+   "tp": 0,
+   "fp": 0,
+   "fn": 8,
+   "tn": 29,
+   "precision": null,
+   "recall": 0.0
+  }
+ ],
+ "deterministic_false_positives": [
+  "P04",
+  "P05",
+  "P06",
+  "P09"
+ ],
+ "deterministic_false_negatives": [
+  "P16",
+  "P23",
+  "P30",
+  "P36",
+  "P46"
+ ],
+ "semantic_false_positives": [
+  "P31",
+  "P37"
+ ],
+ "semantic_false_negatives": [
+  "P01",
+  "P02",
+  "P03",
+  "P16",
+  "P23",
+  "P30",
+  "P36"
+ ],
+ "uncertain_excluded": [
+  "P07",
+  "P08",
+  "P21",
+  "P24",
+  "P26",
+  "P29",
+  "P35",
+  "P44",
+  "P45"
+ ],
+ "invalid_evidence_ids": [],
+ "semantic_verdict_by_provisional_label": {
+  "EXPO_COMPRESSION": {
+   "UNCERTAIN": 1,
+   "NO_ISSUE": 2
+  },
+  "EXPO_INTERRUPTION": {
+   "EXPO_INTERRUPTION": 1
+  },
+  "NO_ISSUE": {
+   "MIXED": 1,
+   "EXPO_COMPRESSION": 6,
+   "NO_ISSUE": 27,
+   "UNCERTAIN": 8
+  }
+ },
+ "total_input_tokens": 167354,
+ "rule_semantic_agreement": {},
+ "latency_s": {
+  "n": 62,
+  "mean": 29.7,
+  "max": 169.6
+ },
+ "note": "All labels provisional (implementer single-reviewer). UNCERTAIN excluded from P/R. No validated accuracy claimed; no thresholds retuned."
+}

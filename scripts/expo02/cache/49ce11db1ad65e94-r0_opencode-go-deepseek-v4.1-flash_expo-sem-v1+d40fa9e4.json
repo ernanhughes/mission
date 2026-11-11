@@ -1,0 +1,31 @@
+{
+ "id": "P04",
+ "sha": "49ce11db1ad65e94",
+ "detector_version": "expo-v1",
+ "prompt_version": "expo-sem-v1+d40fa9e4",
+ "requested_model": "opencode-go/deepseek-v4.1-flash",
+ "actual_model": "opencode-go/deepseek-v4.1-flash",
+ "route_resolution": "configured",
+ "transport": "file",
+ "latency_s": 29.3,
+ "usage": {
+  "input_tokens": 780,
+  "output_tokens": 299,
+  "total_tokens": 1079,
+  "cost_usd": 0.0,
+  "accounting": "provider_reported"
+ },
+ "provider_status": "ok",
+ "provider_error": null,
+ "status": "ok",
+ "score": 0.0,
+ "verdict": "NO_ISSUE",
+ "severity": "NONE",
+ "confidence": null,
+ "main_explanation": "",
+ "diagnosis": "SEMANTICALLY_REJECTED",
+ "quote": "",
+ "validation_state": "SEMANTICALLY_REJECTED",
+ "model": "opencode-go/deepseek-v4.1-flash",
+ "raw_response": "# rationale\nThe paragraph establishes three parallel evaluation axes, illustrates their independence, and states the practical cost of conflating them. The one real qualification—performance depends on a declared workload—is necessary and placed inside the definition it limits. Density is high but controlled; no caveat or rebuttal interrupts the explanation, and reordering would not materially improve comprehension.\n\n# score\n0.08\n\n# answer\n{\n  \"verdict\": \"NO_ISSUE\",\n  \"severity\": \"NONE\",\n  \"confidence\": 0.9,\n  \"main_explanation\": \"\",\n  \"diagnosis\": \"The paragraph is dense but coherent: a topic claim, three parallel definitions, an independence example, and the consequence of conflating the axes. No qualification interrupts the explanation; the workload caveat is essential and correctly placed.\",\n  \"essential_qualifications\": [\n    \"under a declared workload\"\n  ],\n  \"premature_or_repeated_qualifications\": [],\n  \"proposed_strategy\": \"NO_CHANGE\",\n  \"quote\": \"Performance asks how long and at what resource cost the computation ran under a declared workload. Quality asks whether the generated text was useful for its task. Correctness asks whether tokenisation, forward computation, token selection and stopping followed their specified rules.\",\n  \"uncertainty\": \"Some readers may prefer a concrete example after each axis, but the parallel structure and short length make genuine overload unlikely.\"\n}"
+}

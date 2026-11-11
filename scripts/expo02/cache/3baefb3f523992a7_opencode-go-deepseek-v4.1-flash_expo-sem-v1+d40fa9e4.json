@@ -1,0 +1,31 @@
+{
+ "id": "P20",
+ "sha": "3baefb3f523992a7",
+ "detector_version": "expo-v1",
+ "prompt_version": "expo-sem-v1+d40fa9e4",
+ "requested_model": "opencode-go/deepseek-v4.1-flash",
+ "actual_model": "opencode-go/deepseek-v4.1-flash",
+ "route_resolution": "configured",
+ "transport": "file",
+ "latency_s": 28.0,
+ "usage": {
+  "input_tokens": 4642,
+  "output_tokens": 518,
+  "total_tokens": 5160,
+  "cost_usd": 0.0,
+  "accounting": "provider_reported"
+ },
+ "provider_status": "ok",
+ "provider_error": null,
+ "status": "ok",
+ "score": 0.0,
+ "verdict": "NO_ISSUE",
+ "severity": "NONE",
+ "confidence": null,
+ "main_explanation": "",
+ "diagnosis": "SEMANTICALLY_REJECTED",
+ "quote": "",
+ "validation_state": "SEMANTICALLY_REJECTED",
+ "model": "opencode-go/deepseek-v4.1-flash",
+ "raw_response": "# rationale\n\nThe passage has a single, clear comparative job: it tells the reader that the **toy** path and the **real-model** path instrument the same `GenerationResult` protocol differently. The order is sound — context, toy enumeration, real-path differences, then the takeaway that shared types do not imply shared instrumentation. The one caveat that matters (\"A common result type does not imply identical instrumentation...\") arrives *after* both descriptions are established, so it functions as a conclusion rather than a premature hedge. Density is real but warranted: distinguishing stage-level instrumentation requires naming the stages and the merge/omission. The opening sentence about production concerns is mildly extraneous to the toy-vs-real comparison and \"These seven stages\" imposes a small counting burden, but neither derails comprehension for the stated technical profile.\n\n# score\n\n0.18\n\n# answer\n\n```json\n{\n  \"verdict\": \"NO_ISSUE\",\n  \"severity\": \"NONE\",\n  \"confidence\": 0.62,\n  \"main_explanation\": \"\",\n  \"diagnosis\": \"The paragraph is dense but well-ordered for a technical reader: it states the toy path's seven timed stages, then the real-model path's merged/omitted stages, then draws the correct implication. The key caveat about a shared result type not implying identical instrumentation is placed after the supporting description, so it concludes rather than interrupts. Difficulty is largely necessary because the distinction is itself a list of stage-level differences. Minor friction comes from the opening production-systems sentence, which introduces a third frame never used, and from 'These seven stages', which asks the reader to count back, but neither makes the explanation hard to follow.\",\n  \"essential_qualifications\": [\n    \"It does not report `request_parse` or `response_format` as separate measurements.\",\n    \"A common result type does not imply identical instrumentation, so stage-by-stage comparisons must first align definitions.\"\n  ],\n  \"premature_or_repeated_qualifications\": [],\n  \"proposed_strategy\": \"NO_CHANGE\",\n  \"quote\": \"A common result type does not imply identical instrumentation, so stage-by-stage comparisons must first align definitions.\",\n  \"uncertainty\": \"Whether the lead sentence about production scheduling/batching/telemetry is intended as scoped context for the chapter or is stray framing; if stray, a very mild LOW-severity compression flag could be argued, but the paragraph still reads clearly without it.\"\n}\n```"
+}

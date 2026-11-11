@@ -1,0 +1,31 @@
+{
+ "id": "P04",
+ "sha": "49ce11db1ad65e94",
+ "detector_version": "expo-v1",
+ "prompt_version": "expo-sem-v1+d40fa9e4",
+ "requested_model": "opencode-go/deepseek-v4.1-flash",
+ "actual_model": "opencode-go/deepseek-v4.1-flash",
+ "route_resolution": "configured",
+ "transport": "file",
+ "latency_s": 18.9,
+ "usage": {
+  "input_tokens": 4620,
+  "output_tokens": 377,
+  "total_tokens": 4997,
+  "cost_usd": 0.0,
+  "accounting": "provider_reported"
+ },
+ "provider_status": "ok",
+ "provider_error": null,
+ "status": "ok",
+ "score": 0.0,
+ "verdict": "NO_ISSUE",
+ "severity": "NONE",
+ "confidence": null,
+ "main_explanation": "",
+ "diagnosis": "SEMANTICALLY_REJECTED",
+ "quote": "",
+ "validation_state": "SEMANTICALLY_REJECTED",
+ "model": "opencode-go/deepseek-v4.1-flash",
+ "raw_response": "# rationale\nThe passage has a single, clear expository job: define three evaluation axes (performance, quality, correctness) and warn against conflating them. Each definition is parallel and immediately usable, the cross-product example (“fast but wrong, slow but correct, correct yet unhelpful”) illustrates the distinction without adding a new claim, and the engineer example shows the practical cost of confusion. The early qualifier “under a declared workload” is a necessary scoping condition, not a defensive interruption, and the forward reference to later tests closes the paragraph rather than derailing it. Density is moderate and serviced by parallel structure, so the difficulty is intrinsic to the material, not an artifact of compression or interruption.\n\n# score\n0.05\n\n# answer\n{\n  \"verdict\": \"NO_ISSUE\",\n  \"severity\": \"NONE\",\n  \"confidence\": 0.86,\n  \"main_explanation\": \"To distinguish performance, output quality, and implementation correctness as separate evaluation axes so engineers do not use one to diagnose or excuse another.\",\n  \"diagnosis\": \"The paragraph defines three axes in parallel, illustrates their independence with a compact cross-product example, and closes with a practical warning and forward reference. The workload qualifier is positioned early to prevent misreading, and no caveat or rebuttal interrupts the main explanation.\",\n  \"essential_qualifications\": [\n    \"under a declared workload\",\n    \"instead of treating any one of these observations as a substitute for the others\"\n  ],\n  \"premature_or_repeated_qualifications\": [],\n  \"proposed_strategy\": \"NO_CHANGE\",\n  \"quote\": \"\",\n  \"uncertainty\": \"Whether the bold emphasis and the opening frame 'Most of this book' are part of the intended prose; neither affects the verdict.\"\n}"
+}

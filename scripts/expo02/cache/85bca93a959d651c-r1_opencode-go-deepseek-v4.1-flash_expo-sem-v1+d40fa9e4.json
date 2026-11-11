@@ -1,0 +1,31 @@
+{
+ "id": "P27",
+ "sha": "85bca93a959d651c",
+ "detector_version": "expo-v1",
+ "prompt_version": "expo-sem-v1+d40fa9e4",
+ "requested_model": "opencode-go/deepseek-v4.1-flash",
+ "actual_model": "opencode-go/deepseek-v4.1-flash",
+ "route_resolution": "configured",
+ "transport": "file",
+ "latency_s": 6.1,
+ "usage": {
+  "input_tokens": 2378,
+  "output_tokens": 400,
+  "total_tokens": 2778,
+  "cost_usd": 0.0,
+  "accounting": "provider_reported"
+ },
+ "provider_status": "ok",
+ "provider_error": null,
+ "status": "ok",
+ "score": 0.0,
+ "verdict": "NO_ISSUE",
+ "severity": "NONE",
+ "confidence": null,
+ "main_explanation": "",
+ "diagnosis": "SEMANTICALLY_REJECTED",
+ "quote": "",
+ "validation_state": "SEMANTICALLY_REJECTED",
+ "model": "opencode-go/deepseek-v4.1-flash",
+ "raw_response": "# rationale\nThe paragraph states its topic immediately (\"People read for something\"), illustrates it with two contrasting readers, then delivers the governing principle (\"Purpose supplies the success criterion\") and closes with a single guard against misreading that principle (\"It does not authorise the mediator to change the underlying facts\"). The qualification arrives *after* the claim it limits, which is the correct order; it prevents an obvious overreach rather than interrupting an unfinished explanation. There is no dense pile-up of distinctions, no premature caveat blocking the main point, and no repeated defensive framing. The examples do real work (they make \"purpose\" concrete) and are short. The difficulty is minimal and load-bearing: one principle plus one boundary condition. Reordering would not improve comprehension, and splitting would only fragment a tight unit.\n\n# score\n0.08\n\n# answer\n```json\n{\n  \"verdict\": \"NO_ISSUE\",\n  \"severity\": \"NONE\",\n  \"confidence\": 0.86,\n  \"main_explanation\": \"\",\n  \"diagnosis\": \"A short, correctly ordered explanation: topic claim, two concrete reader examples, the governing principle, then one necessary limitation placed after the claim it restricts. No compression of competing distinctions and no interruption of the main line before it is established.\",\n  \"essential_qualifications\": [\n    \"It does not authorise the mediator to change the underlying facts to make the task easier.\"\n  ],\n  \"premature_or_repeated_qualifications\": [],\n  \"proposed_strategy\": \"NO_CHANGE\",\n  \"quote\": \"Purpose supplies the success criterion. It does not authorise the mediator to change the underlying facts to make the task easier.\",\n  \"uncertainty\": \"The excerpt begins mid-section (\\\"**Purpose.**\\\") with no surrounding context, so I cannot confirm whether the qualification about not altering facts has already been stated elsewhere and is therefore redundant here.\"\n}\n```"
+}

@@ -1,0 +1,31 @@
+{
+ "id": "P13",
+ "sha": "f0d0a31fbb7f0c18",
+ "detector_version": "expo-v1",
+ "prompt_version": "expo-sem-v1+d40fa9e4",
+ "requested_model": "opencode-go/deepseek-v4.1-flash",
+ "actual_model": "opencode-go/deepseek-v4.1-flash",
+ "route_resolution": "configured",
+ "transport": "file",
+ "latency_s": 36.8,
+ "usage": {
+  "input_tokens": 1225,
+  "output_tokens": 807,
+  "total_tokens": 2032,
+  "cost_usd": 0.0,
+  "accounting": "provider_reported"
+ },
+ "provider_status": "ok",
+ "provider_error": null,
+ "status": "ok",
+ "score": 0.0,
+ "verdict": "NO_ISSUE",
+ "severity": "NONE",
+ "confidence": null,
+ "main_explanation": "",
+ "diagnosis": "SEMANTICALLY_REJECTED",
+ "quote": "",
+ "validation_state": "SEMANTICALLY_REJECTED",
+ "model": "opencode-go/deepseek-v4.1-flash",
+ "raw_response": "# rationale\n\nThe passage is a short, tightly scoped framing block, not a compressed explanation. It does one job: it pre-empts a misreading of an obviously meaningless output token string before that output gets discussed further. The order is already claim-first (this is a test fixture, and its meaninglessness is intentional), then scope limit (not evidence about model quality, hardware or serving), then the next unit of exposition (the three `simulated_stages` labels are not homogeneous). The negations are doing necessary preventive work — without them a reader would reasonably treat `RWPFdyxf` as a failed generation — and each is followed immediately by what the toy *is* for. There is no stack of nested distinctions, no caveat interrupting an unfinished argument, and no long sentence carrying multiple claims. High density is absent; the sentences are short and single-clause. The only mild friction is the repeated negative framing (\"meaningless\", \"not evidence\", \"do not all describe\"), but that framing is the paragraph's content rather than an interruption of it. The trailing colon indicates the enumerated explanation follows in the next span, which is outside this excerpt; judging only what is shown, the setup is orderly.\n\n# score\n\n0.15\n\n# answer\n\n```json\n{\n  \"verdict\": \"NO_ISSUE\",\n  \"severity\": \"NONE\",\n  \"confidence\": 0.72,\n  \"main_explanation\": \"To establish that the seed 7 toy output is a deliberately meaningless interface/timing test fixture rather than evidence about model quality, before introducing the three `simulated_stages` labels.\",\n  \"diagnosis\": \"Fine as written. The paragraph mixes claim and scope restriction in the correct order: what the toy is, then what it must not be taken to show, then the next point that the three labels are heterogeneous. The qualifiers are preventive rather than defensive padding, since the raw string `RWPFdyxf` invites exactly the misreading being blocked. Sentences are short and single-claim, and the negative framing is the substance of the passage rather than an interruption of a longer explanation.\",\n  \"essential_qualifications\": [\n    \"The toy is a test fixture for the interface and the timing harness.\",\n    \"It is not evidence about model quality, hardware or serving.\"\n  ],\n  \"premature_or_repeated_qualifications\": [],\n  \"proposed_strategy\": \"NO_CHANGE\",\n  \"quote\": \"The toy is a test fixture for the interface and the timing harness. It is not evidence about model quality, hardware or serving.\",\n  \"uncertainty\": \"The excerpt ends at a colon, so the enumerated explanation of the three `simulated_stages` labels is not visible; if that following span is where the distinctions pile up, the overload signal could sit there rather than here. Also, if the surrounding chapter has already made the test-fixture point, the second and third sentences would read as repetition rather than necessary scoping, but nothing in the quoted span shows that.\"\n}\n```"
+}

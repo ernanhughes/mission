@@ -1,0 +1,31 @@
+{
+ "id": "P30",
+ "sha": "212df5de5a6b72e8",
+ "detector_version": "expo-v1",
+ "prompt_version": "expo-sem-v1+d40fa9e4",
+ "requested_model": "opencode-go/deepseek-v4.1-flash",
+ "actual_model": "opencode-go/deepseek-v4.1-flash",
+ "route_resolution": "configured",
+ "transport": "file",
+ "latency_s": 27.6,
+ "usage": {
+  "input_tokens": 2422,
+  "output_tokens": 469,
+  "total_tokens": 2891,
+  "cost_usd": 0.0,
+  "accounting": "provider_reported"
+ },
+ "provider_status": "ok",
+ "provider_error": null,
+ "status": "ok",
+ "score": 0.0,
+ "verdict": "NO_ISSUE",
+ "severity": "NONE",
+ "confidence": null,
+ "main_explanation": "",
+ "diagnosis": "SEMANTICALLY_REJECTED",
+ "quote": "",
+ "validation_state": "SEMANTICALLY_REJECTED",
+ "model": "opencode-go/deepseek-v4.1-flash",
+ "raw_response": "# rationale\n\nThe passage is compact and linear: it establishes two baselines, narrows to the problem identified by Cao, Jiang and Xia, gives one example, then corrects a likely misreading and states the actual limitation. After reading, one should understand that the issue is not static schemas or missing view customization, but the remaining need for design or programming work to invent new cross-application task structures and turn them into usable interfaces. Each qualification does necessary scoping work; none interrupts an unestablished claim or repeats a caveat.\n\n# score\n\n0.05\n\n# answer\n\n{\n  \"verdict\": \"NO_ISSUE\",\n  \"severity\": \"NONE\",\n  \"confidence\": 0.88,\n  \"main_explanation\": \"To distinguish the remaining cross-application modeling problem from systems that merely change data or support user-built views: users still need design or programming work to create new task structures and usable interfaces.\",\n  \"diagnosis\": \"The passage is five sentences organized as baseline, contrast, problem, example, correction, and restatement. Technical terms are limited and clarified through contrast, while the single negative qualification prevents a false reading rather than interrupting the explanation.\",\n  \"essential_qualifications\": [\n    \"The clause noting that data still changes in conventional applications, which prevents overgeneralizing them as entirely static.\",\n    \"The reference to systems with user-built views and ad hoc queries, which narrows the claimed gap.\",\n    \"The clarification that the limitation is not that all models and views are frozen, which blocks an obvious misreading.\"\n  ],\n  \"premature_or_repeated_qualifications\": [],\n  \"proposed_strategy\": \"NO_CHANGE\",\n  \"quote\": \"What Cao, Jiang and Xia identify is a narrower remaining problem: people often have to coordinate several application-specific models to complete an evolving, cross-application information task. A spreadsheet assembled beside a dashboard is one familiar symptom. The limitation is not that all models and views are frozen. It is that inventing a new task structure and turning it into a usable interface still often requires design or programming work.\",\n  \"uncertainty\": \"Whether Cao, Jiang and Xia are introduced earlier in the chapter; judged locally, the reference is acceptable for a technical audience.\"\n}"
+}

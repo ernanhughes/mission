@@ -1,0 +1,31 @@
+{
+ "id": "P43",
+ "sha": "331aec73c6ab2c74",
+ "detector_version": "expo-v1",
+ "prompt_version": "expo-sem-v1+d40fa9e4",
+ "requested_model": "opencode-go/deepseek-v4.1-flash",
+ "actual_model": "opencode-go/deepseek-v4.1-flash",
+ "route_resolution": "configured",
+ "transport": "file",
+ "latency_s": 12.2,
+ "usage": {
+  "input_tokens": 689,
+  "output_tokens": 291,
+  "total_tokens": 980,
+  "cost_usd": 0.0,
+  "accounting": "provider_reported"
+ },
+ "provider_status": "ok",
+ "provider_error": null,
+ "status": "ok",
+ "score": 0.0,
+ "verdict": "NO_ISSUE",
+ "severity": "NONE",
+ "confidence": null,
+ "main_explanation": "",
+ "diagnosis": "SEMANTICALLY_REJECTED",
+ "quote": "",
+ "validation_state": "SEMANTICALLY_REJECTED",
+ "model": "opencode-go/deepseek-v4.1-flash",
+ "raw_response": "# rationale\nThe passage is compact but coherent: it defines three evaluation questions, illustrates their independence with two concrete contrasts, and states why they recur. The distinctions are introduced in a logical order, and no caveat or defensive framing interrupts the explanation.\n\n# score\n0.02\n\n# answer\n{\n  \"verdict\": \"NO_ISSUE\",\n  \"severity\": \"NONE\",\n  \"confidence\": 0.95,\n  \"main_explanation\": \"To distinguish performance, quality, and correctness as separate evaluation questions and explain why all three recur throughout the book.\",\n  \"diagnosis\": \"The passage is short, clearly structured, and moves directly from definitions to illustrative contrasts to a conclusion. Its technical density is appropriate, and no qualification or aside obstructs the main point.\",\n  \"essential_qualifications\": [],\n  \"premature_or_repeated_qualifications\": [],\n  \"proposed_strategy\": \"NO_CHANGE\",\n  \"quote\": \"Performance asks how long the computation took. Quality asks whether the text was useful. Correctness asks whether the implementation followed its rule. A fast run can still be unhelpful, and a repeatable run can still be wrong, so the three questions return deliberately throughout the book.\",\n  \"uncertainty\": \"The word \\\"deliberately\\\" is slightly unusual in this context, but it does not create a comprehension problem.\"\n}"
+}

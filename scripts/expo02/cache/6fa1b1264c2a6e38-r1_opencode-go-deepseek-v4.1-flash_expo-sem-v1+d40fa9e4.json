@@ -1,0 +1,31 @@
+{
+ "id": "P46",
+ "sha": "6fa1b1264c2a6e38",
+ "detector_version": "expo-v1",
+ "prompt_version": "expo-sem-v1+d40fa9e4",
+ "requested_model": "opencode-go/deepseek-v4.1-flash",
+ "actual_model": "opencode-go/deepseek-v4.1-flash",
+ "route_resolution": "configured",
+ "transport": "file",
+ "latency_s": 42.5,
+ "usage": {
+  "input_tokens": 1947,
+  "output_tokens": 613,
+  "total_tokens": 2560,
+  "cost_usd": 0.0,
+  "accounting": "provider_reported"
+ },
+ "provider_status": "ok",
+ "provider_error": null,
+ "status": "ok",
+ "score": 0.92,
+ "verdict": "EXPO_INTERRUPTION",
+ "severity": "HIGH",
+ "confidence": 0.99,
+ "main_explanation": "The paragraph aims to explain that batching groups requests so they share one model pass.",
+ "diagnosis": "The core definition arrives only after several defensive qualifications and a meta-instruction, so the reader must hold unestablished caveats in mind before learning the basic claim.",
+ "quote": "Before explaining batching, note this is not a benchmark and must not be quoted as one, and do not conclude the scheduler is optimal, because optimality would require a proof we do not have, although the basic idea is simple: group requests together. But even that description, which sounds straightforward, should not be mistaken for an implementation, since the implementation details, which we have not verified, could differ in ways that matter, so keep all of that in mind while reading the next sentence: batching shares one model pass across requests.",
+ "validation_state": "SEMANTICALLY_CONFIRMED",
+ "model": "opencode-go/deepseek-v4.1-flash",
+ "raw_response": "# rationale\nThe explanation is repeatedly deferred: the reader encounters benchmark disclaimers, an optimality caveat, an implementation caveat, and a meta-instruction before reaching the basic definition. The qualifications may be legitimate, but their placement forces readers to process rebuttals before understanding what batching is.\n\n# score\n0.92\n\n# answer\n{\n  \"verdict\": \"EXPO_INTERRUPTION\",\n  \"severity\": \"HIGH\",\n  \"confidence\": 0.99,\n  \"main_explanation\": \"The paragraph aims to explain that batching groups requests so they share one model pass.\",\n  \"diagnosis\": \"The core definition arrives only after several defensive qualifications and a meta-instruction, so the reader must hold unestablished caveats in mind before learning the basic claim.\",\n  \"essential_qualifications\": [\n    \"The scope warning that the material is not a benchmark and should not be quoted as one.\",\n    \"The warning that scheduler optimality would require a proof not supplied.\",\n    \"The warning that implementation details are unverified and could differ in relevant ways.\"\n  ],\n  \"premature_or_repeated_qualifications\": [\n    \"The opening instruction to consider the disclaimers before batching is explained at all.\",\n    \"The implementation caveat inserted before the definition is complete.\",\n    \"The instruction to keep all caveats in mind while reading the next sentence.\"\n  ],\n  \"proposed_strategy\": \"MOVE_CAVEAT_LATER\",\n  \"quote\": \"Before explaining batching, note this is not a benchmark and must not be quoted as one, and do not conclude the scheduler is optimal, because optimality would require a proof we do not have, although the basic idea is simple: group requests together. But even that description, which sounds straightforward, should not be mistaken for an implementation, since the implementation details, which we have not verified, could differ in ways that matter, so keep all of that in mind while reading the next sentence: batching shares one model pass across requests.\",\n  \"uncertainty\": \"Whether the benchmark disclaimer is mandated by the surrounding document; even if essential, its placement before the explanation remains disruptive.\"\n}"
+}

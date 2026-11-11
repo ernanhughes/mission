@@ -274,9 +274,19 @@ def goal_progress(session: Session, goal: CultivationGoal) -> dict[str, Any]:
         mode = (goal.recurring_mode or "daily").strip().lower() or "daily"
         if mode == "period":
             # Total output inside the window versus the target (e.g. at least
-            # one new script per 7-day window). Each measurement counts once.
-            from datetime import date as _date, timedelta as _td
-            cutoff = (_date.today() - _td(days=window - 1)).isoformat()
+            # one new post per 7-day window). Each measurement counts once.
+            # The window is anchored to the Europe/Dublin calendar date so
+            # weekly discipline survives DST transitions.
+            from zoneinfo import ZoneInfo as _ZoneInfo
+
+            try:
+                _dublin = _ZoneInfo(DUBLIN_TZ)
+            except Exception:
+                _dublin = timezone.utc
+            _today = datetime.now(_dublin).date()
+            from datetime import timedelta as _td
+
+            cutoff = (_today - _td(days=window - 1)).isoformat()
             total = sum(float(row.value) for row in rows if (row.observed_at or "")[:10] >= cutoff)
             return {"current": total, "target": goal.target_value, "unit": goal.unit,
                     "percent": min(100.0, total / goal.target_value * 100.0) if goal.target_value > 0 else None,
@@ -730,6 +740,12 @@ def _live_observation(session: Session, goal: CultivationGoal) -> dict[str, Any]
     pipeline: dict[str, int] = {"published": int(observed.get("published", 0)),
                        "draft": int(observed.get("drafts", 0)),
                        "unknown": int(observed.get("unknown", 0))}
+    if isinstance(observed.get("scheduled"), int):
+        pipeline["scheduled"] = int(observed["scheduled"])
+    if isinstance(observed.get("tech_published"), int):
+        pipeline["technology"] = int(observed["tech_published"])
+    if isinstance(observed.get("finance_published"), int):
+        pipeline["finance"] = int(observed["finance_published"])
     if goal.evidence_source == "script_registry":
         for key in ("discovered", "completed", "ready", "needs_review", "archived", "missing"):
             if isinstance(observed.get(key), int):
@@ -1817,6 +1833,19 @@ def _store_scan_observation(session: Session, source: CultivationSource, scan: A
     observed = {"published": scan.published, "drafts": scan.drafts, "unknown": scan.unknown,
                 "excluded": scan.excluded, "candidates": scan.candidates,
                 "errors": scan.errors[:20], "fingerprint": scan.fingerprint}
+    # Hugo blogs carry enriched cultivation dimensions (scheduled, tech/finance,
+    # Dublin weekly windows, latest posts). Merge them when available without
+    # breaking the legacy keys used by existing tests.
+    try:
+        from mission_control.cultivation.sources import blog_observation as _blog_obs
+
+        if source.kind == "hugo_blog" and hasattr(scan, "posts"):
+            enriched = _blog_obs(scan)
+            for key, value in enriched.items():
+                if key not in observed:
+                    observed[key] = value
+    except Exception:
+        pass
     source.observed = observed
     source.fingerprint = scan.fingerprint
     source.last_sync_at = now_iso()

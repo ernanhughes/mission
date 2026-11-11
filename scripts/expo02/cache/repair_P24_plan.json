@@ -1,0 +1,21 @@
+{
+ "tag": "P24_plan",
+ "prompt_version": "expo-repair-v1",
+ "requested_model": "opencode-go/deepseek-v4.1-flash",
+ "actual_model": "opencode-go/deepseek-v4.1-flash",
+ "transport": "file",
+ "latency_s": 28.0,
+ "usage": {
+  "input_tokens": 576,
+  "output_tokens": 571,
+  "total_tokens": 1147,
+  "cost_usd": 0.0,
+  "accounting": "provider_reported"
+ },
+ "provider_status": "ok",
+ "provider_error": null,
+ "output": "{\"steps\":[{\"order\":1,\"learn\":\"Add a dedicated literal-byte equality operation (deliverable 1; unconditional, no qualifier attached).\",\"why_here\":\"Opens the list: it is the shortest, unqualified item, so it establishes the one-deliverable-per-line format before any conditional material arrives.\"},{\"order\":2,\"learn\":\"Include an explicit `complete`/`missing` gate for manifests (deliverable 2; unconditional).\",\"why_here\":\"Second position preserves source order and pairs the two unconditional changes together, keeping all condition-and-alternative complexity out of the first two slots.\"},{\"order\":3,\"learn\":\"Correct `flip_probability_bound` for a per-logit epsilon assumption (deliverable 3; the only item carrying a condition).\",\"why_here\":\"Third because it carries both the only condition and the parenthetical repair; placing it last inside the list lets the reader consume the simple items first and then spend full attention on the single complex one.\"},{\"order\":4,\"learn\":\"(or rename its argument to the proven pairwise perturbation bound) — kept as a nested alternative under item 3, not promoted to its own numbered item.\",\"why_here\":\"Subordinating it keeps the either/or clearly attached to the one deliverable it repairs, so it cannot be misread as a fourth, separate change.\"},{\"order\":5,\"learn\":\"These are recommended code changes, not features already implemented.\",\"why_here\":\"Stays as a closing status line after the list; it is correctly placed and scopes all three items at once, so hoisting it into the lead-in or repeating it per item would add load without adding information.\"}],\"example_placement\":\"No example exists in the source and none should be introduced; this is a structure-only revision. If one were ever required, it would follow item 3, the conditional bound correction, since that item carries the most interpretive load.\",\"caveats_adjacent\":[\"(or rename its argument to the proven pairwise perturbation bound) — stays nested immediately beneath item 3, the deliverable it repairs.\",\"These are recommended code changes, not features already implemented. — stays as the closing line directly after the list, applying to all three items at once.\"],\"caveats_moved_later\":[],\"splits_or_merges\":\"Split the single parallel-clause sentence into a short lead-in (\\\"Implementation follow-up:\\\") plus a three-item list, one deliverable per item, preserving original order. Merge nothing. The parenthetical either/or repair remains merged with item 3 as a nested alternative rather than becoming an independent fourth item, and the status disclaimer remains a single trailing line rather than being distributed across the list.\"}",
+ "prompt_sha": "4d8a5dd8f61a9270",
+ "prompt_chars": 2192,
+ "cache_hit": false
+}

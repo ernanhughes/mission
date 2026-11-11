@@ -1,0 +1,31 @@
+{
+ "id": "P01",
+ "sha": "4307d22c54b5cdfe",
+ "detector_version": "expo-v1",
+ "prompt_version": "expo-sem-v1+d40fa9e4",
+ "requested_model": "opencode-go/deepseek-v4.1-flash",
+ "actual_model": "opencode-go/deepseek-v4.1-flash",
+ "route_resolution": "configured",
+ "transport": "file",
+ "latency_s": 28.1,
+ "usage": {
+  "input_tokens": 746,
+  "output_tokens": 336,
+  "total_tokens": 1082,
+  "cost_usd": 0.0,
+  "accounting": "provider_reported"
+ },
+ "provider_status": "ok",
+ "provider_error": null,
+ "status": "ok",
+ "score": 0.0,
+ "verdict": "NO_ISSUE",
+ "severity": "NONE",
+ "confidence": null,
+ "main_explanation": "",
+ "diagnosis": "SEMANTICALLY_REJECTED",
+ "quote": "",
+ "validation_state": "SEMANTICALLY_REJECTED",
+ "model": "opencode-go/deepseek-v4.1-flash",
+ "raw_response": "# rationale\n\nThe paragraph announces three observations, supplies them directly, then limits the inferential reach of the strongest one. The qualifications are scoped and load-bearing, and the closing sentence functions as a compact next step rather than a competing explanation. Reordering would likely weaken the contrast between repeatability and correctness, so the difficulty is purposeful.\n\n# score\n\n0.07\n\n# answer\n\n{\n  \"verdict\": \"NO_ISSUE\",\n  \"severity\": \"NONE\",\n  \"confidence\": 0.9,\n  \"main_explanation\": \"To separate three observations about the run and clarify that repeatability does not establish full implementation correctness.\",\n  \"diagnosis\": \"No avoidable obstruction: the three observations map cleanly onto the announced frame, the caveat follows the evidence rather than interrupting it, and the correctness procedure is stated only briefly. The compression is modest and purposeful.\",\n  \"essential_qualifications\": [\n    \"on the recorded CPU configuration\",\n    \"*consistent with*\",\n    \"greedy selection returned the same sequence across the recorded repeat runs\",\n    \"evidence of repeatability under these conditions, not proof that every part of the implementation is correct\"\n  ],\n  \"premature_or_repeated_qualifications\": [],\n  \"proposed_strategy\": \"NO_CHANGE\",\n  \"quote\": \"That last observation is evidence of repeatability under these conditions, not proof that every part of the implementation is correct.\",\n  \"uncertainty\": \"A reader without background may find the final correctness protocol terse, but it remains a clear scope statement rather than an overloaded explanation.\"\n}"
+}

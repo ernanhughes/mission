@@ -47,12 +47,22 @@ import {
 import type {
   Adapter,
   Application,
+  ArtifactLoadChapter,
+  ArtifactLoadWorkspace,
   Checkpoint,
   IntegrationRecord,
   ProjectDetail,
   ProjectEvidenceTimeline,
+  QualityCampaign,
+  QualityChapter,
+  QualityDiscovery,
+  QualityEvaluation,
+  QualityReview,
+  QualityWorkspace,
   Recommendation,
   Task,
+  WriterDecisionQueueItem,
+  WriterWorkspace,
 } from "../types/api";
 
 function CheckpointForm({ projectId, onSaved }: { projectId: string; onSaved: () => void }) {
@@ -371,6 +381,777 @@ function AdapterCard({ adapter, projectId, onChanged }: { adapter: Adapter; proj
         {adapter.capabilities.length ? <span>{adapter.capabilities.join(" · ")}</span> : null}
       </div>
     </div>
+  );
+}
+
+const QUALITY_DIMENSIONS = ["clarity", "argument", "precision", "economy", "voice", "structure"];
+const QUALITY_DIM_SHORT: Record<string, string> = {
+  clarity: "Clar.",
+  argument: "Arg.",
+  precision: "Prec.",
+  economy: "Econ.",
+  voice: "Voice",
+  structure: "Struc.",
+};
+
+function freshnessTone(state: string): "accent" | "danger" | "default" {
+  if (state === "current") return "accent";
+  if (state === "stale" || state === "outdated") return "danger";
+  return "default";
+}
+
+function invalidQuoteCount(evaluation: QualityEvaluation): number {
+  return Object.values(evaluation.dimensions ?? {}).filter((dim) => !dim.evidence_validated).length;
+}
+
+function QualityEvaluationCard({ evaluation }: { evaluation: QualityEvaluation }) {
+  const toast = useToast();
+  const invalid = invalidQuoteCount(evaluation);
+  const execution = evaluation.execution ?? {};
+  const writerFindings = Array.isArray(evaluation.findings) ? evaluation.findings : [];
+  const reviews = useApi<QualityReview[]>(`/api/quality/evaluations/${evaluation.id}/reviews`);
+  const [reviewBusy, setReviewBusy] = useState<string | null>(null);
+  const reviewByFinding = new Map((reviews.data ?? []).map((r) => [r.finding_id, r]));
+
+  async function recordReview(findingId: string, decision: string) {
+    setReviewBusy(findingId + decision);
+    try {
+      await api.post(`/api/quality/evaluations/${evaluation.id}/reviews`, {
+        evaluation_id: evaluation.id,
+        finding_id: findingId,
+        decision,
+        reason: "",
+        reviewer: "author",
+      });
+      reviews.reload();
+    } catch (caught) {
+      toast.push("error", "Could not record review", errorMessage(caught));
+    } finally {
+      setReviewBusy(null);
+    }
+  }
+  return (
+    <article className="writer-finding" id={`eval-${evaluation.id}`}>
+      <div className="writer-finding-head">
+        <div>
+          <Tag tone={freshnessTone(evaluation.derived_state)}>
+            {titleCase(evaluation.derived_state)}
+          </Tag>
+          {evaluation.status !== "CURRENT" ? <Tag>{evaluation.status}</Tag> : null}
+          <Tag>{evaluation.strategy ?? "direct"}</Tag>
+          <strong>{evaluation.overall ?? "—"} / 6 · Prose quality</strong>
+          <span className="writer-decision-count">
+            {evaluation.chapter_revision.slice(0, 12)} · {evaluation.actual_model ?? "model unknown"}
+          </span>
+        </div>
+        <code className="writer-locator">{formatDateTime(evaluation.created_at)}</code>
+      </div>
+      <div className="writer-mini-scores">
+        {QUALITY_DIMENSIONS.map((id) => {
+          const dim = evaluation.dimensions[id];
+          return (
+            <span key={id} title={dim ? `${id}: ${dim.evidence}` : `${id}: no score`}>
+              {QUALITY_DIM_SHORT[id]}: {dim ? dim.score : "—"}
+              {dim && !dim.evidence_validated ? " ⚠" : ""}
+            </span>
+          );
+        })}
+      </div>
+      {evaluation.section_title ? (
+        <p className="muted small">Section: {evaluation.section_title}</p>
+      ) : null}
+      <p className="muted small">
+        Rubric {evaluation.rubric_id} v{evaluation.rubric_version} · prompt v{evaluation.prompt_version}
+        {evaluation.previous_evaluation_id ? ` · after ${evaluation.previous_evaluation_id.slice(0, 14)}` : ""}
+      </p>
+      {execution.transport || execution.input_tokens != null ? (
+        <p className="muted small">
+          Transport {execution.transport ?? "unknown"}
+          {execution.input_tokens != null ? ` · ${execution.input_tokens} in / ${execution.output_tokens ?? "?"} out` : " · usage unknown"}
+        </p>
+      ) : null}
+      {invalid > 0 ? (
+        <p className="warn-text small">
+          {invalid} quotation{invalid === 1 ? "" : "s"} did not verify against the source and {invalid === 1 ? "is" : "are"} flagged, not repaired.
+        </p>
+      ) : null}
+      {writerFindings.length ? (
+        <ul className="plain-list">
+          {writerFindings.map((finding, index) => {
+            const findingId = String(finding.finding_id ?? `finding-${index}`);
+            const existing = reviewByFinding.get(findingId);
+            const judgment = (execution.decisions ?? []).find(
+              (d: Record<string, any>) => d.finding_id === findingId,
+            );
+            const judgmentLabel = judgment
+              ? ` · judgment: ${judgment.outcome?.status ?? "unknown"} (${judgment.outcome?.policy?.source ?? "?"})`
+              : "";
+            return (
+              <li key={findingId}>
+                <strong>{String(finding.family ?? "finding")}</strong>
+                {" · "}
+                <span className="muted small">{String(finding.claim ?? "")}</span>
+                <br />
+                <span className="muted small">
+                  {(finding.evidence_ids ?? []).length} source span(s)
+                  {finding.verification ? ` · ${finding.verification}` : ""}
+                  {judgmentLabel}
+                  {existing ? ` · reviewed: ${existing.decision} (${existing.source_status})` : " · unreviewed"}
+                </span>
+                <br />
+                {(["ACCEPT", "REJECT", "DEFER", "INVESTIGATE"] as const).map((decision) => (
+                  <button
+                    key={decision}
+                    className="button button-secondary button-small"
+                    disabled={reviewBusy !== null}
+                    onClick={() => void recordReview(findingId, decision)}
+                  >
+                    {reviewBusy === findingId + decision ? "Saving…" : titleCase(decision.toLowerCase())}
+                  </button>
+                ))}
+              </li>
+            );
+          })}
+        </ul>
+      ) : null}
+      {evaluation.workbench_link ? (
+        <a className="text-link" href={evaluation.workbench_link} target="_blank" rel="noreferrer">
+          Open chapter in Workbench <ExternalLink size={12} />
+        </a>
+      ) : null}
+    </article>
+  );
+}
+
+function QualityChapterCard({ chapter }: { chapter: QualityChapter }) {
+  return (
+    <article className="writer-decision-card" id={`quality-${chapter.chapter_id}`}>
+      <div className="writer-decision-head">
+        <strong>{chapter.chapter_id}</strong>
+        <span className="writer-decision-count">
+          {chapter.evaluations.length} evaluation(s)
+          {chapter.sections.length ? ` · ${chapter.sections.length} section(s)` : ""}
+        </span>
+        {chapter.current ? (
+          <Tag tone="accent">Current · {chapter.current.overall} / 6</Tag>
+        ) : (
+          <Tag>No current score</Tag>
+        )}
+      </div>
+      {chapter.current ? <QualityEvaluationCard evaluation={chapter.current} /> : null}
+      {chapter.evaluations.filter((item) => item.derived_state !== "current").length ? (
+        <details className="history-list">
+          <summary>
+            Earlier observations ({chapter.evaluations.filter((item) => item.derived_state !== "current").length})
+          </summary>
+          {chapter.evaluations
+            .filter((item) => item.derived_state !== "current")
+            .map((item) => (
+              <QualityEvaluationCard key={item.id} evaluation={item} />
+            ))}
+        </details>
+      ) : null}
+      {chapter.sections.length ? (
+        <details className="history-list">
+          <summary>Section evaluations ({chapter.sections.length})</summary>
+          {chapter.sections.map((item) => (
+            <QualityEvaluationCard key={item.id} evaluation={item} />
+          ))}
+        </details>
+      ) : null}
+    </article>
+  );
+}
+
+type MapRow = {
+  chapter_id: string;
+  title: string | null;
+  dims: Record<string, number> | null;
+  model: string | null;
+  state: string;
+  revision: string;
+};
+
+function QualityMap({ rows }: { rows: MapRow[] }) {
+  const [sortKey, setSortKey] = useState<string>("chapter");
+  const [showMissing, setShowMissing] = useState(true);
+  const visible = rows.filter((row) => showMissing || row.dims !== null);
+  const sorted = [...visible].sort((a, b) => {
+    if (sortKey === "chapter") return a.chapter_id.localeCompare(b.chapter_id);
+    const av = a.dims?.[sortKey] ?? -1;
+    const bv = b.dims?.[sortKey] ?? -1;
+    if (av !== bv) return av - bv;
+    return a.chapter_id.localeCompare(b.chapter_id);
+  });
+  return (
+    <div className="table-wrap">
+      <div className="inline-meta">
+        <label className="muted small">
+          Sort by{" "}
+          <select value={sortKey} onChange={(event) => setSortKey(event.target.value)} aria-label="Sort map rows">
+            <option value="chapter">Chapter</option>
+            {QUALITY_DIMENSIONS.map((dim) => (
+              <option key={dim} value={dim}>{titleCase(dim)} (lowest first)</option>
+            ))}
+          </select>
+        </label>
+        <label className="muted small">
+          <input type="checkbox" checked={showMissing} onChange={(event) => setShowMissing(event.target.checked)} />{" "}
+          Show unevaluated chapters
+        </label>
+      </div>
+      <table className="data-table">
+        <thead>
+          <tr>
+            <th>Chapter</th>
+            {QUALITY_DIMENSIONS.map((dim) => (
+              <th key={dim}>{QUALITY_DIM_SHORT[dim]}</th>
+            ))}
+            <th>Model</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {sorted.map((row) => (
+            <tr key={row.chapter_id}>
+              <td>
+                <a className="text-link" href={`#quality-${row.chapter_id}`} title={row.title ?? row.chapter_id}>
+                  {row.chapter_id.replace("-chapter.md", "")}
+                </a>
+              </td>
+              {QUALITY_DIMENSIONS.map((dim) => (
+                <td key={dim} className={row.dims && row.dims[dim] <= 3 ? "warn-text" : undefined}>
+                  {row.dims ? row.dims[dim] : "—"}
+                </td>
+              ))}
+              <td className="muted small">{row.model ? row.model.split("/").pop() : "—"}</td>
+              <td>
+                <Tag tone={freshnessTone(row.state)}>{titleCase(row.state)}</Tag>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+type LoadRow = {
+  chapter_id: string;
+  title: string | null;
+  prose_overall: number | null;
+  mech: number | null;
+  weighted_load: number | null;
+  confirmed: number;
+  high: number;
+  unreviewed: number;
+  coverage_mech: number;
+  coverage_sem: number;
+  assessment: string;
+  workbench_link: string | null;
+};
+
+function assessmentLabel(state: string): string {
+  switch (state) {
+    case "assessed_findings":
+      return "Assessed · findings";
+    case "assessed_clean":
+      return "Assessed · clean";
+    case "partially_assessed":
+      return "Partially assessed";
+    case "not_assessed":
+      return "Not assessed";
+    case "stale":
+      return "Stale";
+    case "running":
+      return "Running";
+    case "blocked_failed":
+      return "Blocked/failed";
+    default:
+      return "Not assessed";
+  }
+}
+
+function ArtifactLoadMap({ rows }: { rows: LoadRow[] }) {
+  const [sortKey, setSortKey] = useState<string>("assessment");
+  const assessmentRank = (a: string): number =>
+    ["not_assessed", "partially_assessed", "stale", "blocked_failed", "running"].includes(a)
+      ? 0
+      : 1;
+  const sorted = [...rows].sort((a, b) => {
+    if (sortKey === "chapter") return a.chapter_id.localeCompare(b.chapter_id);
+    if (sortKey === "prose") return (a.prose_overall ?? 99) - (b.prose_overall ?? 99);
+    if (sortKey === "high") return (b.high ?? 0) - (a.high ?? 0);
+    if (sortKey === "assessment")
+      return assessmentRank(a.assessment) - assessmentRank(b.assessment)
+        || a.chapter_id.localeCompare(b.chapter_id);
+    const av = a.weighted_load ?? -1;
+    const bv = b.weighted_load ?? -1;
+    return bv - av;
+  });
+  return (
+    <div className="table-wrap">
+      <div className="inline-meta">
+        <label className="muted small">
+          Sort by{" "}
+          <select value={sortKey} onChange={(event) => setSortKey(event.target.value)} aria-label="Sort load rows">
+            <option value="assessment">Unassessed first</option>
+            <option value="load">Highest load first</option>
+            <option value="high">Most high-severity first</option>
+            <option value="prose">Lowest prose first</option>
+            <option value="chapter">Chapter</option>
+          </select>
+        </label>
+      </div>
+      <table className="data-table">
+        <thead>
+          <tr>
+            <th>Chapter</th>
+            <th>Prose / 5</th>
+            <th>Pressure</th>
+            <th>Load / 1k</th>
+            <th>Confirmed</th>
+            <th>High</th>
+            <th>Unrev</th>
+            <th>Coverage M/S</th>
+            <th>Assessment</th>
+            <th>Workbench</th>
+          </tr>
+        </thead>
+        <tbody>
+          {sorted.map((row) => (
+            <tr key={row.chapter_id}>
+              <td title={row.title ?? row.chapter_id}>{row.chapter_id.replace("-chapter.md", "")}</td>
+              <td>{row.prose_overall ?? "—"}</td>
+              <td className="muted small">{row.mech ?? "—"}</td>
+              <td className={(row.weighted_load ?? 0) > 0 ? "warn-text" : undefined}>
+                {row.assessment === "not_assessed" ? "—" : (row.weighted_load ?? "—")}
+              </td>
+              <td>{row.assessment === "not_assessed" ? "—" : row.confirmed}</td>
+              <td>{row.assessment === "not_assessed" ? "—" : row.high}</td>
+              <td>{row.unreviewed}</td>
+              <td className="muted small">
+                {Math.round(row.coverage_mech * 100)}% / {Math.round(row.coverage_sem * 100)}%
+              </td>
+              <td>
+                <Tag tone={row.assessment.startsWith("assessed") ? "accent" : "default"}>
+                  {assessmentLabel(row.assessment)}
+                </Tag>
+              </td>
+              <td>
+                {row.workbench_link ? (
+                  <a className="text-link" href={row.workbench_link} target="_blank" rel="noreferrer">
+                    Open <ExternalLink size={12} />
+                  </a>
+                ) : (
+                  <span className="muted small">—</span>
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <p className="muted small">
+        Pressure is deterministic screening (candidates); load is confirmed burden (higher means
+        more confirmed problems). A chapter with no semantic review shows Not assessed, never a
+        healthy zero. Both are independent from prose scores; disagreement between them is useful
+        evidence, never merged.
+      </p>
+    </div>
+  );
+}
+
+function QualityPanel({ projectId }: { projectId: string }) {
+  const toast = useToast();
+  const quality = useApi<QualityWorkspace>(`/api/quality/workspace?project_id=${projectId}`, { pollMs: 60000 });
+  const discovery = useApi<QualityDiscovery[]>(`/api/quality/discovery?project_id=${projectId}`, { pollMs: 60000 });
+  const writer = useApi<WriterWorkspace>("/api/writer/books", { pollMs: 60000 });
+  const campaigns = useApi<QualityCampaign[]>(`/api/quality/campaigns?project_id=${projectId}`, { pollMs: 15000 });
+  const artifactLoad = useApi<ArtifactLoadWorkspace>(`/api/artifact-load/workspace?project_id=${projectId}`, { pollMs: 60000 });
+  const [campaignBusy, setCampaignBusy] = useState(false);
+  const [campaignMode, setCampaignMode] = useState("missing");
+  const [campaignModel, setCampaignModel] = useState("opencode-go/deepseek-v4.1-flash");
+  const [campaignStrategy, setCampaignStrategy] = useState("direct");
+  const [selectedChapters, setSelectedChapters] = useState<string[]>([]);
+
+  const writerFindings = (writer.data?.decision_queue ?? []).filter(
+    (item) => item.project_id === projectId,
+  );
+
+  const evalByChapter = new Map((quality.data?.chapters ?? []).map((c) => [c.chapter_id, c]));
+  const mapRows: MapRow[] = (discovery.data ?? []).map((d) => {
+    const current = evalByChapter.get(d.chapter_id)?.current ?? null;
+    return {
+      chapter_id: d.chapter_id,
+      title: d.title,
+      dims: current
+        ? Object.fromEntries(QUALITY_DIMENSIONS.map((dim) => [dim, current.dimensions[dim]?.score ?? null]))
+        : null,
+      model: current?.actual_model ?? null,
+      state: current ? current.derived_state : d.eligibility === "missing" ? "not run" : d.eligibility,
+      revision: d.revision,
+    };
+  });
+  const currentEvals = (quality.data?.chapters ?? [])
+    .map((c) => c.current)
+    .filter((e): e is QualityEvaluation => e !== null && e !== undefined);
+  const distinctModels = [...new Set(currentEvals.map((e) => e.actual_model ?? "unknown"))];
+  const comparableNote =
+    distinctModels.length <= 1
+      ? `Comparable basis: ${distinctModels[0] ?? "no model"} · rubric manuscript-prose-v1 · ${currentEvals.length} observations.`
+      : `Descriptive only: ${currentEvals.length} observations across mixed models (${distinctModels.join(", ")}); not a controlled comparison.`;
+
+  function mean(values: number[]): number | null {
+    if (!values.length) return null;
+    return Math.round((values.reduce((a, b) => a + b, 0) / values.length) * 100) / 100;
+  }
+  function median(values: number[]): number | string {
+    const sorted = [...values].sort((a, b) => a - b);
+    if (!sorted.length) return "—";
+    const mid = Math.floor(sorted.length / 2);
+    return sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
+  }
+
+  const activeCampaign = (campaigns.data ?? []).find((c) => ["pending", "running", "cancelling"].includes(c.status)) ?? null;
+  const pastCampaigns = (campaigns.data ?? []).filter((c) => !["pending", "running", "cancelling"].includes(c.status));
+
+  async function createCampaign(mode: string, chapters?: string[]) {
+    setCampaignBusy(true);
+    try {
+      const created = await api.post<QualityCampaign>("/api/quality/campaigns", {
+        project_id: projectId,
+        mode,
+        chapters: chapters ?? [],
+        model: campaignModel || null,
+        strategy: campaignStrategy,
+      });
+      await api.post(`/api/quality/campaigns/${created.id}/run`);
+      toast.push("success", "Evaluation campaign started", `${created.chapter_selection.length} chapters selected.`);
+      campaigns.reload();
+      discovery.reload();
+    } catch (caught) {
+      toast.push("error", "Could not start campaign", errorMessage(caught));
+    } finally {
+      setCampaignBusy(false);
+    }
+  }
+
+  async function stopCampaign(id: string) {
+    try {
+      await api.post(`/api/quality/campaigns/${id}/stop`);
+      campaigns.reload();
+    } catch (caught) {
+      toast.push("error", "Could not stop campaign", errorMessage(caught));
+    }
+  }
+
+  async function resumeCampaign(id: string) {
+    try {
+      await api.post(`/api/quality/campaigns/${id}/resume`);
+      toast.push("success", "Campaign resumed", "Remaining chapters will be evaluated; completed work is kept.");
+      campaigns.reload();
+    } catch (caught) {
+      toast.push("error", "Could not resume campaign", errorMessage(caught));
+    }
+  }
+
+  const priorities: Array<{ title: string; detail: string; chapter_id: string | null }> = [];
+  for (const chapter of quality.data?.chapters ?? []) {
+    if (chapter.current?.dimensions) {
+      for (const dim of QUALITY_DIMENSIONS) {
+        const entry = chapter.current.dimensions[dim];
+        if (entry && entry.score <= 3 && entry.evidence_validated) {
+          priorities.push({
+            title: `${chapter.chapter_id}: ${dim} ${entry.score}/5 with verified evidence`,
+            detail: entry.evidence,
+            chapter_id: chapter.chapter_id,
+          });
+        }
+      }
+    }
+    for (const item of [...chapter.evaluations, ...chapter.sections]) {
+      for (const [dim, entry] of Object.entries(item.dimensions ?? {})) {
+        if (entry && !entry.evidence_validated && entry.evidence && entry.evidence !== "none") {
+          priorities.push({
+            title: `${chapter.chapter_id}: unverified ${dim} quotation`,
+            detail: String(entry.evidence).slice(0, 120),
+            chapter_id: chapter.chapter_id,
+          });
+        }
+      }
+    }
+  }
+  for (const row of discovery.data ?? []) {
+    if (row.eligibility === "stale") {
+      priorities.push({
+        title: `${row.chapter_id}: source changed since evaluation`,
+        detail: `Current revision ${row.revision.slice(0, 12)} no longer matches the evaluated source.`,
+        chapter_id: row.chapter_id,
+      });
+    }
+  }
+
+  return (
+    <>
+      <Section
+        title="Manuscript quality"
+        description="Independent AI prose-quality observations. Hygiene, technical evidence and publication readiness are separate measurements, never folded into these scores."
+        actions={
+          quality.data?.chapters_current ? (
+            <Tag tone="accent">{quality.data.chapters_current} current</Tag>
+          ) : null
+        }
+      >
+        {quality.loading ? <LoadingBlock label="Loading quality evaluations" compact /> : null}
+        {quality.error ? <InlineError message={quality.error.message} /> : null}
+        {quality.data && quality.data.chapters.length === 0 && discovery.data?.length ? (
+          <EmptyState
+            title="No quality evaluations yet"
+            description="Use the evaluation campaign below to assess the missing chapters."
+            icon={<Crosshair size={19} />}
+          />
+        ) : null}
+        {discovery.data ? (
+          <p className="muted small">
+            Coverage: {quality.data?.chapters_current ?? 0} of {discovery.data.length} chapters current ·{" "}
+            {comparableNote}
+          </p>
+        ) : null}
+        {currentEvals.length ? (
+          <div className="writer-mini-scores">
+            {QUALITY_DIMENSIONS.map((dim) => {
+              const values = currentEvals
+                .map((e) => e.dimensions[dim]?.score)
+                .filter((s): s is number => typeof s === "number");
+              return (
+                <span key={dim} title={`${dim}: mean and median over current chapter observations`}>
+                  {QUALITY_DIM_SHORT[dim]}: mean {mean(values) ?? "—"} · median {median(values)}
+                </span>
+              );
+            })}
+          </div>
+        ) : null}
+      </Section>
+
+      <Section
+        title="Book Quality Map"
+        description="Chapter by chapter across the six prose dimensions. Dashes mean no current observation; low values are review directions, not defect verdicts."
+      >
+        {mapRows.length ? <QualityMap rows={mapRows} /> : <LoadingBlock label="Loading chapter map" compact />}
+      </Section>
+
+      <Section
+        title="Artifact Load"
+        description="Independent burden measure: confirmed expository-overload concentration per chapter. Higher means more confirmed problems. Never merged into prose scores; disagreement between the two is useful evidence."
+        actions={
+          artifactLoad.data?.chapters_current ? (
+            <Tag tone="accent">{artifactLoad.data.chapters_current} current</Tag>
+          ) : null
+        }
+      >
+        {artifactLoad.loading ? <LoadingBlock label="Loading artifact load" compact /> : null}
+        {artifactLoad.error ? <InlineError message={artifactLoad.error.message} /> : null}
+        {artifactLoad.data && artifactLoad.data.chapters.length === 0 ? (
+          <EmptyState
+            title="No artifact load observations yet"
+            description="Record deterministic Writer findings per chapter; confirmed load appears here alongside prose scores."
+            icon={<Crosshair size={19} />}
+          />
+        ) : null}
+        {artifactLoad.data ? (
+          <ArtifactLoadMap
+            rows={(discovery.data ?? []).map((d) => {
+              const chapter = (artifactLoad.data?.chapters ?? []).find(
+                (c: ArtifactLoadChapter) => c.chapter_id === d.chapter_id,
+              );
+              const current = chapter?.current;
+              const prose = evalByChapter.get(d.chapter_id)?.current?.overall ?? null;
+              return {
+                chapter_id: d.chapter_id,
+                title: d.title,
+                prose_overall: prose,
+                mech: current?.mechanical_pressure ?? null,
+                weighted_load: current?.weighted_load ?? null,
+                confirmed: current?.confirmed ?? 0,
+                high: current?.high ?? 0,
+                unreviewed: current?.unreviewed ?? 0,
+                coverage_mech: current?.coverage_mechanical ?? 0,
+                coverage_sem: current?.coverage_semantic ?? 0,
+                assessment: current?.assessment_state ?? "not_assessed",
+                workbench_link: current?.workbench_link ?? null,
+              };
+            })}
+          />
+        ) : null}
+        {artifactLoad.data?.limitations?.map((note: string) => (
+          <p key={note} className="muted small">{note}</p>
+        ))}
+      </Section>
+
+      <Section
+        title="Evaluation campaign"
+        description="One deliberate operation evaluates missing or outdated chapters. Progress persists per chapter; stopping and resuming never discards completed work."
+      >
+        {campaigns.error ? <InlineError message={campaigns.error.message} /> : null}
+        {activeCampaign ? (
+          <div className="writer-decision-card">
+            <div className="writer-decision-head">
+              <strong>{activeCampaign.id.slice(0, 14)} · {activeCampaign.mode} · {activeCampaign.strategy ?? "direct"}</strong>
+              <span className="writer-decision-count">
+                {activeCampaign.completed} done · {activeCampaign.failed} failed · {activeCampaign.remaining} remaining
+                {activeCampaign.current_chapter ? ` · now: ${activeCampaign.current_chapter}` : ""}
+              </span>
+              <Tag tone={activeCampaign.status === "running" ? "accent" : "default"}>{titleCase(activeCampaign.status)}</Tag>
+            </div>
+            {activeCampaign.error ? <p className="warn-text small">{activeCampaign.error}</p> : null}
+            <div className="button-row">
+              {activeCampaign.status === "running" || activeCampaign.status === "pending" ? (
+                <button className="button button-secondary button-small" onClick={() => void stopCampaign(activeCampaign.id)}>
+                  Stop after current chapter
+                </button>
+              ) : null}
+              {["partial", "interrupted", "failed"].includes(activeCampaign.status) ? (
+                <button className="button button-secondary button-small" onClick={() => void resumeCampaign(activeCampaign.id)}>
+                  Resume remaining chapters
+                </button>
+              ) : null}
+            </div>
+          </div>
+        ) : (
+          <div className="inline-form">
+            <label className="muted small">
+              Mode{" "}
+              <select value={campaignMode} onChange={(event) => setCampaignMode(event.target.value)} aria-label="Campaign mode">
+                <option value="missing">Evaluate missing</option>
+                <option value="outdated">Evaluate outdated</option>
+                <option value="selected">Evaluate selected</option>
+                <option value="full">Re-evaluate entire book</option>
+              </select>
+            </label>
+            <label className="muted small">
+              Strategy{" "}
+              <select value={campaignStrategy} onChange={(event) => setCampaignStrategy(event.target.value)} aria-label="Campaign strategy">
+                <option value="deterministic">Deterministic checks</option>
+                <option value="direct">Direct semantic review</option>
+                <option value="bounded_judge">Bounded judgment (shadow)</option>
+              </select>
+            </label>
+            <label className="muted small">
+              Model{" "}
+              <input
+                value={campaignModel}
+                onChange={(event) => setCampaignModel(event.target.value)}
+                placeholder="opencode-go/deepseek-v4.1-flash"
+                aria-label="Campaign model route"
+                size={32}
+              />
+            </label>
+            <button
+              className="button button-primary button-small"
+              disabled={campaignBusy}
+              onClick={() => void createCampaign(campaignMode, campaignMode === "selected" ? selectedChapters : undefined)}
+            >
+              {campaignBusy ? "Starting…" : campaignMode === "full" ? "Confirm full-book re-evaluation" : "Start campaign"}
+            </button>
+          </div>
+        )}
+        {campaignMode === "selected" && !activeCampaign ? (
+          <div className="table-wrap">
+            <p className="muted small">Tick chapters for a targeted run ({selectedChapters.length} selected).</p>
+            {(discovery.data ?? []).map((row) => (
+              <label key={row.chapter_id} className="muted small" style={{ display: "block" }}>
+                <input
+                  type="checkbox"
+                  checked={selectedChapters.includes(row.chapter_id)}
+                  onChange={(event) =>
+                    setSelectedChapters((current) =>
+                      event.target.checked
+                        ? [...current, row.chapter_id]
+                        : current.filter((id) => id !== row.chapter_id),
+                    )
+                  }
+                />{" "}
+                {row.chapter_id} — {row.title ?? "untitled"} ({row.eligibility})
+              </label>
+            ))}
+          </div>
+        ) : null}
+        {pastCampaigns.length ? (
+          <details className="history-list">
+            <summary>Past campaigns ({pastCampaigns.length})</summary>
+            {pastCampaigns.map((c) => (
+              <p key={c.id} className="muted small">
+                {c.id.slice(0, 14)} · {c.mode} · {c.strategy ?? "direct"} · {c.status} · {c.completed} done, {c.failed} failed
+                {c.error ? ` · ${c.error}` : ""}
+              </p>
+            ))}
+          </details>
+        ) : null}
+      </Section>
+
+      <Section
+        title="Priority review"
+        description="Review directions grounded in specific observations and verified evidence — never bare low scores, and never automatic rewrites."
+      >
+        {priorities.length === 0 ? (
+          <p className="muted small">No grounded review items. Scores alone do not create findings.</p>
+        ) : (
+          <ul className="plain-list">
+            {priorities.slice(0, 20).map((item, index) => (
+              <li key={`${item.title}-${index}`}>
+                <strong>{item.title}</strong>
+                <br />
+                <span className="muted small">{item.detail}</span>{" "}
+                {item.chapter_id ? (
+                  <a className="text-link" href={`#quality-${item.chapter_id}`}>
+                    Open evaluation
+                  </a>
+                ) : null}
+              </li>
+            ))}
+          </ul>
+        )}
+        {writerFindings.length ? (
+          <>
+            <span className="eyebrow">Readability signals (Writer, deterministic)</span>
+            <div className="writer-decision-queue">
+              {writerFindings.slice(0, 5).map((item: WriterDecisionQueueItem) => (
+                <article className="writer-decision-card" key={item.id}>
+                  <div className="writer-decision-head">
+                    <Tag tone={item.severity === "high" ? "danger" : item.severity === "medium" ? "accent" : "default"}>
+                      {item.severity.toUpperCase()}
+                    </Tag>
+                    <strong>{item.code}</strong>
+                    <span className="writer-decision-count">
+                      {item.count} finding{item.count === 1 ? "" : "s"} · {item.chapter_title || item.chapter_name}
+                    </span>
+                  </div>
+                  <p className="muted small">{item.reason}</p>
+                </article>
+              ))}
+            </div>
+            <p className="muted small">Deterministic readability signals; not AI judgments and not combined with the scores above.</p>
+          </>
+        ) : null}
+      </Section>
+
+      <Section title="Chapter evaluations" description="Scorecards with provenance, history and Workbench handoff.">
+        {quality.data ? (
+          <div className="writer-decision-queue">
+            {quality.data.chapters.map((chapter) => (
+              <QualityChapterCard key={chapter.chapter_id} chapter={chapter} />
+            ))}
+          </div>
+        ) : null}
+        {quality.data?.limitations.length ? (
+          <ul className="plain-list writer-boundaries">
+            {quality.data.limitations.map((limitation) => (
+              <li key={limitation}>{limitation}</li>
+            ))}
+          </ul>
+        ) : null}
+      </Section>
+    </>
   );
 }
 
@@ -751,6 +1532,8 @@ export function ProjectPage() {
               />
             ) : null}
           </Section>
+
+          <QualityPanel projectId={projectId} />
 
           <Section title="Tasks" description="Explicit user actions. Evidence adapters do not create tasks automatically.">
             <form className="inline-form" onSubmit={(event) => void addTask(event)}>

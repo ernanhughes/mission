@@ -1,0 +1,31 @@
+{
+ "id": "P27",
+ "sha": "85bca93a959d651c",
+ "detector_version": "expo-v1",
+ "prompt_version": "expo-sem-v1+d40fa9e4",
+ "requested_model": "opencode-go/deepseek-v4.1-flash",
+ "actual_model": "opencode-go/deepseek-v4.1-flash",
+ "route_resolution": "configured",
+ "transport": "file",
+ "latency_s": 26.7,
+ "usage": {
+  "input_tokens": 2476,
+  "output_tokens": 529,
+  "total_tokens": 3005,
+  "cost_usd": 0.0,
+  "accounting": "provider_reported"
+ },
+ "provider_status": "ok",
+ "provider_error": null,
+ "status": "ok",
+ "score": 0.0,
+ "verdict": "NO_ISSUE",
+ "severity": "NONE",
+ "confidence": null,
+ "main_explanation": "",
+ "diagnosis": "SEMANTICALLY_REJECTED",
+ "quote": "",
+ "validation_state": "SEMANTICALLY_REJECTED",
+ "model": "opencode-go/deepseek-v4.1-flash",
+ "raw_response": "# rationale\n\nThe paragraph is compact and well ordered: it states the general point that reading serves a purpose, illustrates it with two contrasting readers, draws the implication for questions, omissions and format, then names the success criterion and closes with a limiting condition. The final sentence is a necessary boundary rather than a premature caveat, since without it the purpose principle could be read as licensing factual distortion. Six short sentences and one example pair do not exceed what the structure can carry.\n\n# score\n\n0.05\n\n# answer\n\n```json\n{\n  \"verdict\": \"NO_ISSUE\",\n  \"severity\": \"NONE\",\n  \"confidence\": 0.9,\n  \"main_explanation\": \"Purpose determines what a reader needs and therefore supplies the success criterion for mediation, while remaining bounded by factual fidelity.\",\n  \"diagnosis\": \"The passage moves in a clear sequence from a general claim to a concrete contrast, then to the governing implication and its limit. Density is modest: one distinction (engineer versus student) and one qualification. The closing caveat prevents a relativistic misreading and is correctly placed after the claim has been established, so it functions as a boundary rather than an interruption.\",\n  \"essential_qualifications\": [\n    \"It does not authorise the mediator to change the underlying facts to make the task easier.\"\n  ],\n  \"premature_or_repeated_qualifications\": [],\n  \"proposed_strategy\": \"NO_CHANGE\",\n  \"quote\": \"**Purpose.** People read for something: to decide, to check, to learn or to act. An engineer reviewing an outage needs to judge whether the proposed fix is justified. A student reading the same report may need to explain the failure mechanism. Their questions, acceptable omissions and useful formats differ. Purpose supplies the success criterion. It does not authorise the mediator to change the underlying facts to make the task easier.\",\n  \"uncertainty\": \"The term \\\"mediator\\\" depends on surrounding chapter context and is not defined in this isolated paragraph; this is a local coherence dependency, not evidence of overload.\"\n}\n```"
+}

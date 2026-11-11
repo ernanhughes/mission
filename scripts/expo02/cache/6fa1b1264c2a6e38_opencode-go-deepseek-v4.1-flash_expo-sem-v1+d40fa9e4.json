@@ -1,0 +1,31 @@
+{
+ "id": "P46",
+ "sha": "6fa1b1264c2a6e38",
+ "detector_version": "expo-v1",
+ "prompt_version": "expo-sem-v1+d40fa9e4",
+ "requested_model": "opencode-go/deepseek-v4.1-flash",
+ "actual_model": "opencode-go/deepseek-v4.1-flash",
+ "route_resolution": "configured",
+ "transport": "file",
+ "latency_s": 73.2,
+ "usage": {
+  "input_tokens": 741,
+  "output_tokens": 516,
+  "total_tokens": 1257,
+  "cost_usd": 0.0,
+  "accounting": "provider_reported"
+ },
+ "provider_status": "ok",
+ "provider_error": null,
+ "status": "ok",
+ "score": 0.9,
+ "verdict": "EXPO_INTERRUPTION",
+ "severity": "HIGH",
+ "confidence": 0.94,
+ "main_explanation": "To explain that batching groups requests so that one model pass is shared across them.",
+ "diagnosis": "The core explanation is postponed to the final clause and interrupted by a chain of defensive caveats and reading instructions. The caveats concern real scope limits, but presenting them before the reader knows what batching is turns the paragraph into a sequence of qualifications rather than a progressive explanation.",
+ "quote": "Before explaining batching, note this is not a benchmark and must not be quoted as one, and do not conclude the scheduler is optimal, because optimality would require a proof we do not have, although the basic idea is simple: group requests together. But even that description, which sounds straightforward, should not be mistaken for an implementation, since the implementation details, which we have not verified, could differ in ways that matter, so keep all of that in mind while reading the next sentence: batching shares one model pass across requests.",
+ "validation_state": "SEMANTICALLY_CONFIRMED",
+ "model": "opencode-go/deepseek-v4.1-flash",
+ "raw_response": "# rationale\nThe passage postpones its one substantive explanation—that batching shares a single model pass across requests—until the final clause. Before that, it stacks a benchmark disclaimer, an optimality caveat, an implementation caveat, and a meta-instruction on top of a preliminary description. The caveats are relevant, but their placement forces readers to hold several unresolved warnings before they know what is being explained.\n\n# score\n0.90\n\n# answer\n{\n  \"verdict\": \"EXPO_INTERRUPTION\",\n  \"severity\": \"HIGH\",\n  \"confidence\": 0.94,\n  \"main_explanation\": \"To explain that batching groups requests so that one model pass is shared across them.\",\n  \"diagnosis\": \"The core explanation is postponed to the final clause and interrupted by a chain of defensive caveats and reading instructions. The caveats concern real scope limits, but presenting them before the reader knows what batching is turns the paragraph into a sequence of qualifications rather than a progressive explanation.\",\n  \"essential_qualifications\": [\n    \"this is not a benchmark and must not be quoted as one\",\n    \"should not be mistaken for an implementation, since the implementation details, which we have not verified, could differ in ways that matter\"\n  ],\n  \"premature_or_repeated_qualifications\": [\n    \"Before explaining batching, note this is not a benchmark and must not be quoted as one\",\n    \"and do not conclude the scheduler is optimal, because optimality would require a proof we do not have\",\n    \"But even that description, which sounds straightforward\",\n    \"so keep all of that in mind while reading the next sentence\"\n  ],\n  \"proposed_strategy\": \"MOVE_CAVEAT_LATER\",\n  \"quote\": \"Before explaining batching, note this is not a benchmark and must not be quoted as one, and do not conclude the scheduler is optimal, because optimality would require a proof we do not have, although the basic idea is simple: group requests together. But even that description, which sounds straightforward, should not be mistaken for an implementation, since the implementation details, which we have not verified, could differ in ways that matter, so keep all of that in mind while reading the next sentence: batching shares one model pass across requests.\",\n  \"uncertainty\": \"Whether the benchmark and optimality disclaimers are required by the surrounding document; their necessity cannot be judged from this passage alone.\"\n}"
+}
