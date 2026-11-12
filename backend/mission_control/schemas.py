@@ -701,6 +701,7 @@ class TechnicalClaimCreate(RawModel):
     prompt_version: str = "1"
     quote_validated: bool = False
     campaign_id: str | None = None
+    extraction_run_id: str | None = None
 
 
 class TechnicalClaimRead(BaseModel):
@@ -728,6 +729,7 @@ class TechnicalClaimRead(BaseModel):
     source_char_start: int | None = None
     source_char_end: int | None = None
     campaign_id: str | None
+    extraction_run_id: str | None = None
     derived_state: str = ""
     created_at: str
 
@@ -748,6 +750,8 @@ class TechnicalExtractionRunCreate(RawModel):
     source_revision: str = ""
     manifest_hash: str = ""
     error: str = ""
+    duration_ms: int | None = None
+    transport: str = ""
 
 
 class TechnicalExtractionRunRead(BaseModel):
@@ -767,6 +771,8 @@ class TechnicalExtractionRunRead(BaseModel):
     source_revision: str
     manifest_hash: str
     error: str
+    duration_ms: int | None = None
+    transport: str = ""
     created_at: str
 
 

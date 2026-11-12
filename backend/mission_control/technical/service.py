@@ -75,13 +75,20 @@ def record_claim(session: Session, payload: TechnicalClaimCreate) -> TechnicalCl
         raise ValidationProblem("Campaign does not exist")
     if payload.anchor_method not in ("exact", "normalized", "none"):
         raise ValidationProblem(f"unknown anchor method {payload.anchor_method!r}")
+    if payload.extraction_run_id is not None:
+        from mission_control.models import TechnicalExtractionRun as _Run
+
+        if session.get(_Run, payload.extraction_run_id) is None:
+            raise ValidationProblem("Extraction run does not exist")
     digest = hashlib.sha256(
         f"{payload.chapter_id}|{payload.claim_text}|{payload.source_excerpt}".encode()
     ).hexdigest()[:16]
     existing = session.get(TechnicalClaim, f"tclaim:{digest}")
     if existing is not None:
         # Deterministic identity: re-extraction of the same assertion is a
-        # no-op, preserving the original record and its history.
+        # no-op, preserving the original record and its history. The
+        # original extraction_run_id stands (first-write-wins); every attempt
+        # remains auditable in its own technical_extraction_runs row.
         return existing
     quote_validated = _verify_excerpt(payload.source_path, payload.source_excerpt,
                                       payload.quote_validated)
@@ -110,6 +117,7 @@ def record_claim(session: Session, payload: TechnicalClaimCreate) -> TechnicalCl
         source_char_start=payload.source_char_start,
         source_char_end=payload.source_char_end,
         campaign_id=payload.campaign_id,
+        extraction_run_id=payload.extraction_run_id,
     )
     session.add(record)
     session.flush()
@@ -267,6 +275,7 @@ def to_claim_read(record: TechnicalClaim, *, current_revision: str = "") -> Tech
         source_char_start=record.source_char_start,
         source_char_end=record.source_char_end,
         campaign_id=record.campaign_id,
+        extraction_run_id=record.extraction_run_id,
         derived_state=derived,
         created_at=record.created_at,
     )
@@ -417,13 +426,44 @@ class _TechStop(Exception):
     pass
 
 
-def run_technical_campaign(session_factory, campaign_id: str, evaluate_fn) -> Any:
+def _settle_reservation(budget: "BudgetAccount | None", key: str | None,
+                      outcome: Any) -> None:
+    """Settle one chapter reservation from an evaluate_fn outcome (04A-04-00 A).
+
+    Any returned outcome — claims, BLOCKED, or ERROR — settles via
+    complete(): the attempt consumed its call even when it failed. Only a
+    reservation that never dispatched (stop/crash before evaluate_fn
+    returns) may use cancel(). Unmetered outcomes settle unmetered and are
+    recorded as violations by the account, never silently absorbed."""
+    if budget is None or key is None:
+        return
+    usage = outcome.get("usage", {}) if isinstance(outcome, dict) else {}
+    in_tok = usage.get("input_tokens")
+    out_tok = usage.get("output_tokens")
+    metered = isinstance(in_tok, int) and isinstance(out_tok, int)
+    budget.complete(key, actual_in=in_tok if metered else 0,
+                    actual_out=out_tok if metered else 0, metered=metered)
+
+
+def run_technical_campaign(session_factory, campaign_id: str, evaluate_fn,
+                           *, budget: "BudgetAccount | None" = None,
+                           estimates: dict | None = None) -> Any:
     """Durable per-chapter technical assessment.
 
     evaluate_fn(chapter) returns {"claims": [claim payloads...]} or raises,
     or returns {"status": "BLOCKED"/"ERROR", "error": ...}. Progress and
     failures persist per chapter; one failure never aborts the campaign.
     Reuses the quality campaign progress/recovery columns.
+
+    Optional budget enforcement (04A-04-00 Workstream A): pass a
+    BudgetAccount plus per-chapter estimates
+    {chapter_id: {"est_in": int, "out_cap": int}}. Each non-done chapter
+    reserves its bounded maximum before evaluate_fn runs; a chapter whose
+    maximum cannot fit is marked failed with the refusal reason and
+    skipped (the campaign continues with remaining chapters). Every
+    reservation settles from the outcome's usage (unmetered outcomes are
+    recorded as violations). Chapters without an estimate run ungated;
+    04A-04 runners must supply estimates for every work unit.
     """
     from mission_control.persistence.db import now_iso
     from mission_control.quality.service import (
@@ -467,6 +507,29 @@ def run_technical_campaign(session_factory, campaign_id: str, evaluate_fn) -> An
                 if chapter_id in done:
                     skipped += 1
                     continue
+                reservation_key = None
+                if budget is not None and estimates is not None and chapter_id in estimates:
+                    est = estimates[chapter_id] or {}
+                    reservation_key = f"{record.id}:{chapter_id}"
+                    try:
+                        budget.reserve(reservation_key,
+                                       est_in=int(est.get("est_in", 0)),
+                                       out_cap=int(est.get("out_cap", 0)))
+                    except ValidationProblem as exc:
+                        failed += 1
+                        failures[chapter_id] = f"budget refused: {exc}"
+                        with session_factory() as chapter_session:
+                            row = get_campaign(chapter_session, record.id)
+                            row.error = f"{chapter_id}: {failures[chapter_id]}"
+                            row.usage = {**(row.usage or {}), "failures": failures}
+                            if budget is not None:
+                                row.usage = {**row.usage, "budget": budget.to_state()}
+                            row.failed = failed
+                            row.skipped = skipped
+                            row.remaining = max(0, len(selection) - completed - skipped - failed)
+                            row.updated_at = now_iso()
+                            chapter_session.commit()
+                        continue
                 with session_factory() as chapter_session:
                     row = get_campaign(chapter_session, record.id)
                     row.current_chapter = chapter_id
@@ -476,16 +539,25 @@ def run_technical_campaign(session_factory, campaign_id: str, evaluate_fn) -> An
                 try:
                     outcome = evaluate_fn(chapter_id)
                 except _TechStop:
+                    if budget is not None and reservation_key is not None:
+                        budget.cancel(reservation_key)
                     raise
                 except Exception as exc:  # noqa: BLE001 - per-chapter isolation
+                    if budget is not None and reservation_key is not None:
+                        _settle_reservation(budget, reservation_key, None)
+                        reservation_key = None
                     outcome = {"status": "ERROR", "error": f"{type(exc).__name__}: {str(exc)[:300]}"}
                 if isinstance(outcome, dict) and outcome.get("status") in ("BLOCKED", "ERROR") and "claims" not in outcome:
                     failed += 1
                     failures[chapter_id] = str(outcome.get("error", "failed"))
+                    _settle_reservation(budget, reservation_key, outcome)
+                    reservation_key = None
                     with session_factory() as chapter_session:
                         row = get_campaign(chapter_session, record.id)
                         row.error = f"{chapter_id}: {failures[chapter_id]}"
                         row.usage = {**(row.usage or {}), "failures": failures}
+                        if budget is not None:
+                            row.usage = {**row.usage, "budget": budget.to_state()}
                         row.failed = failed
                         row.skipped = skipped
                         row.remaining = max(0, len(selection) - completed - skipped - failed)
@@ -525,8 +597,13 @@ def run_technical_campaign(session_factory, campaign_id: str, evaluate_fn) -> An
                             usage_in += usage["input_tokens"]
                         if isinstance(usage.get("output_tokens"), int):
                             usage_out += usage["output_tokens"]
+                        _settle_reservation(budget, reservation_key, outcome)
+                        reservation_key = None
                         chapter_session.commit()
                 except Exception as exc:  # noqa: BLE001
+                    if budget is not None and reservation_key is not None:
+                        _settle_reservation(budget, reservation_key, None)
+                        reservation_key = None
                     failed += 1
                     failures[chapter_id] = f"persist failed: {type(exc).__name__}: {str(exc)[:200]}"
                 with session_factory() as chapter_session:
@@ -537,6 +614,8 @@ def run_technical_campaign(session_factory, campaign_id: str, evaluate_fn) -> An
                     row.remaining = max(0, len(selection) - completed - skipped - failed)
                     row.usage = {**(row.usage or {}), "input_tokens": usage_in,
                                  "output_tokens": usage_out, "failures": failures}
+                    if budget is not None:
+                        row.usage = {**row.usage, "budget": budget.to_state()}
                     row.updated_at = now_iso()
                     chapter_session.commit()
         except _TechStop:
@@ -588,6 +667,25 @@ GAP_TYPES = (
 GAP_STATUSES = ("OPEN", "RESOLVED", "STALE")
 LINK_RELATIONS = ("satisfies", "partially_satisfies", "contradicts", "depends_on")
 CLAIM_LINK_RELATIONS = ("depends_on", "restates", "contradicts", "refines")
+
+#: Gap types that assert an evidence absence and therefore require a
+#: recorded searched scope. Without examined scope the honest classification
+#: is NOT_SEARCHED (04A-02 restriction, 04A-04-00 Workstream G).
+SEARCHED_SCOPE_REQUIRED = ("MISSING_LOCAL_ARTIFACT", "EXPERIMENT_NOT_RUN")
+
+
+def require_searched_scope(gap_type: str, searched_scope: str | None) -> None:
+    """Enforce the NOT_SEARCHED default at the evidence-assessment boundary.
+
+    MISSING_LOCAL_ARTIFACT / EXPERIMENT_NOT_RUN assert that something does
+    not exist or was not run. Those findings require a recorded searched
+    scope; without one the caller must use NOT_SEARCHED. Pure function so
+    runners and reviewers share one rule.
+    """
+    if gap_type in SEARCHED_SCOPE_REQUIRED and not (searched_scope or "").strip():
+        raise ValidationProblem(
+            f"gap type {gap_type!r} asserts an absence but no searched_scope was "
+            "recorded; use NOT_SEARCHED when the evidence source was not examined")
 
 
 def _region_id(chapter_id: str, source_hash: str, char_start: int, char_end: int, title: str) -> str:
@@ -756,6 +854,8 @@ def record_extraction_run(
         source_revision=payload.source_revision,
         manifest_hash=payload.manifest_hash,
         error=payload.error,
+        duration_ms=payload.duration_ms,
+        transport=payload.transport,
     )
     session.add(record)
     session.flush()
@@ -885,6 +985,157 @@ def check_budget(*, used_input: int, used_output: int, used_calls: int,
             f"output token budget exhausted ({used_output}/{max_output}); stop, do not continue")
 
 
+class BudgetAccount:
+    """Reservation-based call/token budget for one experiment arm (04A-04-00 A).
+
+    B1 in 04A-03E exceeded its output arm ceiling (86,548/85,000) because
+    requests were dispatched against heuristic estimates with no per-request
+    reservation: the overrun was *detected* after the fact but never
+    *prevented*. This account enforces the prevention half:
+
+    - reserve() before dispatch: refuses when the bounded maximum
+      (est_in + out_cap) cannot fit inside the remaining authorization.
+      Refusals raise ValidationProblem and are counted, never silent.
+    - complete() after the provider returns: meters actual usage, releases
+      the reservation, and records (not hides) provider-accounting
+      discrepancies: unmetered responses and actual-over-reserved outputs
+      become explicit violations.
+    - cancel() releases a reservation that never dispatched (interruption
+      between reserve and dispatch). Distinct from complete(): a failed or
+      quarantined attempt still consumed its call and must complete(),
+      never cancel().
+    - No cross-arm transfers: caps are fixed at construction. One account
+      per arm; aggregate ceilings are enforced by holding a parent account
+      or by checking each arm account before dispatch (callers decide;
+      transfers require explicit policy, never implicit borrowing).
+
+    Estimation limitation (honest): est_in is heuristic. Prevention is
+    exact only when out_cap is enforced by the provider interface; otherwise
+    the account guarantees that the *bounded maximum* fit, and any provider
+    overrun is surfaced as a violation instead of being silently absorbed.
+    In-memory; persist via to_state()/from_state() into a durable ledger.
+    """
+
+    def __init__(self, *, max_calls: int, max_input: int, max_output: int,
+                 label: str = "") -> None:
+        self.label = label
+        self.max_calls = max_calls
+        self.max_input = max_input
+        self.max_output = max_output
+        self.used_calls = 0
+        self.used_in = 0
+        self.used_out = 0
+        self._reserved: dict[str, dict] = {}
+        self._settled: set[str] = set()
+        self.refusals = 0
+        self.violations: list[dict] = []
+
+    def remaining(self) -> dict:
+        reserved_in = sum(r["est_in"] for r in self._reserved.values())
+        reserved_out = sum(r["out_cap"] for r in self._reserved.values())
+        return {
+            "calls": self.max_calls - self.used_calls - len(self._reserved),
+            "input": self.max_input - self.used_in - reserved_in,
+            "output": self.max_output - self.used_out - reserved_out,
+        }
+
+    def reserve(self, key: str, *, est_in: int, out_cap: int) -> None:
+        """Reserve budget for one bounded request. Raises on any shortfall."""
+        if key in self._reserved or key in self._settled:
+            raise ValidationProblem(f"duplicate reservation key {key!r}")
+        problems: list[str] = []
+        if self.used_calls + len(self._reserved) + 1 > self.max_calls:
+            problems.append(
+                f"call budget would be exceeded ({self.used_calls}+1/{self.max_calls})")
+        if self.used_in + sum(r["est_in"] for r in self._reserved.values()) + est_in > self.max_input:
+            problems.append("input budget would be exceeded by bounded estimate")
+        if self.used_out + sum(r["out_cap"] for r in self._reserved.values()) + out_cap > self.max_output:
+            problems.append("output budget would be exceeded by bounded maximum")
+        if problems:
+            self.refusals += 1
+            raise ValidationProblem(
+                f"budget reservation refused for {key!r} [{self.label}]: " + "; ".join(problems))
+        self._reserved[key] = {"est_in": est_in, "out_cap": out_cap}
+
+    def complete(self, key: str, *, actual_in: int, actual_out: int,
+                 metered: bool = True) -> bool:
+        """Settle a reservation with provider-reported usage.
+
+        Always consumes one call (failed attempts are billable). Returns True
+        on first settlement; a repeated completion records a
+        duplicate-completion violation and changes nothing (never double
+        counts). Unknown keys raise: settling work that was never reserved
+        is a caller bug, not a recovery path (use cancel() for
+        never-dispatched reservations)."""
+        if key in self._settled:
+            self.violations.append({"kind": "duplicate-completion", "key": key,
+                                    "detail": "second completion ignored; usage not double-counted"})
+            return False
+        if key not in self._reserved:
+            raise ValidationProblem(f"completion for unknown reservation {key!r}")
+        reservation = self._reserved.pop(key)
+        self._settled.add(key)
+        self.used_calls += 1
+        self.used_in += max(0, actual_in)
+        self.used_out += max(0, actual_out)
+        if not metered:
+            self.violations.append({"kind": "unmetered-response", "key": key,
+                                    "detail": "no provider usage reported; call still consumed"})
+        if metered and actual_out > reservation["out_cap"]:
+            self.violations.append({"kind": "provider-overrun", "key": key,
+                                    "detail": f"actual {actual_out} exceeded reserved maximum {reservation['out_cap']}"})
+        return True
+
+    def cancel(self, key: str) -> bool:
+        """Release a reservation that never dispatched (interruption path).
+
+        Idempotent: unknown or already-settled keys are no-ops returning
+        False, so crash-recovery replays cannot corrupt balances. A
+        dispatched attempt must use complete(), even on failure."""
+        if key in self._settled or key not in self._reserved:
+            return False
+        del self._reserved[key]
+        return True
+
+    def over_ceiling(self) -> list[str]:
+        """Post-hoc breach detector for imported/durable ledgers.
+
+        Reservation discipline prevents new breaches; this reports breaches
+        already present in reconstructed history (e.g. the 04A-03E B1 output
+        overrun). Returns the subset of {"calls", "input", "output"} whose
+        metered usage exceeds the cap."""
+        breached: list[str] = []
+        if self.used_calls > self.max_calls:
+            breached.append("calls")
+        if self.used_in > self.max_input:
+            breached.append("input")
+        if self.used_out > self.max_output:
+            breached.append("output")
+        return breached
+
+    def to_state(self) -> dict:
+        return {"label": self.label, "max_calls": self.max_calls,
+                "max_input": self.max_input, "max_output": self.max_output,
+                "used_calls": self.used_calls, "used_in": self.used_in,
+                "used_out": self.used_out,
+                "reserved": dict(self._reserved),
+                "settled": sorted(self._settled),
+                "refusals": self.refusals, "violations": list(self.violations)}
+
+    @classmethod
+    def from_state(cls, state: dict) -> "BudgetAccount":
+        account = cls(max_calls=state["max_calls"], max_input=state["max_input"],
+                      max_output=state["max_output"], label=state.get("label", ""))
+        account.used_calls = state["used_calls"]
+        account.used_in = state["used_in"]
+        account.used_out = state["used_out"]
+        account._reserved = dict(state.get("reserved", {}))
+        account._settled = set(state.get("settled", []))
+        account.refusals = state.get("refusals", 0)
+        account.violations = list(state.get("violations", []))
+        return account
+
+
 def classify_cli_output(out: dict) -> dict:
     """Map one extractor CLI result to a campaign action (04A-03B).
 
@@ -907,6 +1158,57 @@ def classify_cli_output(out: dict) -> dict:
     return {"action": "persist",
             "run_status": "COMPLETED_WITHIN_BUDGET" if status in ("CURRENT", "") else "PARTIAL",
             "error": ""}
+
+
+def continuation_decision(
+    *,
+    chapter_id: str,
+    run_status: str,
+    requested_limit: int,
+    returned_count: int,
+    all_region_ids: list,
+    covered_region_ids: list,
+    prior_continuations: int = 0,
+    max_continuations: int = 1,
+    exclude_claim_texts: list | None = None,
+) -> dict:
+    """Eligibility for one bounded whole-chapter continuation (04A-04-00 E).
+
+    A saturated response (LIMIT_REACHED at the claim bound) is an operational
+    signal, never a completeness proof: 04A-03E saturated every pass while
+    region coverage stayed partial. This pure function turns that signal
+    into an explicit, auditable go/no-go:
+
+    - not saturated (returned < requested, or status != LIMIT_REACHED)
+      -> ineligible: "no saturation signal".
+    - saturated but every planned region already processed
+      -> ineligible: "no remaining candidate regions" (NOT "chapter complete").
+    - prior continuations exhausted -> ineligible: "continuation budget exhausted".
+    - else eligible with the remaining region ids and the caller-supplied
+      exclusion list (previously persisted claim texts, so the continuation
+      cannot merely repeat the initial pass).
+
+    A continuation returning zero new claims ends the line for that chapter;
+    it does not establish that no further claims exist.
+    """
+    remaining = [r for r in (all_region_ids or []) if r not in set(covered_region_ids or [])]
+    saturated = run_status == "LIMIT_REACHED" and returned_count >= requested_limit
+    if not saturated:
+        return {"chapter_id": chapter_id, "eligible": False,
+                "reason": "no saturation signal", "remaining_region_ids": remaining,
+                "excludes_claim_texts": list(exclude_claim_texts or [])}
+    if prior_continuations >= max_continuations:
+        return {"chapter_id": chapter_id, "eligible": False,
+                "reason": "continuation budget exhausted", "remaining_region_ids": remaining,
+                "excludes_claim_texts": list(exclude_claim_texts or [])}
+    if not remaining:
+        return {"chapter_id": chapter_id, "eligible": False,
+                "reason": "no remaining candidate regions (saturated, not complete)",
+                "remaining_region_ids": [], "excludes_claim_texts": list(exclude_claim_texts or [])}
+    return {"chapter_id": chapter_id, "eligible": True,
+            "reason": "saturated with unprocessed regions remaining",
+            "remaining_region_ids": remaining,
+            "excludes_claim_texts": list(exclude_claim_texts or [])}
 
 
 def find_duplicate_candidates(claims: list) -> list[dict]:
@@ -1058,6 +1360,7 @@ def record_gap(session: Session, payload: "TechnicalGapCreate") -> "TechnicalGap
 
     if payload.gap_type not in GAP_TYPES:
         raise ValidationProblem(f"unknown gap type {payload.gap_type!r}")
+    require_searched_scope(payload.gap_type, payload.searched_scope)
     if payload.claim_id:
         get_claim(session, payload.claim_id)
     record = TechnicalGap(

@@ -1029,6 +1029,9 @@ class TechnicalClaim(Base):
     campaign_id: Mapped[str | None] = mapped_column(
         String, ForeignKey("quality_campaigns.id", ondelete="SET NULL")
     )
+    extraction_run_id: Mapped[str | None] = mapped_column(
+        String, ForeignKey("technical_extraction_runs.id", ondelete="SET NULL")
+    )
     created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
 
 
@@ -1161,6 +1164,8 @@ class TechnicalExtractionRun(Base):
     source_revision: Mapped[str] = mapped_column(String, default="", nullable=False)
     manifest_hash: Mapped[str] = mapped_column(String, default="", nullable=False)
     error: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    duration_ms: Mapped[int | None] = mapped_column(Integer)
+    transport: Mapped[str] = mapped_column(String, default="", nullable=False)
     created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
 
 
