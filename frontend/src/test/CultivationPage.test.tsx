@@ -489,4 +489,71 @@ describe("Cultivation blue theme", () => {
       ).toBe(true);
     });
   });
+
+  it("shows the GitHub-backed applications inventory with summary, not an empty state", async () => {
+    const calls = mockCultivation((call) => {
+      if (call.path === "/api/cultivation/skills/software-development")
+        return json({
+          id: "software-development", name: "Software Development", icon: "git-branch",
+          category: "software", description: "", pinned: false, pin_order: 100, state: "active",
+          created_at: "2026-11-09T00:00:00Z", updated_at: "2026-11-09T00:00:00Z",
+          goals_total: 0, goals_achieved: 0, item_completions: 0, goals: [],
+        });
+      if (call.path === "/api/cultivation/goals" && call.method === "GET") return json([]);
+      if (call.path === "/api/cultivation/sources")
+        return json([
+          {
+            id: "src-github-repos", name: "GitHub repositories", kind: "github_repos",
+            skill_id: "software-development", goal_id: "repositories", path: "",
+            config: { account: "ernanhughes" },
+            last_sync_at: "2026-11-09T00:00:00Z", last_status: "ok", last_error: null,
+            fingerprint: "gh-abc",
+            observed: { repos_total: 306, public: 183, private: 123, by_classification: { application: 120 } },
+            created_at: "2026-11-09T00:00:00Z", updated_at: "2026-11-09T00:00:00Z",
+          },
+        ]);
+      if (call.path === "/api/cultivation/github/summary")
+        return json({
+          discovered: 306, private: 123, applications_identified: 120, books_identified: 17,
+          completed_applications: 0, published_applications: 0,
+          goals: { applications: { current: 0, target: 100, unit: "apps", percent: 0 } },
+        });
+      if (call.path === "/api/cultivation/repo-states")
+        return json({
+          items: [
+            {
+              repo_id: "gh-R_writer", repo_uid: "github:R_writer", name: "writer",
+              path: null, root_path: "github", branch: "main", head_sha: null,
+              accessible: true, indexed: false, total_commits: 0,
+              first_commit_ts: null, last_commit_ts: null, backfill_complete: false,
+              last_indexed_at: "2026-11-09T00:00:00Z", has_agents: false, has_description: true,
+              context_status: "missing", projects: [], qualification: "discovered",
+              lifecycle_stage: "unreviewed", classification: "application",
+              rationale: "Inferred application", evidence: {}, decided_by: "undecided", decided_at: null,
+              last_seen_at: "2026-11-09T00:00:00Z", created_at: "2026-11-09T00:00:00Z",
+              updated_at: "2026-11-09T00:00:00Z", recent_commits: 0, review_count: 0,
+              origin: "github", url: "https://github.com/ernanhughes/writer",
+              description: "AI authoring", visibility: "PRIVATE", language: "Python",
+              private: true, fork: false, pushed_at: "2026-11-09T00:00:00Z", missing: false,
+            },
+          ],
+          total: 306, limit: 50, offset: 0,
+        });
+      if (call.path === "/api/cultivation/applications") return json([]);
+      return undefined;
+    });
+    const user = userEvent.setup();
+    renderRoute(<CultivationPage />, "/cultivation?skill=software-development");
+    expect(await screen.findByText(/GitHub inventory/)).toBeInTheDocument();
+    expect(await screen.findByText("writer")).toBeInTheDocument();
+    expect(await screen.findByRole("button", { name: "Refresh GitHub" })).toBeInTheDocument();
+    expect(screen.queryByText("No applications registered yet.")).toBeInTheDocument();
+    expect(screen.queryByText("No applications match")).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Refresh GitHub" }));
+    await waitFor(() => {
+      expect(
+        calls.some((call) => call.method === "POST" && call.path === "/api/cultivation/sources/src-github-repos/sync"),
+      ).toBe(true);
+    });
+  });
 });

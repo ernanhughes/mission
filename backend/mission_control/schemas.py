@@ -2058,6 +2058,15 @@ class CultivationRepoStateRead(BaseModel):
     updated_at: str
     recent_commits: int = 0
     review_count: int = 0
+    origin: str = "activity"
+    url: str | None = None
+    description: str | None = None
+    visibility: str | None = None
+    language: str | None = None
+    private: bool = False
+    fork: bool = False
+    pushed_at: str | None = None
+    missing: bool = False
 
 
 class CultivationRepoClassify(RawModel):

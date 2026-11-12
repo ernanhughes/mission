@@ -17,6 +17,7 @@ from sqlalchemy.orm import Session
 
 from mission_control.core.errors import Conflict, NotFound, ValidationProblem
 from mission_control.models import (
+    Application,
     Book,
     CultivationApplication,
     CultivationAppRepo,
@@ -24,6 +25,7 @@ from mission_control.models import (
     CultivationCycleGoal,
     CultivationEvent,
     CultivationEvidence,
+    CultivationGitHubRepo,
     CultivationGoal,
     CultivationItem,
     CultivationMeasurement,
@@ -49,13 +51,15 @@ PROVENANCE_VALUES = {"human", "ai_assisted", "ai_workflow", "unclassified"}
 BASELINE_PROVENANCE = {"none", "estimate", "user_assertion", "verified"}
 EVIDENCE_STATUS = {"none", "claimed", "verified"}
 SKILL_STATES = {"active", "archived"}
-SOURCE_KINDS = {"hugo_blog", "activity_projects", "numbered_files", "script_registry"}
+SOURCE_KINDS = {"hugo_blog", "activity_projects", "numbered_files", "script_registry", "github_repos"}
 CYCLE_STATES = {"active", "completed", "archived"}
 REPO_QUALIFICATIONS = {"discovered", "eligible", "pending", "qualified", "excluded", "archived", "unavailable"}
 REPO_CLASSIFICATIONS = {"application", "library", "infrastructure", "research", "website",
-                        "book", "experiment", "other", "unclassified"}
+                        "book", "experiment", "other", "unclassified", "dataset", "tutorial"}
 LIFECYCLE_STAGES = {"idea", "planned", "in_development", "functional", "testing",
-                    "released", "maintained", "archived"}
+                    "released", "maintained", "archived",
+                    "unreviewed", "concept", "prototype", "development",
+                    "working", "completed", "published", "abandoned"}
 RELEASE_EVIDENCE_KINDS = {"versioned_release", "deployment", "published", "completion_decision",
                           "owner_confirmed", "project_record"}
 DUBLIN_TZ = "Europe/Dublin"
@@ -1112,8 +1116,388 @@ def sync_activity_projects(session: Session, source_id: str) -> dict[str, Any]:
             "fingerprint_changed": changed}
 
 
+# ------------------------------------------------- GitHub inventory (04)
+#
+# Read-only GitHub synchronisation. GitHub owns remote facts (cached in
+# cultivation_github_repos); Mission Control owns classifications, lifecycle
+# assessments, annotations and goals. A failed sync never deletes cached
+# rows: the source row records the failure and the last observation is kept.
+
+def _github_local_matches(session: Session, repo_name: str) -> list[dict[str, str]]:
+    """Match a GitHub repo name against local workspaces (advisory only)."""
+    import os as _os
+
+    matches: list[dict[str, str]] = []
+    seen: set[str] = set()
+    lowered = repo_name.lower()
+    for repo in session.scalars(select(Repository)).all():
+        if _os.path.basename(repo.path or "").lower() == lowered and repo.path not in seen:
+            seen.add(repo.path)
+            matches.append({"kind": "repository", "path": repo.path})
+    for git_repo in session.scalars(select(GitRepository)).all():
+        if _os.path.basename(git_repo.path or "").lower() == lowered and git_repo.path not in seen:
+            seen.add(git_repo.path)
+            matches.append({"kind": "activity_index", "path": git_repo.path})
+    for app in session.scalars(select(Application)).all():
+        candidate = app.repository_path or ""
+        if candidate and _os.path.basename(candidate).lower() == lowered and candidate not in seen:
+            seen.add(candidate)
+            matches.append({"kind": "application", "path": candidate})
+    return matches[:5]
+
+
+def _github_evidence(repo: dict[str, Any],
+                     matches: list[dict[str, str]]) -> dict[str, Any]:
+    return {"github": {
+        "node_id": repo.get("node_id"), "full_name": repo.get("full_name"),
+        "url": repo.get("url"), "description": repo.get("description"),
+        "visibility": repo.get("visibility"), "private": bool(repo.get("is_private")),
+        "fork": bool(repo.get("is_fork")), "archived": bool(repo.get("is_archived")),
+        "language": repo.get("language"), "languages": list(repo.get("languages") or []),
+        "topics": list(repo.get("topics") or []),
+        "default_branch": repo.get("default_branch"),
+        "pushed_at": repo.get("pushed_at"), "created_at": repo.get("created_at"),
+        "updated_at": repo.get("updated_at")},
+        "local_matches": matches}
+
+
+def sync_github_repos(session: Session, source_id: str,
+                       fetcher: Any | None = None) -> dict[str, Any]:
+    """Sync the GitHub inventory snapshot (read-only toward GitHub).
+
+    ``fetcher`` is an injectable zero-argument callable returning normalized
+    repository dicts (see ``cultivation.github.normalize_repo``); tests pass a
+    fake, production resolves one from the source config.
+    """
+    from mission_control.cultivation import github as _github
+
+    source = get_source(session, source_id)
+    if source.kind != "github_repos":
+        raise ValidationProblem("Only github_repos sources sync this way")
+    if fetcher is None:
+        config = source.config if isinstance(source.config, dict) else {}
+        fetcher = _github.resolve_fetcher(config)
+    try:
+        repos = fetcher()
+    except _github.GitHubError as exc:
+        source.last_status = exc.status
+        source.last_error = str(exc)[:2000]
+        source.updated_at = now_iso()
+        session.flush()
+        return {"source_id": source.id, "status": exc.status,
+                "observed": dict(source.observed or {}), "stale": True,
+                "error": source.last_error, "goal_id": source.goal_id}
+    if not isinstance(repos, list):
+        raise ValidationProblem("GitHub fetcher must return a list of repositories")
+
+    valid = [repo for repo in repos
+             if isinstance(repo, dict) and str(repo.get("node_id") or "").strip()]
+    seen: set[str] = set()
+    new_items = 0
+    for repo in valid:
+        node_id = str(repo.get("node_id"))
+        seen.add(node_id)
+        row = session.get(CultivationGitHubRepo, node_id)
+        if row is None:
+            row = CultivationGitHubRepo(
+                node_id=node_id, numeric_id=repo.get("numeric_id"),
+                owner=str(repo.get("owner") or ""), name=str(repo.get("name") or ""),
+                full_name=str(repo.get("full_name") or ""),
+                url=str(repo.get("url") or ""),
+                description=str(repo.get("description") or ""),
+                visibility=str(repo.get("visibility") or "PUBLIC").upper(),
+                is_private=bool(repo.get("is_private")),
+                is_fork=bool(repo.get("is_fork")),
+                is_archived=bool(repo.get("is_archived")),
+                language=repo.get("language"),
+                languages=list(repo.get("languages") or []),
+                topics=list(repo.get("topics") or []),
+                default_branch=repo.get("default_branch"),
+                pushed_at=repo.get("pushed_at"),
+                created_at_github=repo.get("created_at"),
+                updated_at_github=repo.get("updated_at"),
+                missing=False, observed_at=now_iso(), updated_at=now_iso())
+            session.add(row)
+            session.flush()
+        else:
+            row.numeric_id = repo.get("numeric_id")
+            row.owner = str(repo.get("owner") or "")
+            row.name = str(repo.get("name") or "")
+            row.full_name = str(repo.get("full_name") or "")
+            row.url = str(repo.get("url") or "")
+            row.description = str(repo.get("description") or "")
+            row.visibility = str(repo.get("visibility") or "PUBLIC").upper()
+            row.is_private = bool(repo.get("is_private"))
+            row.is_fork = bool(repo.get("is_fork"))
+            row.is_archived = bool(repo.get("is_archived"))
+            row.language = repo.get("language")
+            row.languages = list(repo.get("languages") or [])
+            row.topics = list(repo.get("topics") or [])
+            row.default_branch = repo.get("default_branch")
+            row.pushed_at = repo.get("pushed_at")
+            row.created_at_github = repo.get("created_at")
+            row.updated_at_github = repo.get("updated_at")
+            row.missing = False
+            row.observed_at = now_iso()
+            row.updated_at = now_iso()
+
+        from mission_control.cultivation import github as _gh_mod
+
+        uid = _gh_mod.gh_repo_uid(node_id)
+        state_id = _gh_mod.gh_repo_id(node_id)
+        item_id = _repo_item_id(uid)
+        item = session.get(CultivationItem, item_id)
+        title = str(repo.get("name") or repo.get("full_name") or node_id)
+        if item is None:
+            item = CultivationItem(
+                id=item_id, title=title[:300], item_type="repository",
+                notes=f"Observed by GitHub source '{source.name}'.",
+                provenance="unclassified", source_application="github_repos",
+                source_ref=f"{source.id}:{repo.get('full_name')}",
+                created_at=now_iso(), updated_at=now_iso())
+            session.add(item)
+            session.flush()
+            new_items += 1
+        else:
+            if title and item.title != title:
+                old_title = item.title
+                item.title = title[:300]
+                _record_event(session, goal_id=None, item_id=item_id, event_type="renamed",
+                              from_value=old_title, to_value=item.title,
+                              note="GitHub repository renamed; stable identity kept, no new achievement.")
+            item.source_ref = f"{source.id}:{repo.get('full_name')}"
+            item.updated_at = now_iso()
+
+        matches = _github_local_matches(session, str(repo.get("name") or ""))
+        classification, rationale = _github.infer_classification(repo)
+        lifecycle, lifecycle_note = _github.infer_lifecycle(repo)
+        state = session.get(CultivationRepoState, state_id)
+        if state is None:
+            if repo.get("is_archived"):
+                qualification = "archived"
+                qualification_note = "GitHub marks this repository archived; observed, never counted."
+            else:
+                qualification = "discovered"
+                qualification_note = rationale
+            state = CultivationRepoState(
+                repo_id=state_id, repo_uid=uid,
+                qualification=qualification,
+                lifecycle_stage=lifecycle,
+                classification=classification,
+                rationale=rationale if not repo.get("is_archived") else qualification_note,
+                evidence=_github_evidence(repo, matches),
+                decided_by="undecided",
+                accessible=True, last_seen_at=now_iso(),
+                last_head=None, last_commit_count=0,
+                created_at=now_iso(), updated_at=now_iso())
+            session.add(state)
+            session.flush()
+        else:
+            state.accessible = True
+            state.last_seen_at = now_iso()
+            state.updated_at = now_iso()
+            evidence = dict(state.evidence or {})
+            evidence["github"] = _github_evidence(repo, matches)["github"]
+            evidence["local_matches"] = matches
+            state.evidence = evidence
+            if state.decided_by == "undecided":
+                # Inferred fields may move while the owner has not decided.
+                # Qualification never becomes "qualified" here.
+                if repo.get("is_archived"):
+                    state.qualification = "archived"
+                    state.lifecycle_stage = "archived"
+                    state.rationale = ("GitHub marks this repository archived; "
+                                       "observed, never counted.")
+                else:
+                    if state.qualification == "archived" and not repo.get("is_archived"):
+                        state.qualification = "discovered"
+                        state.rationale = rationale
+                    if state.classification in (None, "", "unclassified"):
+                        state.classification = classification
+                        state.rationale = rationale
+                    if state.lifecycle_stage in (None, "", "archived"):
+                        state.lifecycle_stage = lifecycle
+                state.updated_at = now_iso()
+
+        # First-evidence timestamp for honest cycle attribution (GitHub's own
+        # creation date, never the scan time).
+        created_stamp = repo.get("created_at")
+        if created_stamp:
+            for membership in session.scalars(select(CultivationMembership).where(
+                    CultivationMembership.item_id == item_id)).all():
+                evidence = dict(membership.quality_evidence or {})
+                if evidence.get("first_evidence_ts") != created_stamp:
+                    evidence["first_evidence_ts"] = created_stamp
+                    membership.quality_evidence = evidence
+                    membership.updated_at = now_iso()
+
+    # Repositories that vanished from GitHub keep their history (missing, not
+    # deleted). A single failed sync never reaches here, so a missing flag
+    # always reflects a successful observation.
+    for row in session.scalars(select(CultivationGitHubRepo)).all():
+        if row.node_id in seen:
+            continue
+        row.missing = True
+        row.updated_at = now_iso()
+        from mission_control.cultivation import github as _gh_mod2
+
+        state = session.get(CultivationRepoState, _gh_mod2.gh_repo_id(row.node_id))
+        if state is not None and state.accessible:
+            state.accessible = False
+            state.updated_at = now_iso()
+            item_id = _repo_item_id(_gh_mod2.gh_repo_uid(row.node_id))
+            _record_event(session, goal_id=None,
+                          item_id=item_id if session.get(CultivationItem, item_id) else None,
+                          event_type="source_removed",
+                          note=(f"GitHub repository {row.full_name or row.node_id} no longer listed; "
+                                "qualifications and history preserved, counted state unchanged."))
+
+    by_qualification: dict[str, int] = {}
+    by_classification: dict[str, int] = {}
+    by_lifecycle: dict[str, int] = {}
+    public_count = 0
+    private_count = 0
+    archived_count = 0
+    fork_count = 0
+    missing_count = 0
+    gh_states = session.scalars(select(CultivationRepoState).where(
+        CultivationRepoState.repo_id.like("gh-%"))).all()
+    for state in gh_states:
+        by_qualification[state.qualification] = by_qualification.get(state.qualification, 0) + 1
+        by_classification[state.classification] = by_classification.get(state.classification, 0) + 1
+        if state.lifecycle_stage:
+            by_lifecycle[state.lifecycle_stage] = by_lifecycle.get(state.lifecycle_stage, 0) + 1
+    for row in session.scalars(select(CultivationGitHubRepo)).all():
+        if row.missing:
+            missing_count += 1
+            continue
+        if row.is_private:
+            private_count += 1
+        else:
+            public_count += 1
+        if row.is_archived:
+            archived_count += 1
+        if row.is_fork:
+            fork_count += 1
+    observed = {"repos_total": len(seen), "public": public_count, "private": private_count,
+                "archived": archived_count, "forks": fork_count, "missing": missing_count,
+                "by_qualification": by_qualification,
+                "by_classification": by_classification,
+                "by_lifecycle": by_lifecycle,
+                "fingerprint": _github.fingerprint(valid),
+                "note": "GitHub inventory: owner confirmation required before anything counts."}
+    changed = observed["fingerprint"] != (source.fingerprint or "")
+    source.observed = observed
+    source.fingerprint = observed["fingerprint"]
+    source.last_sync_at = now_iso()
+    source.last_status = "ok"
+    source.last_error = None
+    source.updated_at = now_iso()
+    session.flush()
+    if changed and source.goal_id and session.get(CultivationGoal, source.goal_id):
+        _record_event(session, goal_id=source.goal_id, event_type="synced",
+                      to_value=str(len(seen)),
+                      note=(f"Source '{source.name}': {len(seen)} GitHub repositories observed "
+                            f"({public_count} public, {private_count} private, "
+                            f"{archived_count} archived)."))
+    return {"source_id": source.id, "status": "ok", "observed": observed,
+            "stale": False, "goal_id": source.goal_id, "new_items": new_items,
+            "fingerprint_changed": changed}
+
+
+def github_summary(session: Session) -> dict[str, Any]:
+    """Compact Applications-section summary (inventory vs achievement)."""
+    from sqlalchemy import func as _func
+
+    states = session.scalars(select(CultivationRepoState).where(
+        CultivationRepoState.repo_id.like("gh-%"))).all()
+    discovered = len(states)
+    applications_identified = sum(1 for state in states if state.classification == "application")
+    books_identified = sum(1 for state in states if state.classification == "book")
+    private_count = session.scalar(select(_func.count()).select_from(CultivationGitHubRepo).where(
+        CultivationGitHubRepo.missing.is_(False),
+        CultivationGitHubRepo.is_private.is_(True))) or 0
+    shipped = session.scalar(select(_func.count()).select_from(CultivationApplication).where(
+        CultivationApplication.lifecycle_stage.in_(["released", "maintained"]))) or 0
+    progress: dict[str, Any] = {}
+    for goal_id in ("applications", "repositories", "perfect_repositories"):
+        goal = session.get(CultivationGoal, goal_id)
+        if goal is not None:
+            computed = goal_progress(session, goal)
+            progress[goal_id] = {"current": computed["current"], "target": goal.target_value,
+                                 "unit": goal.unit, "percent": computed["percent"],
+                                 "unknown_reason": computed["unknown_reason"],
+                                 "estimate_label": computed.get("estimate_label")}
+    completed = 0
+    goal = session.get(CultivationGoal, "applications")
+    if goal is not None:
+        completed = len(_qualified_memberships(session, goal))
+    return {"discovered": discovered,
+            "private": int(private_count),
+            "applications_identified": applications_identified,
+            "books_identified": books_identified,
+            "completed_applications": int(completed),
+            "published_applications": int(shipped),
+            "goals": progress}
+
+
+def _github_repo_read(session: Session, state: CultivationRepoState) -> dict[str, Any]:
+    """Display record joining owner judgement with the GitHub snapshot."""
+    from mission_control.cultivation import github as _gh_mod
+
+    node_id = state.repo_uid[len(_gh_mod.GH_UID_PREFIX):] if state.repo_uid.startswith(
+        _gh_mod.GH_UID_PREFIX) else state.repo_id[len(_gh_mod.GH_REPO_PREFIX):]
+    snapshot = session.get(CultivationGitHubRepo, node_id)
+    projects: list[dict[str, str]] = []
+    if snapshot is not None:
+        import os as _os
+
+        project_map = _project_map(session)
+        for match in _github_local_matches(session, snapshot.name):
+            if match.get("kind") != "repository":
+                continue
+            for project_id in project_map.get(_os.path.normcase(match.get("path", "")), []):
+                project = session.get(Project, project_id)
+                if project is not None and all(entry["id"] != project.id for entry in projects):
+                    projects.append({"id": project.id, "name": project.name})
+    return {
+        "repo_id": state.repo_id, "repo_uid": state.repo_uid,
+        "name": snapshot.name if snapshot and snapshot.name else state.repo_id,
+        "path": None,
+        "root_path": "github",
+        "branch": snapshot.default_branch if snapshot else None,
+        "head_sha": None,
+        "accessible": (not snapshot.missing) if snapshot else state.accessible,
+        "indexed": False,
+        "total_commits": 0,
+        "first_commit_ts": None, "last_commit_ts": None,
+        "backfill_complete": False,
+        "last_indexed_at": snapshot.observed_at if snapshot else None,
+        "has_agents": False,
+        "has_description": bool(snapshot.description) if snapshot else False,
+        "context_status": "missing",
+        "projects": projects,
+        "qualification": state.qualification, "lifecycle_stage": state.lifecycle_stage,
+        "classification": state.classification, "rationale": state.rationale,
+        "evidence": dict(state.evidence or {}), "decided_by": state.decided_by,
+        "decided_at": state.decided_at, "last_seen_at": state.last_seen_at,
+        "created_at": state.created_at, "updated_at": state.updated_at,
+        "origin": "github",
+        "url": snapshot.url if snapshot else None,
+        "description": snapshot.description if snapshot else None,
+        "visibility": snapshot.visibility if snapshot else None,
+        "language": snapshot.language if snapshot else None,
+        "private": bool(snapshot.is_private) if snapshot else False,
+        "fork": bool(snapshot.is_fork) if snapshot else False,
+        "pushed_at": snapshot.pushed_at if snapshot else None,
+        "missing": bool(snapshot.missing) if snapshot else False,
+    }
+
+
 def repo_read(session: Session, state: CultivationRepoState) -> dict[str, Any]:
     """Display record joining owner judgement with live Activity evidence."""
+    if state.repo_id.startswith("gh-"):
+        return _github_repo_read(session, state)
     repo = _resolve_git_row(session, state)
     projects: list[dict[str, str]] = []
     if repo is not None:
@@ -1153,6 +1537,15 @@ def repo_read(session: Session, state: CultivationRepoState) -> dict[str, Any]:
         "evidence": dict(state.evidence or {}), "decided_by": state.decided_by,
         "decided_at": state.decided_at, "last_seen_at": state.last_seen_at,
         "created_at": state.created_at, "updated_at": state.updated_at,
+        "origin": "activity",
+        "url": None,
+        "description": None,
+        "visibility": None,
+        "language": None,
+        "private": False,
+        "fork": False,
+        "pushed_at": None,
+        "missing": False,
     }
 
 
@@ -1160,8 +1553,24 @@ def list_repo_states(session: Session, *, qualification: str | None = None,
                      classification: str | None = None, lifecycle: str | None = None,
                      root: str | None = None, search: str | None = None,
                      include_unavailable: bool = True,
+                     origin: str | None = None, visibility: str | None = None,
                      limit: int = 100, offset: int = 0) -> tuple[list[dict[str, Any]], int]:
     query = select(CultivationRepoState).order_by(CultivationRepoState.updated_at.desc())
+    if origin:
+        if origin not in {"activity", "github"}:
+            raise ValidationProblem(f"Unknown origin: {origin}")
+        if origin == "github":
+            query = query.where(CultivationRepoState.repo_id.like("gh-%"))
+        else:
+            query = query.where(~CultivationRepoState.repo_id.like("gh-%"))
+    if visibility:
+        normalized = str(visibility).upper()
+        if normalized not in {"PUBLIC", "PRIVATE"}:
+            raise ValidationProblem(f"Unknown visibility: {visibility}")
+        query = query.join(
+            CultivationGitHubRepo,
+            CultivationGitHubRepo.node_id == func.substr(CultivationRepoState.repo_id, 4),
+        ).where(CultivationGitHubRepo.visibility == normalized)
     if qualification:
         if qualification not in REPO_QUALIFICATIONS:
             raise ValidationProblem(f"Unknown qualification: {qualification}")
@@ -1375,8 +1784,14 @@ def update_application(session: Session, app_id: str, payload: dict[str, Any]) -
 
 
 def link_app_repo(session: Session, app_id: str, repo_id: str) -> None:
+    from mission_control.cultivation import github as _gh_mod
+
     get_application(session, app_id)
-    if session.get(GitRepository, repo_id) is None:
+    if repo_id.startswith(_gh_mod.GH_REPO_PREFIX):
+        node_id = repo_id[len(_gh_mod.GH_REPO_PREFIX):]
+        if session.get(CultivationGitHubRepo, node_id) is None:
+            raise NotFound("Repository is not in the GitHub inventory — sync its source first")
+    elif session.get(GitRepository, repo_id) is None:
         raise NotFound("Repository is not in the Activity index")
     if session.get(CultivationAppRepo, (app_id, repo_id)) is None:
         session.add(CultivationAppRepo(app_id=app_id, repo_id=repo_id, created_at=now_iso()))
@@ -1513,12 +1928,25 @@ def app_read(session: Session, app: CultivationApplication) -> dict[str, Any]:
             CultivationAppRepo.app_id == app.id)).all():
         state = session.get(CultivationRepoState, link.repo_id)
         git_repo = session.get(GitRepository, link.repo_id)
+        if git_repo is not None:
+            repos.append({
+                "repo_id": link.repo_id,
+                "name": git_repo.name,
+                "path": git_repo.path,
+                "qualification": state.qualification if state else "untracked",
+                "accessible": bool(git_repo.accessible),
+            })
+            continue
+        github_row = None
+        if link.repo_id.startswith("gh-"):
+            github_row = session.get(CultivationGitHubRepo, link.repo_id[len("gh-"):])
         repos.append({
             "repo_id": link.repo_id,
-            "name": git_repo.name if git_repo else (state.repo_uid if state else link.repo_id),
-            "path": git_repo.path if git_repo else None,
+            "name": github_row.full_name if github_row and github_row.full_name else (
+                github_row.name if github_row else (state.repo_uid if state else link.repo_id)),
+            "path": None,
             "qualification": state.qualification if state else "untracked",
-            "accessible": bool(git_repo.accessible) if git_repo else False,
+            "accessible": state.accessible if state else False,
         })
     memberships = []
     item = session.get(CultivationItem, _app_item_id(app.id))
@@ -1679,10 +2107,10 @@ def create_source(session: Session, payload: dict[str, Any]) -> CultivationSourc
     kind = str(payload.get("kind", "hugo_blog"))
     if kind not in SOURCE_KINDS:
         raise ValidationProblem(
-            "Unsupported source kind: {kind}. Only hugo_blog, activity_projects, numbered_files and script_registry are implemented."
-            .format(kind=kind))
+            "Unsupported source kind: {kind}. Only hugo_blog, activity_projects, numbered_files, "
+            "script_registry and github_repos are implemented.".format(kind=kind))
     raw_path = str(payload.get("path", "") or "")
-    if kind in ("activity_projects", "script_registry"):
+    if kind in ("activity_projects", "script_registry", "github_repos"):
         # The registry lives in the database and reads the configured scripts
         # root; an explicit path is optional and only documents intent.
         path = require_existing_directory(raw_path, field="source path") if raw_path else ""
@@ -1714,7 +2142,7 @@ def update_source(session: Session, source_id: str, payload: dict[str, Any]) -> 
         source.name = str(payload["name"]).strip()[:120] or source.name
     if "path" in payload and payload["path"] is not None:
         raw = str(payload["path"] or "")
-        if source.kind in ("activity_projects", "script_registry") and not raw:
+        if source.kind in ("activity_projects", "script_registry", "github_repos") and not raw:
             source.path = ""
         else:
             source.path = require_existing_directory(raw or str(source.path), field="source path")
@@ -1771,6 +2199,8 @@ def sync_source(session: Session, source_id: str) -> dict[str, Any]:
         return _sync_script_registry(session, source)
     if source.kind == "activity_projects":
         return sync_activity_projects(session, source_id)
+    if source.kind == "github_repos":
+        return sync_github_repos(session, source_id)
     raise ValidationProblem(f"Unsupported source kind: {source.kind}")
 
 

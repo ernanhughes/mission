@@ -1722,6 +1722,15 @@ export type CultivationRepoState = {
   last_seen_at: string | null;
   created_at: string;
   updated_at: string;
+  origin?: string;
+  url?: string | null;
+  description?: string | null;
+  visibility?: string | null;
+  language?: string | null;
+  private?: boolean;
+  fork?: boolean;
+  pushed_at?: string | null;
+  missing?: boolean;
 };
 
 export type CultivationApp = {

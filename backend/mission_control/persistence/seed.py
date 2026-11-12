@@ -365,6 +365,12 @@ def seed_cultivation(session) -> None:
                                 "goal_id": "repositories", "path": "",
                                 "config": {"included_roots": [r"C:\Projects"], "min_commits": 2}})
         logger.info("Seeded cultivation Activity source (not yet synced)")
+    if session.get(CultivationSource, "src-github-repos") is None:
+        create_source(session, {"id": "src-github-repos", "name": "GitHub repositories",
+                                "kind": "github_repos", "skill_id": "software-development",
+                                "goal_id": "repositories", "path": "",
+                                "config": {"account": "ernanhughes", "auth": "gh_cli", "limit": 1000}})
+        logger.info("Seeded cultivation GitHub source (not yet synced)")
 
     # Seeded registry-backed scripts source. Path-gated like the blog source
     # and never synced automatically. Completion comes only from explicit

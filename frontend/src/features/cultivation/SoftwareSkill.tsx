@@ -22,8 +22,8 @@ import type {
 import { currentLabel } from "./progress";
 
 const QUALIFICATIONS = ["discovered", "eligible", "pending", "qualified", "excluded", "archived", "unavailable"];
-const CLASSIFICATIONS = ["application", "library", "infrastructure", "research", "website", "book", "experiment", "other", "unclassified"];
-const LIFECYCLES = ["idea", "planned", "in_development", "functional", "testing", "released", "maintained", "archived"];
+const CLASSIFICATIONS = ["application", "library", "infrastructure", "research", "website", "book", "experiment", "dataset", "tutorial", "other", "unclassified"];
+const LIFECYCLES = ["idea", "planned", "in_development", "functional", "testing", "released", "maintained", "archived", "unreviewed", "concept", "prototype", "development", "working", "completed", "published", "abandoned"];
 
 function commitTime(ts: number | null): string {
   if (!ts) return "Unknown";
@@ -63,6 +63,10 @@ export function SkillDetail(props: {
   );
   const blogSource = useMemo(
     () => (sources.data ?? []).find((row) => row.skill_id === props.skillId && row.kind === "hugo_blog") ?? null,
+    [sources.data, props.skillId],
+  );
+  const githubSource = useMemo(
+    () => (sources.data ?? []).find((row) => row.skill_id === props.skillId && row.kind === "github_repos") ?? null,
     [sources.data, props.skillId],
   );
 
@@ -110,6 +114,9 @@ export function SkillDetail(props: {
       ) : null}
       {blogSource ? (
         <BlogInventory key={blogSource.id} source={blogSource} goals={goals.data ?? []} onChanged={() => { sources.reload(); props.onChanged(); }} />
+      ) : null}
+      {githubSource ? (
+        <GitHubInventory key={githubSource.id} source={githubSource} onChanged={() => { sources.reload(); props.onChanged(); }} />
       ) : null}
       <ApplicationsPanel onChanged={props.onChanged} />
     </>
@@ -349,6 +356,393 @@ function RepoInventory(props: { source: CultivationSource; onChanged: () => void
         />
       ) : null}
     </Section>
+  );
+}
+
+// ---------------------------------------------------------- GitHub inventory
+type GitHubSummary = {
+  discovered: number;
+  private: number;
+  applications_identified: number;
+  books_identified: number;
+  completed_applications: number;
+  published_applications: number;
+  goals: Record<string, { current: number | null; target: number; unit: string; percent: number | null }>;
+};
+
+function isoDate(value: string | null | undefined): string {
+  if (!value) return "Unknown";
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return "Unknown";
+  return parsed.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" });
+}
+
+function GitHubInventory(props: { source: CultivationSource; onChanged: () => void }) {
+  const toast = useToast();
+  const [qualification, setQualification] = useState("");
+  const [classification, setClassification] = useState("");
+  const [lifecycle, setLifecycle] = useState("");
+  const [visibility, setVisibility] = useState("");
+  const [search, setSearch] = useState("");
+  const [appliedSearch, setAppliedSearch] = useState("");
+  const [page, setPage] = useState(0);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [bulkOpen, setBulkOpen] = useState(false);
+  const limit = 50;
+
+  const query = useMemo(
+    () =>
+      apiPath("/api/cultivation/repo-states", {
+        origin: "github",
+        qualification: qualification || undefined,
+        classification: classification || undefined,
+        lifecycle: lifecycle || undefined,
+        visibility: visibility || undefined,
+        search: appliedSearch || undefined,
+        limit,
+        offset: page * limit,
+      }),
+    [qualification, classification, lifecycle, visibility, appliedSearch, page],
+  );
+  const repos = useApi<{ items: CultivationRepoState[]; total: number }>(query);
+  const summary = useApi<GitHubSummary>("/api/cultivation/github/summary");
+
+  function resetPage() {
+    setPage(0);
+  }
+
+  async function sync() {
+    try {
+      const result = await api.post<{ status: string; error?: string | null }>(
+        `/api/cultivation/sources/${props.source.id}/sync`,
+        {},
+      );
+      if (result.status === "ok") toast.push("success", "GitHub inventory synced");
+      else toast.push("info", "GitHub sync reported a problem", result.error ?? result.status);
+      repos.reload();
+      summary.reload();
+      props.onChanged();
+    } catch (caught) {
+      toast.push("error", "Sync failed", errorMessage(caught));
+    }
+  }
+
+  const observed = (props.source.observed ?? {}) as Record<string, unknown>;
+  const byClass = (observed.by_classification ?? {}) as Record<string, number>;
+  const account = ((props.source.config ?? {}) as Record<string, unknown>).account as string | undefined;
+
+  return (
+    <Section
+      title="Applications"
+      description="GitHub inventory · Cultivation. Every repository is observed; only owner-confirmed completions count."
+      actions={
+        <button className="button button-secondary button-small" onClick={() => void sync()}>
+          Refresh GitHub
+        </button>
+      }
+    >
+      {summary.data ? (
+        <p className="muted">
+          <strong>{summary.data.discovered}</strong> discovered ·{" "}
+          <strong>{summary.data.applications_identified}</strong> applications identified ·{" "}
+          <strong>{summary.data.completed_applications}</strong> completed ·{" "}
+          <strong>{summary.data.published_applications}</strong> published
+          {summary.data.goals?.applications != null ? (
+            <>
+              {" "}· Goal: {summary.data.goals.applications.current ?? "—"}/
+              {summary.data.goals.applications.target} {summary.data.goals.applications.unit}
+            </>
+          ) : null}
+        </p>
+      ) : null}
+      <p className="muted">
+        {Number(observed.repos_total ?? summary.data?.discovered ?? 0)} repositories observed
+        {account ? ` · account: ${account}` : ""}
+        {Object.entries(byClass).map(([key, value]) => ` · ${key}: ${value}`).join("")}
+        {props.source.last_sync_at ? ` · Last sync: ${formatDateTime(props.source.last_sync_at)}` : " · Never synced"}
+        {props.source.last_status && props.source.last_status !== "ok" && props.source.last_status !== "never_synced"
+          ? ` · ${props.source.last_status}: ${props.source.last_error ?? "see source status"}`
+          : ""}
+      </p>
+      <div className="toolbar">
+        <label className="select-field">
+          <span className="sr-only">Filter by qualification</span>
+          <select
+            value={qualification}
+            onChange={(event) => {
+              setQualification(event.target.value);
+              resetPage();
+            }}
+          >
+            <option value="">All states</option>
+            {QUALIFICATIONS.map((item) => (
+              <option value={item} key={item}>
+                {item}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="select-field">
+          <span className="sr-only">Filter by classification</span>
+          <select
+            value={classification}
+            onChange={(event) => {
+              setClassification(event.target.value);
+              resetPage();
+            }}
+          >
+            <option value="">All kinds</option>
+            {CLASSIFICATIONS.map((item) => (
+              <option value={item} key={item}>
+                {item}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="select-field">
+          <span className="sr-only">Filter by lifecycle</span>
+          <select
+            value={lifecycle}
+            onChange={(event) => {
+              setLifecycle(event.target.value);
+              resetPage();
+            }}
+          >
+            <option value="">Any lifecycle</option>
+            <option value="unset">Unset</option>
+            {LIFECYCLES.map((item) => (
+              <option value={item} key={item}>
+                {item}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="select-field">
+          <span className="sr-only">Filter by visibility</span>
+          <select
+            value={visibility}
+            onChange={(event) => {
+              setVisibility(event.target.value);
+              resetPage();
+            }}
+          >
+            <option value="">Public + private</option>
+            <option value="public">Public</option>
+            <option value="private">Private</option>
+          </select>
+        </label>
+        <label className="search-field">
+          <span className="sr-only">Search repositories</span>
+          <input
+            value={search}
+            placeholder="Search repos…"
+            onChange={(event) => setSearch(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") {
+                setAppliedSearch(search.trim());
+                resetPage();
+              }
+            }}
+          />
+        </label>
+        {selected.size > 0 ? (
+          <button className="button button-secondary button-small" onClick={() => setBulkOpen(true)}>
+            Qualify {selected.size} selected
+          </button>
+        ) : null}
+        <span className="toolbar-count">{repos.data?.total ?? 0} tracked</span>
+      </div>
+
+      {repos.loading && !repos.data ? <LoadingBlock label="Loading inventory" compact /> : null}
+      {repos.data && repos.data.total === 0 ? (
+        <p className="muted">No GitHub repositories match. Press Refresh GitHub to discover your inventory.</p>
+      ) : null}
+      {(repos.data?.items ?? []).map((repo) => (
+        <GitHubRepoRow
+          key={repo.repo_id}
+          repo={repo}
+          selected={selected.has(repo.repo_id)}
+          onToggle={() =>
+            setSelected((current) => {
+              const next = new Set(current);
+              if (next.has(repo.repo_id)) next.delete(repo.repo_id);
+              else next.add(repo.repo_id);
+              return next;
+            })
+          }
+          onChanged={() => {
+            repos.reload();
+            summary.reload();
+            props.onChanged();
+          }}
+        />
+      ))}
+      <div className="toolbar">
+        {page > 0 ? (
+          <button className="button button-ghost button-small" onClick={() => setPage(page - 1)}>
+            Previous
+          </button>
+        ) : null}
+        {(repos.data?.total ?? 0) > (page + 1) * limit ? (
+          <button className="button button-secondary button-small" onClick={() => setPage(page + 1)}>
+            More
+          </button>
+        ) : null}
+      </div>
+      {bulkOpen ? (
+        <BulkQualifyModal
+          repoIds={Array.from(selected)}
+          onClose={() => setBulkOpen(false)}
+          onDone={() => {
+            setBulkOpen(false);
+            setSelected(new Set());
+            repos.reload();
+            summary.reload();
+            props.onChanged();
+          }}
+        />
+      ) : null}
+    </Section>
+  );
+}
+
+function GitHubRepoRow(props: { repo: CultivationRepoState; selected: boolean; onToggle: () => void; onChanged: () => void }) {
+  const { repo } = props;
+  const toast = useToast();
+  const [editing, setEditing] = useState(false);
+  const [classification, setClassification] = useState(repo.classification);
+  const [lifecycle, setLifecycle] = useState(repo.lifecycle_stage ?? "");
+  const [qualification, setQualification] = useState(repo.qualification);
+  const [rationale, setRationale] = useState("");
+  const [goalId, setGoalId] = useState("");
+  const [goals, setGoals] = useState<Array<{ id: string; name: string }> | null>(null);
+  const evidence = (repo.evidence ?? {}) as Record<string, unknown>;
+  const localMatches = (evidence.local_matches ?? []) as Array<{ kind: string; path: string }>;
+
+  async function openEditor() {
+    setEditing(true);
+    try {
+      const list = await api.get<Array<{ id: string; name: string }>>("/api/cultivation/goals");
+      setGoals(list.map((goal) => ({ id: goal.id, name: goal.name })));
+    } catch {
+      setGoals([]);
+    }
+  }
+
+  async function save() {
+    try {
+      await api.patch(`/api/cultivation/repo-states/${repo.repo_id}`, {
+        classification,
+        lifecycle_stage: lifecycle || null,
+        qualification,
+        rationale,
+        goal_id: qualification === "qualified" ? goalId || null : null,
+      });
+      toast.push("success", "Repository updated");
+      setEditing(false);
+      props.onChanged();
+    } catch (caught) {
+      toast.push("error", "Update failed", errorMessage(caught));
+    }
+  }
+
+  return (
+    <div className="panel review-card">
+      <div className="activity-head">
+        <input type="checkbox" aria-label={`Select ${repo.name}`} checked={props.selected} onChange={props.onToggle} />
+        {repo.url ? (
+          <a href={repo.url} target="_blank" rel="noreferrer">
+            <strong>{repo.name}</strong>
+          </a>
+        ) : (
+          <strong>{repo.name}</strong>
+        )}
+        <Tag>{repo.qualification}</Tag>
+        {repo.classification !== "unclassified" ? <Tag>{repo.classification}</Tag> : null}
+        {repo.lifecycle_stage ? <Tag>{repo.lifecycle_stage}</Tag> : <Tag>unreviewed</Tag>}
+        {repo.visibility ? <Tag>{repo.visibility === "PRIVATE" ? "Private" : "Public"}</Tag> : null}
+        {repo.fork ? <Tag>Fork</Tag> : null}
+        {repo.missing ? <Tag>Missing</Tag> : null}
+      </div>
+      {repo.description ? <p className="muted">{repo.description}</p> : null}
+      <div className="activity-meta">
+        {repo.language ? <span>{repo.language}</span> : null}
+        {repo.pushed_at ? <span>active {isoDate(repo.pushed_at)}</span> : null}
+        {localMatches.map((match) => (
+          <span key={match.path}>local: {match.path}</span>
+        ))}
+        <span>{repo.decided_by === "owner" ? "owner decided" : "GitHub observed"}</span>
+      </div>
+      {repo.rationale ? <p className="muted">{repo.rationale}</p> : null}
+      {!editing ? (
+        <div className="activity-actions">
+          <button className="button button-ghost button-small" onClick={() => void openEditor()}>
+            Classify
+          </button>
+        </div>
+      ) : (
+        <div className="form-stack">
+          <div className="form-grid three">
+            <label className="field">
+              <span>Kind</span>
+              <select value={classification} onChange={(event) => setClassification(event.target.value)}>
+                {CLASSIFICATIONS.map((item) => (
+                  <option value={item} key={item}>
+                    {item}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="field">
+              <span>Lifecycle</span>
+              <select value={lifecycle} onChange={(event) => setLifecycle(event.target.value)}>
+                <option value="">Unset</option>
+                {LIFECYCLES.map((item) => (
+                  <option value={item} key={item}>
+                    {item}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="field">
+              <span>Qualification</span>
+              <select value={qualification} onChange={(event) => setQualification(event.target.value)}>
+                {["discovered", "eligible", "pending", "qualified", "excluded", "archived", "unavailable"].map((item) => (
+                  <option value={item} key={item}>
+                    {item}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+          {qualification === "qualified" ? (
+            <label className="field">
+              <span>Count toward goal</span>
+              <select value={goalId} onChange={(event) => setGoalId(event.target.value)}>
+                <option value="">Select goal…</option>
+                {(goals ?? []).map((goal) => (
+                  <option value={goal.id} key={goal.id}>
+                    {goal.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ) : null}
+          <label className="field">
+            <span>Rationale (required for qualified / excluded)</span>
+            <input value={rationale} onChange={(event) => setRationale(event.target.value)} placeholder="Why does this count (or not)?" />
+          </label>
+          <div className="toolbar">
+            <button className="button button-primary button-small" onClick={() => void save()}>
+              Save judgement
+            </button>
+            <button className="button button-ghost button-small" onClick={() => setEditing(false)}>
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 

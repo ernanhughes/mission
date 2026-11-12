@@ -402,14 +402,23 @@ def list_repo_states(session: Session = Depends(get_session),
                      root: str | None = None,
                      search: str | None = None,
                      include_unavailable: bool = True,
+                     origin: str | None = None,
+                     visibility: str | None = None,
                      limit: int = Query(default=100, ge=1, le=500),
                      offset: int = Query(default=0, ge=0)) -> dict:
     items, total = service.list_repo_states(
         session, qualification=qualification or None, classification=classification or None,
         lifecycle=lifecycle or None, root=root or None, search=search or None,
-        include_unavailable=include_unavailable, limit=limit, offset=offset)
+        include_unavailable=include_unavailable, origin=origin or None,
+        visibility=visibility or None, limit=limit, offset=offset)
     return {"items": [CultivationRepoStateRead(**row) for row in items],
             "total": total, "limit": limit, "offset": offset}
+
+
+@router.get("/github/summary", response_model=dict)
+def github_summary(session: Session = Depends(get_session)) -> dict:
+    """Inventory-vs-achievement summary for the Applications section."""
+    return service.github_summary(session)
 
 
 @router.patch("/repo-states/{repo_id}", response_model=CultivationRepoStateRead)
