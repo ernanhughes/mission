@@ -132,3 +132,107 @@ def comparison_report(strategy_a: dict, strategy_b: dict) -> dict:
         rows[key] = {"A": strategy_a.get(key), "B": strategy_b.get(key)}
     return {"metrics": rows,
             "note": "Unmeasured or unassessed cells are null, not zero."}
+
+
+# ---------------------------------------------------------------------------
+# Passage-level reference-review workflow (MC-QUALITY-04A-04-00 F).
+#
+# The 24 frozen passages are source-verified but their semantic reference
+# labels remain ai_draft_awaiting_human_review. These packets present each
+# passage with sliced (never paraphrased) context and the provisional draft
+# label for independent review. Verdicts and provenance live in the packet;
+# precision/recall stay NOT_MEASURED until human labels exist
+# (adjudicated_metrics above already excludes unassessed claims).
+
+REVIEW_VERDICTS = (
+    "ACCEPT_LABEL", "CORRECT_LABEL", "REJECT_LABEL", "SPLIT_CLAIM",
+    "MERGE_DUPLICATE", "NEEDS_CONTEXT", "ABSTAIN",
+)
+
+REVIEW_PROVENANCE = (
+    "HUMAN_REVIEW", "AI_ASSISTED_REVIEW", "AWAITING_REVIEW",
+)
+
+
+def build_review_packet(passage: dict, chapter_text: str, live_revision: str,
+                        *, context_chars: int = 800) -> dict:
+    """Assemble one passage review packet. Slices context, never paraphrases.
+
+    Coordinate convention: chapter_text must be DECODED text (raw bytes
+    decoded as UTF-8 with CRLF preserved), because frozen char_spans are
+    decoded offsets. Context spans are therefore decoded coordinates too.
+    """
+    text = passage.get("text", "")
+    lo, hi = passage.get("char_span", [0, 0])
+    segment = chapter_text[lo:hi] if 0 <= lo < hi <= len(chapter_text) else ""
+    match = bool(segment) and segment == text
+    excerpt_at = chapter_text.find(text) if text else -1
+    if excerpt_at >= 0:
+        clo = max(0, excerpt_at - context_chars)
+        chi = min(len(chapter_text), excerpt_at + len(text) + context_chars)
+        plo = chapter_text.rfind("\n\n", 0, clo)
+        plo = 0 if plo < 0 else plo + 2
+        phi = chapter_text.find("\n\n", chi)
+        phi = len(chapter_text) if phi < 0 else phi
+        context = {"text": chapter_text[plo:phi], "char_span": [plo, phi],
+                   "passage_offset_in_context": [excerpt_at - plo,
+                                                 excerpt_at + len(text) - plo]}
+    else:
+        context = {"text": "", "char_span": [0, 0], "passage_offset_in_context": [0, 0]}
+    return {
+        "passage_id": passage.get("passage_id", ""),
+        "chapter_id": passage.get("chapter_id", ""),
+        "frozen_char_span": [lo, hi],
+        "frozen_text": text,
+        "live_chapter_revision": live_revision,
+        "integrity": {
+            "span_in_range": 0 <= lo < hi <= len(chapter_text),
+            "text_matches_frozen_span": match,
+            "excerpt_anchored": excerpt_at >= 0,
+            "excerpt_multiple_occurrences": chapter_text.count(text) > 1 if excerpt_at >= 0 else False,
+        },
+        "surrounding_source_context": context,
+        "draft_label_provisional": passage.get("draft_label", {}),
+        "draft_provenance": passage.get("label_provenance", "ai_draft_awaiting_human_review"),
+        "reviews": [],
+        "status": "AWAITING_REVIEW",
+    }
+
+
+def record_review_verdict(packet: dict, *, verdict: str, reviewer: str,
+                          rationale: str = "") -> dict:
+    """Append one review verdict to a packet (pure; returns the packet).
+
+    Provenance rule: HUMAN_REVIEW is recorded only when the reviewer string
+    identifies a human ("human:<id>"); agent-assisted work is AI_ASSISTED.
+    Disagreements are preserved as a list, never auto-merged. A packet with
+    any HUMAN_REVIEW verdict leaves AWAITING_REVIEW; mixed or provisional
+    states stay explicit.
+    """
+    if verdict not in REVIEW_VERDICTS:
+        raise ValueError(f"unknown review verdict {verdict!r}")
+    if not reviewer or not reviewer.strip():
+        raise ValueError("reviewer identity is required")
+    provenance = "HUMAN_REVIEW" if reviewer.startswith("human:") else "AI_ASSISTED_REVIEW"
+    updated = dict(packet)
+    reviews = list(updated.get("reviews", []))
+    reviews.append({"verdict": verdict, "reviewer": reviewer,
+                    "reviewer_provenance": provenance, "rationale": rationale[:500]})
+    updated["reviews"] = reviews
+    if any(r["reviewer_provenance"] == "HUMAN_REVIEW" for r in reviews):
+        updated["status"] = "HUMAN_REVIEWED"
+    else:
+        updated["status"] = "AI_ASSISTED_REVIEW"
+    return updated
+
+
+def review_status(packets: list[dict]) -> dict:
+    """Aggregate review-state counts for the benchmark status artifact."""
+    counts: dict[str, int] = {}
+    for packet in packets:
+        status = packet.get("status", "AWAITING_REVIEW")
+        counts[status] = counts.get(status, 0) + 1
+    return {"packets_total": len(packets), "by_status": counts,
+            "precision": "NOT_MEASURED", "recall": "NOT_MEASURED",
+            "note": ("Semantic precision/recall require completed HUMAN_REVIEWED "
+                     "labels; provisional and AI-assisted states never qualify.")}

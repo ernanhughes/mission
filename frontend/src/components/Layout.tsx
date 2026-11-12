@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
 import {
   Activity,
@@ -13,6 +13,7 @@ import {
   Menu,
   Moon,
   PlugZap,
+  RotateCw,
   Search,
   Settings,
   ShieldCheck,
@@ -21,11 +22,13 @@ import {
   Telescope,
   X,
 } from "lucide-react";
+import { api, errorMessage } from "../api/client";
 import { useApi } from "../api/useApi";
 import { CultivationHud } from "../features/cultivation/CultivationHud";
 import { WorkbenchSidebarAction } from "../features/applications/WorkbenchSidebarAction";
 import { useTheme } from "./Theme";
 import { CommandPalette } from "./CommandPalette";
+import { useToast } from "./Toast";
 import type { Health } from "../types/api";
 
 const navigation = [
@@ -68,6 +71,59 @@ export function Layout() {
   const [paletteOpen, setPaletteOpen] = useState(false);
   const { theme, toggle } = useTheme();
   const health = useApi<Health>("/api/health", { pollMs: 30000 });
+  const toast = useToast();
+  const [restarting, setRestarting] = useState(false);
+  const restartTimer = useRef<number | null>(null);
+
+  function stopRestartPoll() {
+    if (restartTimer.current !== null) {
+      window.clearInterval(restartTimer.current);
+      restartTimer.current = null;
+    }
+  }
+
+  async function handleRestart() {
+    if (
+      !window.confirm(
+        "Restart Mission Control?\n\nThe backend will restart and this panel will reconnect automatically.",
+      )
+    ) {
+      return;
+    }
+    setRestarting(true);
+    stopRestartPoll();
+    try {
+      await api.post("/api/restart");
+    } catch (caught) {
+      setRestarting(false);
+      toast.push("error", "Restart failed", errorMessage(caught));
+      return;
+    }
+    let attempts = 0;
+    restartTimer.current = window.setInterval(async () => {
+      attempts += 1;
+      try {
+        const observed = await api.get<Health>("/api/health");
+        if (observed && observed.status === "ok") {
+          stopRestartPoll();
+          setRestarting(false);
+          toast.push("success", "Mission Control restarted");
+          return;
+        }
+      } catch {
+        // Keep polling until the replacement backend answers.
+      }
+      if (attempts >= 60) {
+        stopRestartPoll();
+        setRestarting(false);
+        toast.push(
+          "error",
+          "Restart timed out",
+          "The backend did not come back online. Start it again with `mission`.",
+        );
+      }
+    }, 1000);
+  }
 
   useEffect(() => {
     setMenuOpen(false);
@@ -148,6 +204,15 @@ export function Layout() {
           <button className="theme-toggle" onClick={toggle} aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}>
             {theme === "dark" ? <Sun size={15} /> : <Moon size={15} />}
             {theme === "dark" ? "Light theme" : "Dark theme"}
+          </button>
+          <button
+            className="button button-danger button-small"
+            disabled={restarting}
+            onClick={handleRestart}
+            aria-label="Restart Mission Control"
+          >
+            <RotateCw size={14} aria-hidden="true" />
+            <span>{restarting ? "Reconnecting…" : "Restart"}</span>
           </button>
         </div>
       </aside>

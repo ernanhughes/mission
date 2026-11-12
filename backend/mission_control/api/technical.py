@@ -307,7 +307,8 @@ def _run_technical_campaign_task(database, settings, campaign_id: str) -> None:
                     model_id=out.get("model_id"),
                     prompt_version=str(out.get("prompt_version", "1") or "1"),
                     source_revision=str(out.get("chapter_revision", "")),
-                    error=decision["error"]))
+                    error=decision["error"],
+                    transport=str(out.get("transport", "") or "")))
                 run_session.commit()
             return {"status": "ERROR", "error": decision["error"]}
         out["requested_model"] = route
@@ -326,7 +327,8 @@ def _run_technical_campaign_task(database, settings, campaign_id: str) -> None:
                 output_tokens=int(out.get("output_tokens", 0) or 0),
                 model_id=out.get("model_id"),
                 prompt_version=str(out.get("prompt_version", "1") or "1"),
-                source_revision=str(out.get("chapter_revision", ""))))
+                source_revision=str(out.get("chapter_revision", "")),
+                transport=str(out.get("transport", "") or "")))
             run_session.commit()
         return out
 
