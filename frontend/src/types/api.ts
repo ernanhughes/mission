@@ -752,6 +752,132 @@ export type WriterDecisionTotals = {
   deferred: number;
 };
 
+export type WriterCampaignChapter = {
+  chapter_id: string;
+  status: string;
+  outcomes: Record<string, number>;
+  candidates_made: number;
+  model_calls: number;
+  report_id: string | null;
+};
+
+export type WriterBookCampaign = {
+  campaign_id: string;
+  mode: string;
+  state: string;
+};
+
+export type CampaignActiveRun = {
+  run_id: string;
+  campaign_id: string;
+  state: string;
+  stop_reason: string;
+};
+
+export type WriterCampaignBook = {
+  book_id: string;
+  campaign_root: string;
+  totals: Record<string, number>;
+  campaigns: WriterBookCampaign[];
+  chapters: WriterCampaignChapter[];
+  active_runs: CampaignActiveRun[];
+};
+
+export type WriterStrategyCard = {
+  strategy: string;
+  evaluated: number;
+  supported: number;
+  support_rate: number | null;
+  evidence_level: string;
+  book_id?: string;
+  denominator?: string;
+};
+
+export type WriterModelCard = {
+  model: string;
+  role: string;
+  attempts: number;
+  evaluated: number;
+  supported: number;
+  evidence_level: string;
+  denominator?: string;
+};
+
+export type WriterFailureFamily = {
+  family: string;
+  attempts: number;
+  sample_limitation?: string;
+};
+
+export type WriterOversizedRegion = {
+  chapter_id: string;
+  opportunity_id: string;
+  reason: string;
+  plan_id: string;
+};
+
+export type WriterStrategyVersion = {
+  strategy_id: string;
+  version: string;
+  status: string;
+  content_hash?: string;
+  book_id?: string;
+};
+
+export type WriterExperiment = {
+  experiment_id: string;
+  status: string;
+  baseline_version?: string;
+  candidate_version?: string;
+  book_id?: string;
+};
+
+export type WriterEvolutionDecision = {
+  decision_id: string;
+  decision: string;
+  actor?: string;
+  experiment_id?: string;
+  book_id?: string;
+};
+
+export type WriterEvolutionSummary = {
+  available: boolean;
+  detail: string;
+  error: string | null;
+  totals: Record<string, number>;
+  versions: WriterStrategyVersion[];
+  proposals: Array<Record<string, any>>;
+  experiments: WriterExperiment[];
+  decisions: WriterEvolutionDecision[];
+  books: Array<{ book_id: string; versions: number }>;
+  limitations: string[];
+  unreadable_files: number;
+};
+
+export type WriterIntelSummary = {
+  available: boolean;
+  detail: string;
+  error: string | null;
+  totals: Record<string, number>;
+  strategies: WriterStrategyCard[];
+  models: WriterModelCard[];
+  failures: WriterFailureFamily[];
+  oversized: WriterOversizedRegion[];
+  books: Array<{ book_id: string; attempts: number; oversized: number }>;
+  limitations: string[];
+  unreadable_files: number;
+};
+
+export type WriterCampaignSummary = {
+  available: boolean;
+  detail: string;
+  error: string | null;
+  totals: Record<string, number>;
+  books: WriterCampaignBook[];
+  limitations: string[];
+  unreadable_files: number;
+};
+
 export type WriterWorkspace = {
   available: boolean;
   detail: string;
@@ -770,6 +896,9 @@ export type WriterWorkspace = {
   };
   books: WriterBook[];
   limitations: string[];
+  campaigns?: WriterCampaignSummary;
+  intel?: WriterIntelSummary;
+  strategy_evolution?: WriterEvolutionSummary;
 };
 
 export type QualityDimension = {
@@ -825,6 +954,134 @@ export type QualityReview = {
   created_at: string;
 };
 
+export type TechnicalClaim = {
+  id: string;
+  project_id: string | null;
+  book_id: string;
+  chapter_id: string;
+  source_path: string;
+  source_revision: string;
+  source_start_line: number | null;
+  source_end_line: number | null;
+  source_excerpt: string;
+  claim_text: string;
+  normalized_assertion: string;
+  claim_type: string;
+  epistemic_role: string;
+  assumptions: string[];
+  qualifications: string[];
+  extraction_method: string;
+  model_id: string | null;
+  prompt_version: string;
+  extraction_status: string;
+  quote_validated: boolean;
+  campaign_id: string | null;
+  derived_state: string;
+  created_at: string;
+};
+
+export type TechnicalEvidence = {
+  id: string;
+  claim_id: string;
+  evidence_type: string;
+  source_location: string;
+  source_revision: string;
+  source_span: string;
+  evidence_excerpt: string;
+  discovery_method: string;
+  verification_method: string;
+  verification_status: string;
+  limitations: string;
+  created_at: string;
+};
+
+export type TechnicalVerification = {
+  id: string;
+  claim_id: string;
+  evidence_id: string | null;
+  method: string;
+  status: string;
+  detail: string;
+  spec_id: string;
+  spec_version: number;
+  model_id: string | null;
+  prompt_version: string;
+  prompt_hash: string | null;
+  token_usage: string;
+  input_tokens: number | null;
+  output_tokens: number | null;
+  campaign_id: string | null;
+  created_at: string;
+};
+
+export type TechnicalChapterAssessment = {
+  chapter_id: string;
+  title: string | null;
+  source_revision: string;
+  claims_total: number;
+  claims_source_verified: number;
+  claims_unresolved: number;
+  by_status: Record<string, number>;
+  by_method: Record<string, number>;
+  claims: TechnicalClaim[];
+};
+
+export type TechnicalCompleteness = {
+  chapter_id: string;
+  live_revision: string | null;
+  regions_total: number;
+  regions_processed: number;
+  regions_capped: number;
+  regions_failed: number;
+  regions_not_started: number;
+  regions_stale: number;
+  claims_total: number;
+  claims_source_verified: number;
+  claims_stale: number;
+  requirements_total: number;
+  by_satisfaction: Record<string, number>;
+  by_applicability: Record<string, number>;
+  open_gaps: number;
+  gap_types: string[];
+  assessment: string;
+};
+
+export type TechnicalRequirement = {
+  id: string;
+  requirement_key: string;
+  label: string;
+  requirement_type: string;
+  acceptance_rule: string;
+  rationale: string;
+  applicability: string;
+  satisfaction: string;
+  satisfaction_detail: string;
+  waived_reason: string;
+};
+
+export type TechnicalGap = {
+  id: string;
+  chapter_id: string;
+  claim_id: string | null;
+  requirement_id: string | null;
+  gap_type: string;
+  title: string;
+  detail: string;
+  searched_scope: string;
+  status: string;
+  priority_rationale: string;
+  created_at: string;
+};
+
+export type TechnicalObjective = {
+  id: string;
+  chapter_id: string;
+  statement: string;
+  source: string;
+  status: string;
+  created_at: string;
+};
+
 export type QualityChapter = {
   chapter_id: string;
   chapter_title: string | null;
@@ -868,6 +1125,7 @@ export type QualityCampaign = {
   prompt_version: string;
   model: string | null;
   strategy: string;
+  assessment_type: string;
   status: string;
   total: number;
   completed: number;

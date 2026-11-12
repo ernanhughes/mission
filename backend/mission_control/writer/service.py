@@ -20,7 +20,10 @@ from mission_control.writer.decisions import (
     summary as decision_summary,
 )
 from mission_control.writer.queue import build_decision_queue
+from mission_control.writer.evolution_summary import summarize_strategy_evolution
 from mission_control.writer.improvement_summary import summarize_improvement
+from mission_control.writer.campaign_summary import summarize_campaigns
+from mission_control.writer.intel_summary import summarize_intel
 from mission_control.writer.self_repair import summarize_self_repair
 
 _STATUS_RANK = {
@@ -122,6 +125,9 @@ class WriterService:
                 "limitations": limitations,
                 "self_repair": summarize_self_repair(self.settings.book_root),
                 "chapter_improvement": summarize_improvement(self.settings.book_root),
+                "campaigns": summarize_campaigns(self.settings.book_root),
+                "intel": summarize_intel(self.settings.book_root),
+                "strategy_evolution": summarize_strategy_evolution(self.settings.book_root),
             }
 
     @staticmethod

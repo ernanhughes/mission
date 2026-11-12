@@ -262,9 +262,17 @@ def record_review(session: Session, payload: QualityReviewCreate) -> QualityRevi
         raise ValidationProblem(
             f"decision must be one of {', '.join(REVIEW_DECISIONS)}; got {payload.decision!r}"
         )
-    evaluation = session.get(QualityEvaluation, payload.evaluation_id)
-    if evaluation is None:
-        raise NotFound("Evaluation does not exist")
+    if payload.evaluation_id:
+        evaluation = session.get(QualityEvaluation, payload.evaluation_id)
+        if evaluation is None:
+            raise NotFound("Evaluation does not exist")
+        digest = evaluation.chapter_revision or ""
+    elif payload.source_digest:
+        digest = payload.source_digest
+    else:
+        raise ValidationProblem(
+            "a review needs an evaluation_id or an explicit source_digest"
+        )
     record = QualityReview(
         id=f"mqrev:{uuid.uuid4().hex[:12]}",
         evaluation_id=payload.evaluation_id,
@@ -272,7 +280,7 @@ def record_review(session: Session, payload: QualityReviewCreate) -> QualityRevi
         decision=payload.decision,
         reason=payload.reason or "",
         reviewer=payload.reviewer or "",
-        source_digest=evaluation.chapter_revision or "",
+        source_digest=digest,
     )
     session.add(record)
     session.flush()
@@ -325,7 +333,15 @@ def workspace(session: Session, project_id: str) -> QualityWorkspaceRead:
         current: QualityEvaluationRead | None = None
         for row in whole:
             if row in terminals:
-                reads.append(to_read(row, derived_state=row.status.lower()))
+                terminal_state = row.status.lower()
+                if (
+                    terminal_state in ("current", "partial")
+                    and (row.strategy or "") in WRITER_STRATEGIES
+                ):
+                    # A Writer findings observation is inspectable evidence
+                    # with no scores — including the honest empty case.
+                    terminal_state = "findings"
+                reads.append(to_read(row, derived_state=terminal_state))
                 continue
             if row is newest_scored and row.status == "CURRENT":
                 state = "current"
@@ -559,7 +575,9 @@ def _campaign_read(record: QualityCampaign) -> QualityCampaignRead:
         rubric_version=record.rubric_version,
         prompt_version=record.prompt_version,
         model=record.model,
+        max_cost_usd=record.max_cost_usd or 0.0,
         strategy=record.strategy or "direct",
+        assessment_type=record.assessment_type or "prose",
         status=record.status,
         total=record.total,
         completed=record.completed,
@@ -583,9 +601,13 @@ def create_campaign(session: Session, payload: QualityCampaignCreate) -> Quality
     if payload.mode not in CAMPAIGN_MODES:
         raise ValidationProblem(f"mode must be one of {', '.join(CAMPAIGN_MODES)}")
     strategy = _check_strategy(payload.strategy)
+    assessment_type = (payload.assessment_type or "prose").strip().lower()
+    if assessment_type not in ("prose", "technical"):
+        raise ValidationProblem("assessment_type must be prose or technical")
     active = session.scalars(
         select(QualityCampaign).where(
             QualityCampaign.project_id == payload.project_id,
+            QualityCampaign.assessment_type == assessment_type,
             QualityCampaign.status.in_(ACTIVE_CAMPAIGN_STATES),
         )
     ).first()
@@ -631,7 +653,9 @@ def create_campaign(session: Session, payload: QualityCampaignCreate) -> Quality
         rubric_version=1,
         prompt_version="1",
         model=payload.model,
+        max_cost_usd=payload.max_cost_usd or 0.0,
         strategy=strategy,
+        assessment_type=assessment_type,
         status="pending",
         total=len(selection),
         completed=0,
@@ -653,6 +677,88 @@ def get_campaign(session: Session, campaign_id: str) -> QualityCampaign:
     if record is None:
         raise NotFound("Campaign does not exist")
     return record
+
+
+def _finding_key(chapter_id: str, finding: dict[str, Any]) -> tuple[str, str, str]:
+    return (
+        str(chapter_id),
+        str(finding.get("family", "")),
+        str(finding.get("claim", ""))[:400],
+    )
+
+
+def compare_campaigns(session: Session, first_id: str, second_id: str) -> dict[str, Any]:
+    """Diff two campaigns' recorded findings without rewriting history.
+
+    A finding missing from the second campaign is reported as not detected,
+    never as fixed: changed source, strategy, coverage or contracts can all
+    explain absence. Callers must check those fields before concluding.
+    """
+    first = get_campaign(session, first_id)
+    second = get_campaign(session, second_id)
+
+    def findings_by_campaign(campaign_id: str) -> dict[tuple[str, str, str], dict[str, Any]]:
+        rows = list(
+            session.scalars(
+                select(QualityEvaluation).where(
+                    QualityEvaluation.campaign_id == campaign_id
+                )
+            ).all()
+        )
+        latest: dict[str, QualityEvaluation] = {}
+        for row in sorted(rows, key=lambda r: r.created_at):
+            latest[row.chapter_id] = row
+        out: dict[tuple[str, str, str], dict[str, Any]] = {}
+        for chapter_id, row in latest.items():
+            for item in row.findings or []:
+                if isinstance(item, dict) and item.get("claim"):
+                    out[_finding_key(chapter_id, item)] = {
+                        "chapter_id": chapter_id,
+                        "evaluation_id": row.id,
+                        "chapter_revision": row.chapter_revision,
+                        "strategy": row.strategy,
+                    }
+        return out
+
+    first_findings = findings_by_campaign(first_id)
+    second_findings = findings_by_campaign(second_id)
+    still = sorted(set(first_findings) & set(second_findings))
+    new = sorted(set(second_findings) - set(first_findings))
+    gone = sorted(set(first_findings) - set(second_findings))
+
+    def revisions(campaign_id: str) -> dict[str, str]:
+        rows = session.scalars(
+            select(QualityEvaluation).where(
+                QualityEvaluation.campaign_id == campaign_id
+            )
+        ).all()
+        latest: dict[str, str] = {}
+        for row in sorted(rows, key=lambda r: r.created_at):
+            latest[row.chapter_id] = row.chapter_revision or ""
+        return latest
+
+    first_revs, second_revs = revisions(first_id), revisions(second_id)
+    changed_source = sorted(
+        c for c in set(first_revs) & set(second_revs) if first_revs[c] != second_revs[c]
+    )
+    return {
+        "first_id": first_id,
+        "second_id": second_id,
+        "first": {"strategy": first.strategy, "status": first.status,
+                  "chapters": len(first.chapter_selection or [])},
+        "second": {"strategy": second.strategy, "status": second.status,
+                   "chapters": len(second.chapter_selection or [])},
+        "same_strategy": (first.strategy or "") == (second.strategy or ""),
+        "changed_source_chapters": changed_source,
+        "still_present": len(still),
+        "new_in_second": len(new),
+        "not_detected_in_second": len(gone),
+        "gone_detail": [
+            {"chapter_id": c, "family": f, "claim": cl[:160]} for c, f, cl in gone
+        ],
+        "note": "Absence in the second campaign is not a fix unless source, "
+        "strategy, coverage and contracts are comparable; check changed_source_chapters first.",
+    }
 
 
 def list_campaigns(session: Session, project_id: str | None = None) -> list[QualityCampaign]:
@@ -726,6 +832,7 @@ def run_campaign(session_factory, campaign_id: str, evaluate_fn) -> QualityCampa
         in_tokens = out_tokens = 0
         costs: list[float] = []
         usage_unknown = False
+        stopped_reason: str | None = None
         try:
             for chapter_id in selection:
                 with session_factory() as check:
@@ -735,6 +842,18 @@ def run_campaign(session_factory, campaign_id: str, evaluate_fn) -> QualityCampa
                 if chapter_id in done_chapters:
                     skipped += 1
                     continue
+                budget = float(record.max_cost_usd or 0.0)
+                if budget and sum(costs) >= budget:
+                    stopped_reason = (
+                        f"budget exhausted: ${sum(costs):.4f} >= ${budget:.4f}; "
+                        f"{chapter_id} and later chapters skipped"
+                    )
+                    with session_factory() as chapter_session:
+                        campaign_row = get_campaign(chapter_session, record.id)
+                        campaign_row.error = stopped_reason
+                        chapter_session.commit()
+                    skipped += len(selection) - completed - skipped - failed
+                    break
                 with session_factory() as chapter_session:
                     campaign_row = get_campaign(chapter_session, record.id)
                     campaign_row.current_chapter = chapter_id
@@ -797,9 +916,16 @@ def run_campaign(session_factory, campaign_id: str, evaluate_fn) -> QualityCampa
                             # Writer usage records are ingested once, verbatim:
                             # one list entry per Worker dispatch. Cached input
                             # tokens are real billed usage at the cached rate.
+                            # Repeat sightings of one execution ID are skipped.
+                            seen_executions: set[str] = set()
                             for record_usage in execution.get("usage", []) or []:
                                 if not isinstance(record_usage, dict):
                                     continue
+                                execution_id = str(record_usage.get("execution_id") or "")
+                                if execution_id and execution_id in seen_executions:
+                                    continue
+                                if execution_id:
+                                    seen_executions.add(execution_id)
                                 detail = record_usage.get("usage") or {}
                                 if isinstance(detail, dict):
                                     in_tokens += int(detail.get("input_tokens", 0) or 0)
@@ -850,8 +976,8 @@ def run_campaign(session_factory, campaign_id: str, evaluate_fn) -> QualityCampa
         with session_factory() as session:
             record = get_campaign(session, campaign_id)
             _finish_counts(session, record, completed, skipped, failed, selection)
-            final = "completed" if failed == 0 else "partial"
-            _campaign_done(session, record, final, None if failed == 0 else f"{failed} chapter(s) failed; retry them with a selected rerun")
+            final = "completed" if failed == 0 and stopped_reason is None else "partial"
+            _campaign_done(session, record, final, None if final == "completed" else (stopped_reason or f"{failed} chapter(s) failed; retry them with a selected rerun"))
             session.commit()
         return get_fresh(session_factory, campaign_id)
 

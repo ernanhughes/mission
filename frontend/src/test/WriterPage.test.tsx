@@ -420,4 +420,112 @@ describe("WriterPage", () => {
     expect(await screen.findByText(/Writer CLI is unavailable/)).toBeInTheDocument();
     expect(screen.getByText("No Writer editing evidence")).toBeInTheDocument();
   });
+
+  it("lists book campaigns with chapter progress and no composite score", async () => {
+    mockFetch(({ path }) => {
+      if (path === "/api/writer/books") return json(workspace());
+      if (path === "/api/writer/campaigns")
+        return json({
+          available: true,
+          detail: "Read 1 campaign(s).",
+          error: null,
+          totals: { campaigns: 1, runs: 1, verification_supported: 1,
+                    regressions_prevented: 1, canonical_changes: 0, applied: 0 },
+          books: [{
+            book_id: "inference",
+            campaign_root: "C:/books/inference/.writer/book-campaigns",
+            totals: { campaigns: 1 },
+            campaigns: [{ campaign_id: "camp-abc123", mode: "IMPROVE_CANDIDATES", state: "COMPLETE" }],
+            chapters: [{ chapter_id: "01-chapter.md", status: "done",
+                         outcomes: { VERIFICATION_SUPPORTED: 1 },
+                         candidates_made: 1, model_calls: 7, report_id: "rep-x" }],
+            active_runs: [],
+          }],
+          limitations: ["Process metrics only."],
+          unreadable_files: 0,
+        });
+      return apiError(404, `Unhandled ${path}`);
+    });
+    renderRoute(<WriterPage />, "/writer");
+    expect(await screen.findByRole("heading", { name: "Book campaigns" })).toBeInTheDocument();
+    expect(await screen.findByText("camp-abc123")).toBeInTheDocument();
+    expect(await screen.findByText("01-chapter.md")).toBeInTheDocument();
+    expect(screen.queryByText(/overall book score/i)).not.toBeInTheDocument();
+  });
+
+  it("shows improvement intelligence with denominators and no composite score", async () => {
+    mockFetch(({ path }) => {
+      if (path === "/api/writer/books") return json(workspace());
+      if (path === "/api/writer/campaigns")
+        return json({
+          available: true, detail: "d", error: null,
+          totals: {}, books: [], limitations: [], unreadable_files: 0,
+        });
+      if (path === "/api/writer/intel")
+        return json({
+          available: true, detail: "Read 16 attempt row(s).", error: null,
+          totals: { attempts: 16, verification_supported: 2, preservation_failed: 3,
+                    skipped_oversized: 71 },
+          strategies: [{ strategy: "artifact_pattern", evaluated: 11, supported: 2,
+                          support_rate: 0.182, evidence_level: "COMPARABLE_EVIDENCE",
+                          book_id: "inference" }],
+          models: [{ model: "test-model", role: "candidate_generation",
+                      attempts: 1, evaluated: 0, supported: 0,
+                      evidence_level: "INSUFFICIENT_EVIDENCE" }],
+          failures: [{ family: "technical_preservation", attempts: 5 }],
+          oversized: [{ chapter_id: "02-chapter.md", opportunity_id: "opp-x",
+                        reason: "region spans 229 lines (budget max 60)", plan_id: "p" }],
+          books: [{ book_id: "inference", attempts: 16, oversized: 71 }],
+          limitations: ["Process metrics only."],
+          unreadable_files: 0,
+        });
+      return apiError(404, `Unhandled ${path}`);
+    });
+    renderRoute(<WriterPage />, "/writer");
+    expect(await screen.findByRole("heading", { name: "Improvement intelligence" })).toBeInTheDocument();
+    expect(await screen.findByText("artifact_pattern")).toBeInTheDocument();
+    expect(screen.getByText("COMPARABLE_EVIDENCE")).toBeInTheDocument();
+    expect(screen.getByText("02-chapter.md")).toBeInTheDocument();
+    expect(screen.queryByText(/intelligence score/i)).not.toBeInTheDocument();
+  });
+
+  it("shows strategy evolution without promotion or composite scores", async () => {
+    mockFetch(({ path }) => {
+      if (path === "/api/writer/books") return json(workspace());
+      if (path === "/api/writer/campaigns")
+        return json({
+          available: true, detail: "d", error: null,
+          totals: {}, books: [], limitations: [], unreadable_files: 0,
+        });
+      if (path === "/api/writer/intel")
+        return json({
+          available: true, detail: "d", error: null,
+          totals: {}, strategies: [], models: [], failures: [], oversized: [],
+          books: [], limitations: [], unreadable_files: 0,
+        });
+      if (path === "/api/writer/evolution")
+        return json({
+          available: true, detail: "Read 2 version(s).", error: null,
+          totals: { versions: 2, experiments: 1, proposals: 1, decisions: 1,
+                    paired_cases: 0, candidate_favored: 0, safety_regressions: 0 },
+          versions: [{ strategy_id: "explanation_reorder", version: "v2-contract-questions",
+                       status: "EXPERIMENTAL", content_hash: "sth-abc",
+                       book_id: "inference" }],
+          proposals: [{ proposal_id: "prop-1" }],
+          experiments: [{ experiment_id: "exp-1", status: "COMPLETE",
+                          baseline_version: "v1", candidate_version: "v2" }],
+          decisions: [{ decision_id: "dec-1", decision: "NEEDS_MORE_EVIDENCE",
+                        actor: "author", experiment_id: "exp-1" }],
+          books: [{ book_id: "inference", versions: 2 }],
+          limitations: ["Process metrics only."],
+          unreadable_files: 0,
+        });
+      return apiError(404, `Unhandled ${path}`);
+    });
+    renderRoute(<WriterPage />, "/writer");
+    expect(await screen.findByRole("heading", { name: "Strategy evolution" })).toBeInTheDocument();
+    expect(await screen.findByText("explanation_reorder@v2-contract-questions")).toBeInTheDocument();
+    expect(screen.getByText("exp-1: NEEDS_MORE_EVIDENCE")).toBeInTheDocument();
+    expect(screen.queryByText(/evolution score/i)).not.toBeInTheDocument();
+  });
 });
