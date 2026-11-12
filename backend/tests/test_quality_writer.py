@@ -88,6 +88,24 @@ def test_scorer_guard_intact_for_non_writer_records(
     assert response.status_code in (400, 404, 422), response.text
 
 
+def test_empty_writer_observation_is_visible_not_current(
+    client: TestClient, runtime
+) -> None:
+    _make_book(client, runtime)
+    body = _writer_payload("01-chapter.md", "rev-1", findings=[])
+    response = client.post("/api/quality/evaluations", json=body)
+    assert response.status_code == 201, response.text
+    workspace = client.get(
+        "/api/quality/workspace", params={"project_id": "math"}
+    ).json()
+    chapter = next(
+        c for c in workspace["chapters"] if c["chapter_id"] == "01-chapter.md"
+    )
+    assert chapter["current"] is None
+    states = [e["derived_state"] for e in chapter["evaluations"]]
+    assert "findings" in states
+
+
 def test_run_campaign_records_writer_usage_once(
     client: TestClient, runtime
 ) -> None:

@@ -29,10 +29,12 @@ from mission_control.api import (
     integrations as integrations_api,
     processes,
     projects,
+    publication as publication_api,
     quality as quality_api,
     research as research_api,
     scripts as scripts_api,
     settings as settings_api,
+    technical as technical_api,
     workflows as workflows_api,
     writer as writer_api,
 )
@@ -253,6 +255,8 @@ def create_app(runtime: RuntimeSettings | None = None) -> FastAPI:
     app.include_router(workflows_api.router)
     app.include_router(writer_api.router)
     app.include_router(quality_api.router)
+    app.include_router(technical_api.router)
+    app.include_router(publication_api.router)
     app.include_router(artifact_load_api.router)
     app.include_router(briefing.router)
     app.include_router(settings_api.router)

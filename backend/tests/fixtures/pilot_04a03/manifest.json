@@ -1,0 +1,380 @@
+{
+ "pilot_id": "pilot-04a03-prep",
+ "book_id": "book-inference",
+ "extractor_version": "technical-claim-v1",
+ "prompt_version_whole": "1",
+ "prompt_version_region": "2",
+ "model": "opencode-go/deepseek-v4.1-flash",
+ "status": "PREPARED_NO_LIVE_CALLS",
+ "chapters": {
+  "12-chapter.md": {
+   "category": "mathematical",
+   "rationale": "fp-format derivations, formulas with conditions, dense numeric tables, explicit non-proofs",
+   "source_hash": "db3023389a95ed0977b3a33d1822d5daa1a8946e9d41b61debd4d603d8a48dc8",
+   "chars": 40313,
+   "words": 5958,
+   "frozen": true,
+   "regions": [
+    {
+     "title": "Preamble",
+     "chars": [
+      0,
+      2347
+     ],
+     "id": "bda48899cb4dc315265c10ed8ddf18856ec7a2669068959e380c6bc8635e0cdc"
+    },
+    {
+     "title": "Where this sits",
+     "chars": [
+      2347,
+      4210
+     ],
+     "id": "7332a9041044996957695551ca41cdba332edabe9ff9762406e039e0e6d9a240"
+    },
+    {
+     "title": "Formats and what they can represent",
+     "chars": [
+      4210,
+      7342
+     ],
+     "id": "7d1fc480b6c1fa084207b42f6f60ce61829f85b955ded033107b5ca76b339b60"
+    },
+    {
+     "title": "Granularity",
+     "chars": [
+      7342,
+      8482
+     ],
+     "id": "f093f15b89d0a6674be34b1eab0cfef0d8df7275594cbd5475ea5aacb0369c16"
+    },
+    {
+     "title": "What the weights look like",
+     "chars": [
+      8482,
+      11717
+     ],
+     "id": "74e6319accd2aa4bdb377884e9152e1e2380a7c8a04cc2b518309ef48aeb852b"
+    },
+    {
+     "title": "What the model does",
+     "chars": [
+      11717,
+      18720
+     ],
+     "id": "1ef11917e28bf5e5a7e4f799bd2a8ba6e48dd0a2e919adac4071fc5b3a5c3ee8"
+    },
+    {
+     "title": "The matrix that is used twice",
+     "chars": [
+      18720,
+      22276
+     ],
+     "id": "c8e7972ed711649412e117a30202e1ae624e6025ef6fef875a9872ad958cc12e"
+    },
+    {
+     "title": "Quantising activations",
+     "chars": [
+      22276,
+      25032
+     ],
+     "id": "41ee301f8d5cfa0e3e614c1a48435d92bd35923820144d13bc97bc41057d9fb0"
+    },
+    {
+     "title": "Does it run faster?",
+     "chars": [
+      25032,
+      29185
+     ],
+     "id": "0cf82d4faa8e378c9b8a1e6f194d618e92d4f5beb3f311dfa03f71f575dc13e0"
+    },
+    {
+     "title": "Inference Lab increment",
+     "chars": [
+      30825,
+      33005
+     ],
+     "id": "db3781635f07c2787d2de88413765dbaf5cfaee551fd5f7ad1d4b120223074fc"
+    }
+   ],
+   "region_count": 10
+  },
+  "44-chapter.md": {
+   "category": "experimental",
+   "rationale": "medians/SLO shares, task results, explicit NOT_RUN externals, baselines, negative results",
+   "source_hash": "7b5a1e527416b7c3b9329a79a6406e9bc0c237e88978a56ec327f626af392dc9",
+   "chars": 42667,
+   "words": 5904,
+   "frozen": true,
+   "regions": [
+    {
+     "title": "Preamble",
+     "chars": [
+      0,
+      2238
+     ],
+     "id": "9c010142df593e82635d46b5ccb291823fa985da689ee628d564e37a5d05f4c4"
+    },
+    {
+     "title": "The question",
+     "chars": [
+      2238,
+      4015
+     ],
+     "id": "65c40aacafb25d6f5e989fe161c9af2f333c9d1b8419acb61c505b2cb7bdd20a"
+    },
+    {
+     "title": "Decide what is being compared",
+     "chars": [
+      4015,
+      6710
+     ],
+     "id": "d44c913f17aab0d124668f7e0046de925d23a008dcd2e7146aee299ca773ac10"
+    },
+    {
+     "title": "What actually ran",
+     "chars": [
+      6710,
+      9938
+     ],
+     "id": "df2c32f4397b0bcc966ea156f0c177624f7e2ce451c22ab1db5649d192fbd3b5"
+    },
+    {
+     "title": "Freeze requests before comparing clocks",
+     "chars": [
+      9938,
+      13045
+     ],
+     "id": "53aa6a458c498dc60a13b6fce63b2c58398893bb1d4611fce0eb4151ce5bc309"
+    },
+    {
+     "title": "Define the measurement point",
+     "chars": [
+      13045,
+      15656
+     ],
+     "id": "edb9a590cc621185b88481cb446aee6f9b8549490a94f0998dcb45bf564492d1"
+    },
+    {
+     "title": "Results: a scheduler changes the shape of waiting",
+     "chars": [
+      15656,
+      18720
+     ],
+     "id": "d73ae1ee4db95494f22e42b0280e2195248e637475f4a8b7c03f0a0b7ba06c7a"
+    },
+    {
+     "title": "Variation is part of the result",
+     "chars": [
+      18720,
+      22426
+     ],
+     "id": "fd5cf4e1746e17f51d2b878a179d524502fc15af7f66c8e0dd615d3732e875a7"
+    },
+    {
+     "title": "Agreement is a separate gate",
+     "chars": [
+      22426,
+      24518
+     ],
+     "id": "7e846fc654cea771875401d02c140aa70b0fec89c58c4bfed32d02e5deb61b77"
+    },
+    {
+     "title": "Results: delivering an answer is not solving the task",
+     "chars": [
+      24518,
+      28490
+     ],
+     "id": "cc9dd8a3f778f991c6771f964ffcf382010047653b8c31468f027f4381b93609"
+    },
+    {
+     "title": "Rebuild the comparison",
+     "chars": [
+      28490,
+      31856
+     ],
+     "id": "ba3fcd3eddca188e160f08621cb48fc09a7d0e9e29f9346d1d1673287f675414"
+    },
+    {
+     "title": "The comparison we still owe",
+     "chars": [
+      31856,
+      34022
+     ],
+     "id": "467a04bd05237e213ee9deef37512d4168ce2e651e5bb410e506c7b77bd77ef7"
+    },
+    {
+     "title": "Inference Lab increment",
+     "chars": [
+      34022,
+      35352
+     ],
+     "id": "03770c3f626e0182b772871e18c1e07e6b28b32061290b05283a3263ce756d75"
+    },
+    {
+     "title": "References and evidence",
+     "chars": [
+      39452,
+      41643
+     ],
+     "id": "d1f1f8da729104e90283dd994aa92b7c429abb030537d3db21f0498681240308"
+    },
+    {
+     "title": "Implementation status",
+     "chars": [
+      41643,
+      42667
+     ],
+     "id": "881fa0716fce4d74f25bcc77d8d5be31ee2f8ed9c633eadc7cedaf92f2feec1c"
+    }
+   ],
+   "region_count": 15
+  },
+  "25-chapter.md": {
+   "category": "api_architecture",
+   "rationale": "29-probe HTTP experiment, error envelopes, timing tables, named implementation files, scope exclusions",
+   "source_hash": "c0256be9c7fbbd1ec178966f3f89287a332df12db812564b7ab37fa93995298d",
+   "chars": 52552,
+   "words": 7568,
+   "frozen": true,
+   "regions": [
+    {
+     "title": "Preamble",
+     "chars": [
+      0,
+      2450
+     ],
+     "id": "956f73e84a44b09a1cda5d3a80c1f8ccea3be8f5bdfd87f04f6964ab43e05a2f"
+    },
+    {
+     "title": "The question",
+     "chars": [
+      2450,
+      3814
+     ],
+     "id": "dd995f45a42a4eacbcaba4117c72e84b2672c0ce24ad651739f2786f04ae2d87"
+    },
+    {
+     "title": "Where this sits",
+     "chars": [
+      3814,
+      5886
+     ],
+     "id": "5d76d2c9b132106f306fe2984c1ed5619ac45442dd340e70e1e4a0150964c885"
+    },
+    {
+     "title": "A request's life",
+     "chars": [
+      5886,
+      9329
+     ],
+     "id": "1095b64557cf3221a1a6e89698fac995ca7f370686220783053483413d3d10b3"
+    },
+    {
+     "title": "Connecting is not free, and the name matters",
+     "chars": [
+      9329,
+      10521
+     ],
+     "id": "ab9f956154b9dbfae50480b1046e1a2c483f629914182310cb17e24fd320fc30"
+    },
+    {
+     "title": "The event loop and the health check",
+     "chars": [
+      10521,
+      12227
+     ],
+     "id": "6841bdbc95ec6ae0312c534f9f5e379e1565738d7b7af0e230b5e5e22e0d9b5f"
+    },
+    {
+     "title": "Requests",
+     "chars": [
+      12246,
+      15319
+     ],
+     "id": "3f7a9993ed565bf1da38308d2ded7dc0d46cdfcbb358016f7c26d09978e67a61"
+    },
+    {
+     "title": "Responses",
+     "chars": [
+      15319,
+      16633
+     ],
+     "id": "ce3a65783cea4fe793d8685f3cf30f02c39c4d28fcb8a30d77095a102d92a6ca"
+    },
+    {
+     "title": "Changing the contract",
+     "chars": [
+      16633,
+      20775
+     ],
+     "id": "2247b6fe1bd2903f68bace1a1b6df481ad73a471bb5ce1754d814d454230d5ec"
+    },
+    {
+     "title": "Budgets",
+     "chars": [
+      20775,
+      24935
+     ],
+     "id": "b3feb6ac0f2405dc125751f1e64c4d6ef64dfad994756e66c70e0279ed2f9904"
+    },
+    {
+     "title": "What a client can act on",
+     "chars": [
+      24948,
+      27349
+     ],
+     "id": "a09277f4a683e617ca908f21cbe59e52a8ca820f34c656d70faed1b3d5a1cac0"
+    },
+    {
+     "title": "What the defaults did",
+     "chars": [
+      27349,
+      30173
+     ],
+     "id": "351a3cc4a4ffc57d99dc2f7eeae240d966cd39a3a23346a0949518beaf0f11c4"
+    },
+    {
+     "title": "Large bodies",
+     "chars": [
+      30173,
+      32226
+     ],
+     "id": "91cde828cf98807c44915d81330df029a8df63bd3d2efd07ad3eb595fdc80aa2"
+    },
+    {
+     "title": "Is the answer the engine's answer?",
+     "chars": [
+      32258,
+      34330
+     ],
+     "id": "18ff03f8c2fec6770ab9c1c96022e93a24df564abe40b3dfaf2dfd87c89b12c7"
+    },
+    {
+     "title": "One engine, many callers",
+     "chars": [
+      34330,
+      36403
+     ],
+     "id": "9728617bd4700f26674aac953173c5e67f60cb4538732615509285263108b679"
+    },
+    {
+     "title": "Inference Lab increment",
+     "chars": [
+      38419,
+      41363
+     ],
+     "id": "d8ee2f656e25d4aad59e89faf24f6872706b6354162bc60d5e8eb50dba3e2409"
+    },
+    {
+     "title": "Implementation status",
+     "chars": [
+      50576,
+      52552
+     ],
+     "id": "d810cdd91d44142b5ad83a1e0aefb3fbc5f9398543d11d878faf9161080b5686"
+    }
+   ],
+   "region_count": 17
+  }
+ }
+}

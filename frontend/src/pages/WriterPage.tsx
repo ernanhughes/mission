@@ -21,12 +21,366 @@ import { formatDateTime, timeAgo, titleCase } from "../lib/format";
 import type {
   IntegrationExecution,
   WriterBook,
+  WriterCampaignSummary,
   WriterChapter,
   WriterDecisionQueueItem,
   WriterDimension,
+  WriterEvolutionSummary,
   WriterFinding,
+  WriterIntelSummary,
   WriterWorkspace,
 } from "../types/api";
+
+function CampaignsSection({ books }: { books: WriterBook[] }) {
+  const campaigns = useApi<WriterCampaignSummary>("/api/writer/campaigns");
+  const toast = useToast();
+  const [running, setRunning] = useState(false);
+  const [execution, setExecution] = useState<IntegrationExecution | null>(null);
+  const [bookRoot, setBookRoot] = useState("");
+  const [mode, setMode] = useState("PLAN");
+
+  useEffect(() => {
+    if (!bookRoot && books.length) setBookRoot(books[0].project_root);
+  }, [books, bookRoot]);
+
+  async function runAction(url: string, body: Record<string, unknown>, label: string) {
+    setRunning(true);
+    setExecution(null);
+    try {
+      let current = await api.post<IntegrationExecution>(url, body);
+      setExecution(current);
+      for (let attempt = 0; attempt < 240; attempt += 1) {
+        if (["succeeded", "failed", "cancelled"].includes(current.status)) break;
+        await new Promise((resolve) => window.setTimeout(resolve, 1000));
+        current = await api.get<IntegrationExecution>(`/api/integrations/executions/${current.id}`);
+        setExecution(current);
+      }
+      if (current.status === "succeeded") {
+        toast.push("success", `${label} complete`, "Writer recorded the result; nothing was auto-applied.");
+        campaigns.reload();
+      } else {
+        toast.push("error", `${label} did not complete`, current.error || "No result was accepted.");
+      }
+    } catch (caught) {
+      toast.push("error", `Could not ${label.toLowerCase()}`, errorMessage(caught));
+    } finally {
+      setRunning(false);
+    }
+  }
+
+  const totals = campaigns.data?.totals;
+  return (
+    <Section
+      title="Book campaigns"
+      description="Durable, bounded book-wide improvement. Campaigns coordinate existing chapter workers; every candidate still needs author review in Workbench. No bulk apply exists."
+      actions={
+        <div className="tag-row">
+          <Tag tone="accent">{totals?.campaigns ?? 0} campaigns</Tag>
+          <Tag>{totals?.runs ?? 0} runs</Tag>
+          <Tag>{totals?.verification_supported ?? 0} verification-supported</Tag>
+          <Tag>{totals?.regressions_prevented ?? 0} regressions prevented</Tag>
+          <Tag>{totals?.canonical_changes ?? 0} canonical changes</Tag>
+        </div>
+      }
+    >
+      <div className="writer-campaign-create">
+        <select value={bookRoot} onChange={(event) => setBookRoot(event.target.value)} disabled={running}>
+          {books.map((book) => (
+            <option key={book.project_id} value={book.project_root}>
+              {book.title} ({book.project_id})
+            </option>
+          ))}
+        </select>
+        <select value={mode} onChange={(event) => setMode(event.target.value)} disabled={running}>
+          {["DISCOVER", "ASSESS", "PLAN", "IMPROVE_CANDIDATES", "REVIEW"].map((candidate) => (
+            <option key={candidate} value={candidate}>{candidate}</option>
+          ))}
+        </select>
+        <button
+          className="button button-primary button-small"
+          disabled={running || !bookRoot}
+          onClick={() => void runAction("/api/writer/campaigns", { book_root: bookRoot, mode }, "Campaign creation")}
+        >
+          <Play size={14} /> {running ? "Working." : "Create campaign"}
+        </button>
+      </div>
+      {execution ? (
+        <div className="writer-execution" role="status">
+          <span className={`status-badge status-${statusState(execution.status)}`}>
+            <span className="status-dot" />
+            {titleCase(execution.status)}
+          </span>
+          <span>{execution.status === "succeeded" ? "Recorded." : execution.error || execution.output}</span>
+          <code>{execution.id}</code>
+        </div>
+      ) : null}
+      {(campaigns.data?.books ?? []).map((book) => (
+        <article className="writer-campaign-book" key={book.book_id}>
+          <div className="writer-decision-head">
+            <strong>{book.book_id}</strong>
+            <span className="writer-decision-count">
+              {book.campaigns.length} campaign{book.campaigns.length === 1 ? "" : "s"} ·{" "}
+              {book.chapters.length} chapter{book.chapters.length === 1 ? "" : "s"} with reports
+            </span>
+          </div>
+          {book.campaigns.map((campaign) => (
+            <div className="writer-campaign-row" key={campaign.campaign_id}>
+              <code>{campaign.campaign_id}</code>
+              <Tag>{campaign.mode}</Tag>
+              <Tag tone={campaign.state === "COMPLETE" ? "ok" : "info"}>{campaign.state}</Tag>
+              <span className="row">
+                <button className="button button-secondary button-small" disabled={running}
+                  onClick={() => void runAction(`/api/writer/campaigns/${campaign.campaign_id}/manifest`, { book_root: campaignBookRoot(book) }, "Manifest build")}>Manifest</button>
+                <button className="button button-secondary button-small" disabled={running}
+                  onClick={() => void runAction(`/api/writer/campaigns/${campaign.campaign_id}/plan`, { book_root: campaignBookRoot(book) }, "Plan build")}>Plan</button>
+              </span>
+            </div>
+          ))}
+          {book.active_runs.map((run) => (
+            <div className="writer-campaign-row" key={run.run_id}>
+              <code>{run.run_id}</code>
+              <Tag tone="warn">{run.state}</Tag>
+              <span className="mute small">{run.stop_reason}</span>
+              <span className="row">
+                <button className="button button-secondary button-small" disabled={running}
+                  onClick={() => void runAction("/api/writer/campaigns/runs/chunk", { run_id: run.run_id, book_root: campaignBookRoot(book) }, "Run chunk")}>Run chunk</button>
+                <button className="button button-secondary button-small" disabled={running}
+                  onClick={() => void runAction(`/api/writer/campaigns/runs/${run.run_id}/pause`, { book_root: campaignBookRoot(book) }, "Pause")}>Pause</button>
+                <button className="button button-secondary button-small" disabled={running}
+                  onClick={() => void runAction(`/api/writer/campaigns/runs/${run.run_id}/resume`, { book_root: campaignBookRoot(book) }, "Resume")}>Resume</button>
+                <button className="button button-secondary button-small" disabled={running}
+                  onClick={() => void runAction(`/api/writer/campaigns/runs/${run.run_id}/cancel`, { book_root: campaignBookRoot(book) }, "Cancel")}>Cancel</button>
+              </span>
+            </div>
+          ))}
+          {book.chapters.length ? (
+            <table className="writer-campaign-chapters">
+              <thead><tr><th>Chapter</th><th>Status</th><th>Supported</th><th>Done</th></tr></thead>
+              <tbody>
+                {book.chapters.map((chapter) => (
+                  <tr key={chapter.chapter_id}>
+                    <td><code>{chapter.chapter_id}</code></td>
+                    <td>{chapter.status}</td>
+                    <td>{chapter.outcomes?.VERIFICATION_SUPPORTED ?? 0}</td>
+                    <td>{chapter.candidates_made}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : null}
+          {book.campaigns.length === 0 && book.chapters.length === 0 ? (
+            <p className="muted">No campaigns yet. Create one to start planning.</p>
+          ) : null}
+        </article>
+      ))}
+      {(campaigns.data?.limitations ?? []).length ? (
+        <ul className="plain-list writer-boundaries">
+          {(campaigns.data?.limitations ?? []).map((limitation) => (
+            <li key={limitation}>{limitation}</li>
+          ))}
+        </ul>
+      ) : null}
+      <IntelligenceSection />
+    </Section>
+  );
+}
+
+function IntelligenceSection() {
+  const intel = useApi<WriterIntelSummary>("/api/writer/intel");
+  const totals = intel.data?.totals;
+  return (
+    <Section
+      title="Improvement intelligence"
+      description="Evidence-aware views over campaign history: what was tried, what failed and why, which regions were skipped as oversized. Advisory only — nothing here changes verification or schedules work."
+      actions={
+        <div className="tag-row">
+          <Tag tone="accent">{totals?.attempts ?? 0} attempts indexed</Tag>
+          <Tag>{totals?.verification_supported ?? 0} supported</Tag>
+          <Tag>{totals?.preservation_failed ?? 0} preservation failures</Tag>
+          <Tag>{totals?.skipped_oversized ?? 0} oversized skips</Tag>
+        </div>
+      }
+    >
+      {(intel.data?.strategies ?? []).length ? (
+        <table className="writer-campaign-chapters">
+          <thead><tr><th>Strategy</th><th>Evaluated</th><th>Supported</th><th>Rate</th><th>Evidence</th></tr></thead>
+          <tbody>
+            {intel.data.strategies.map((card) => (
+              <tr key={`${card.book_id ?? ""}:${card.strategy}`}>
+                <td><code>{card.strategy}</code></td>
+                <td>{card.evaluated}</td>
+                <td>{card.supported}</td>
+                <td>{card.support_rate ?? "—"}</td>
+                <td><Tag tone={card.evidence_level === "INSUFFICIENT_EVIDENCE" ? "warn" : "info"}>{card.evidence_level}</Tag></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : (
+        <p className="muted">No strategy evidence yet. Run a bounded campaign first.</p>
+      )}
+      {(intel.data?.models ?? []).length ? (
+        <table className="writer-campaign-chapters">
+          <thead><tr><th>Model</th><th>Role</th><th>Attempts</th><th>Evaluated</th><th>Evidence</th></tr></thead>
+          <tbody>
+            {intel.data.models.map((card) => (
+              <tr key={`${card.model}:${card.role}`}>
+                <td><code>{String(card.model).slice(0, 40)}</code></td>
+                <td>{card.role}</td>
+                <td>{card.attempts}</td>
+                <td>{card.evaluated}</td>
+                <td><Tag tone={card.evidence_level === "INSUFFICIENT_EVIDENCE" ? "warn" : "info"}>{card.evidence_level}</Tag></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : null}
+      {(intel.data?.failures ?? []).length ? (
+        <div className="tag-row">
+          {intel.data.failures.map((failure) => (
+            <Tag key={failure.family} tone="warn">{failure.family} × {failure.attempts}</Tag>
+          ))}
+        </div>
+      ) : null}
+      {(intel.data?.oversized ?? []).length ? (
+        <table className="writer-campaign-chapters">
+          <thead><tr><th>Oversized region</th><th>Reason</th></tr></thead>
+          <tbody>
+            {intel.data.oversized.slice(0, 12).map((region, index) => (
+              <tr key={`${region.chapter_id}:${region.opportunity_id}:${index}`}>
+                <td><code>{region.chapter_id}</code></td>
+                <td className="mute small">{region.reason}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : null}
+      {(intel.data?.limitations ?? []).length ? (
+        <ul className="plain-list writer-boundaries">
+          {intel.data.limitations.map((limitation) => (
+            <li key={limitation}>{limitation}</li>
+          ))}
+        </ul>
+      ) : null}
+    </Section>
+  );
+}
+
+function campaignBookRoot(book: { campaign_root: string }): string {
+  return book.campaign_root.replace(/\/\.writer\/book-campaigns$/, "");
+}
+
+function EvolutionSection({ books }: { books: WriterBook[] }) {
+  const evo = useApi<WriterEvolutionSummary>("/api/writer/evolution");
+  const toast = useToast();
+  const [running, setRunning] = useState(false);
+  const [execution, setExecution] = useState<IntegrationExecution | null>(null);
+
+  async function runArm(experimentId: string, arm: string, root: string) {
+    setRunning(true);
+    setExecution(null);
+    try {
+      let current = await api.post<IntegrationExecution>("/api/writer/evolution/experiments/run", {
+        experiment_id: experimentId, arm, book_root: root,
+      });
+      setExecution(current);
+      for (let attempt = 0; attempt < 240; attempt += 1) {
+        if (["succeeded", "failed", "cancelled"].includes(current.status)) break;
+        await new Promise((resolve) => window.setTimeout(resolve, 1000));
+        current = await api.get<IntegrationExecution>(`/api/integrations/executions/${current.id}`);
+        setExecution(current);
+      }
+      if (current.status === "succeeded") {
+        toast.push("success", `Experiment arm ${arm} complete`, "Results recorded; nothing was promoted or applied.");
+        evo.reload();
+      } else {
+        toast.push("error", `Experiment arm ${arm} did not complete`, current.error || "No result was accepted.");
+      }
+    } catch (caught) {
+      toast.push("error", "Could not run experiment arm", errorMessage(caught));
+    } finally {
+      setRunning(false);
+    }
+  }
+
+  const totals = evo.data?.totals;
+  const roots: Record<string, string> = {};
+  books.forEach((book) => { roots[book.project_id] = book.project_root; });
+  return (
+    <Section
+      title="Strategy evolution"
+      description="Versioned repair strategies, matched experiments, and promotion decisions. Advisory and recorded-only — approvals need a separate human decision with rationale."
+      actions={
+        <div className="tag-row">
+          <Tag tone="accent">{totals?.versions ?? 0} versions</Tag>
+          <Tag>{totals?.experiments ?? 0} experiments</Tag>
+          <Tag>{totals?.paired_cases ?? 0} paired cases</Tag>
+          <Tag>{totals?.safety_regressions ?? 0} safety regressions</Tag>
+        </div>
+      }
+    >
+      {(evo.data?.versions ?? []).length ? (
+        <table className="writer-campaign-chapters">
+          <thead><tr><th>Strategy version</th><th>Status</th><th>Hash</th></tr></thead>
+          <tbody>
+            {evo.data.versions.map((version) => (
+              <tr key={`${version.book_id ?? ""}:${version.strategy_id}@${version.version}`}>
+                <td><code>{version.strategy_id}@{version.version}</code></td>
+                <td><Tag tone={version.status === "ACTIVE_VERSION" ? "ok" : version.status === "REJECTED" ? "danger" : "info"}>{version.status}</Tag></td>
+                <td className="mono muted small">{String(version.content_hash ?? "").slice(0, 16)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : (
+        <p className="muted">No strategy versions registered yet.</p>
+      )}
+      {(evo.data?.experiments ?? []).length ? (
+        <table className="writer-campaign-chapters">
+          <thead><tr><th>Experiment</th><th>Baseline vs candidate</th><th>Run</th></tr></thead>
+          <tbody>
+            {evo.data.experiments.map((experiment) => (
+              <tr key={experiment.experiment_id}>
+                <td><code>{experiment.experiment_id}</code></td>
+                <td className="mute small">{experiment.baseline_version ?? ""} vs {experiment.candidate_version ?? ""}</td>
+                <td>
+                  <span className="row">
+                    <button className="button button-secondary button-small" disabled={running}
+                      onClick={() => void runArm(experiment.experiment_id, "baseline", roots[experiment.book_id ?? ""] ?? "")}>Run baseline</button>
+                    <button className="button button-secondary button-small" disabled={running}
+                      onClick={() => void runArm(experiment.experiment_id, "candidate", roots[experiment.book_id ?? ""] ?? "")}>Run candidate</button>
+                  </span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : null}
+      {execution ? (
+        <div className="writer-execution" role="status">
+          <span>{execution.status === "succeeded" ? "Recorded." : execution.error || execution.output}</span>
+          <code>{execution.id}</code>
+        </div>
+      ) : null}
+      {(evo.data?.decisions ?? []).length ? (
+        <div className="tag-row">
+          {evo.data.decisions.map((decision) => (
+            <Tag key={decision.decision_id} tone={decision.decision === "REJECT" || decision.decision === "ROLLBACK" ? "warn" : "info"}>
+              {decision.experiment_id}: {decision.decision}
+            </Tag>
+          ))}
+        </div>
+      ) : null}
+      {(evo.data?.limitations ?? []).length ? (
+        <ul className="plain-list writer-boundaries">
+          {evo.data.limitations.map((limitation) => (
+            <li key={limitation}>{limitation}</li>
+          ))}
+        </ul>
+      ) : null}
+    </Section>
+  );
+}
 
 const PROFILE = "technical-nonfiction-v1";
 const DIMENSION_ORDER = [
@@ -664,6 +1018,10 @@ export function WriterPage() {
           ) : null}
         </Section>
       ) : null}
+
+      <CampaignsSection books={workspace.data?.books ?? []} />
+
+      <EvolutionSection books={workspace.data?.books ?? []} />
 
       {workspace.data?.limitations.length ? (
         <Section title="Boundaries" description="What this view does not claim.">

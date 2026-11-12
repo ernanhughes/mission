@@ -1,0 +1,646 @@
+{
+ "version": 1,
+ "count": 24,
+ "passages": [
+  {
+   "passage_id": "P12-1",
+   "chapter_id": "12-chapter.md",
+   "char_span": [
+    4858,
+    5217
+   ],
+   "text": "| fp32 | 32 | \\(3.4 \\times 10^{38}\\) | \\(1.2 \\times 10^{-38}\\) | \\(1.2 \\times 10^{-7}\\) |\r\n| fp16 | 16 | 65,504 | \\(6.1 \\times 10^{-5}\\) | \\(9.8 \\times 10^{-4}\\) |\r\n| bf16 | 16 | \\(3.4 \\times 10^{38}\\) | \\(1.2 \\times 10^{-38}\\) | \\(7.8 \\times 10^{-3}\\) |\r\n| fp8 (e4m3) | 8 | 448 | 0.0156 | 0.125 |\r\n| fp8 (e5m2) | 8 | 57,344 | \\(6.1 \\times 10^{-5}\\) | 0.25 |\r",
+   "label_provenance": "ai_draft_awaiting_human_review",
+   "draft_label": {
+    "n_assertions": 10,
+    "types": [
+     "MATHEMATICAL"
+    ],
+    "roles": [
+     "DOCUMENTED"
+    ],
+    "must_split": true,
+    "split_unit": "table-row",
+    "qualifications": [
+     "values from torch.finfo in the recorded environment",
+     "fp8 rows are formats not experiments"
+    ],
+    "testable": true,
+    "notes": "each row is an independently checkable tuple; caption context required"
+   }
+  },
+  {
+   "passage_id": "P12-2",
+   "chapter_id": "12-chapter.md",
+   "char_span": [
+    5220,
+    5711
+   ],
+   "text": "The two 16-bit formats make different compromises. Bfloat16 keeps a range close to fp32 but offers seven explicit fraction bits, whereas fp16 has ten. In the recorded cast probe, 70,000 became `inf` in fp16 and 70,144 in bf16; 2,956 was exactly represented in fp16 and rounded to 2,960 in bf16. The same probe mapped \\(10^{-9}\\) to zero in fp16 but retained a nonzero bf16 approximation. Range, rounding and underflow can therefore affect different parts of a computation in different ways.\r",
+   "label_provenance": "ai_draft_awaiting_human_review",
+   "draft_label": {
+    "n_assertions": 3,
+    "types": [
+     "EXPERIMENTAL"
+    ],
+    "roles": [
+     "OBSERVED"
+    ],
+    "must_split": true,
+    "qualifications": [
+     "recorded cast probe only",
+     "specific values 70000/2956/1e-9"
+    ],
+    "testable": true,
+    "notes": "numbers must match exactly; rounding direction matters"
+   }
+  },
+  {
+   "passage_id": "P12-3",
+   "chapter_id": "12-chapter.md",
+   "char_span": [
+    5714,
+    6353
+   ],
+   "text": "The [The Transformer as a Computation]({{< relref \"./04-chapter\" >}}) residual coordinate of 2,956 falls within fp16's finite range. That observation **does not** prove that every intermediate operation in this GPT-2 implementation is overflow-safe, nor does it establish fp16 as universally preferable: accumulation dtype, reductions, kernel implementation and the actual activation distribution matter. The measured GPT-2 evaluation below happens to preserve perplexity more closely in fp16 than bf16. That is an empirical result for this checkpoint and runtime; for other models, the larger exponent range of bf16 may be more valuable.\r",
+   "label_provenance": "ai_draft_awaiting_human_review",
+   "draft_label": {
+    "n_assertions": 2,
+    "types": [
+     "MATHEMATICAL"
+    ],
+    "roles": [
+     "DERIVED"
+    ],
+    "must_split": false,
+    "qualifications": [
+     "residual coordinate 2956 in fp16 range",
+     "accumulation dtype/reductions/kernel/activations matter"
+    ],
+    "testable": false,
+    "notes": "negative/limiting claim; extractor must preserve the negation and scope"
+   }
+  },
+  {
+   "passage_id": "P12-4",
+   "chapter_id": "12-chapter.md",
+   "char_span": [
+    6356,
+    7339
+   ],
+   "text": "Integer quantisation represents a real number by a discrete code and metadata that maps that code back to a scale. In the simple symmetric, signed, round-to-nearest scheme used here, \\(b\\) bits provide up to \\(2^b\\) codes. For a nonzero finite tensor or quantisation group, the implementation uses a scale set by its largest absolute value:\r\n\r\n\\[\r\ns = \\frac{\\max|x|}{2^{b-1}-1}, \\qquad q = \\operatorname{round}(x/s), \\qquad \\hat{x} = q\\,s\r\n\\]\r\n\r\nIgnoring floating-point error in scale calculation, rounding within a representable group contributes at most half a quantisation step per value. That statement needs its conditions: it does not cover clipping from a separately calibrated range, invalid values, or the later effect of many errors after matrix multiplication. In this workbench the symmetric scale is selected from each observed group's maximum, and values are clamped to the chosen signed integer range. **Group outliers raise the scale and coarsen every other value.**\r",
+   "label_provenance": "ai_draft_awaiting_human_review",
+   "draft_label": {
+    "n_assertions": 3,
+    "types": [
+     "MATHEMATICAL"
+    ],
+    "roles": [
+     "DERIVED"
+    ],
+    "must_split": true,
+    "qualifications": [
+     "ignoring fp error in scale calc",
+     "excludes clipping/invalid values/post-matmul effects",
+     "symmetric scale from observed group maximum"
+    ],
+    "testable": true,
+    "notes": "formula plus conditions; dropping conditions is a qualification loss"
+   }
+  },
+  {
+   "passage_id": "P12-5",
+   "chapter_id": "12-chapter.md",
+   "char_span": [
+    7361,
+    8479
+   ],
+   "text": "For the GPT-2 `Conv1D` weights the stored matrix has shape `[input, output]`. The implementation shares a scale across the entire matrix (`group=0`), across all input coordinates of one output column (`group=-1`), or across blocks of \\(g\\) input coordinates **inside each output column** (`group=g`). Finer groups can reduce the effect of extreme weights, but add scale metadata and may impose alignment requirements on a real packing format. The estimator assumes a 16-bit scale for each complete group:\r\n\r\n\\[\r\n\\text{bits per weight} = b + \\frac{16}{g}\r\n\\]\r\n\r\nA symmetric four-bit group-128 representation therefore has a **nominal** cost of \\(4+16/128=4.125\\) bits per weight, or 4.5 bits with groups of 32. The workbench's asymmetric option adds a zero point counted at \\(b/g\\) bits per weight. These are mathematical packing estimates: they do not include tensor headers, strides, block padding, alignment, kernel-specific layout or serialisation metadata. More importantly, `quantize_dequantize` **returns floating-point weights**; its estimated bit width is not the resident size of the evaluated PyTorch model.\r",
+   "label_provenance": "ai_draft_awaiting_human_review",
+   "draft_label": {
+    "n_assertions": 4,
+    "types": [
+     "MATHEMATICAL",
+     "DEFINITION"
+    ],
+    "roles": [
+     "DEFINED",
+     "DERIVED"
+    ],
+    "must_split": true,
+    "qualifications": [
+     "nominal packing estimates exclude headers/strides/padding/layout/metadata",
+     "quantize_dequantize returns fp weights"
+    ],
+    "testable": true,
+    "notes": "equation bits-per-weight plus scope restriction; nominal vs resident is the key distinction"
+   }
+  },
+  {
+   "passage_id": "P12-6",
+   "chapter_id": "12-chapter.md",
+   "char_span": [
+    8603,
+    9010
+   ],
+   "text": "GPT-2 small has 48 `Conv1D` projection modules (four per transformer layer), containing **84,934,656** stored weight elements, about 68 per cent of its 124.4-million-parameter checkpoint. The tied token-embedding/output-projection table accounts for most of the remainder. The following statistics are computed separately for those 48 projection matrices, not across the embedding table or all activations:\r",
+   "label_provenance": "ai_draft_awaiting_human_review",
+   "draft_label": {
+    "n_assertions": 2,
+    "types": [
+     "FACTUAL"
+    ],
+    "roles": [
+     "DOCUMENTED"
+    ],
+    "must_split": true,
+    "qualifications": [
+     "48 projection matrices only, not embedding table or all activations",
+     "statistics computed separately per matrix"
+    ],
+    "testable": true,
+    "notes": "exact counts 84,934,656 / 68% / 124.4M must be reproduced verbatim"
+   }
+  },
+  {
+   "passage_id": "P12-7",
+   "chapter_id": "12-chapter.md",
+   "char_span": [
+    9013,
+    9690
+   ],
+   "text": "| Statistic | Median over 48 layers | Worst |\r\n|---|---:|---|\r\n| Largest weight over RMS | 20.8 | 186 (layer 3, feed-forward output) |\r\n| Excess kurtosis (0 for a Gaussian) | 3.2 | 790 (same layer) |\r\n\r\nThe largest peak-to-RMS ratios belong to the MLP output projections of layers 3, 2 and 1: approximately 186, 162 and 158. The reported excess kurtosis is also extreme for some of these layers. This shows that a per-tensor maximum can be a poor representative of typical weights. It does **not** mean every matrix has the same heavy tail, and the Gaussian comparison is only a heuristic; the measured distributions, rather than that analogy, justify looking at finer scales.\r",
+   "label_provenance": "ai_draft_awaiting_human_review",
+   "draft_label": {
+    "n_assertions": 4,
+    "types": [
+     "EXPERIMENTAL",
+     "MATHEMATICAL"
+    ],
+    "roles": [
+     "OBSERVED",
+     "DERIVED"
+    ],
+    "must_split": true,
+    "qualifications": [
+     "Gaussian comparison is heuristic only",
+     "does NOT mean every matrix has the same heavy tail"
+    ],
+    "testable": true,
+    "notes": "table plus qualified interpretation; negation must survive"
+   }
+  },
+  {
+   "passage_id": "P12-8",
+   "chapter_id": "12-chapter.md",
+   "char_span": [
+    10343,
+    11447
+   ],
+   "text": "| int8, per tensor | 8.00 | 0.047 | **0.421** |\r\n| int8, per channel | 8.01 | 0.0089 | 0.020 |\r\n| int8, group 128 | 8.13 | 0.0068 | 0.0097 |\r\n| int4, per channel | 4.01 | 0.160 | 0.279 |\r\n| int4, group 128 | 4.13 | 0.124 | 0.148 |\r\n| int4, group 64 | 4.25 | 0.110 | 0.128 |\r\n| int4, group 32 | 4.50 | 0.099 | 0.109 |\r\n| int4, group 128, asymmetric | 4.16 | 0.104 | 0.119 |\r\n| int3, group 128 | 3.13 | 0.287 | 0.324 |\r\n| int2, group 128 | 2.13 | 0.771 | 0.792 |\r\n\r\nPer-tensor int8 has a median relative reconstruction error of 0.047 and a worst-layer value of 0.421. The latter does **not** mean that 42 per cent of weights were discarded: it means the Frobenius norm of the error is 42 per cent of that matrix's original Frobenius norm. Per-output-channel scales reduce the median to 0.0089 and worst to 0.020; group-128 int8 reduces them further. At four bits, shrinking group size from 128 to 32 moves median error from 0.124 to 0.099 while raising the nominal cost from 4.125 to 4.5 bits per weight. This is a storage-versus-reconstruction trade-off, before we ask which errors matter to the network.\r",
+   "label_provenance": "ai_draft_awaiting_human_review",
+   "draft_label": {
+    "n_assertions": 12,
+    "types": [
+     "EXPERIMENTAL"
+    ],
+    "roles": [
+     "OBSERVED"
+    ],
+    "must_split": true,
+    "split_unit": "table-row-plus-reading",
+    "qualifications": [
+     "relative Frobenius norm ratio, not fraction discarded",
+     "storage-vs-reconstruction trade-off only"
+    ],
+    "testable": true,
+    "notes": "dense table; the 0.421 reading is a known misinterpretation trap"
+   }
+  },
+  {
+   "passage_id": "P44-1",
+   "chapter_id": "44-chapter.md",
+   "char_span": [
+    500,
+    1262
+   ],
+   "text": "The heavy workload supplies the chapter's first warning against declaring a performance winner from one latency column. In the recorded five-trial comparison, the capstone with batched decode reached a median first-token time of 0.071 seconds; the local library loop using static batches of four reached 0.879 seconds. Their median output throughputs were nearly identical, at 56.05 and 55.28 tokens per second. Yet their median shares meeting **both** service thresholds were 0.63 and 0.96, respectively. Getting the first token out sooner did not ensure that the rest arrived quickly enough. A repeated run under an identically configured capstone name reached a median SLO share of 0.91, an early warning that the apparent gap needs independent confirmation.\r",
+   "label_provenance": "ai_draft_awaiting_human_review",
+   "draft_label": {
+    "n_assertions": 5,
+    "types": [
+     "EXPERIMENTAL"
+    ],
+    "roles": [
+     "OBSERVED"
+    ],
+    "must_split": true,
+    "qualifications": [
+     "recorded five-trial comparison",
+     "medians not means",
+     "first token vs rest distinction"
+    ],
+    "testable": true,
+    "notes": "0.071/0.879s, 56.05/55.28 tok/s, 0.63/0.96 SLO shares, 0.91 repeat-run warning"
+   }
+  },
+  {
+   "passage_id": "P44-2",
+   "chapter_id": "44-chapter.md",
+   "char_span": [
+    1265,
+    1794
+   ],
+   "text": "The separate extraction task makes the distinction between performance and usefulness sharper. At eight running requests the batched capstone completed 60 order descriptions in a median 30.1 seconds; its serial configuration took 127.3 seconds. Both recovered the correct order after removing surrounding output for only 17 of 60 inputs, and only 5 of 60 responses were exact as written. In these runs, increased execution speed did not repair incorrect fields or turn a wrapped JSON fragment into a compliant as-written answer.\r",
+   "label_provenance": "ai_draft_awaiting_human_review",
+   "draft_label": {
+    "n_assertions": 3,
+    "types": [
+     "EXPERIMENTAL"
+    ],
+    "roles": [
+     "OBSERVED"
+    ],
+    "must_split": true,
+    "qualifications": [
+     "eight running requests",
+     "60 order descriptions",
+     "median 30.1 vs 127.3s"
+    ],
+    "testable": true,
+    "notes": "negative result: speed did not repair incorrect fields; 17/60 and 5/60 must survive"
+   }
+  },
+  {
+   "passage_id": "P44-3",
+   "chapter_id": "44-chapter.md",
+   "char_span": [
+    1797,
+    2235
+   ],
+   "text": "These are **book results** from one shared RTX 2060, one pinned model and a frozen local workload. The comparison is among the capstone and two *local Transformers-based loops*, not vLLM, SGLang, DeepInfer or a hosted provider. Those external-engine comparisons remain **NOT_RUN**. The chapter reports the measurements that exist, keeps quality and SLO outcomes next to speed, and refuses to turn an empty comparison cell into a ranking.\r",
+   "label_provenance": "ai_draft_awaiting_human_review",
+   "draft_label": {
+    "n_assertions": 3,
+    "types": [
+     "FACTUAL",
+     "HYPOTHESIS"
+    ],
+    "roles": [
+     "DOCUMENTED"
+    ],
+    "must_split": true,
+    "qualifications": [
+     "one RTX 2060, pinned model, frozen workload",
+     "local loops only",
+     "external comparisons NOT_RUN"
+    ],
+    "testable": false,
+    "notes": "scope + explicit NOT_RUN; must not be extracted as a completed comparison"
+   }
+  },
+  {
+   "passage_id": "P44-4",
+   "chapter_id": "44-chapter.md",
+   "char_span": [
+    7074,
+    7711
+   ],
+   "text": "| Configuration | Admission and decode |\r\n|---|---|\r\n| `hf-b1` | [Latency, Throughput and Time to First Token]({{< relref \"./36-chapter\" >}})'s library-based serving loop, static batch size one |\r\n| `hf-b4` | The same loop, static batch size four |\r\n| `cap-queue-1` | Capstone scheduler with one running request and per-sequence decode |\r\n| `cap-sched-8` | Capstone scheduler with up to eight running requests and per-sequence decode |\r\n| `cap-batched-8` | Capstone scheduler with up to eight running requests and one batched decode call |\r\n| `cap-batched-8-copy` | The previous configuration under another name, for an A/A comparison |\r",
+   "label_provenance": "ai_draft_awaiting_human_review",
+   "draft_label": {
+    "n_assertions": 6,
+    "types": [
+     "DEFINITION"
+    ],
+    "roles": [
+     "DEFINED"
+    ],
+    "must_split": true,
+    "split_unit": "table-row",
+    "qualifications": [
+     "names are exact record identifiers",
+     "last row is a deliberate A/A copy"
+    ],
+    "testable": true,
+    "notes": "identifiers hf-b1/hf-b4/cap-* must be exact; A/A purpose must be kept"
+   }
+  },
+  {
+   "passage_id": "P44-5",
+   "chapter_id": "44-chapter.md",
+   "char_span": [
+    7714,
+    8257
+   ],
+   "text": "The `hf` labels mean **local serving code built with the Transformers model**, not the hosted Hugging Face Inference service. In this suite they also do **not** mean `model.generate`: the batch-one and batch-four rows use [Latency, Throughput and Time to First Token]({{< relref \"./36-chapter\" >}})'s explicit static-batch decode loop. The later order-extraction task **does** use the library's `generate`, with its own batching and stopping path. Treating these distinct baselines as interchangeable would make the comparison irreproducible.\r",
+   "label_provenance": "ai_draft_awaiting_human_review",
+   "draft_label": {
+    "n_assertions": 3,
+    "types": [
+     "DEFINITION"
+    ],
+    "roles": [
+     "DOCUMENTED"
+    ],
+    "must_split": true,
+    "qualifications": [
+     "local Transformers code, not hosted HF service",
+     "not model.generate except order-extraction task"
+    ],
+    "testable": true,
+    "notes": "terminology guard; misreading baselines breaks reproducibility"
+   }
+  },
+  {
+   "passage_id": "P44-6",
+   "chapter_id": "44-chapter.md",
+   "char_span": [
+    8260,
+    8809
+   ],
+   "text": "Every open-loop suite configuration uses the same Qwen3-0.6B weights and tokenizer, both at revision `c1899de289a04d12100db370d81485cdf75e47ca`, with float16 and SDPA attention. The saved environment records Windows 11, Python 3.13.15, PyTorch 2.6.0+cu124, Transformers 5.17.0, NumPy 2.5.3, CUDA runtime 12.4 and driver 591.44, on an RTX 2060 12 GB shared with desktop activity. The GPU process was pinned to logical CPUs 0\u201315 of an i9-12900KF. These are provenance details, not a claim that CPU pinning made the desktop machine perfectly isolated.\r",
+   "label_provenance": "ai_draft_awaiting_human_review",
+   "draft_label": {
+    "n_assertions": 2,
+    "types": [
+     "FACTUAL"
+    ],
+    "roles": [
+     "DOCUMENTED"
+    ],
+    "must_split": false,
+    "qualifications": [
+     "Qwen3-0.6B rev c1899de...",
+     "pinned stack versions",
+     "CPU pinning is provenance not isolation proof"
+    ],
+    "testable": true,
+    "notes": "long condition list must stay attached to any derived claim"
+   }
+  },
+  {
+   "passage_id": "P44-7",
+   "chapter_id": "44-chapter.md",
+   "char_span": [
+    9984,
+    10479
+   ],
+   "text": "The suite uses [Designing Meaningful Inference Benchmarks]({{< relref \"./40-chapter\" >}})'s manifest with recorded hash `3b0c7161424a16e2`. Each of its three workloads has five trial seeds. Within a trial, every configuration receives the same generated token inputs, requested output lengths and arrival offsets; configuration order is randomised and recorded. This is **paired at the workload-trial level**, not a claim that individual queued requests are independent experimental replicates.\r",
+   "label_provenance": "ai_draft_awaiting_human_review",
+   "draft_label": {
+    "n_assertions": 3,
+    "types": [
+     "EXPERIMENTAL",
+     "DEFINITION"
+    ],
+    "roles": [
+     "OBSERVED",
+     "DEFINED"
+    ],
+    "must_split": true,
+    "qualifications": [
+     "manifest hash 3b0c7161424a16e2",
+     "paired at workload-trial level",
+     "3 workloads x 5 seeds"
+    ],
+    "testable": true,
+    "notes": "methodology with pairing scope; overgeneralizing replicates is the trap"
+   }
+  },
+  {
+   "passage_id": "P44-8",
+   "chapter_id": "44-chapter.md",
+   "char_span": [
+    11779,
+    12371
+   ],
+   "text": "The saved suite has **90 run records**: 3 workloads \u00d7 5 trials \u00d7 6 configurations. `research/ch44/results.json` on the capstone work branch reports one environment, one workload hash per workload, matching request digests inside each paired block, and no recorded run errors. Those checks establish a necessary input-comparability boundary. They do not prove identical code paths, queue policies, output semantics or experimental conditions outside the recorded manifest. A publishable next run should enforce these checks as gates before computing ratios and preserve all unsuccessful runs.\r",
+   "label_provenance": "ai_draft_awaiting_human_review",
+   "draft_label": {
+    "n_assertions": 4,
+    "types": [
+     "FACTUAL",
+     "EXPERIMENTAL"
+    ],
+    "roles": [
+     "OBSERVED"
+    ],
+    "must_split": true,
+    "qualifications": [
+     "3x5x6=90 decomposition",
+     "comparability boundary is necessary not sufficient"
+    ],
+    "testable": true,
+    "notes": "record counts plus what checks do and do not establish"
+   }
+  },
+  {
+   "passage_id": "P25-1",
+   "chapter_id": "25-chapter.md",
+   "char_span": [
+    571,
+    1331
+   ],
+   "text": "A deliberately lenient HTTP service was sent twenty-nine awkward requests, including malformed JSON, an empty prompt, an unknown option, a non-finite temperature, and a prompt containing 4,000 emoji. Eight requests received HTTP 200. Four of these successes silently changed what the caller specified: the string `\"5\"`, float `5.0`, and Boolean `true` were coerced into integer token limits, while the unknown field `max_tokens: 2` was ignored and the existing field's default produced sixteen tokens. Four other requests produced HTTP 500. None of the twenty-one errors followed a service-defined envelope; the framework returned `detail` objects in differing shapes. These are observations from the Chapter 25 probe list, not a general FastAPI failure rate.\r",
+   "label_provenance": "ai_draft_awaiting_human_review",
+   "draft_label": {
+    "n_assertions": 5,
+    "types": [
+     "EXPERIMENTAL"
+    ],
+    "roles": [
+     "OBSERVED"
+    ],
+    "must_split": true,
+    "qualifications": [
+     "29 awkward requests, Chapter 25 probe list",
+     "8x200 with 4 silent coercions",
+     "4x500, no service envelope"
+    ],
+    "testable": true,
+    "notes": "coercion details (string \"5\"/5.0/true, max_tokens:2 ignored) must survive exactly"
+   }
+  },
+  {
+   "passage_id": "P25-2",
+   "chapter_id": "25-chapter.md",
+   "char_span": [
+    1334,
+    1949
+   ],
+   "text": "The hardened variant used the **same underlying inference engine**. On the same twenty-nine probes it returned HTTP 200 four times, including one accepted request that carried a warning about an ineffective parameter. The remaining twenty-five received a consistent service-defined error envelope containing a request id, an error type, a message, and (when meaningful) the offending parameter. None returned HTTP 500. The comparison isolates the consequences of API validation and error policy for this test set; it does not establish that an unauthenticated, single-worker laboratory service is production-ready.\r",
+   "label_provenance": "ai_draft_awaiting_human_review",
+   "draft_label": {
+    "n_assertions": 4,
+    "types": [
+     "EXPERIMENTAL"
+    ],
+    "roles": [
+     "OBSERVED"
+    ],
+    "must_split": true,
+    "qualifications": [
+     "same engine",
+     "4x200 with one warning",
+     "25x consistent envelope",
+     "lab service not production-ready"
+    ],
+    "testable": true,
+    "notes": "comparative measurement; the non-production qualifier is load-bearing"
+   }
+  },
+  {
+   "passage_id": "P25-3",
+   "chapter_id": "25-chapter.md",
+   "char_span": [
+    1952,
+    2447
+   ],
+   "text": "The difference is architectural: between an inference loop that produces tokens and a client on a network, the service must decide how to interpret inputs, enforce budgets, preserve model and sampler identity, report failures, and safely share state. This chapter measures those decisions rather than treating HTTP as a thin wrapper. The resulting design provides a working foundation for Part 5, but security, timeouts, cancellation, overload control, and streaming remain explicit exclusions.\r",
+   "label_provenance": "ai_draft_awaiting_human_review",
+   "draft_label": {
+    "n_assertions": 3,
+    "types": [
+     "ARCHITECTURAL"
+    ],
+    "roles": [
+     "DERIVED"
+    ],
+    "must_split": true,
+    "qualifications": [
+     "validation+admission both required",
+     "security/timeouts/cancellation/overload/streaming excluded"
+    ],
+    "testable": false,
+    "notes": "design conclusion plus exclusion list; exclusions must not be dropped"
+   }
+  },
+  {
+   "passage_id": "P25-4",
+   "chapter_id": "25-chapter.md",
+   "char_span": [
+    3298,
+    3811
+   ],
+   "text": "There are five questions. What portion of a real HTTP request belongs to parsing, tokenisation, inference, and transport? Can a character cap enforce a model's token limit? How do errors become predictable enough for a client to handle? Which schema changes preserve old-client behaviour? And can the service preserve the engine's tokens, usage, and identity when it crosses a process boundary or shares a cached backend? Each requires a different measurement; a fast success response alone answers none of them.\r",
+   "label_provenance": "ai_draft_awaiting_human_review",
+   "draft_label": {
+    "n_assertions": 0,
+    "types": [],
+    "roles": [],
+    "must_split": false,
+    "qualifications": [],
+    "testable": false,
+    "notes": "NEGATIVE CONTROL: research questions, no technical assertions; extractor should return few or zero claims here"
+   }
+  },
+  {
+   "passage_id": "P25-5",
+   "chapter_id": "25-chapter.md",
+   "char_span": [
+    5431,
+    5883
+   ],
+   "text": "The scope is deliberately controlled: GPT-2 small (124M parameters), a [Key-Value Caching]({{< relref \"./10-chapter\" >}}) cached backend, a FastAPI/uvicorn process, loopback HTTP, and no authentication or TLS. GPU experiments used the local RTX 2060; selected error and body-size probes ran on one CPU thread. Results describe this specified environment. No command in this chapter should be interpreted as a publicly deployable service configuration.\r",
+   "label_provenance": "ai_draft_awaiting_human_review",
+   "draft_label": {
+    "n_assertions": 2,
+    "types": [
+     "FACTUAL"
+    ],
+    "roles": [
+     "DOCUMENTED"
+    ],
+    "must_split": true,
+    "qualifications": [
+     "GPT-2 small 124M, KV-cached backend, FastAPI/uvicorn loopback, no auth/TLS",
+     "RTX 2060 GPU / one CPU thread split"
+    ],
+    "testable": true,
+    "notes": "environment scope; must stay attached as conditions, not become general claims"
+   }
+  },
+  {
+   "passage_id": "P25-6",
+   "chapter_id": "25-chapter.md",
+   "char_span": [
+    5909,
+    6542
+   ],
+   "text": "The path is: receive HTTP headers and body, parse and validate JSON, tokenise the prompt, check budgets, acquire the engine lock, run inference, construct the typed response, and serialise it to the wire. The request id is generated when the ASGI request enters the middleware. The Lab's timing object reports parse/validate, tokenisation, lock wait, engine prefill, engine decode, and response-building time. Its `Server-Timing: total` value is attached when the **response-start header** is sent, rather than after the last response byte, so it is best read as server time to response headers, not complete server connection time.\r",
+   "label_provenance": "ai_draft_awaiting_human_review",
+   "draft_label": {
+    "n_assertions": 3,
+    "types": [
+     "ALGORITHMIC",
+     "FACTUAL"
+    ],
+    "roles": [
+     "DOCUMENTED"
+    ],
+    "must_split": true,
+    "qualifications": [
+     "stage list in order",
+     "Server-Timing attached at response-start header"
+    ],
+    "testable": true,
+    "notes": "ordered pipeline plus timing-semantics correction"
+   }
+  },
+  {
+   "passage_id": "P25-7",
+   "chapter_id": "25-chapter.md",
+   "char_span": [
+    7067,
+    7530
+   ],
+   "text": "| Generated tokens | Client round trip | Parse and validate | Tokenise | Engine prefill | Engine decode | Build response | Unattributed client/server difference |\r\n|---:|---:|---:|---:|---:|---:|---:|---:|\r\n| 1 | 22.7 | 0.38 | 0.21 | 19.0 | 0.74 | 0.05 | about 1.3 |\r\n| 8 | 153.2 | 0.33 | 0.19 | 17.8 | 131.9 | 0.05 | about 1.2 |\r\n| 32 | 620.8 | 0.35 | 0.19 | 18.3 | 600.7 | 0.05 | about 1.1 |\r\n| 128 | 2,460.4 | 0.36 | 0.18 | 18.0 | 2,438.9 | 0.05 | about 1.2 |\r",
+   "label_provenance": "ai_draft_awaiting_human_review",
+   "draft_label": {
+    "n_assertions": 5,
+    "types": [
+     "EXPERIMENTAL"
+    ],
+    "roles": [
+     "OBSERVED"
+    ],
+    "must_split": true,
+    "split_unit": "table-row",
+    "qualifications": [
+     "independent medians",
+     "medians need not add to round trip",
+     "transport column derived"
+    ],
+    "testable": true,
+    "notes": "4 data rows each independently checkable; header semantics in surrounding prose"
+   }
+  },
+  {
+   "passage_id": "P25-8",
+   "chapter_id": "25-chapter.md",
+   "char_span": [
+    3836,
+    4709
+   ],
+   "text": "Part 5 starts at the network boundary. The [Building Our First Inference Engine]({{< relref \"./06-chapter\" >}}) engine and [Key-Value Caching]({{< relref \"./10-chapter\" >}}) cached backend supply the computation; [Model Architecture Versus Runtime Architecture]({{< relref \"./24-chapter\" >}}) supplies the principle that unsupported or ineffective options must not be silently accepted. This chapter supplies request parsing, an independent token budget, response provenance, stable errors, and a simple serialised engine call. The actual service is implemented in `examples/ch25/service_lab.py`; `examples/ch25/api.py` remains the starter example. This is the bridge to [Request Scheduling and Admission Control]({{< relref \"./26-chapter\" >}})'s admission under load and [Concurrent Requests and Streaming]({{< relref \"./27-chapter\" >}})'s incremental streaming protocol.\r",
+   "label_provenance": "ai_draft_awaiting_human_review",
+   "draft_label": {
+    "n_assertions": 3,
+    "types": [
+     "IMPLEMENTATION"
+    ],
+    "roles": [
+     "DOCUMENTED"
+    ],
+    "must_split": true,
+    "qualifications": [
+     "service_lab.py is the lab, api.py is the starter",
+     "bridge to ch26 admission and ch27 streaming"
+    ],
+    "testable": true,
+    "notes": "file references must resolve; starter-vs-lab distinction is the key fidelity check"
+   }
+  }
+ ]
+}

@@ -973,6 +973,7 @@ class QualityCampaign(Base):
     rubric_version: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
     prompt_version: Mapped[str] = mapped_column(String, default="1", nullable=False)
     model: Mapped[str | None] = mapped_column(String)
+    max_cost_usd: Mapped[float] = mapped_column(Float, default=0.0, nullable=False)
     status: Mapped[str] = mapped_column(String, default="pending", nullable=False)
     total: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     completed: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
@@ -985,9 +986,304 @@ class QualityCampaign(Base):
     error: Mapped[str | None] = mapped_column(Text)
     heartbeat_at: Mapped[str | None] = mapped_column(String)
     strategy: Mapped[str] = mapped_column(String, default="direct", nullable=False)
+    assessment_type: Mapped[str] = mapped_column(String, default="prose", nullable=False)
+    max_cost_usd: Mapped[float] = mapped_column(Float, default=0.0, nullable=False)
     created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
     updated_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
     completed_at: Mapped[str | None] = mapped_column(String)
+
+
+class TechnicalClaim(Base):
+    """One independently inspectable technical assertion (MC-QUALITY-03B).
+
+    Append-only; staleness derived at read time from source_revision.
+    """
+
+    __tablename__ = "technical_claims"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    project_id: Mapped[str | None] = mapped_column(
+        String, ForeignKey("projects.id", ondelete="CASCADE")
+    )
+    book_id: Mapped[str] = mapped_column(String, default="", nullable=False)
+    chapter_id: Mapped[str] = mapped_column(String, nullable=False)
+    source_path: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    source_revision: Mapped[str] = mapped_column(String, nullable=False)
+    source_start_line: Mapped[int | None] = mapped_column(Integer)
+    source_end_line: Mapped[int | None] = mapped_column(Integer)
+    source_excerpt: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    claim_text: Mapped[str] = mapped_column(Text, nullable=False)
+    normalized_assertion: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    claim_type: Mapped[str] = mapped_column(String, nullable=False)
+    epistemic_role: Mapped[str] = mapped_column(String, nullable=False)
+    assumptions: Mapped[list[str]] = mapped_column(JSON, default=list, nullable=False)
+    qualifications: Mapped[list[str]] = mapped_column(JSON, default=list, nullable=False)
+    extraction_method: Mapped[str] = mapped_column(String, default="llm_extract_v1", nullable=False)
+    model_id: Mapped[str | None] = mapped_column(String)
+    prompt_version: Mapped[str] = mapped_column(String, default="1", nullable=False)
+    extraction_status: Mapped[str] = mapped_column(String, default="CURRENT", nullable=False)
+    quote_validated: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    anchor_method: Mapped[str] = mapped_column(String, default="none", nullable=False)
+    source_char_start: Mapped[int | None] = mapped_column(Integer)
+    source_char_end: Mapped[int | None] = mapped_column(Integer)
+    campaign_id: Mapped[str | None] = mapped_column(
+        String, ForeignKey("quality_campaigns.id", ondelete="SET NULL")
+    )
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class TechnicalEvidence(Base):
+    """One supporting-evidence record for a claim (MC-QUALITY-03B)."""
+
+    __tablename__ = "technical_evidence"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    claim_id: Mapped[str] = mapped_column(
+        String, ForeignKey("technical_claims.id", ondelete="CASCADE"), nullable=False
+    )
+    evidence_type: Mapped[str] = mapped_column(String, nullable=False)
+    source_location: Mapped[str] = mapped_column(Text, nullable=False)
+    source_revision: Mapped[str] = mapped_column(String, default="", nullable=False)
+    source_span: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    evidence_excerpt: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    discovery_method: Mapped[str] = mapped_column(String, default="", nullable=False)
+    verification_method: Mapped[str] = mapped_column(String, default="", nullable=False)
+    verification_status: Mapped[str] = mapped_column(String, default="NOT_RUN", nullable=False)
+    limitations: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class TechnicalVerification(Base):
+    """One verification outcome for a claim (MC-QUALITY-03B)."""
+
+    __tablename__ = "technical_verifications"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    claim_id: Mapped[str] = mapped_column(
+        String, ForeignKey("technical_claims.id", ondelete="CASCADE"), nullable=False
+    )
+    evidence_id: Mapped[str | None] = mapped_column(
+        String, ForeignKey("technical_evidence.id", ondelete="SET NULL")
+    )
+    method: Mapped[str] = mapped_column(String, nullable=False)
+    status: Mapped[str] = mapped_column(String, nullable=False)
+    detail: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    spec_id: Mapped[str] = mapped_column(String, default="", nullable=False)
+    spec_version: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
+    model_id: Mapped[str | None] = mapped_column(String)
+    prompt_version: Mapped[str] = mapped_column(String, default="", nullable=False)
+    prompt_hash: Mapped[str | None] = mapped_column(String)
+    token_usage: Mapped[str] = mapped_column(String, default="unknown", nullable=False)
+    input_tokens: Mapped[int | None] = mapped_column(Integer)
+    output_tokens: Mapped[int | None] = mapped_column(Integer)
+    campaign_id: Mapped[str | None] = mapped_column(
+        String, ForeignKey("quality_campaigns.id", ondelete="SET NULL")
+    )
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class TechnicalRegion(Base):
+    """Deterministic source region for coverage accounting (MC-QUALITY-03C)."""
+
+    __tablename__ = "technical_regions"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    project_id: Mapped[str | None] = mapped_column(
+        String, ForeignKey("projects.id", ondelete="CASCADE")
+    )
+    book_id: Mapped[str] = mapped_column(String, default="", nullable=False)
+    chapter_id: Mapped[str] = mapped_column(String, nullable=False)
+    title: Mapped[str] = mapped_column(String, default="", nullable=False)
+    source_path: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    source_hash: Mapped[str] = mapped_column(String, default="", nullable=False)
+    char_start: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    char_end: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    byte_start: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    byte_end: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    unit_hash: Mapped[str] = mapped_column(String, default="", nullable=False)
+    parent_region_id: Mapped[str | None] = mapped_column(
+        String, ForeignKey("technical_regions.id", ondelete="SET NULL")
+    )
+    depth: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    source_kind: Mapped[str] = mapped_column(String, default="section", nullable=False)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class TechnicalExtractionCoverage(Base):
+    """One extraction attempt against a region (MC-QUALITY-03C)."""
+
+    __tablename__ = "technical_extraction_coverage"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    region_id: Mapped[str] = mapped_column(
+        String, ForeignKey("technical_regions.id", ondelete="CASCADE"), nullable=False
+    )
+    campaign_id: Mapped[str | None] = mapped_column(
+        String, ForeignKey("quality_campaigns.id", ondelete="SET NULL")
+    )
+    source_hash: Mapped[str] = mapped_column(String, default="", nullable=False)
+    extractor_version: Mapped[str] = mapped_column(String, default="technical-claim-v1", nullable=False)
+    model_id: Mapped[str | None] = mapped_column(String)
+    prompt_version: Mapped[str] = mapped_column(String, default="1", nullable=False)
+    requested_limit: Mapped[int] = mapped_column(Integer, default=40, nullable=False)
+    returned_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    status: Mapped[str] = mapped_column(String, default="NOT_STARTED", nullable=False)
+    limit_reached: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    truncated: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    error: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class TechnicalExtractionRun(Base):
+    """One bounded extraction request under a strategy (MC-QUALITY-04A-03).
+
+    Strategy is one of whole_continuation, region_single, region_grouped.
+    Quarantined (over-limit/truncated) runs persist with accepted_count 0;
+    their claims must never be stored as complete extraction."""
+
+    __tablename__ = "technical_extraction_runs"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    campaign_id: Mapped[str | None] = mapped_column(
+        String, ForeignKey("quality_campaigns.id", ondelete="SET NULL")
+    )
+    strategy: Mapped[str] = mapped_column(String, default="whole_continuation", nullable=False)
+    chapter_id: Mapped[str] = mapped_column(String, nullable=False)
+    region_ids: Mapped[list] = mapped_column(JSON, default=list, nullable=False)
+    requested_limit: Mapped[int] = mapped_column(Integer, default=40, nullable=False)
+    returned_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    accepted_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    status: Mapped[str] = mapped_column(String, default="NOT_RUN", nullable=False)
+    input_tokens: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    output_tokens: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    model_id: Mapped[str | None] = mapped_column(String)
+    prompt_version: Mapped[str] = mapped_column(String, default="1", nullable=False)
+    source_revision: Mapped[str] = mapped_column(String, default="", nullable=False)
+    manifest_hash: Mapped[str] = mapped_column(String, default="", nullable=False)
+    error: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class TechnicalEvidenceRequirement(Base):
+    """An evidence obligation for one claim (MC-QUALITY-03C)."""
+
+    __tablename__ = "technical_evidence_requirements"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    claim_id: Mapped[str] = mapped_column(
+        String, ForeignKey("technical_claims.id", ondelete="CASCADE"), nullable=False
+    )
+    requirement_key: Mapped[str] = mapped_column(String, nullable=False)
+    label: Mapped[str] = mapped_column(String, default="", nullable=False)
+    requirement_type: Mapped[str] = mapped_column(String, default="", nullable=False)
+    acceptance_rule: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    rationale: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    spec_version: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
+    applicability: Mapped[str] = mapped_column(String, default="UNDETERMINED", nullable=False)
+    applicability_reason: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    satisfaction: Mapped[str] = mapped_column(String, default="NOT_ASSESSED", nullable=False)
+    satisfaction_detail: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    waived_reason: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    campaign_id: Mapped[str | None] = mapped_column(
+        String, ForeignKey("quality_campaigns.id", ondelete="SET NULL")
+    )
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class TechnicalRequirementLink(Base):
+    """Evidence-to-requirement relationship with explicit semantics."""
+
+    __tablename__ = "technical_requirement_links"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    requirement_id: Mapped[str] = mapped_column(
+        String, ForeignKey("technical_evidence_requirements.id", ondelete="CASCADE"), nullable=False
+    )
+    evidence_id: Mapped[str | None] = mapped_column(
+        String, ForeignKey("technical_evidence.id", ondelete="SET NULL")
+    )
+    relation: Mapped[str] = mapped_column(String, default="satisfies", nullable=False)
+    note: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class TechnicalClaimLink(Base):
+    """Claim-to-claim relationship (depends_on, restates, contradicts, refines)."""
+
+    __tablename__ = "technical_claim_links"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    from_claim_id: Mapped[str] = mapped_column(
+        String, ForeignKey("technical_claims.id", ondelete="CASCADE"), nullable=False
+    )
+    to_claim_id: Mapped[str] = mapped_column(
+        String, ForeignKey("technical_claims.id", ondelete="CASCADE"), nullable=False
+    )
+    relation: Mapped[str] = mapped_column(String, default="depends_on", nullable=False)
+    note: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class TechnicalGap(Base):
+    """A recorded evidence gap (MC-QUALITY-03C). Gaps describe missing or
+    insufficient evidence; they are not technical-defect verdicts."""
+
+    __tablename__ = "technical_gaps"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    project_id: Mapped[str | None] = mapped_column(
+        String, ForeignKey("projects.id", ondelete="CASCADE")
+    )
+    book_id: Mapped[str] = mapped_column(String, default="", nullable=False)
+    chapter_id: Mapped[str] = mapped_column(String, nullable=False)
+    claim_id: Mapped[str | None] = mapped_column(
+        String, ForeignKey("technical_claims.id", ondelete="SET NULL")
+    )
+    requirement_id: Mapped[str | None] = mapped_column(
+        String, ForeignKey("technical_evidence_requirements.id", ondelete="SET NULL")
+    )
+    gap_type: Mapped[str] = mapped_column(String, nullable=False)
+    title: Mapped[str] = mapped_column(String, default="", nullable=False)
+    detail: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    searched_scope: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    status: Mapped[str] = mapped_column(String, default="OPEN", nullable=False)
+    priority_rationale: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    campaign_id: Mapped[str | None] = mapped_column(
+        String, ForeignKey("quality_campaigns.id", ondelete="SET NULL")
+    )
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class TechnicalObjective(Base):
+    """A chapter-level objective, explicit or provisional (MC-QUALITY-03C)."""
+
+    __tablename__ = "technical_objectives"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    project_id: Mapped[str | None] = mapped_column(
+        String, ForeignKey("projects.id", ondelete="CASCADE")
+    )
+    book_id: Mapped[str] = mapped_column(String, default="", nullable=False)
+    chapter_id: Mapped[str] = mapped_column(String, nullable=False)
+    statement: Mapped[str] = mapped_column(Text, nullable=False)
+    source: Mapped[str] = mapped_column(String, default="inferred", nullable=False)
+    status: Mapped[str] = mapped_column(String, default="proposed", nullable=False)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class TechnicalObjectiveClaim(Base):
+    """Objective-to-claim support link."""
+
+    __tablename__ = "technical_objective_claims"
+
+    objective_id: Mapped[str] = mapped_column(
+        String, ForeignKey("technical_objectives.id", ondelete="CASCADE"), primary_key=True
+    )
+    claim_id: Mapped[str] = mapped_column(
+        String, ForeignKey("technical_claims.id", ondelete="CASCADE"), primary_key=True
+    )
+    role: Mapped[str] = mapped_column(String, default="supports", nullable=False)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
 
 
 class QualityReview(Base):
@@ -1292,3 +1588,168 @@ class ScriptCandidate(Base):
     promoted_relpath: Mapped[str | None] = mapped_column(Text)
     created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
     updated_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class PublicationAssessment(Base):
+    """One release-candidate assessment bound to an exact manuscript snapshot
+    and a versioned release policy (MC-QUALITY-03D). Append-only."""
+
+    __tablename__ = "publication_assessments"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    project_id: Mapped[str | None] = mapped_column(
+        String, ForeignKey("projects.id", ondelete="CASCADE")
+    )
+    book_id: Mapped[str] = mapped_column(String, default="", nullable=False)
+    book_root: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    policy_version: Mapped[str] = mapped_column(
+        String, default="publication-readiness-v1", nullable=False
+    )
+    technical_scope: Mapped[str] = mapped_column(String, default="pilot", nullable=False)
+    manuscript_fingerprint: Mapped[str] = mapped_column(String, default="", nullable=False)
+    input_manifest_fingerprint: Mapped[str] = mapped_column(String, default="", nullable=False)
+    chapter_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    assessment_status: Mapped[str] = mapped_column(
+        String, default="NOT_YET_ASSESSED", nullable=False
+    )
+    freshness: Mapped[str] = mapped_column(String, default="CURRENT", nullable=False)
+    readiness_detail: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    preflight_id: Mapped[str | None] = mapped_column(String)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class PublicationPreflight(Base):
+    """A consumed Workbench publication-preflight report (MC-QUALITY-03D).
+
+    The full report is stored as a dossier file; only the identity,
+    fingerprints, counts and status live in the row. Never truncated."""
+
+    __tablename__ = "publication_preflights"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    assessment_id: Mapped[str | None] = mapped_column(
+        String, ForeignKey("publication_assessments.id", ondelete="CASCADE")
+    )
+    project_id: Mapped[str | None] = mapped_column(
+        String, ForeignKey("projects.id", ondelete="CASCADE")
+    )
+    schema_id: Mapped[str] = mapped_column(
+        String, default="workbench-publication-preflight-v1", nullable=False
+    )
+    schema_version: Mapped[str] = mapped_column(String, default="", nullable=False)
+    book_root: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    scope: Mapped[str] = mapped_column(String, default="book", nullable=False)
+    manuscript_fingerprint: Mapped[str] = mapped_column(String, default="", nullable=False)
+    input_manifest_fingerprint: Mapped[str] = mapped_column(String, default="", nullable=False)
+    chapters_found: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    findings_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    report_bytes: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    report_path: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    snapshot_consistent: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    status: Mapped[str] = mapped_column(String, default="NOT_RUN", nullable=False)
+    error: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class PublicationGateResult(Base):
+    """One gate outcome for one assessment (MC-QUALITY-03D). Deterministic
+    given the same snapshot and policy; history is never rewritten."""
+
+    __tablename__ = "publication_gate_results"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    assessment_id: Mapped[str] = mapped_column(
+        String, ForeignKey("publication_assessments.id", ondelete="CASCADE"), nullable=False
+    )
+    gate_id: Mapped[str] = mapped_column(String, nullable=False)
+    gate_version: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
+    gate_group: Mapped[str] = mapped_column(String, default="", nullable=False)
+    result: Mapped[str] = mapped_column(String, default="NOT_RUN", nullable=False)
+    blocking: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    waivable: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    detail: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    evidence_refs: Mapped[list] = mapped_column(JSON, default=list, nullable=False)
+    limitations: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class PublicationIssue(Base):
+    """A normalized release issue (MC-QUALITY-03D). Blocking classification
+    comes from gate policy and verified facts, never from AI severity."""
+
+    __tablename__ = "publication_issues"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    assessment_id: Mapped[str] = mapped_column(
+        String, ForeignKey("publication_assessments.id", ondelete="CASCADE"), nullable=False
+    )
+    gate_id: Mapped[str] = mapped_column(String, default="", nullable=False)
+    issue_type: Mapped[str] = mapped_column(String, nullable=False)
+    severity: Mapped[str] = mapped_column(String, default="advisory", nullable=False)
+    verification_method: Mapped[str] = mapped_column(
+        String, default="deterministic", nullable=False
+    )
+    status: Mapped[str] = mapped_column(String, default="OPEN", nullable=False)
+    waiver_eligibility: Mapped[str] = mapped_column(String, default="waivable", nullable=False)
+    author_review_status: Mapped[str] = mapped_column(String, default="pending", nullable=False)
+    source_refs: Mapped[list] = mapped_column(JSON, default=list, nullable=False)
+    evidence_refs: Mapped[list] = mapped_column(JSON, default=list, nullable=False)
+    rationale: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class PublicationApproval(Base):
+    """Author approval of one exact release snapshot (MC-QUALITY-03D).
+    Approval is not deployment and never carries across snapshots."""
+
+    __tablename__ = "publication_approvals"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    assessment_id: Mapped[str] = mapped_column(
+        String, ForeignKey("publication_assessments.id", ondelete="CASCADE"), nullable=False
+    )
+    project_id: Mapped[str | None] = mapped_column(
+        String, ForeignKey("projects.id", ondelete="CASCADE")
+    )
+    decision: Mapped[str] = mapped_column(String, nullable=False)
+    rationale: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    manuscript_fingerprint: Mapped[str] = mapped_column(String, default="", nullable=False)
+    input_manifest_fingerprint: Mapped[str] = mapped_column(String, default="", nullable=False)
+    policy_version: Mapped[str] = mapped_column(
+        String, default="publication-readiness-v1", nullable=False
+    )
+    accepted_limitation_ids: Mapped[list] = mapped_column(JSON, default=list, nullable=False)
+    freshness: Mapped[str] = mapped_column(String, default="CURRENT", nullable=False)
+    reviewer: Mapped[str] = mapped_column(String, default="", nullable=False)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class PublicationCalibrationReview(Base):
+    """One human calibration verdict on a sampled 03C requirement (03D-01).
+    Records what the requirement got right and what must change; the
+    historical requirement rows themselves are never rewritten here."""
+
+    __tablename__ = "publication_calibration_reviews"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    requirement_id: Mapped[str | None] = mapped_column(
+        String, ForeignKey("technical_evidence_requirements.id", ondelete="SET NULL")
+    )
+    sample_version: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
+    sample_reason: Mapped[str] = mapped_column(String, default="", nullable=False)
+    claim_accurate: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    requirement_applicable: Mapped[str] = mapped_column(
+        String, default="UNDETERMINED", nullable=False
+    )
+    necessary: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    strictness_ok: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    satisfied_by_evidence: Mapped[str] = mapped_column(String, default="unknown", nullable=False)
+    gap_justified: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    priority_proportionate: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    would_block: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    qualification_sufficient: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    duplicate_of: Mapped[str] = mapped_column(String, default="", nullable=False)
+    verdict: Mapped[str] = mapped_column(String, default="", nullable=False)
+    correction: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    reviewer: Mapped[str] = mapped_column(String, default="", nullable=False)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)

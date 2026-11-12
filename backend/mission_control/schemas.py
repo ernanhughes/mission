@@ -643,6 +643,8 @@ class QualityCampaignCreate(RawModel):
     chapters: list[str] = Field(default_factory=list)
     model: str | None = None
     strategy: str = "direct"
+    max_cost_usd: float = 0.0
+    assessment_type: str = "prose"
 
 
 class QualityCampaignRead(BaseModel):
@@ -658,6 +660,8 @@ class QualityCampaignRead(BaseModel):
     prompt_version: str
     model: str | None
     strategy: str = "direct"
+    max_cost_usd: float = 0.0
+    assessment_type: str = "prose"
     status: str
     total: int
     completed: int
@@ -672,6 +676,307 @@ class QualityCampaignRead(BaseModel):
     created_at: str
     updated_at: str
     completed_at: str | None
+
+
+class TechnicalClaimCreate(RawModel):
+    project_id: str | None = None
+    book_id: str = ""
+    chapter_id: str = Field(min_length=1)
+    source_path: str = ""
+    source_revision: str = Field(min_length=1)
+    source_start_line: int | None = None
+    source_end_line: int | None = None
+    anchor_method: str = "none"
+    source_char_start: int | None = None
+    source_char_end: int | None = None
+    source_excerpt: str = ""
+    claim_text: str = Field(min_length=1)
+    normalized_assertion: str = ""
+    claim_type: str
+    epistemic_role: str
+    assumptions: list[str] = Field(default_factory=list)
+    qualifications: list[str] = Field(default_factory=list)
+    extraction_method: str = "llm_extract_v1"
+    model_id: str | None = None
+    prompt_version: str = "1"
+    quote_validated: bool = False
+    campaign_id: str | None = None
+
+
+class TechnicalClaimRead(BaseModel):
+    id: str
+    project_id: str | None
+    book_id: str
+    chapter_id: str
+    source_path: str
+    source_revision: str
+    source_start_line: int | None
+    source_end_line: int | None
+    source_excerpt: str
+    claim_text: str
+    normalized_assertion: str
+    claim_type: str
+    epistemic_role: str
+    assumptions: list[str]
+    qualifications: list[str]
+    extraction_method: str
+    model_id: str | None
+    prompt_version: str
+    extraction_status: str
+    quote_validated: bool
+    anchor_method: str = "none"
+    source_char_start: int | None = None
+    source_char_end: int | None = None
+    campaign_id: str | None
+    derived_state: str = ""
+    created_at: str
+
+
+class TechnicalExtractionRunCreate(RawModel):
+    campaign_id: str | None = None
+    strategy: str = "whole_continuation"
+    chapter_id: str = Field(min_length=1)
+    region_ids: list[str] = Field(default_factory=list)
+    requested_limit: int = 40
+    returned_count: int = 0
+    accepted_count: int = 0
+    status: str = "NOT_RUN"
+    input_tokens: int = 0
+    output_tokens: int = 0
+    model_id: str | None = None
+    prompt_version: str = "1"
+    source_revision: str = ""
+    manifest_hash: str = ""
+    error: str = ""
+
+
+class TechnicalExtractionRunRead(BaseModel):
+    id: str
+    campaign_id: str | None
+    strategy: str
+    chapter_id: str
+    region_ids: list = Field(default_factory=list)
+    requested_limit: int
+    returned_count: int
+    accepted_count: int
+    status: str
+    input_tokens: int
+    output_tokens: int
+    model_id: str | None
+    prompt_version: str
+    source_revision: str
+    manifest_hash: str
+    error: str
+    created_at: str
+
+
+class TechnicalEvidenceCreate(RawModel):
+    claim_id: str = Field(min_length=1)
+    evidence_type: str = Field(min_length=1)
+    source_location: str = Field(min_length=1)
+    source_revision: str = ""
+    source_span: str = ""
+    evidence_excerpt: str = ""
+    discovery_method: str = ""
+    verification_method: str = ""
+    verification_status: str = "NOT_RUN"
+    limitations: str = ""
+
+
+class TechnicalEvidenceRead(BaseModel):
+    id: str
+    claim_id: str
+    evidence_type: str
+    source_location: str
+    source_revision: str
+    source_span: str
+    evidence_excerpt: str
+    discovery_method: str
+    verification_method: str
+    verification_status: str
+    limitations: str
+    created_at: str
+
+
+class TechnicalVerificationCreate(RawModel):
+    claim_id: str = Field(min_length=1)
+    evidence_id: str | None = None
+    method: str
+    status: str
+    detail: str = ""
+    spec_id: str = ""
+    spec_version: int = 1
+    model_id: str | None = None
+    prompt_version: str = ""
+    prompt_hash: str | None = None
+    token_usage: str = "unknown"
+    input_tokens: int | None = None
+    output_tokens: int | None = None
+    campaign_id: str | None = None
+
+
+class TechnicalVerificationRead(BaseModel):
+    id: str
+    claim_id: str
+    evidence_id: str | None
+    method: str
+    status: str
+    detail: str
+    spec_id: str
+    spec_version: int
+    model_id: str | None
+    prompt_version: str
+    prompt_hash: str | None
+    token_usage: str
+    input_tokens: int | None
+    output_tokens: int | None
+    campaign_id: str | None
+    created_at: str
+
+
+class TechnicalChapterAssessment(BaseModel):
+    chapter_id: str
+    title: str | None = None
+    source_revision: str = ""
+    claims_total: int = 0
+    claims_source_verified: int = 0
+    claims_unresolved: int = 0
+    by_status: dict[str, int] = Field(default_factory=dict)
+    by_method: dict[str, int] = Field(default_factory=dict)
+    claims: list[TechnicalClaimRead] = Field(default_factory=list)
+
+
+class TechnicalRegionRead(BaseModel):
+    id: str
+    chapter_id: str
+    title: str
+    source_path: str
+    source_hash: str
+    char_start: int
+    char_end: int
+    unit_hash: str
+    parent_region_id: str | None
+    depth: int
+    source_kind: str
+
+
+class TechnicalCoverageRead(BaseModel):
+    id: str
+    region_id: str
+    campaign_id: str | None
+    source_hash: str
+    extractor_version: str
+    model_id: str | None
+    prompt_version: str
+    requested_limit: int
+    returned_count: int
+    status: str
+    limit_reached: bool
+    truncated: bool
+    error: str
+    created_at: str
+
+
+class TechnicalRequirementCreate(RawModel):
+    claim_id: str = Field(min_length=1)
+    requirement_key: str = Field(min_length=1)
+    label: str = ""
+    requirement_type: str = ""
+    acceptance_rule: str = ""
+    rationale: str = ""
+    spec_version: int = 1
+    applicability: str = "UNDETERMINED"
+    applicability_reason: str = ""
+    campaign_id: str | None = None
+
+
+class TechnicalRequirementRead(BaseModel):
+    id: str
+    claim_id: str
+    requirement_key: str
+    label: str
+    requirement_type: str
+    acceptance_rule: str
+    rationale: str
+    spec_version: int
+    applicability: str
+    applicability_reason: str
+    satisfaction: str
+    satisfaction_detail: str
+    waived_reason: str
+    campaign_id: str | None
+    created_at: str
+
+
+class TechnicalRequirementLinkCreate(RawModel):
+    requirement_id: str
+    evidence_id: str | None = None
+    relation: str = "satisfies"
+    note: str = ""
+
+
+class TechnicalClaimLinkCreate(RawModel):
+    from_claim_id: str
+    to_claim_id: str
+    relation: str = "depends_on"
+    note: str = ""
+
+
+class TechnicalGapCreate(RawModel):
+    project_id: str | None = None
+    book_id: str = ""
+    chapter_id: str = Field(min_length=1)
+    claim_id: str | None = None
+    requirement_id: str | None = None
+    gap_type: str
+    title: str = ""
+    detail: str = ""
+    searched_scope: str = ""
+    priority_rationale: str = ""
+    campaign_id: str | None = None
+
+
+class TechnicalGapRead(BaseModel):
+    id: str
+    project_id: str | None
+    book_id: str
+    chapter_id: str
+    claim_id: str | None
+    requirement_id: str | None
+    gap_type: str
+    title: str
+    detail: str
+    searched_scope: str
+    status: str
+    priority_rationale: str
+    campaign_id: str | None
+    created_at: str
+
+
+class TechnicalObjectiveCreate(RawModel):
+    project_id: str | None = None
+    book_id: str = ""
+    chapter_id: str = Field(min_length=1)
+    statement: str = Field(min_length=1)
+    source: str = "inferred"
+    status: str = "proposed"
+
+
+class TechnicalObjectiveRead(BaseModel):
+    id: str
+    project_id: str | None
+    book_id: str
+    chapter_id: str
+    statement: str
+    source: str
+    status: str
+    created_at: str
+
+
+class TechnicalObjectiveClaimCreate(RawModel):
+    objective_id: str
+    claim_id: str
+    role: str = "supports"
 
 
 class QualityEvaluationCreate(RawModel):
@@ -705,11 +1010,12 @@ class QualityEvaluationCreate(RawModel):
 
 
 class QualityReviewCreate(RawModel):
-    evaluation_id: str = Field(min_length=1)
+    evaluation_id: str | None = None
     finding_id: str = Field(min_length=1)
     decision: str = "ACCEPT"
     reason: str = ""
     reviewer: str = ""
+    source_digest: str = ""
 
 
 class QualityReviewRead(BaseModel):
@@ -2305,6 +2611,9 @@ class WriterWorkspaceRead(BaseModel):
     limitations: list[str] = Field(default_factory=list)
     self_repair: dict[str, Any] = Field(default_factory=dict)
     chapter_improvement: dict[str, Any] = Field(default_factory=dict)
+    campaigns: dict[str, Any] = Field(default_factory=dict)
+    intel: dict[str, Any] = Field(default_factory=dict)
+    strategy_evolution: dict[str, Any] = Field(default_factory=dict)
 
 
 class WriterAuditRequest(RawModel):
@@ -2439,3 +2748,124 @@ class ResearchChatSessionSummary(BaseModel):
 BookRead.model_rebuild()
 ProjectDetail.model_rebuild()
 CultivationHudRead.model_rebuild()
+
+
+# -------------------------------------------------- MC-QUALITY-03D schemas
+
+
+class PublicationAssessmentCreate(RawModel):
+    project_id: str | None = None
+    book_id: str = ""
+    policy_version: str = "publication-readiness-v1"
+    technical_scope: str = "pilot"
+
+
+class PublicationGateRead(BaseModel):
+    id: str
+    gate_id: str
+    gate_version: int
+    gate_group: str
+    result: str
+    blocking: bool
+    waivable: bool
+    detail: str
+    evidence_refs: list = Field(default_factory=list)
+    limitations: str
+    created_at: str
+
+
+class PublicationIssueRead(BaseModel):
+    id: str
+    gate_id: str
+    issue_type: str
+    severity: str
+    verification_method: str
+    status: str
+    waiver_eligibility: str
+    author_review_status: str
+    source_refs: list = Field(default_factory=list)
+    evidence_refs: list = Field(default_factory=list)
+    rationale: str
+    created_at: str
+
+
+class PublicationApprovalCreate(RawModel):
+    assessment_id: str = Field(min_length=1)
+    decision: str
+    rationale: str = ""
+    accepted_limitation_ids: list[str] = Field(default_factory=list)
+    reviewer: str = ""
+
+
+class PublicationApprovalRead(BaseModel):
+    id: str
+    assessment_id: str
+    decision: str
+    rationale: str
+    manuscript_fingerprint: str
+    input_manifest_fingerprint: str
+    policy_version: str
+    accepted_limitation_ids: list = Field(default_factory=list)
+    freshness: str
+    reviewer: str
+    created_at: str
+
+
+class PublicationAssessmentRead(BaseModel):
+    id: str
+    project_id: str | None
+    book_id: str
+    book_root: str
+    policy_version: str
+    technical_scope: str
+    manuscript_fingerprint: str
+    input_manifest_fingerprint: str
+    chapter_count: int
+    assessment_status: str
+    freshness: str
+    readiness_detail: str
+    preflight_id: str | None
+    gates: list[PublicationGateRead] = Field(default_factory=list)
+    issues: list[PublicationIssueRead] = Field(default_factory=list)
+    approvals: list[PublicationApprovalRead] = Field(default_factory=list)
+    created_at: str
+
+
+class PublicationCalibrationCreate(RawModel):
+    requirement_id: str = Field(min_length=1)
+    sample_version: int = 1
+    sample_reason: str = ""
+    claim_accurate: bool = False
+    requirement_applicable: str = "UNDETERMINED"
+    necessary: bool = False
+    strictness_ok: bool = False
+    satisfied_by_evidence: str = "unknown"
+    gap_justified: bool = False
+    priority_proportionate: bool = False
+    would_block: bool = False
+    qualification_sufficient: bool = False
+    duplicate_of: str = ""
+    verdict: str = ""
+    correction: str = ""
+    reviewer: str = ""
+
+
+class PublicationCalibrationRead(BaseModel):
+    id: str
+    requirement_id: str | None
+    sample_version: int
+    sample_reason: str
+    claim_accurate: bool
+    requirement_applicable: str
+    necessary: bool
+    strictness_ok: bool
+    satisfied_by_evidence: str
+    gap_justified: bool
+    priority_proportionate: bool
+    would_block: bool
+    qualification_sufficient: bool
+    duplicate_of: str
+    verdict: str
+    correction: str
+    reviewer: str
+    created_at: str

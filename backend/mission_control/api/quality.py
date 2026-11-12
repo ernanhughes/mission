@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 from mission_control.api.deps import get_session
 from mission_control.quality.service import (
     compare,
+    compare_campaigns,
     create_campaign,
     eligibility,
     get_campaign,
@@ -69,6 +70,11 @@ def create_quality_evaluation(
 ) -> QualityEvaluationRead:
     record = record_evaluation(session, payload)
     session.flush()
+    # Commit before responding: dependency teardown runs after the response
+    # is sent, so without this an immediate follow-up GET can 404 on a row
+    # this call just created (observed in production use, EE-02). Teardown
+    # commit becomes a no-op.
+    session.commit()
     return to_read(record)
 
 
@@ -102,6 +108,9 @@ def create_quality_review(
     payload.evaluation_id = evaluation_id
     record = record_review(session, payload)
     session.flush()
+    # See create_quality_evaluation: commit before responding so the row is
+    # visible to the client's immediate follow-up reads.
+    session.commit()
     evaluation = get_evaluation(session, evaluation_id)
     return to_review_read(record, evaluation.chapter_revision or "")
 
@@ -113,6 +122,15 @@ def compare_evaluations(
     session: Session = Depends(get_session),
 ):
     return compare(session, first_id, second_id)
+
+
+@router.get("/campaigns/compare")
+def compare_quality_campaigns(
+    first_id: str = Query(...),
+    second_id: str = Query(...),
+    session: Session = Depends(get_session),
+):
+    return compare_campaigns(session, first_id, second_id)
 
 
 @router.get("/discovery", response_model=list[QualityChapterDiscovery])
@@ -272,6 +290,7 @@ def _writer_quality_evaluate(
             "worker_tasks": result.get("worker_tasks", 0),
             "usage": result.get("usage", []),
             "decisions": result.get("decisions", []),
+            "coverage": result.get("coverage", {}),
             "source_fingerprint": result.get("source_fingerprint", ""),
             "quality_errors": result.get("errors", []),
         },

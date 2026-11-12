@@ -43,6 +43,50 @@ def test_record_and_read_evaluation(client: TestClient):
     assert fetched.json()["overall"] == 4.0
 
 
+def test_created_evaluation_reviews_immediately_readable(client: TestClient):
+    """Read-after-write: POST then immediate GET .../reviews must not 404.
+
+    EE-02 hit this against a live server (~1/5 flaked): the create
+    endpoint only flushed, and the teardown commit ran after the response
+    was sent. The endpoint now commits before responding; this locks the
+    guarantee. Repeated to cover the original flakiness rate.
+    """
+    created = client.post("/api/quality/evaluations", json=_payload())
+    assert created.status_code == 201, created.text
+    record_id = created.json()["id"]
+    for _ in range(5):
+        reviews = client.get(f"/api/quality/evaluations/{record_id}/reviews")
+        assert reviews.status_code == 200, reviews.text
+    assert reviews.json() == []
+
+
+def test_uncommitted_flush_invisible_to_other_sessions(client: TestClient):
+    """Documents the mechanism behind the read-after-write race: a flushed
+    but uncommitted row is invisible to a second session, so any endpoint
+    that answers before its teardown commit exposes a 404 window."""
+    from mission_control.core.errors import NotFound
+    from mission_control.quality.service import (
+        get_evaluation,
+        record_evaluation,
+    )
+    from mission_control.schemas import QualityEvaluationCreate
+
+    database = client.app.state.database
+    with database.session() as writer:
+        record = record_evaluation(writer, QualityEvaluationCreate(**_payload()))
+        writer.flush()
+        with database.session() as reader:
+            try:
+                get_evaluation(reader, record.id)
+            except NotFound:
+                pass
+            else:
+                raise AssertionError("uncommitted row visible across sessions")
+        writer.commit()
+    with database.session() as reader:
+        assert get_evaluation(reader, record.id).id == record.id
+
+
 def test_unknown_project_rejected(client: TestClient):
     response = client.post("/api/quality/evaluations", json=_payload(project_id="nope"))
     assert response.status_code in (400, 404, 422)
