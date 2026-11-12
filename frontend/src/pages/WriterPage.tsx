@@ -205,7 +205,7 @@ function IntelligenceSection() {
         <table className="writer-campaign-chapters">
           <thead><tr><th>Strategy</th><th>Evaluated</th><th>Supported</th><th>Rate</th><th>Evidence</th></tr></thead>
           <tbody>
-            {intel.data.strategies.map((card) => (
+            {((intel.data?.strategies) ?? []).map((card) => (
               <tr key={`${card.book_id ?? ""}:${card.strategy}`}>
                 <td><code>{card.strategy}</code></td>
                 <td>{card.evaluated}</td>
@@ -223,7 +223,7 @@ function IntelligenceSection() {
         <table className="writer-campaign-chapters">
           <thead><tr><th>Model</th><th>Role</th><th>Attempts</th><th>Evaluated</th><th>Evidence</th></tr></thead>
           <tbody>
-            {intel.data.models.map((card) => (
+            {((intel.data?.models) ?? []).map((card) => (
               <tr key={`${card.model}:${card.role}`}>
                 <td><code>{String(card.model).slice(0, 40)}</code></td>
                 <td>{card.role}</td>
@@ -237,7 +237,7 @@ function IntelligenceSection() {
       ) : null}
       {(intel.data?.failures ?? []).length ? (
         <div className="tag-row">
-          {intel.data.failures.map((failure) => (
+          {((intel.data?.failures) ?? []).map((failure) => (
             <Tag key={failure.family} tone="warn">{failure.family} × {failure.attempts}</Tag>
           ))}
         </div>
@@ -246,7 +246,7 @@ function IntelligenceSection() {
         <table className="writer-campaign-chapters">
           <thead><tr><th>Oversized region</th><th>Reason</th></tr></thead>
           <tbody>
-            {intel.data.oversized.slice(0, 12).map((region, index) => (
+            {((intel.data?.oversized) ?? []).slice(0, 12).map((region, index) => (
               <tr key={`${region.chapter_id}:${region.opportunity_id}:${index}`}>
                 <td><code>{region.chapter_id}</code></td>
                 <td className="mute small">{region.reason}</td>
@@ -257,7 +257,7 @@ function IntelligenceSection() {
       ) : null}
       {(intel.data?.limitations ?? []).length ? (
         <ul className="plain-list writer-boundaries">
-          {intel.data.limitations.map((limitation) => (
+          {((intel.data?.limitations) ?? []).map((limitation) => (
             <li key={limitation}>{limitation}</li>
           ))}
         </ul>
@@ -323,7 +323,7 @@ function EvolutionSection({ books }: { books: WriterBook[] }) {
         <table className="writer-campaign-chapters">
           <thead><tr><th>Strategy version</th><th>Status</th><th>Hash</th></tr></thead>
           <tbody>
-            {evo.data.versions.map((version) => (
+            {((evo.data?.versions) ?? []).map((version) => (
               <tr key={`${version.book_id ?? ""}:${version.strategy_id}@${version.version}`}>
                 <td><code>{version.strategy_id}@{version.version}</code></td>
                 <td><Tag tone={version.status === "ACTIVE_VERSION" ? "ok" : version.status === "REJECTED" ? "danger" : "info"}>{version.status}</Tag></td>
@@ -339,7 +339,7 @@ function EvolutionSection({ books }: { books: WriterBook[] }) {
         <table className="writer-campaign-chapters">
           <thead><tr><th>Experiment</th><th>Baseline vs candidate</th><th>Run</th></tr></thead>
           <tbody>
-            {evo.data.experiments.map((experiment) => (
+            {((evo.data?.experiments) ?? []).map((experiment) => (
               <tr key={experiment.experiment_id}>
                 <td><code>{experiment.experiment_id}</code></td>
                 <td className="mute small">{experiment.baseline_version ?? ""} vs {experiment.candidate_version ?? ""}</td>
@@ -364,7 +364,7 @@ function EvolutionSection({ books }: { books: WriterBook[] }) {
       ) : null}
       {(evo.data?.decisions ?? []).length ? (
         <div className="tag-row">
-          {evo.data.decisions.map((decision) => (
+          {((evo.data?.decisions) ?? []).map((decision) => (
             <Tag key={decision.decision_id} tone={decision.decision === "REJECT" || decision.decision === "ROLLBACK" ? "warn" : "info"}>
               {decision.experiment_id}: {decision.decision}
             </Tag>
@@ -373,7 +373,7 @@ function EvolutionSection({ books }: { books: WriterBook[] }) {
       ) : null}
       {(evo.data?.limitations ?? []).length ? (
         <ul className="plain-list writer-boundaries">
-          {evo.data.limitations.map((limitation) => (
+          {((evo.data?.limitations) ?? []).map((limitation) => (
             <li key={limitation}>{limitation}</li>
           ))}
         </ul>

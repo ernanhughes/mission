@@ -540,9 +540,42 @@ class CultivationRepoState(Base):
     updated_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
 
 
+class CultivationGitHubRepo(Base):
+    """Local read-only snapshot of one GitHub repository.
+
+    GitHub owns the remote facts; Mission Control owns nothing here except
+    the cached observation. Owner judgement (qualification, lifecycle,
+    classification, rationale) lives in ``cultivation_repo_states`` under
+    ``repo_id = 'gh-' + node_id``. Never written back to GitHub.
+    """
+
+    __tablename__ = "cultivation_github_repos"
+
+    node_id: Mapped[str] = mapped_column(String, primary_key=True)
+    numeric_id: Mapped[int | None] = mapped_column(Integer)
+    owner: Mapped[str] = mapped_column(String, default="", nullable=False)
+    name: Mapped[str] = mapped_column(String, default="", nullable=False)
+    full_name: Mapped[str] = mapped_column(String, default="", nullable=False)
+    url: Mapped[str] = mapped_column(String, default="", nullable=False)
+    description: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    visibility: Mapped[str] = mapped_column(String, default="PUBLIC", nullable=False)
+    is_private: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    is_fork: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    is_archived: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    language: Mapped[str | None] = mapped_column(String)
+    languages: Mapped[list[Any]] = mapped_column(JSON, default=list, nullable=False)
+    topics: Mapped[list[str]] = mapped_column(JSON, default=list, nullable=False)
+    default_branch: Mapped[str | None] = mapped_column(String)
+    pushed_at: Mapped[str | None] = mapped_column(String)
+    created_at_github: Mapped[str | None] = mapped_column(String)
+    updated_at_github: Mapped[str | None] = mapped_column(String)
+    missing: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    observed_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+    updated_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
 class CultivationApplication(Base):
     __tablename__ = "cultivation_applications"
-
     id: Mapped[str] = mapped_column(String, primary_key=True)
     name: Mapped[str] = mapped_column(String, nullable=False)
     description: Mapped[str] = mapped_column(Text, default="", nullable=False)
