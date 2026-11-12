@@ -799,17 +799,19 @@ def plan_extraction_requests(
     if requested_limit < 1 or requested_limit > 200:
         raise ValidationProblem("requested_limit must be 1..200")
 
-    def estimate(input_chars: int, output_claims: int) -> dict:
-        # ~240 output tokens/claim measured on the 04A-01 probe (875/7
-        # with margin); input is overhead + body estimate.
+    def estimate(input_chars: int, body_chars: int, limit: int) -> dict:
+        # Input: prompt overhead (~3.5k measured) + body/4. Output: calibrated
+        # upper bound (~150 tokens/claim measured on the 04A-01 probe, scaled
+        # by expected claims from body size), capped at the 16k hard
+        # per-request model limit. Estimates, not guarantees.
         return {
             "input_tokens": PLAN_PROMPT_OVERHEAD_TOKENS + max(0, input_chars) // PLAN_CHARS_PER_TOKEN,
-            "output_tokens": 800 + output_claims * 240,
+            "output_tokens": min(16000, 600 + 150 * min(limit, max(1, body_chars // 1200))),
         }
 
     specs: list[dict] = []
     if strategy == "whole_continuation":
-        est = estimate(chapter_chars, requested_limit)
+        est = estimate(chapter_chars, chapter_chars, requested_limit)
         specs.append({
             "strategy": strategy, "chapter_id": chapter_id,
             "region_ids": [r["id"] for r in regions],
@@ -851,7 +853,7 @@ def plan_extraction_requests(
         lo = min(r.get("char_start", 0) for r in group)
         hi = max(r.get("char_end", 0) for r in group)
         body = hi - lo
-        est = estimate(body + 2 * context_chars, requested_limit)
+        est = estimate(body + 2 * context_chars, body, requested_limit)
         # Calibrated cap: ~150 tokens/claim measured (04A-01 probe), claims
         # scale ~1 per 1200 chars; floor 600 for JSON scaffolding; the 16k
         # model-interface limit is the hard per-request bound.
