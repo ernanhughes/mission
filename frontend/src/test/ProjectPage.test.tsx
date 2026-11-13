@@ -503,4 +503,89 @@ describe("ProjectPage", () => {
       expect(drafts.some((call) => String((call.body as Record<string, unknown>).verdict).startsWith("DRAFT:"))).toBe(true);
     });
   });
+
+  it("surfaces quotation and numbers verification on quality findings", async () => {
+    const detail = makeProjectDetail({ id: "math", name: "Math" });
+    const flaggedFinding = {
+      finding_id: "Q-flagged",
+      family: "claim_status",
+      dimension: "evidence",
+      claim: 'The chapter says "the product is exact".',
+      evidence_ids: ["e1"],
+      verification: "EXACT_MATCH",
+      evidence: [{ evidence_id: "e1", file: "01-chapter.md", start_line: 10, end_line: 10, excerpt: "The product rule is exact." }],
+      quotation_check: { status: "unsupported", quotes: [{ quote: "the product is exact", status: "unsupported" }] },
+      numbers_check: { status: "needs_semantic_review", numbers: [{ number: "0.0111", status: "derived_or_unverified" }] },
+    };
+    const cleanFinding = {
+      finding_id: "Q-clean",
+      family: "clarity",
+      dimension: "evidence",
+      claim: "The intro is vague.",
+      evidence_ids: ["e2"],
+      verification: "EXACT_MATCH",
+      evidence: [{ evidence_id: "e2", file: "01-chapter.md", start_line: 3, end_line: 3, excerpt: "Intro text." }],
+    };
+    mockFetch(({ path, method }) => {
+      if (path === "/api/projects/math" && method === "GET") return json(detail);
+      if (path === "/api/projects/math/integration-context" && method === "GET") return json([]);
+      if (path === "/api/quality/workspace" && method === "GET")
+        return json({
+          project_id: "math",
+          chapters: [
+            {
+              chapter_id: "01-chapter.md",
+              chapter_title: null,
+              evaluations: [
+                {
+                  id: "mqeval:verify",
+                  project_id: "math",
+                  book_id: "jev",
+                  chapter_id: "01-chapter.md",
+                  source_path: "content/books/jev/01-chapter.md",
+                  chapter_revision: "a".repeat(64),
+                  status: "CURRENT",
+                  derived_state: "findings",
+                  overall: null,
+                  dimensions: {},
+                  findings: [flaggedFinding, cleanFinding],
+                  uncertainty: "",
+                  limitations: [],
+                  execution: {},
+                  previous_evaluation_id: null,
+                  supersedes: null,
+                  workbench_url: null,
+                  workbench_link: null,
+                  section_id: null,
+                  section_title: null,
+                  char_span: [],
+                  section_sha: null,
+                  created_at: new Date().toISOString(),
+                },
+              ],
+              sections: [],
+              current: null,
+            },
+          ],
+          limitations: [],
+        });
+      if (path === "/api/quality/discovery" && method === "GET") return json([]);
+      if (path === "/api/quality/campaigns" && method === "GET") return json([]);
+      if (path === "/api/technical/overview" && method === "GET")
+        return json({ project_id: "math", chapters_with_claims: 0, claims_total: 0, by_status: {}, by_method: {}, claims_unresolved: 0 });
+      if (path === "/api/technical/chapters/01-chapter.md" && method === "GET") return json(null);
+      if (path === "/api/quality/evaluations/mqeval:verify/reviews" && method === "GET") return json([]);
+      if (path === "/api/writer/books" && method === "GET")
+        return json({ available: false, detail: "", error: null, totals: {}, review_queue: [], decision_queue: [], decision_totals: {}, workbench: { url: "", book: null, ready: false, note: "" }, books: [], limitations: [] });
+      if (path === "/api/artifact-load/workspace" && method === "GET")
+        return json({ project_id: "math", book_id: "", chapters_total: 0, chapters_observed: 0, chapters_current: 0, chapters: [], limitations: [] });
+      return apiError(404, `Unhandled ${method} ${path}`);
+    });
+    renderProject();
+
+    expect(await screen.findByText(/The chapter says/)).toBeInTheDocument();
+    expect(await screen.findByText("quote unverified")).toBeInTheDocument();
+    expect(await screen.findByText("numbers need review")).toBeInTheDocument();
+    expect(screen.queryByText("quote outside cited spans")).not.toBeInTheDocument();
+  });
 });

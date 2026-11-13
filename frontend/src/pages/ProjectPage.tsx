@@ -588,6 +588,15 @@ function QualityEvaluationCard({ evaluation }: { evaluation: QualityEvaluation }
                   {judgmentLabel}
                   {existing ? ` · reviewed: ${existing.decision} (${existing.source_status})` : " · unreviewed"}
                 </span>
+                {(finding.quotation_check as Record<string, unknown> | undefined)?.status === "unsupported" ? (
+                  <span title="Quoted text was not found in the cited evidence. The finding is retained for review, not verified."><Tag tone="danger">quote unverified</Tag></span>
+                ) : null}
+                {(finding.quotation_check as Record<string, unknown> | undefined)?.status === "elsewhere" ? (
+                  <span title="Quoted text found in the chapter but outside the cited spans."><Tag tone="accent">quote outside cited spans</Tag></span>
+                ) : null}
+                {(finding.numbers_check as Record<string, unknown> | undefined)?.status === "needs_semantic_review" ? (
+                  <span title="Numbers in the claim need a comparability check (units, denominator, condition)."><Tag tone="accent">numbers need review</Tag></span>
+                ) : null}
                 {(finding.evidence ?? []).slice(0, 2).map((span: Record<string, any>, spanIndex: number) => (
                   <blockquote key={spanIndex} className="muted small">
                     {String(span.file ?? "")}:{span.start_line ?? "?"}–{span.end_line ?? "?"} —{" "}
