@@ -23,13 +23,19 @@ owner can represent the lifecycle.
 | Candidate repair campaigns | Writer `artifact/book_campaign` | CLI `writer book-campaign`; `.writer/book-campaigns` | Do not add a fourth scheduler. |
 | Advisory multi-dimension AI scoring | `ai.scoring` | `ai.scoring` Python API; `manuscript_cli`, `tech_cli` | Do not create `ai.assessment`. |
 | Runtime-participant evaluation fabric | Writer `evaluation_fabric` | CQRS service, evidence packets, council synthesis | Not human-reader evidence. |
-| Read-only reader-legibility review | Writer `reader_legibility` CLI | CLI reports; not a runtime domain | Do not present as comprehension proof. |
+| Read-only reader-legibility review | Writer `reader_legibility` CLI/core analyzer | CLI reports; not a runtime domain | Do not present as comprehension proof. |
+| Sustained readability D1/D2/D4/D5 | Writer `reader_legibility` (proposed extension) | Per-chapter companion report | Do not add as Editing dimensions or a universal score. |
+| Sustained readability D3/D6 | Writer `editorial` (cross-chapter) | `writer-sustained-readability-v1` composition | Do not infer reader learning from sequence proxies. |
+| Protected-fact guard D7 | Writer `artifact/self_repair` Gate B | Contract + gate result | No second fact gate; `fact_guard.py` is an adapter/fixture. |
+| Technical defect ledger | Inference book repo | `editorial/defect-remediation-ledger.md`, tests, frozen results | Writer/Mission never edit it. |
+| Technical-defect projection | Writer `editorial` (proposed read-only bridge) | Categorical status + test/rerun refs | No second issue tracker or defect DB. |
 | Book-level editorial diagnosis | Writer `editorial` | `runtime.editorial` | Read-only, diagnose-only. |
 | Author editorial decision | Workbench `EditorialDecisions` | Append-only decision log; JSONL/file store | Mission never writes it. |
 | Candidate Apply / Undo | Workbench `chapter_apply` + proposal routes | `/proposals/{pid}/accept`, `/undo`; journal; Git | Sole mutation path. |
-| Human reader study | **UNOWNED** | None today | The only candidate for new code in v1. |
+| Human reader study | Writer `quality.reader_study` (accepted owner; not implemented) | Study IDs, consent-bound observations, aggregates | No new `reader_assurance` domain; no AI testimony as human evidence. |
 | Mission control-plane display | Mission `writer` read model | `/api/writer/*`, `/writer` page | No rescoring, no manuscript parsing. |
 | Mission quality observations | Mission `quality` | `/api/quality/*`; QualityEvaluation/Campaign/Review | Competing lane today; disposition required. |
+| Mission technical claims | Mission `technical` | `/api/technical/*`; TechnicalClaim/Evidence/Verification | Manuscript-claim verification, **not** code-defect storage. |
 | Cross-book priority / queue | Mission `writer.queue` | `/writer` "Cross-book review queue" | Presentation only, not a score. |
 
 ## 2. Store map
@@ -37,8 +43,12 @@ owner can represent the lifecycle.
 | Store | Path | Owner | Notes |
 |---|---|---|---|
 | Editing reports | `C:\Projects\writer\.writer\editing` | Writer Editing | Default is CWD-relative; `WRITER_EDITING_STORE` overrides. Not per-book. |
-| Self-repair contracts/runs | `C:\books\<book>\.writer\self-repair\` | Writer self_repair | Inference has 10 contracts, 1 run. |
+| Self-repair contracts/runs | `C:\books\<book>\.writer\self-repair\` | Writer self_repair | Inference has 13 contracts, 1 run; Chapter 10 contract is stale on the editorial branch. |
 | Book campaigns | `C:\books\<book>\.writer\book-campaigns\` | Writer book_campaign | 11 Inference campaigns. |
+| Technical defect ledger | `C:\books\inference\editorial\defect-remediation-ledger.md` + `tests/test_known_defects.py` + `research/chNN/results.json` | Inference book repo | Canonical; Writer projects read-only. |
+| Technical-defect projection | Writer `editorial` store (proposed) | Writer editorial | Categorical status and refs; no second defect DB. |
+| Sustained-readability report | Writer `reader_legibility` store (proposed) | Writer reader_legibility | Companion report; no Editing schema mutation. |
+| Human reader study | Writer `quality` store (proposed) | Writer quality | Consent-bound; not implemented. |
 | Quality campaign state | Writer execution provenance | Writer quality | No separate DB; per-chapter step records. |
 | Mission quality | Mission DB (`quality_evaluations`, `quality_campaigns`, `quality_reviews`) | Mission | Append-only evaluation history. |
 | Mission integration records | Mission DB (`IntegrationRecord`) | Mission | Writer Editing snapshots. |

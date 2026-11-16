@@ -1,21 +1,31 @@
 # Pilot contract review packet — chapters 10, 34, 44
 
 **Status:** all three contracts have `SUPPORTED` independent reviews; **none is
-approved**. Approval is the author's action and freezes the content hash.
+approved**. **Chapter 10 is STALE on the current book branch** and cannot be
+approved or used until it is re-audited and re-contracted (or evaluated against
+a pinned `main` worktree). Chapters 34 and 44 remain source-current.
+Approval is the author's action and freezes the content hash.
 **Date:** 2026-11-16
-**Source:** `C:\books\inference\content\books\inference`
+**Source:** `C:\books\inference` on `editorial/reader-first-reconstruction`
+(`1403b62`); Chapter 10 contract was built against the then-current checkout
+`f958967` (current `main` is `132820e`).
 
-| Chapter | Contract | Version | Region | Source SHA-256 | Questions | Preservation |
+| Chapter | Contract | Version | Region | Contract source SHA-256 | Current source SHA-256 | Freshness |
 |---|---|---|---|---|---|---|
-| 10 | `exp-7f9262f8c66377cd` | 2 | L106–108 | `fd34d339…f1b2` | 8 | 12 |
-| 34 | `exp-3d0a9322fcc0771e` | 2 | L121–123 | `92e1385f…b919` | 7 | 28 |
-| 44 | `exp-c732f3709d55f68a` | 1 | L131–133 | `26c5ba68…9c8e` | 6 | 18 |
+| 10 | `exp-7f9262f8c66377cd` | 2 | L106–108 | `fd34d339…f1b2` | `9f055001…92d8` | **STALE** |
+| 34 | `exp-3d0a9322fcc0771e` | 2 | L121–123 | `92e1385f…b919` | `92e1385f…b919` | CURRENT |
+| 44 | `exp-c732f3709d55f68a` | 1 | L131–133 | `26c5ba68…9c8e` | `26c5ba68…9c8e` | CURRENT |
 
-All three are `REVIEW_REQUIRED`. No manuscript byte changed. `PARTIAL` Editing
-reports for the same chapters are current (`stale=false`) and recorded in
-`baseline-health.md`.
+All three remain `REVIEW_REQUIRED`. Chapters 34 and 44 are source-current and
+eligible for author review; Chapter 10 is stale on the editorial branch and is
+not eligible. No candidate was generated for any chapter.
 
 ## Chapter 10 — KV-cache logits parity
+
+> **STALE:** this contract pins `fd34d339…f1b2` from `main`. The current
+> editorial branch has `9f055001…92d8`. Do not approve or run it against the
+> current chapter; re-audit and create a new contract, or evaluate against a
+> pinned `main` worktree and label it as historical.
 
 **Reader objective:** understand that the logits comparison is more sensitive
 than selected-token parity, what maximum absolute errors were reported, why
@@ -96,6 +106,8 @@ can point in different directions.
 
 ## Approval checklist
 
+- [ ] Current source SHA matches the contract's `source_revision` (Ch 10 is
+      stale and cannot be approved).
 - [ ] Each question is answerable from the cited source region.
 - [ ] Hard preservation items capture the exact values, units and identifiers.
 - [ ] Semantic items capture the conditions, scope and limitations the author

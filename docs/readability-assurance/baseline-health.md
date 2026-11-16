@@ -8,20 +8,15 @@ Stage 1 change.
 
 | Repo | Branch | HEAD | Tree |
 |---|---|---|---|
-| Writer | `main` | `f36d2ada3` | modified by this work: `config/models.yaml`, `packages/writer-web/writer_web/routes/self_repair.py`, `packages/writer-web/writer_web/services/self_repair_web_service.py`, `tests/web/test_self_repair_routes.py`; new `tests/runtime/test_model_task_policies.py` |
-| Mission | `main` | `245b231` | untracked `docs/readability-assurance/` |
+| Writer | `main` | `2563b8453` | clean |
+| Mission | `main` | `9be0c02` | clean |
 | Workbench | `codex/writer-quality-01` | `0546f87` | clean; 0 ahead / 0 behind `main` |
 | AI | `main` | `0274296` | clean |
-| Inference book | `main` | `f958967` | pre-existing dirty: `15-chapter.md`, `_index.md`, `scripts/apply_edits.py`, `test.md`; concurrent untracked `content/examples/` |
+| Inference book | `editorial/reader-first-reconstruction` | `1403b62` | clean; local branch only; `main` is `132820e`; 26 commits ahead |
 
-No stashes, resets, merges or pushes were performed. The book's dirty paths
-predate this audit and were not touched; the three pilot chapters were read
-only, and their SHA-256 values match the audit and contract source revisions.
-
-An untracked `content/examples/` tree (45 chapter example pages) appeared during
-the session while separate `programmer.ie` processes were running. It is not
-produced by the Writer self-repair path and was left untouched; treat it as
-concurrent work, not part of this change set.
+No stashes, resets, merges or pushes were performed. The Inference book is on a
+local editorial reconstruction branch, not `main`; its provenance must be frozen
+before any cross-system consumption.
 
 ## 2. Test runs
 
@@ -102,11 +97,12 @@ Findings:
   `READABILITY.PARAGRAPH_DENSITY` (medium, line 131),
   `READABILITY.METRIC_LIMITATION` (info).
 
-These reports are source-current for the three pilot chapters. The earlier
-book-level Inference report remains stale and must not be cited as the pilot
-baseline.
+The Chapter 34 and 44 audits are source-current on the editorial branch. The
+Chapter 10 audit was run against `main` (`fd34…`) and is **STALE** on the current
+branch (`9f05…`); do not cite it as current. The earlier book-level Inference
+report remains stale and must not be cited as the pilot baseline.
 
-### 3.2 Proposed contract regions (not yet drafted)
+### 3.2 Contract regions
 
 | Chapter | Region | Why this region |
 |---|---|---|
@@ -117,7 +113,8 @@ baseline.
 Each region is three source lines, well inside the 60-line pilot limit. Each
 contains hard numbers, a scope qualifier and a negative/limitation statement,
 so a contract and Gate B can test real preservation rather than prose polish.
-These are proposals; no contract has been drafted.
+Contracts were drafted for these regions on 2026-11-16; Chapter 10 is now stale
+after the editorial-branch switch, while 34/44 remain source-current.
 
 ## 4. Self-repair baseline
 
@@ -128,20 +125,20 @@ Stored contracts: 10 before this run; 13 after.
 - 8 REVIEW_REQUIRED: chapter 02 (4), chapter 22 (2), chapter 39 (1),
   chapter 43 (1).
 
-No contract existed for chapters 10, 34 or 44. One run exists:
+Before this run, no contract existed for chapters 10, 34 or 44. One run exists:
 `C:\books\inference\.writer\self-repair\runs\ch01-first`.
 
 ### 4.1 Pilot contracts drafted 2026-11-16
 
-| Chapter | Contract | Version | Status | Questions | Preservation items | Independent review |
-|---|---|---|---|---|---|---|
-| 10 | `exp-7f9262f8c66377cd` | 2 | REVIEW_REQUIRED | 8 | 12 | `SUPPORTED` |
-| 34 | `exp-3d0a9322fcc0771e` | 2 | REVIEW_REQUIRED | 7 | 28 | `SUPPORTED` |
-| 44 | `exp-c732f3709d55f68a` | 1 | REVIEW_REQUIRED | 6 | 18 | `SUPPORTED` |
+| Chapter | Contract | Version | Status | Questions | Preservation items | Independent review | Freshness |
+|---|---|---|---|---|---|---|---|
+| 10 | `exp-7f9262f8c66377cd` | 2 | REVIEW_REQUIRED | 8 | 12 | `SUPPORTED` | **STALE** (`fd34…` vs `9f05…`) |
+| 34 | `exp-3d0a9322fcc0771e` | 2 | REVIEW_REQUIRED | 7 | 28 | `SUPPORTED` | CURRENT |
+| 44 | `exp-c732f3709d55f68a` | 1 | REVIEW_REQUIRED | 6 | 18 | `SUPPORTED` | CURRENT |
 
-All three are source-current (`source_revision` equals the fresh audit
-fingerprints in §3.1). No contract is approved, no candidate was generated and
-no manuscript byte changed.
+Chapter 10's contract was drafted against `main`; the current editorial branch
+has a revised Chapter 10, so the contract cannot be approved or run. Chapters 34
+and 44 still match their contract source revisions.
 
 Initial review objections, resolved in the v2 amendments:
 
@@ -228,9 +225,11 @@ preflight before the first paid draft.
 
 Consequences:
 
-- Contract drafts for chapters 10/34/44 are now policy-safe in the working
-  tree, but the policy change is uncommitted and the Worker routes are still
-  `unknown/unverified`.
+- Contract drafts for chapters 10/34/44 are policy-safe; the
+  `artifact.contract: private` change is committed in `2563b8453`, and the three
+  drafts ran successfully through the Worker-routed adapter.
+- Chapter 10's contract is still **stale** after the book branch switch; policy
+  safety and source freshness are separate checks.
 - Do **not** fall back to `scripts/expo03b/opencode_runner.py`; it uses a direct
   OpenCode provider and a raw `opencode-go/deepseek-v4.1-flash` route. That was
   a recorded EXPO-03B workaround, not the approved path.
@@ -239,6 +238,46 @@ Consequences:
   `None` (Worker policy routing) unless an approved alias is named.
 - No paid inference was attempted during the route check; contract-draft usage
   is recorded in §4.2.
+
+## 6.2 Technical integrity and fatigue baseline (editorial branch)
+
+Book state: `editorial/reader-first-reconstruction` at `1403b62`, 26 commits
+ahead of `main` (`132820e`), local only. Chapters 01–14 are revised.
+
+### Technical
+
+`pytest tests/test_known_defects.py -q` on Windows with torch 2.6.0+cu124:
+
+- **4 passed, 7 xfailed**
+- the 7 xfails are LEDGER-03, -04, -05a, -05b, -05c (strict), not passes
+- LEDGER-09a, -09b, -14a, -14b and LEDGER-README have no regression tests
+
+Additional baseline:
+
+| Command | Result |
+|---|---|
+| `pytest tests/test_ch01_inference.py tests/test_ch02_reproducible.py tests/test_ch03_probability.py tests/test_ch05_real_generation.py -q` | 46 passed |
+| `pytest tests/test_ch03_real_distributions.py -q` | 14 passed |
+| `pytest tests/test_ch04_gpt2_from_scratch.py -q` | 8 passed |
+
+The ledger's flagged
+`test_ch03_real_distributions::test_numerics_report_flags_float32_overflow_threshold`
+**passed here** (14/14); it remains environment-dependent, not a current Windows
+failure.
+
+### Fatigue / readability
+
+- `editorial/fatigue_proxies.py` and `editorial/fact_guard.py` exist, but neither
+  has a test module.
+- `editorial/baseline-proxies.json` and `editorial/after-proxies.json` exist for
+  the original/revised comparison.
+- `editorial/reader-fatigue-evaluation.md` and
+  `editorial/independent-review-ch01-06.md` exist.
+- `editorial/independent-review-ch07-14.md` is referenced by `CHECKPOINT.md` but
+  **does not exist**.
+- Current `reader-legibility` on revised Ch01: 3 findings, all
+  `reproduction_gap`; Ch04: 1 finding, `reproduction_gap`. D1/D2/D4 are not yet
+  detected.
 
 ## 7. Workbench baseline
 
