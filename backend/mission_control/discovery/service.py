@@ -14,7 +14,7 @@ from sqlalchemy import select
 
 from mission_control.activity.service import record_activity
 from mission_control.core.errors import Conflict
-from mission_control.discovery.books import sync_detected_books
+from mission_control.discovery.books import sync_detected_books, sync_fiction_books
 from mission_control.discovery.scanner import ScanResult, scan_roots
 from mission_control.models import (
     Application,
@@ -30,9 +30,15 @@ logger = logging.getLogger(__name__)
 
 
 class DiscoveryService:
-    def __init__(self, database: Database, book_root: str | None = None) -> None:
+    def __init__(
+        self,
+        database: Database,
+        book_root: str | None = None,
+        fiction_book_root: str | None = None,
+    ) -> None:
         self.database = database
         self.book_root = book_root or r"C:\books"
+        self.fiction_book_root = fiction_book_root or r"C:\fiction-books"
         self._task: asyncio.Task[None] | None = None
         self._cancel = threading.Event()
         self._status: dict[str, Any] = self._load_last_status()
@@ -174,6 +180,13 @@ class DiscoveryService:
             detected = sync_detected_books(session, [self.book_root])
             if detected:
                 logger.info("Detected %s book workspaces", len(detected))
+            try:
+                fiction = sync_fiction_books(session, [self.fiction_book_root])
+            except Exception:
+                logger.exception("Fiction book detection failed")
+                return
+            if fiction:
+                logger.info("Detected %s fiction book workspaces", len(fiction))
 
     def _persist(self, scan_id: str, result: ScanResult, roots: list[str]) -> None:
         with self.database.session() as session:

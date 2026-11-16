@@ -247,8 +247,14 @@ function BookEditor({ book, onSaved }: { book: Book; onSaved: () => void }) {
   );
 }
 
-export function BooksPage() {
-  const books = useApi<Book[]>("/api/books");
+export function BooksCollectionPage(props: {
+  apiBase: string;
+  eyebrow: string;
+  title: string;
+  description: string;
+  emptyHint: string;
+}) {
+  const books = useApi<Book[]>(props.apiBase);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const toast = useToast();
   const [reordering, setReordering] = useState(false);
@@ -273,7 +279,7 @@ export function BooksPage() {
     [next[index], next[target]] = [next[target], next[index]];
     setReordering(true);
     try {
-      await api.post("/api/books/reorder", { ids: next.map((item) => item.id) });
+      await api.post(`${props.apiBase}/reorder`, { ids: next.map((item) => item.id) });
       toast.push("success", "Book priority saved");
       books.reload();
     } catch (caught) {
@@ -286,7 +292,7 @@ export function BooksPage() {
   async function detectBooks() {
     setDetecting(true);
     try {
-      const result = await api.post<{ created: string[]; count: number }>("/api/books/detect");
+      const result = await api.post<{ created: string[]; count: number }>(`${props.apiBase}/detect`);
       toast.push(
         "success",
         result.count
@@ -304,9 +310,9 @@ export function BooksPage() {
   return (
     <div className="page">
       <PageHeader
-        eyebrow="Books and publishing"
-        title="Books"
-        description="Priority books stay first. Every detected content/books manuscript is added as a first-class workspace."
+        eyebrow={props.eyebrow}
+        title={props.title}
+        description={props.description}
         actions={
           <button
             className="button button-secondary button-small"
@@ -324,10 +330,7 @@ export function BooksPage() {
       {books.data && books.data.length === 0 ? (
         <EmptyState
           title="No book workspaces"
-          description={
-            "Create a book project, or add a manuscript at " +
-            "C:\\books\\<project>\\content\\books\\<book>."
-          }
+          description={props.emptyHint}
           icon={<BookOpen size={20} />}
           action={
             <Link className="button button-primary button-small" to="/projects">
@@ -394,5 +397,20 @@ export function BooksPage() {
         </p>
       </Section>
     </div>
+  );
+}
+
+export function BooksPage() {
+  return (
+    <BooksCollectionPage
+      apiBase="/api/books"
+      eyebrow="Books and publishing"
+      title="Books"
+      description="Priority books stay first. Every detected content/books manuscript is added as a first-class workspace."
+      emptyHint={
+        "Create a book project, or add a manuscript at " +
+        "C:\\books\\<project>\\content\\books\\<book>."
+      }
+    />
   );
 }

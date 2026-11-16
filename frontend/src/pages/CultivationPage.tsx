@@ -375,6 +375,8 @@ export function CultivationPage() {
 function GoalRow(props: { goal: CultivationGoal; active: boolean; onSelect: (id: string) => void }) {
   const { goal } = props;
   const isScripts = goal.id === "scripts_published" || goal.id === "weekly_script";
+  const isFiction = goal.id === "fiction_books";
+  const isTechnical = goal.id === "technical_books";
   return (
     <div className={props.active ? "goal-card goal-card-active" : "goal-card"}>
       <div className="activity-head">
@@ -390,6 +392,16 @@ function GoalRow(props: { goal: CultivationGoal; active: boolean; onSelect: (id:
         {goal.progress.achieved ? <Tag tone="accent">Achieved</Tag> : null}
         {isScripts ? (
           <a className="button button-ghost button-small" href="/scripts">
+            Open library
+          </a>
+        ) : null}
+        {isFiction ? (
+          <a className="button button-ghost button-small" href="/fiction-books">
+            Open library
+          </a>
+        ) : null}
+        {isTechnical ? (
+          <a className="button button-ghost button-small" href="/books">
             Open library
           </a>
         ) : null}
@@ -544,6 +556,16 @@ function GoalDetail(props: {
               Open library
             </a>
           )}
+          {goal.id === "fiction_books" && (
+            <a className="button button-secondary button-small" href="/fiction-books">
+              Open library
+            </a>
+          )}
+          {goal.id === "technical_books" && (
+            <a className="button button-secondary button-small" href="/books">
+              Open library
+            </a>
+          )}
           {goal.state === "active" ? (
             <button className="button button-ghost button-small" onClick={() => props.onArchive("paused")}>
               Pause
@@ -642,6 +664,9 @@ function GoalDetail(props: {
       )}
       {(goal.id === "blog_posts" || goal.id === "weekly_blog") && (
         <BlogGoalExtras goalId={goal.id} observed={observed as Record<string, unknown>} />
+      )}
+      {(goal.id === "fiction_books" || goal.id === "technical_books") && (
+        <FictionGoalExtras goalId={goal.id} observed={observed as Record<string, unknown>} />
       )}
 
       <div className="stat-strip">
@@ -848,6 +873,37 @@ function BlogGoalExtras(props: { goalId: string; observed: Record<string, unknow
         {Number(observed.scheduled ?? 0)} · Technology: {Number(observed.tech_published ?? 0)} · Finance: {Number(observed.finance_published ?? 0)}
       </p>
       <p className="muted">Lifetime achievement (total published) is separate from weekly discipline (one per week). Filesystem is authoritative; stored observations are supporting evidence.</p>
+    </div>
+  );
+}
+
+function FictionGoalExtras(props: { goalId: string; observed: Record<string, unknown> }) {
+  const observed = props.observed ?? {};
+  const libraryHref = props.goalId === "fiction_books" ? "/fiction-books" : "/books";
+  const discovered = Number(observed.discovered ?? 0);
+  const published = Number(observed.published ?? 0);
+  const drafts = Number(observed.drafts ?? observed.draft ?? 0);
+  const excluded = Number(observed.excluded ?? 0);
+  return (
+    <div className="panel review-card">
+      <div className="activity-head">
+        <strong>Manuscript inventory</strong>
+        <Tag tone="accent">Live</Tag>
+      </div>
+      <p className="muted">
+        Discovered: <strong>{discovered || published + drafts}</strong> · Published:{" "}
+        <strong>{published}</strong> / 100 · Drafts: <strong>{drafts}</strong>
+        {excluded ? <> · Excluded (research/tooling): {excluded}</> : null}
+      </p>
+      <p className="muted">
+        Discovery is inventory only; only explicit publication evidence counts toward the goal.
+        Compiled manuscripts and local builds never count as published.
+      </p>
+      <div className="toolbar">
+        <a className="button button-secondary button-small" href={libraryHref}>
+          Open library
+        </a>
+      </div>
     </div>
   );
 }

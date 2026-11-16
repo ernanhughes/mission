@@ -43,7 +43,7 @@ from mission_control.core.errors import MissionControlError
 from mission_control.core.logging import configure_logging
 from mission_control.core.paths import is_within
 from mission_control.core.security import OriginGuardMiddleware, SecurityHeadersMiddleware
-from mission_control.discovery.books import sync_detected_books
+from mission_control.discovery.books import sync_detected_books, sync_fiction_books
 from mission_control.discovery.service import DiscoveryService
 from mission_control.integrations.service import IntegrationService
 from mission_control.persistence.db import Database
@@ -116,12 +116,21 @@ def create_app(runtime: RuntimeSettings | None = None) -> FastAPI:
                 detected = sync_detected_books(session, [settings.book_root])
                 if detected:
                     logger.info("Detected %s book workspaces", len(detected))
+                try:
+                    fiction = sync_fiction_books(session, [settings.fiction_book_root])
+                except Exception:
+                    logger.exception("Fiction book detection failed; existing workspaces remain available")
+                else:
+                    if fiction:
+                        logger.info("Detected %s fiction book workspaces", len(fiction))
         except Exception:
             logger.exception("Book detection failed; existing workspaces remain available")
         process_manager = ProcessManager(database, settings)
         adapter_service = AdapterService(database, settings)
         adapter_service.ensure_statuses()
-        discovery_service = DiscoveryService(database, book_root=settings.book_root)
+        discovery_service = DiscoveryService(
+            database, book_root=settings.book_root,
+            fiction_book_root=settings.fiction_book_root)
         integration_service = IntegrationService(database, settings)
         workflow_service = WorkflowService(database, settings, integration_service)
         research_chat = ResearchChatService(database, settings)
