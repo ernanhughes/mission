@@ -28,6 +28,9 @@ class RuntimeSettings:
     config_dir: Path = field(default_factory=lambda: _env_path("MISSION_CONTROL_CONFIG_DIR", _repo_root() / "config"))
     frontend_dist: Path = field(default_factory=lambda: _env_path("MISSION_CONTROL_FRONTEND_DIST", _repo_root() / "frontend" / "dist"))
     book_root: Path = field(default_factory=lambda: _env_path("MISSION_CONTROL_BOOKS_ROOT", Path(r"C:\books")))
+    fiction_book_root: Path = field(
+        default_factory=lambda: _env_path("MISSION_CONTROL_FICTION_BOOKS_ROOT", Path(r"C:\fiction-books"))
+    )
     host: str = field(default_factory=lambda: os.environ.get("MISSION_CONTROL_HOST", "127.0.0.1"))
     port: int = field(default_factory=lambda: int(os.environ.get("MISSION_CONTROL_PORT", "8790")))
     log_level: str = field(default_factory=lambda: os.environ.get("MISSION_CONTROL_LOG_LEVEL", "INFO"))

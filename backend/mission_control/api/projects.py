@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 
 from mission_control.api.deps import get_session
 from mission_control.core.errors import NotFound
-from mission_control.discovery.books import sync_detected_books
+from mission_control.discovery.books import sync_detected_books, sync_fiction_books
 from mission_control.models import ActivityEvent, Outcome, Project
 from mission_control.projects.service import (
     add_note,
@@ -237,6 +237,56 @@ def detect_book_workspaces(
 ) -> BookDetectionRead:
     created = sync_detected_books(session, [request.app.state.settings.book_root])
     return BookDetectionRead(created=created, count=len(created))
+
+
+# ------------------------------------------------- fiction book collection
+@router.get("/fiction-books", response_model=list[BookRead])
+def get_fiction_books(
+    request: Request, session: Session = Depends(get_session)
+) -> list[BookRead]:
+    """Fiction manuscripts from the configured fiction root (read-only filter).
+
+    The shared Book workspace table holds both collections; membership in the
+    fiction collection is determined by manuscript paths under the configured
+    fiction root. Technical books are never included here.
+    """
+    from pathlib import Path as _Path
+
+    from mission_control.core.paths import is_within
+
+    try:
+        fiction_root = _Path(request.app.state.settings.fiction_book_root)
+    except Exception:
+        return []
+    result = []
+    for book in list_books(session):
+        try:
+            if any(
+                is_within(_Path(path), fiction_root)
+                for path in (book.manuscript_paths or [])
+            ):
+                result.append(book)
+        except OSError:
+            continue
+    return result
+
+
+@router.post("/fiction-books/detect", response_model=BookDetectionRead)
+def detect_fiction_book_workspaces(
+    request: Request, session: Session = Depends(get_session)
+) -> BookDetectionRead:
+    created = sync_fiction_books(session, [request.app.state.settings.fiction_book_root])
+    return BookDetectionRead(created=created, count=len(created))
+
+
+@router.post("/fiction-books/reorder", response_model=OkResponse)
+def reorder_fiction_books_route(
+    payload: ReorderRequest, session: Session = Depends(get_session)
+) -> OkResponse:
+    from mission_control.projects.service import reorder_books as _reorder_books
+
+    _reorder_books(session, payload.ids)
+    return OkResponse()
 
 
 @router.get("/books/{book_id}", response_model=BookRead)

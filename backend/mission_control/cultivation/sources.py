@@ -643,3 +643,65 @@ def blog_observation(scan: BlogScan, *, now: datetime | None = None) -> dict[str
         ],
     }
     return observed
+
+
+def scan_fiction_books(root: str | Path) -> BlogScan:
+    """Observe fiction book projects without touching manuscripts.
+
+    Each immediate subdirectory with chapter Markdown (``chapters/``,
+    ``book/chapters/`` or ``content/``) is one discovered project. Empty
+    trees, tooling repositories and research directories are excluded, never
+    counted. A compiled ``.epub`` is a local artifact, not publication
+    evidence: projects stay drafts until explicit publication metadata exists.
+    Identity is the project directory name, stable across rescans.
+    """
+    from mission_control.discovery.books import detect_fiction_books
+
+    base = Path(root)
+    scan = BlogScan()
+    if not base.is_dir():
+        scan.errors.append({"path": str(base), "error": "Source directory is missing or not a directory"})
+        return scan
+    try:
+        children = sorted(path for path in base.iterdir() if path.is_dir())
+    except OSError as exc:
+        scan.errors.append({"path": str(base), "error": str(exc)[:300]})
+        return scan
+    scan.candidates = len(children)
+    try:
+        detected = detect_fiction_books([base])
+    except OSError as exc:
+        scan.errors.append({"path": str(base), "error": str(exc)[:300]})
+        return scan
+    for book in detected:
+        try:
+            relpath = str(book.book_dir.relative_to(base)).replace("\\", "/")
+        except ValueError:
+            relpath = book.project_dir.name
+        identity = book.project_dir.name
+        state = "published" if book.publication_status == "published" else "draft"
+        reason = (
+            f"{book.chapter_count} chapter files in {relpath}; "
+            "local builds are not publication evidence"
+        )
+        digest = hashlib.sha256()
+        digest.update(identity.encode("utf-8"))
+        digest.update(str(book.chapter_count).encode("utf-8"))
+        digest.update(state.encode("utf-8"))
+        scan.posts.append(BlogPost(
+            identity=identity, title=book.title, relpath=relpath,
+            state=state, reason=reason,
+            fingerprint=digest.hexdigest()[:24]))
+        if state == "published":
+            scan.published += 1
+        else:
+            scan.drafts += 1
+    scan.excluded = len(children) - len(detected)
+    scan.unknown = 0
+    digest = hashlib.sha256()
+    for post in sorted(scan.posts, key=lambda item: item.identity):
+        digest.update(post.identity.encode("utf-8"))
+        digest.update(post.fingerprint.encode("utf-8"))
+        digest.update(post.state.encode("utf-8"))
+    scan.fingerprint = digest.hexdigest()[:24]
+    return scan

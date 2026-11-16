@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import logging
+import os
 from pathlib import Path
 from typing import Any
 
@@ -124,7 +125,7 @@ def repository_id(path: str) -> str:
     return "repo-" + hashlib.sha1(path.casefold().encode("utf-8")).hexdigest()[:16]
 
 
-def seed_cultivation(session) -> None:
+def seed_cultivation(session, fiction_root: str | None = None) -> None:
     """Seed the starter goal catalogue without ever overwriting user goals.
 
     Estimates stay labelled estimates. The blog-post milestone is a
@@ -389,6 +390,37 @@ def seed_cultivation(session) -> None:
         if ensure_script_source_retired(session):
             logger.info("Retired legacy numbered-file scripts source to script_registry")
 
+    # Fiction Books live source: path-gated like the blog source and never
+    # synced automatically. Discovery is read-only; drafts never count as
+    # published. The path stays editable through the source record and
+    # survives restarts.
+    fiction_path = fiction_root or os.environ.get(
+        "MISSION_CONTROL_FICTION_BOOKS_ROOT", r"C:\fiction-books")
+    if (session.get(CultivationSource, "src-fiction-books") is None
+            and Path(fiction_path).is_dir()
+            and session.get(CultivationGoal, "fiction_books") is not None):
+        create_source(session, {"id": "src-fiction-books", "name": "Fiction manuscripts",
+                                "kind": "fiction_books", "skill_id": "fiction-writing",
+                                "goal_id": "fiction_books", "path": fiction_path,
+                                "config": {}})
+        logger.info("Seeded cultivation fiction-books source (not yet synced)")
+    # Backfill the counting rule on existing databases without touching any
+    # other user customization: only fill an empty completion_criteria.
+    _fiction_criteria = ("A distinct published fiction title. Drafts, local builds "
+                         "(.epub), research notes and tooling never count; only an "
+                         "explicit publication record moves a project to published.")
+    for _goal_id, _criteria in (
+        ("fiction_books", _fiction_criteria),
+        ("technical_books", ("A distinct published technical title. Drafts and local "
+                             "builds never count; only an explicit publication record "
+                             "moves a project to published.")),
+    ):
+        _goal = session.get(CultivationGoal, _goal_id)
+        if _goal is not None and not (_goal.completion_criteria or "").strip():
+            _goal.completion_criteria = _criteria
+            _goal.updated_at = now_iso()
+            logger.info("Backfilled completion criteria for cultivation goal %s", _goal_id)
+
     # 100-day Cycle 5: reported position only. No start date is invented, so
     # the day does not auto-advance until the owner sets one.
     if session.scalar(select(CultivationCycle).where(CultivationCycle.number == 5)) is None:
@@ -496,10 +528,12 @@ def seed_defaults(session: Session, settings: RuntimeSettings) -> None:
         return
 
     # Root discovery paths are editable and survive restarts.
+    fiction_root = str(getattr(settings, "fiction_book_root", r"C:\fiction-books"))
     for root, display, category in (
         ("C:\\Projects", "Projects", "software"),
         ("C:\\books", "Books", "books"),
         ("C:\\book-projects", "Book Projects", "books"),
+        (fiction_root, "Fiction Books", "books"),
     ):
         if Path(root).exists():
             existing = session.get(DiscoveryRoot, root)
@@ -708,7 +742,7 @@ def seed_defaults(session: Session, settings: RuntimeSettings) -> None:
                 )
             )
 
-    seed_cultivation(session)
+    seed_cultivation(session, fiction_root=str(settings.fiction_book_root))
 
     # Existing databases seeded before the Workbench launch definition was
     # shipped keep their (empty) registration; backfill the canonical
