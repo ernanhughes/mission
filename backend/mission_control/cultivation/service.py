@@ -51,7 +51,8 @@ PROVENANCE_VALUES = {"human", "ai_assisted", "ai_workflow", "unclassified"}
 BASELINE_PROVENANCE = {"none", "estimate", "user_assertion", "verified"}
 EVIDENCE_STATUS = {"none", "claimed", "verified"}
 SKILL_STATES = {"active", "archived"}
-SOURCE_KINDS = {"hugo_blog", "activity_projects", "numbered_files", "script_registry", "github_repos"}
+SOURCE_KINDS = {"hugo_blog", "activity_projects", "numbered_files", "script_registry", "github_repos",
+                "fiction_books"}
 CYCLE_STATES = {"active", "completed", "archived"}
 REPO_QUALIFICATIONS = {"discovered", "eligible", "pending", "qualified", "excluded", "archived", "unavailable"}
 REPO_CLASSIFICATIONS = {"application", "library", "infrastructure", "research", "website",
@@ -715,7 +716,7 @@ def _live_observation(session: Session, goal: CultivationGoal) -> dict[str, Any]
     disagree the milestone stays achieved (explicit state) while the progress
     honestly reports the observed value with a reconciliation note.
     """
-    if goal.evidence_source not in ("hugo_blog", "numbered_files", "script_registry"):
+    if goal.evidence_source not in ("hugo_blog", "numbered_files", "script_registry", "fiction_books"):
         return None
     source = session.scalars(select(CultivationSource).where(
         CultivationSource.goal_id == goal.id, CultivationSource.kind == goal.evidence_source,
@@ -732,7 +733,7 @@ def _live_observation(session: Session, goal: CultivationGoal) -> dict[str, Any]
     label = f"{current:g} / {goal.target_value:g} {goal.unit} observed {(source.last_sync_at or '')[:10]}"
     if stale:
         label += " (stale — source unavailable, last known kept)"
-    if goal.evidence_source == "script_registry" and isinstance(observed.get("discovered"), int):
+    if goal.evidence_source in ("script_registry", "fiction_books") and isinstance(observed.get("discovered"), int):
         label += f" · {int(observed['discovered'])} discovered"
     disagreement = None
     if goal.baseline_value is not None:
@@ -752,6 +753,10 @@ def _live_observation(session: Session, goal: CultivationGoal) -> dict[str, Any]
         pipeline["finance"] = int(observed["finance_published"])
     if goal.evidence_source == "script_registry":
         for key in ("discovered", "completed", "ready", "needs_review", "archived", "missing"):
+            if isinstance(observed.get(key), int):
+                pipeline[key] = int(observed[key])
+    if goal.evidence_source == "fiction_books":
+        for key in ("discovered", "candidates", "excluded"):
             if isinstance(observed.get(key), int):
                 pipeline[key] = int(observed[key])
     return {"current": current, "target": goal.target_value, "unit": goal.unit,
@@ -2108,7 +2113,7 @@ def create_source(session: Session, payload: dict[str, Any]) -> CultivationSourc
     if kind not in SOURCE_KINDS:
         raise ValidationProblem(
             "Unsupported source kind: {kind}. Only hugo_blog, activity_projects, numbered_files, "
-            "script_registry and github_repos are implemented.".format(kind=kind))
+            "script_registry, github_repos and fiction_books are implemented.".format(kind=kind))
     raw_path = str(payload.get("path", "") or "")
     if kind in ("activity_projects", "script_registry", "github_repos"):
         # The registry lives in the database and reads the configured scripts
@@ -2176,6 +2181,10 @@ def _script_item_id(source_id: str, identity: str) -> str:
     return _observed_item_id("script-", source_id, identity)
 
 
+def _fiction_item_id(source_id: str, identity: str) -> str:
+    return _observed_item_id("fiction-", source_id, identity)
+
+
 def sync_source(session: Session, source_id: str) -> dict[str, Any]:
     """Dispatch to the kind-specific synchronizer.
 
@@ -2201,6 +2210,8 @@ def sync_source(session: Session, source_id: str) -> dict[str, Any]:
         return sync_activity_projects(session, source_id)
     if source.kind == "github_repos":
         return sync_github_repos(session, source_id)
+    if source.kind == "fiction_books":
+        return _sync_fiction_books(session, source)
     raise ValidationProblem(f"Unsupported source kind: {source.kind}")
 
 
@@ -2464,6 +2475,38 @@ def _sync_numbered_files(session: Session, source: CultivationSource) -> dict[st
         session, source, goal, scan, item_type="script",
         source_application="numbered_files", item_id_fn=_script_item_id,
         completed_label="New script observed")
+
+
+def _sync_fiction_books(session: Session, source: CultivationSource) -> dict[str, Any]:
+    """Sync fiction manuscripts into the Fiction Books goal.
+
+    Read-only toward the fiction root. Each discovered project becomes one
+    cultivation item at a working stage; only explicit publication evidence
+    moves an item to the qualifying ``published`` stage, so discovery never
+    inflates the published count. Manual holds and human qualifications
+    survive resyncs via the shared reconciler.
+    """
+    from pathlib import Path as _Path
+
+    from mission_control.cultivation.sources import scan_fiction_books
+    if not source.path or not _Path(source.path).is_dir():
+        return _mark_source_stale(session, source)
+    scan = scan_fiction_books(source.path)
+    observed = _store_scan_observation(session, source, scan)
+    observed["discovered"] = scan.published + scan.drafts + scan.unknown
+    source.observed = observed
+    source.updated_at = now_iso()
+    session.flush()
+
+    goal = session.get(CultivationGoal, source.goal_id) if source.goal_id else None
+    if goal is None:
+        return {"source_id": source.id, "status": "ok", "observed": observed,
+                "stale": False, "goal_id": None}
+    _attach_live_source(session, source, goal, "fiction_books")
+    return _reconcile_observed_items(
+        session, source, goal, scan, item_type="fiction_book",
+        source_application="fiction_books", item_id_fn=_fiction_item_id,
+        completed_label="Published fiction book observed")
 
 
 def _sync_script_registry(session: Session, source: CultivationSource) -> dict[str, Any]:
