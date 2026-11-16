@@ -54,6 +54,14 @@ The owner decisions are recorded, but the target surfaces do not exist yet:
 API, the Workbench bridge is unwired, and the pilot contracts must be generated
 and approved. This is the audit doing its job, not a judgement on the product.
 
+**2026-11-16 V2/addendum review:** the attached Claude addendum adds a
+technical-integrity lane and a D1–D7 sustained-readability lane. Those are
+integrated in `V2-ADDENDUM-INTEGRATION.md`. They do not revive
+`reader_assurance`: technical defects project through `editorial`, D1/D2/D4/D5
+extend `reader_legibility`, D3/D6 extend `editorial`, and D7 remains Gate B.
+The human study stays in `quality`. The editorial branch switch also made the
+Chapter 10 contract **STALE**; see C15.
+
 ---
 
 ## 2. Repository baseline
@@ -116,17 +124,18 @@ from a clean 45-chapter baseline.
 | C1 | Writer has 167 runtime entries; `quality` not considered | 170 directories: 167 indexed domains + 2 non-domain dirs + the unindexed `quality` domain = **168 domains**. `docs/runtime/INDEX.md` is stale. | Regenerating the index would add `quality`. Do it in a disposable worktree, not as part of a feature branch. |
 | C2 | `ai.scoring` / comprehension API not established | Full `ai.scoring` package with ~27 test modules; Mission calls `manuscript_cli` and `tech_cli`. | Delete the `ai.assessment` new-primitive hypothesis. Reuse, relabel or retire the existing lane. |
 | C3 | "Do not create a second generic AI scoring framework" | A generic framework already exists; Writer's mechanical Editing and Mission's LLM rubric are separate lanes on top of different semantics. | The risk is not a future duplicate; it is the **current** duplicate. Decide its disposition before adding reader assurance. |
-| C4 | New `reader_assurance` lifecycle is unowned | `quality`, `eval`, `evaluation_fabric`, `reader`, `readthrough`, `reader_legibility`, `editorial`, `self_repair` collectively own most of it. | Justify a new domain only for human-reader study/calibration, or extend `quality`. |
+| C4 | New `reader_assurance` lifecycle is unowned | `quality`, `eval`, `evaluation_fabric`, `reader`, `readthrough`, `reader_legibility`, `editorial`, `self_repair` collectively own most of it. | No new domain. Human study -> `quality.reader_study`; D1–D6 -> `reader_legibility`/`editorial`; D7 -> Gate B. |
 | C5 | `artifact/book_campaign` is the primary 45-chapter orchestrator | `book_campaign`, `quality/campaign.py`, and Mission `QualityCampaign` all schedule durable multi-chapter work. | Pick one per work unit; do not add a fourth scheduler. |
 | C6 | Mission Control has a Review surface | Routes are `/writer` and `/projects/:id`; there is no `/review`. WriterPage contains a "Cross-book review queue"; ProjectPage contains quality tabs. | Extend those, or choose one deliberately. Do not create a top-level page by assumption. |
 | C7 | Mission never assigns a competing readability score | `/api/quality` records six-dimension LLM scores and `overall` (mean). It orchestrates rather than locally rescoring, but it is a competing quality lane. | Explicitly label it advisory/legacy or migrate it. Silence is not a policy. |
 | C8 | Workbench will consume self-repair/campaign evidence | Self-repair and chapter-improvement are wired; the portable-quality bridge exists but has **no view wiring**. | Workbench integration is a real ticket, not a small display change. |
-| C9 | Pilot chapters 10/34/44 are the contract base | Stored contracts: ch01 (APPROVED, 5 questions), ch02 (6 contracts, 1 DRAFT), ch22 (2), ch39, ch43. **No ch10/34/44 contract.** | Either generate new contracts for 10/34/44 or prove the loop on an already-contracted chapter first. |
+| C9 | Pilot chapters 10/34/44 are the contract base | At Stage 0 no contract existed for them. Three were later drafted; chapters 34/44 are source-current, but Chapter 10 is now stale after the editorial-branch switch. | Approve 34/44 after review; re-audit and re-contract Chapter 10, or pin a `main` worktree and label it historical. |
 | C10 | Editing reports are current | Inference report `edit-20261025T231633334069Z-904c13cd0598` is STALE (last checked 2026-10-25); 0 CURRENT across all books. | Every pilot must re-audit before contract work; old findings must not be attached to new source. |
 | C11 | AI is book-agnostic and Writer-independent | `ai.books` is a book-evolution domain that reads `.writer` evidence (`writer_evidence.py`). | The "no book knowledge" rule is already violated inside `ai`; define the boundary before adding anything. |
 | C12 | `artifact/self_repair` and `artifact/book_campaign` are runtime domains | They are internal packages with CLI/web entry points; `writer info describe self_repair` and `book_campaign` fail. | Adapters must use supported CLI/web APIs or add a deliberate facade; do not assume `runtime.self_repair`. |
 | C13 | Existing contract generation is a reusable approved model path | `scripts/expo03b/opencode_runner.py` calls `ai.inference.providers.opencode` directly because the Writer `runtime.models` Worker path returned BLOCKED (documented EXPO-03B blocker). The Writer web path uses `ArtifactModelsAdapter` over `runtime.models`. Worker health was `WORKER_HTTP_UNREACHABLE` before a local start. | Do not reuse the direct-runner provenance as Worker evidence and do not copy the raw `opencode-go/...` route. Draft through the web/Workbench adapter with `model_name=None` once the policy below is fixed. |
 | C14 | Contract drafting inherits the private manuscript policy | `ContractService` calls the runner with `task="artifact.contract"`; `config/models.yaml` had `artifact.repair: private` but no `artifact.contract` entry, so `runtime.models` fell through to the default `training_allowed`. | **FIXED locally 2026-11-16:** added `artifact.contract: private` and `tests/runtime/test_model_task_policies.py` (2 passed). Do not draft contracts until this change is reviewed/committed and the route is preflighted. |
+| C15 | The Chapter 10 pilot contract remains usable after the branch switch | The book moved to `editorial/reader-first-reconstruction` (`1403b62`), which rewrites Chapters 01–14. Chapter 10 is now `9f05…`; the contract pins `fd34…`. Chapters 34/44 still match. | Chapter 10 is **STALE**; re-audit and re-contract it or evaluate against a pinned `main` worktree. Do not approve/run the stale contract. This is the design's version-binding invariant working as intended. |
 
 ---
 
@@ -153,7 +162,7 @@ from a clean 45-chapter baseline.
 | `exp-a31c9bb9a0f9fa1f` | 02 | REVIEW_REQUIRED | no | 7 | REVISION_REQUIRED |
 | `exp-c49d72a7d97494a6` | 02 | REVIEW_REQUIRED | no | 6 | REVISION_REQUIRED |
 | `exp-eea1e9bd726b11c3` | 02 | REVIEW_REQUIRED | no | 7 | SUPPORTED |
-| **`exp-7f9262f8c66377cd`** | **10** | **REVIEW_REQUIRED** | no | **8** | **SUPPORTED (v2)** |
+| **`exp-7f9262f8c66377cd`** | **10** | **REVIEW_REQUIRED** | no | **8** | **SUPPORTED (v2), STALE on editorial branch** |
 | `exp-0200da458ff2dc8c` | 22 | REVIEW_REQUIRED | no | 8 | REVISION_REQUIRED |
 | `exp-16569e7db2711a24` | 22 | REVIEW_REQUIRED | no | 6 | REVISION_REQUIRED |
 | **`exp-3d0a9322fcc0771e`** | **34** | **REVIEW_REQUIRED** | no | **7** | **SUPPORTED (v2)** |
@@ -172,9 +181,9 @@ Implications:
 - The contract mechanism is real and produces source-bound, question-rich
   contracts.
 - The approval bottleneck is real: 12 of 13 are not approved.
-- The pilot contracts for 10, 34 and 44 are source-current and have
-  `SUPPORTED` independent reviews; they are eligible for author review, not
-  approved.
+- The pilot contracts for 34 and 44 are source-current and have `SUPPORTED`
+  independent reviews; Chapter 10's contract is `SUPPORTED` but **STALE** on the
+  editorial branch (pinned `fd34…`, current `9f05…`) and cannot be approved.
 - Existing contracts for chapters 01/02/22/39/43 may be stale against current
   source; source hashes must be rechecked before reuse.
 
@@ -234,9 +243,13 @@ on the tickets below; no bulk campaign or Apply is authorized.
 |---|---|---|
 | `runtime.quality` unregistered; no facade | Writer | Public surface for findings, campaign status and `reader_study`; contract tests. |
 | Mission quality migration has no Writer API | Writer + Mission | Writer quality HTTP/bus surface; Mission read model mapping; legacy rows labelled. |
-| Pilot contracts absent for 10/34/44 | Writer | Three source-current contracts generated, reviewed, APPROVED. |
-| Inference Editing report stale | Writer | Fresh audits for 10/34/44 with current source hashes. |
+| Pilot contracts for 10/34/44 | Writer | Drafted; 34/44 source-current; Chapter 10 stale after branch switch; approval pending. |
+| Inference Editing report stale | Writer | Fresh audits for 10/34/44 done; 34/44 current, Chapter 10 stale after branch switch. |
 | Workbench quality bridge unwired | Workbench | Read-only view wiring with stale/source checks; tests. |
+| Technical defect projection absent | Writer + book repo | Read-only ledger adapter; 5 tested defects, 4 untested; branch frozen. |
+| D1–D6 sustained readability absent | Writer | Extend `reader_legibility`/`editorial`; negative-control fixtures; companion report. |
+| Chapter 10 contract stale after branch switch | Writer + book repo | Re-audit and re-contract, or pin a `main` worktree and label it historical. |
+| Independent review 07–14 missing | Book repo | Either produce it or restrict claims to Chapters 01–06. |
 | Campaign consolidation not implemented | Writer + Mission | Documented boundary and no duplicate scheduling path. |
 
 Proceeding to code on anything outside these tickets would violate the
@@ -334,9 +347,11 @@ score or new AI primitive.
    Writer web and the Worker-routed `runtime.models` adapter. Initial reviews:
    10 and 34 `REVISION_REQUIRED`, 44 `SUPPORTED`. Chapters 10 and 34 were
    amended to v2 with source-grounded wording fixes; both v2 reviews are now
-   `SUPPORTED`. All three remain `REVIEW_REQUIRED`, none approved. Actual usage
-   8 calls / $0.076499. **Next:** author approval of the three source-current
-   contracts.
+   `SUPPORTED`. Chapters 34 and 44 remain source-current. Chapter 10 is now
+   **STALE** because the book switched to `editorial/reader-first-reconstruction`
+   (`9f05…` current vs `fd34…` contract). All three remain `REVIEW_REQUIRED`;
+   none approved. Actual usage 8 calls / $0.076499. **Next:** re-audit and
+   re-contract Chapter 10, then seek author approval of 34/44.
 5. **Wire the Workbench bridge** read-only; no Apply changes.
 6. **Only then** run one bounded candidate through gates A–E and the existing
    Workbench Apply/Undo on a disposable fixture.
@@ -376,6 +391,15 @@ score or new AI primitive.
   `src/workbench/quality_bridge.py`
 - Project registry: `C:\Projects\writer\config\web\projects.yaml`
 - Inference source: `C:\books\inference\content\books\inference`
+- V2/addendum integration:
+  `docs/readability-assurance/V2-ADDENDUM-INTEGRATION.md`
+- Book defect ledger: `editorial/defect-remediation-ledger.md`
+- Book known-defect tests: `tests/test_known_defects.py`
+- Book fatigue pilot:
+  `editorial/reader-fatigue-evaluation.md`,
+  `editorial/baseline-proxies.json`, `editorial/after-proxies.json`
+- Book independent review:
+  `editorial/independent-review-ch01-06.md` (07–14 missing)
 
 ---
 

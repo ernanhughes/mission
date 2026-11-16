@@ -1,6 +1,7 @@
 # ADRs — READABILITY-ASSURANCE-01
 
-**Status:** PROPOSED — Stage 0 decisions, not implementation claims
+**Status:** Stage 0 decisions. ADR-001–004 and ADR-006 are accepted; ADR-005,
+ADR-007 and ADR-008–010 remain proposed. Not implementation claims.
 **Date:** 2026-11-16
 **Rule:** an ADR is accepted only when the named owner accepts the boundary.
 Until then it is a recommendation, not a licence to code.
@@ -59,6 +60,8 @@ v1:
 - `quality` needs a supported public surface for `reader_study`. Registering
   `runtime.quality` is the preferred way; a CLI-only surface is acceptable
   only if Workbench and Mission can consume it safely.
+- D1–D6 sustained readability diagnostics are **not** part of `quality` or
+  `reader_study`; they extend `reader_legibility`/`editorial` under ADR-009.
 - Human-study records reference `exp-contract-v1`; they do not copy it.
 - No call to `ai.scoring` for human outcomes.
 
@@ -203,3 +206,92 @@ manuscripts, rescores prose or applies changes.
 - Stale or unresolvable links must explain, not silently open another chapter.
 
 **Blocked by:** D2 disposition; actual UI placement review.
+
+---
+
+## ADR-008 — Technical defect ledger stays in the book repo; Writer projects it read-only
+
+**Status:** PROPOSED (new, from the V2/addendum review)
+**Decision:** The canonical technical-defect ledger, code, regression tests,
+rerun artefacts and Git history remain in the Inference book repository. Writer
+adds a read-only **technical-dependency projection** inside `editorial` (or a
+thin existing-owner bridge), not a new issue tracker and not a second defect
+database. Mission and Workbench display the projection and link to the owning
+code/test.
+
+**Evidence:**
+- `editorial/defect-remediation-ledger.md`,
+  `tests/test_known_defects.py`, `research/chNN/results.json` exist locally.
+- `pytest tests/test_known_defects.py` currently gives **4 passed, 7 xfailed**
+  on Windows with torch 2.6.
+- Mission already has a `TechnicalClaim`/`TechnicalEvidence`/verification lane;
+  that is manuscript-claim verification, not code-defect storage.
+
+**Consequences:**
+- No Writer/Mission action may edit the ledger, tests or frozen results.
+- Defect repair is a `fix:` commit; editorial prose changes are separate
+  `editorial:` commits.
+- The projection must show categorical status, test refs, frozen hashes and
+  `TECHNICAL_CORRECTION_PENDING`; no composite score.
+- LEDGER-09a/b and 14a/b remain `REPORTED` until tests exist.
+
+**Blocked by:** read-only adapter design; branch freeze.
+
+---
+
+## ADR-009 — Sustained readability is a companion report, not an Editing dimension
+
+**Status:** PROPOSED (new, from the V2/addendum review)
+**Decision:** D1–D6 are a versioned companion report
+(`writer-sustained-readability-v1`), not extra dimensions in
+`writer-editing-report-v1`. Ownership:
+- `reader_legibility` owns per-chapter D1/D2/D4/D5;
+- `editorial` owns cross-chapter D3/D6 and report composition;
+- `editing` remains mechanical;
+- `knowledge_state`/`compiler`/`manuscript_ir` supply D3 inputs;
+- `artifact/self_repair` Gate B owns D7;
+- `quality` owns human-reader study records.
+
+**Evidence:**
+- `reader_legibility` already has evidence-intrusion, reproduction-gap,
+  repeated-qualification, technical-density and placeholder findings.
+- On revised Ch01 it reports 3 `reproduction_gap`; on Ch04, 1. It does not yet
+  detect D1/D2/D4.
+- The editing report schema is explicitly mechanical and independent; adding
+  model judgments would break its meaning.
+
+**Consequences:**
+- D1–D6 findings are advisory and source-bound; they never become a publication
+  score.
+- Model judgment by the revising model is `CONFLICTED_MODEL_JUDGEMENT`.
+- The eight-dimension 1–5 rubric is stored alongside the findings, not averaged
+  into a gate.
+
+**Blocked by:** `reader_legibility` public surface; negative-control fixtures.
+
+---
+
+## ADR-010 — Evidence labels, conflicted judgments and separate release gates
+
+**Status:** PROPOSED (new, from the V2/addendum review)
+**Decision:** Every observation carries exactly one primary evidence label:
+`MEASURED_TEXT`, `MODEL_JUDGEMENT`, `INDEPENDENT_REVIEW`,
+`HUMAN_READER_OBSERVATION`, `CODE_TEST` or `BENCHMARK_RERUN`. The revising model
+cannot supply `INDEPENDENT_REVIEW`; record `CONFLICTED_MODEL_JUDGEMENT`.
+Technical gates T1–T4, editorial gates E1–E4 and release gate R1 remain
+separate; unknown stays a named pending/blocked state.
+
+**Evidence:**
+- The local pilot's scores were produced by the revising model and are
+  explicitly marked conflicted in `reader-fatigue-evaluation.md`.
+- The independent review found one UNSAFE and six WEAKENED relocations; those
+  are not reader outcomes.
+- The defect ledger's strict xfails are open defects, not passes.
+
+**Consequences:**
+- No green state from a model's self-score.
+- A technical fix cannot close an editorial finding; a human reader study cannot
+  prove code correctness.
+- `NOT_RUN` and `INCONCLUSIVE` remain visible in Workbench and Mission.
+
+**Blocked by:** schema/DTO review; no implementation yet.
