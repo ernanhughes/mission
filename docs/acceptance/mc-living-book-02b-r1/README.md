@@ -136,3 +136,6 @@ are unrelated and pass together in isolation.
   `use_experience=true`.
 - No manuscript file was modified or applied.
 - The source remains pinned for reproducibility.
+- No chapter independent-evaluation route exists yet. The gate’s `quality.history` attachment point
+  reads the existing append-only `improvement.evaluated` contract, but recording such evidence against
+  an already-retained chapter proposal is a remaining structural gap.
