@@ -47,6 +47,8 @@ The authorised bounded fallback was one v906 run on the pinned source.
 | Status | `COMPLETED`, 12/12 stages |
 | Calls / tokens | 8 / 54,150 |
 | Budget | 8 calls, 12,288 output tokens, 900 s, effective token ceiling 240,000 |
+| Verified admission terms | `max_calls: 8`, `max_tokens: 240000` (standing event `9b04738c…`; admission `b67894f3…`) |
+| Boundary note | This run used 54,150 tokens, below the old 100,000 ceiling; the repair is verified on the launch path by the admission terms. The old refusal is reproduced from the old run’s 39,809 + 63,914 = 103,723 reservation. |
 | Proposal | `c8daa07f30499d2042c3947cfefd43bb9803d2b61e84be23a75d3dc88d0f2464` |
 | Diff | 51 added, 225 removed |
 | Evaluation | `evaluated`, `promising` |
