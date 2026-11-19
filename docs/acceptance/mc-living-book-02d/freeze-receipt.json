@@ -1,0 +1,29 @@
+{
+  "schema": "mc-living-book-02d.freeze-receipt.v1",
+  "experiment_id": "MC-LIVING-BOOK-02D-PILOT-1",
+  "frozen_at": "2026-11-19T23:49:00Z",
+  "manifest_sha256": "e9c0365c4ec6644546ad16964467d61ceb17911abced71b9e36f6bb91c2ea678",
+  "criteria_sha256": "f833311270ce6e0638b79f0a6886ea85d0141d0864a456404b650680113cbc7b",
+  "chapter_sha256": "5bf5c4c7e06c2bea92156a8ff78fbe00a8da3151f6cb92a537f8b3826f2e464f",
+  "plan_sha256": "637feb2227e35a74ef9cd0ada5b688d81e0763879e11a210de9a782e86b085a4",
+  "experience_context_sha256": "e5993c625ac957e55de39b5b5be060bddb808c4ab60b18cc37c7b5edd610653a",
+  "alive_commit": "435fc649f5c3fe2a188a8a5c4d8321cab1270f78",
+  "phase_a_qualification_run": {
+    "evaluation_run_id": "a7114cdb-0c72-4b6a-aa0a-11dd5b41a629",
+    "status": "COMPLETED",
+    "verdict": "benefit",
+    "mechanical_status": "attention",
+    "mechanical_attention": [
+      "equations"
+    ],
+    "proposal_sha256": "c8daa07f30499d2042c3947cfefd43bb9803d2b61e84be23a75d3dc88d0f2464",
+    "original_sha256": "ad89a4e96412b58818579c79b6c06dd6eac6082b3f6e549c4a337fb7d5acaa05"
+  },
+  "phase_a_refusal_run": {
+    "evaluation_run_id": "4332d806-1839-432e-918d-56099c4ac8d8",
+    "status": "FAILED",
+    "terminal_reason": "authority_refused",
+    "note": "The first run failed closed before dispatch because the new role had no typed dispatch binding. It is retained as evidence of the fence, not used as an evaluation."
+  },
+  "note": "This receipt freezes the design before either arm runs. Run and evaluation ids belong in the results receipt, not here."
+}
