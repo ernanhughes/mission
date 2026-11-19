@@ -1,10 +1,10 @@
 {
   "schema": "mc-living-book-02d.freeze-receipt.v1",
   "experiment_id": "MC-LIVING-BOOK-02D-PILOT-1",
-  "frozen_at": "2026-11-20T00:00:00Z",
-  "revision": 2,
-  "revision_reason": "Criteria shortened from 630 to 565 characters to fit the 600-character admission limit; the refused launch made no model call.",
-  "manifest_sha256": "543b2acec609200a4a6e44fc33be7e4a4003a5fb8d0a28189331878ddc8d84e2",
+  "frozen_at": "2026-11-20T00:05:00Z",
+  "revision": 3,
+  "revision_reason": "Revision 2 shortened the criteria to fit the 600-character limit. Revision 3 records a one-retry infrastructure rule after Arm B's first attempt timed out with no provider response and no proposal.",
+  "manifest_sha256": "4fdc321b9ee4fdfc795b7c73055818c8366db6a56fe88434f87a0807d7e93474",
   "criteria_sha256": "6d0ac3838618822c3a4015c98ec496aa2897ea248fc27b1bf6c626b585bc6ce4",
   "chapter_sha256": "5bf5c4c7e06c2bea92156a8ff78fbe00a8da3151f6cb92a537f8b3826f2e464f",
   "plan_sha256": "637feb2227e35a74ef9cd0ada5b688d81e0763879e11a210de9a782e86b085a4",
@@ -27,5 +27,14 @@
     "terminal_reason": "authority_refused",
     "note": "The first run failed closed before dispatch because the new role had no typed dispatch binding. It is retained as evidence of the fence, not used as an evaluation."
   },
-  "note": "This receipt freezes the design before either arm runs. Run and evaluation ids belong in the results receipt, not here."
+  "infrastructure_retry": {
+    "failed_arm": "B",
+    "failed_run_id": "e493ef43-4316-42e2-8c37-cb917a5b1494",
+    "failed_pi_run_id": "ca6d4fa6-1396-4b53-8d9f-0da1998ca64b",
+    "reason": "ambiguous_provider_request / timeout with no model response and no retained proposal",
+    "retries_allowed": 1,
+    "excluded_from_outcome": true,
+    "no_retry_after_completed_proposal": true
+  },
+  "note": "This receipt freezes the design before either arm produces an outcome. Run and evaluation ids belong in the results receipt, not here."
 }

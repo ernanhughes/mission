@@ -1,6 +1,6 @@
 # MC-LIVING-BOOK-02D — Evaluated Experience and Transfer
 
-Status: **Phase A complete; Phase B design frozen; pilot runs pending.**
+Status: **Phase A complete; Phase B design frozen; Arm A complete; Arm B retry pending.**
 This is a research pilot, not a claim that the Living Book has learned.
 
 ## Purpose
@@ -75,9 +75,10 @@ pass. The evaluator is committed as ALIVE `435fc649`.
 
 The machine-readable freeze is
 `docs/acceptance/mc-living-book-02d/experiment-manifest.json`
-(revision 2, SHA-256 `543b2acec609200a4a6e44fc33be7e4a4003a5fb8d0a28189331878ddc8d84e2`).
+(revision 3, SHA-256 `4fdc321b9ee4fdfc795b7c73055818c8366db6a56fe88434f87a0807d7e93474`).
 Revision 2 shortened the criteria from 630 to 565 characters to fit the workflow's 600-character
-admission limit; the refused launch made no model call.
+admission limit; the refused launch made no model call. Revision 3 records a one-retry
+infrastructure rule after Arm B's first attempt timed out before any proposal existed.
 
 | Field | Frozen value |
 | --- | --- |
@@ -112,6 +113,21 @@ specificity cannot be separated from the effect of added context.
 
 The evaluator is blind to condition, experience, decision and the other arm, but it is the same
 model family as the generator. It is not human or third-party review.
+
+### Run log
+
+| Attempt | Run | Status | Calls | Tokens | Proposal |
+| --- | --- | --- | --- | --- | --- |
+| A | `1bae6afa-3b24-4cf6-8683-bad990faf8e7` | COMPLETED | 8 | 51,312 | `93914a3d…`, artifact `08978b9a…` |
+| B attempt 1 | `e493ef43-4316-42e2-8c37-cb917a5b1494` | UNKNOWN | 2 | 31,454 | none |
+| B retry | pending | — | — | — | — |
+
+Arm A matched the frozen source, plan, 8 calls and empty experience context. Its generation-time
+evaluation is `promising`; its decision remains pending. Arm B's first attempt completed the
+review stage, then its section-1 Pi request was admitted and timed out after ~33 seconds
+(`ambiguous_provider_request`, no response). The run retained no proposal and is excluded from
+the outcome. The one-retry rule was recorded before the retry and permits no changes to the
+frozen inputs.
 
 ## Phase C — evaluation and outcome rules
 
