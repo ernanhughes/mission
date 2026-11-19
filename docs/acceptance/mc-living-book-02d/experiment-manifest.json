@@ -1,0 +1,280 @@
+{
+  "schema": "mc-living-book-02d.experiment-manifest.v1",
+  "experiment_id": "MC-LIVING-BOOK-02D-PILOT-1",
+  "title": "Incremental context benefit of one retained owner-decision experience on a held-out chapter",
+  "frozen_at": "2026-11-19T23:49:00Z",
+  "status": "frozen-before-model-runs",
+  "commission": "MC-LIVING-BOOK-02D - Evaluated Experience and Transfer",
+  "code_freeze": {
+    "alive_commit": "435fc649f5c3fe2a188a8a5c4d8321cab1270f78",
+    "mission_commit_at_freeze": "a6fb4b957f8985093a699e8e8024d05ee4a4908b",
+    "note": "Mission documentation only; the experiment executes against ALIVE."
+  },
+  "research_questions": [
+    {
+      "id": "H1",
+      "question": "Does adding the workspace's existing context-only owner-decision experience change the quality of a later chapter proposal compared with no experience?",
+      "testable_in_this_pilot": true
+    },
+    {
+      "id": "H2",
+      "question": "Does an independently evaluated lesson transfer to a different held-out chapter?",
+      "testable_in_this_pilot": false,
+      "reason": "No independently evaluated lesson is eligible. The only eligible experience is quality-unverified: its original evaluation failed at the old token ceiling and owner acceptance is context, not proof."
+    }
+  ],
+  "source": {
+    "workspace_id": "9a992443-ee5f-4a30-a52d-6760e584baf1",
+    "book_id": "72b95337-795f-5327-87c6-ad67e4246086",
+    "project_id": "distillation",
+    "source_root": "C:\\books\\distillation",
+    "manuscript_root": "C:\\books\\distillation\\content\\books\\distillation",
+    "capture_id": "a632c716-f82b-42a0-85eb-e275caea0e96",
+    "approval_id": "3996f4b2-7a40-411f-8ad3-8bab777313b0",
+    "custody": "pinned",
+    "chapter": {
+      "path": "content/books/distillation/15-chapter.md",
+      "title": "Data Filtering and Curriculum Learning",
+      "sha256": "5bf5c4c7e06c2bea92156a8ff78fbe00a8da3151f6cb92a537f8b3826f2e464f",
+      "characters": 25336,
+      "bytes": 25520,
+      "held_out": true,
+      "prior_improvement_runs": []
+    }
+  },
+  "criteria": {
+    "ref": "criteria.txt",
+    "characters": 630,
+    "sha256": "f833311270ce6e0638b79f0a6886ea85d0141d0864a456404b650680113cbc7b",
+    "text": "Improve economy in \"Data Filtering and Curriculum Learning\" without dropping technical claims, source citations, uncertainty or the chapter's argument. The chapter reports a negative result; keep the negative result, its measured differences and the explanation of why the curriculum arms ran fewer updates. Preserve all reported numbers, the four regimes, the derived distribution effects, the difficulty and diversity measures, the rights and provenance limits, and the chapter's stated limits. Keep each section's full substance and approximate length; do not omit material. Return a complete proposal; do not write the source."
+  },
+  "design": {
+    "type": "one pre-registered pair; no replication; no rerun after seeing outcomes",
+    "unit": "one held-out whole chapter, sectioned improvement",
+    "order": [
+      "A",
+      "B"
+    ],
+    "conditions": {
+      "A": {
+        "label": "no_experience",
+        "use_experience": false,
+        "experience_context": {
+          "enabled": false,
+          "items": []
+        }
+      },
+      "B": {
+        "label": "retained_experience_context",
+        "use_experience": true,
+        "experience_context_sha256": "e5993c625ac957e55de39b5b5be060bddb808c4ab60b18cc37c7b5edd610653a",
+        "experience_context_chars": 2070,
+        "items": [
+          {
+            "improvement_id": "390ba0bd-0662-4788-b24c-284721cf4dd6",
+            "source_run_id": "c335aacf-cd5a-43a3-8914-d6dacd2dfc8a",
+            "decision_event_id": "203b21a5-ea2e-57d9-a877-a24a8ebda394",
+            "chapter_path": "content/books/distillation/14-chapter.md",
+            "decision": "accepted",
+            "quality_status": "evaluation_failed",
+            "quality_unverified": true,
+            "promotable": false,
+            "retrieval_score": 0.633,
+            "retrieval_reasons": [
+              "criteria overlap 0.383",
+              "owner comment recorded"
+            ],
+            "expected_rank": 1
+          }
+        ]
+      }
+    },
+    "irrelevant_experience_control": {
+      "included": false,
+      "reason": "Only one eligible owner decision exists in this workspace. A second eligible item would require a new owner decision before the experiment; without it, relevance specificity cannot be separated from added context. No claim of relevance specificity follows."
+    },
+    "blinding": {
+      "evaluator_receives": [
+        "original chapter text and sha256",
+        "retained proposal text and sha256",
+        "frozen editorial criteria",
+        "deterministic mechanical preservation observations"
+      ],
+      "evaluator_does_not_receive": [
+        "condition label",
+        "experience context or retrieval receipt",
+        "owner decision or quality status",
+        "generation-time evaluation",
+        "other arm's proposal"
+      ],
+      "same_model_family": true,
+      "human_review": false
+    },
+    "model": {
+      "workflow": "muse-spark-1.3-contributor",
+      "evaluator": "muse-spark-1.3",
+      "provider": "meta via Pi"
+    },
+    "workflow": {
+      "name": "chapter-improvement",
+      "version": 1006,
+      "definition_id": "d38e4c3a-50ec-46e7-b53f-3a3606d48071",
+      "definition_sha256": "5cd3400f1417e87fd25db62ad0776e987a422313294634d59b263db5a83b76c3",
+      "binding_sha256": "30f106e148b1cf53b16c9a38514739b49ec2236b9f40d82e99a3081459e8edf8",
+      "mode": "sections",
+      "plan_sha256": "637feb2227e35a74ef9cd0ada5b688d81e0763879e11a210de9a782e86b085a4",
+      "model_calls": 8,
+      "max_tokens": 100000,
+      "output_tokens": 12288,
+      "wall_seconds": 900,
+      "sections": [
+        {
+          "id": "s1",
+          "start": 0,
+          "end": 4762,
+          "sha256": "48185a0c9b79021635d370830ffdd40ed75e8cc01a8bf48d01c37d0ec3d3a72f",
+          "estimated_tokens": 1210
+        },
+        {
+          "id": "s2",
+          "start": 4762,
+          "end": 9607,
+          "sha256": "48207ddc8b3e11509b77889d205f82ff8cda0bcea3ece978dcfb7702633f7491",
+          "estimated_tokens": 1233
+        },
+        {
+          "id": "s3",
+          "start": 9607,
+          "end": 14323,
+          "sha256": "d572517f3110336c73a4a76d28805f9f8136c36acc3782dd7aec7f506efb1b7c",
+          "estimated_tokens": 1207
+        },
+        {
+          "id": "s4",
+          "start": 14323,
+          "end": 18772,
+          "sha256": "23d9cd394c9e33aa12ee5bdbeed0345dc8a543648cafc9cf403415ea099c1079",
+          "estimated_tokens": 1155
+        },
+        {
+          "id": "s5",
+          "start": 18772,
+          "end": 22775,
+          "sha256": "31706c2a02a94eb6e1b9fab4a516b6f470c509e00fec11cd2a5662a12e0e7b3c",
+          "estimated_tokens": 1050
+        },
+        {
+          "id": "s6",
+          "start": 22775,
+          "end": 25336,
+          "sha256": "8608c3e50ae3e41e9139393a655349c2b13ea0711fb46c3b6d745fee28f4696f",
+          "estimated_tokens": 649
+        }
+      ]
+    }
+  },
+  "independent_evaluation": {
+    "workflow": "chapter-evaluation",
+    "version": 1,
+    "definition_id": "58e82d51-2f69-4432-82af-a5c7418380f8",
+    "definition_sha256": "13cc2b251d34564f819f4412eac44c3c14961bf8461e381ccfe707eaee812ce7",
+    "implementation": "chapter-independent-evaluator-v1",
+    "rubric": "chapter-evaluation-v1",
+    "rubric_version": "1",
+    "dimensions": [
+      "technical_preservation",
+      "argument_preservation",
+      "clarity",
+      "economy",
+      "completeness",
+      "provenance_integrity"
+    ],
+    "scale": "0 materially fails; 1 weak; 2 adequate with notable gaps; 3 strong; 4 exceptionally strong. Rubric judgments, not measurements.",
+    "mechanical_checks": [
+      "headings",
+      "code_blocks",
+      "urls",
+      "numbers",
+      "equations",
+      "qualifications",
+      "quotes_and_tables"
+    ],
+    "calls_per_proposal": 1,
+    "max_output_tokens": 4096,
+    "order": [
+      "A",
+      "B"
+    ],
+    "note": "The evaluator is a separate blind role with a frozen rubric, but it is the same model family as the generator. It is not human or third-party review."
+  },
+  "endpoints": {
+    "primary": {
+      "name": "independent_verdict",
+      "values": [
+        "benefit",
+        "no_benefit",
+        "harm",
+        "inconclusive"
+      ],
+      "source": "chapter-evaluation-v1"
+    },
+    "secondary": [
+      {
+        "name": "delta_total",
+        "definition": "sum over six dimensions of (proposed score - original score), range -24..24"
+      },
+      {
+        "name": "delta_economy",
+        "definition": "proposed economy score - original economy score"
+      },
+      {
+        "name": "preservation_attention",
+        "definition": "number of mechanical checks whose status is attention"
+      },
+      {
+        "name": "guardrail_deltas",
+        "definition": "technical_preservation, argument_preservation and provenance_integrity deltas"
+      },
+      {
+        "name": "receipts",
+        "definition": "run ids, model invocation ids, charged tokens and Pi receipts for both arms and both evaluations"
+      }
+    ]
+  },
+  "outcome_rules": {
+    "valid_comparison": "Both improvement runs COMPLETED with complete provenance and the exact frozen plan, source and (for B) experience context sha256. Both independent evaluations COMPLETED with the frozen rubric and valid quotes.",
+    "benefit_observed": "B verdict is benefit; A verdict is not benefit; B delta_total > A delta_total; B delta_economy > A delta_economy; B preservation_attention <= A preservation_attention; every B guardrail delta is >= 0 and not below A; every attention item is explained in preservation_observations.",
+    "harm_observed": "B verdict is harm, or any B guardrail delta < 0, or B preservation_attention > A preservation_attention, or B delta_total < A delta_total.",
+    "no_benefit_observed": "The comparison is valid and neither benefit_observed nor harm_observed applies.",
+    "inconclusive": "Either evaluation failed or returned inconclusive, a required receipt or identity is missing, the frozen context was not injected, or the signals conflict.",
+    "label_meaning": "These labels describe one pre-registered pair. benefit_observed is not proof of learning, quality, or general transfer."
+  },
+  "budget": {
+    "max_improvement_runs": 2,
+    "max_improvement_calls": 16,
+    "max_improvement_tokens": 200000,
+    "max_evaluation_runs": 2,
+    "max_evaluation_calls": 2,
+    "max_evaluation_tokens": 200000,
+    "total_max_calls": 18,
+    "total_max_tokens": 400000,
+    "hard_stop": "No third improvement run and no rerun to obtain a more favourable result."
+  },
+  "failure_conditions": [
+    "Source, plan, section hashes, criteria or model differ from this manifest.",
+    "B's experience_retrieval.context_sha256 differs from the frozen value.",
+    "A receives any experience item.",
+    "An improvement run does not complete with a retained proposal.",
+    "An independent evaluation fails, quotes text absent from a version, or changes its rubric.",
+    "Any manuscript source write, decision change or promotion change occurs."
+  ],
+  "non_claims": [
+    "The experience used in B is not an independently evaluated lesson; its original evaluation failed and it remains quality-unverified.",
+    "One pair cannot establish general transfer, statistical significance or a durable learning effect.",
+    "Owner acceptance is context, not quality evidence.",
+    "A model verdict is an assessment, not proof or publication readiness.",
+    "The evaluator shares a model family with the generator.",
+    "No irrelevant-experience control was run; relevance specificity is untested.",
+    "No manuscript was edited, promoted or deployed."
+  ]
+}
