@@ -112,6 +112,9 @@ function BookEditor({ book, onSaved }: { book: Book; onSaved: () => void }) {
           >
             Repository
           </ActionButton>
+          <Link className="button button-secondary button-small" to={`/projects/${book.project_id}/read`}>
+            <BookOpen size={14} /> Read with ALIVE
+          </Link>
           <Link className="button button-primary button-small" to={`/projects/${book.project_id}`}>
             <BookOpen size={14} /> Full workspace
           </Link>

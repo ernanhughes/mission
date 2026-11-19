@@ -2,6 +2,7 @@ import { Route, Routes, Link } from "react-router-dom";
 import { Layout } from "../components/Layout";
 import { HomePage } from "../pages/HomePage";
 import { ProjectsPage } from "../pages/ProjectsPage";
+import { LivingBookPage } from "../pages/LivingBookPage";
 import { ProjectPage } from "../pages/ProjectPage";
 import { ApplicationsPage } from "../pages/ApplicationsPage";
 import { BooksPage } from "../pages/BooksPage";
@@ -25,15 +26,16 @@ export function App() {
         <Route index element={<HomePage />} />
         <Route path="inbox" element={<InboxPage />} />
         <Route path="search" element={<SearchPage />} />
-        <Route path="next" element={<IntegrationWorkspacePage appId="next" />} />
-        <Route path="work" element={<IntegrationWorkspacePage appId="work" />} />
-        <Route path="cocoder" element={<IntegrationWorkspacePage appId="cocoder" />} />
+        <Route path="next" element={<IntegrationWorkspacePage key="next" appId="next" />} />
+        <Route path="work" element={<IntegrationWorkspacePage key="work" appId="work" />} />
+        <Route path="cocoder" element={<IntegrationWorkspacePage key="cocoder" appId="cocoder" />} />
         <Route path="workflows" element={<WorkflowsPage />} />
         <Route path="workflows/:workflowId" element={<WorkflowDetailPage />} />
         <Route path="writer" element={<WriterPage />} />
         <Route path="integrations" element={<IntegrationsPage />} />
         <Route path="projects" element={<ProjectsPage />} />
         <Route path="projects/:projectId" element={<ProjectPage />} />
+        <Route path="projects/:projectId/read" element={<LivingBookPage />} />
         <Route path="applications" element={<ApplicationsPage />} />
         <Route path="books" element={<BooksPage />} />
         <Route path="fiction-books" element={<FictionBooksPage />} />

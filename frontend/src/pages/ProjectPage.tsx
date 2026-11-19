@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { api, errorMessage } from "../api/client";
 import { useApi } from "../api/useApi";
+import { LivingBookCard } from "../features/living-book/LivingBookCard";
 import { useToast } from "../components/Toast";
 import {
   ActionButton,
@@ -2663,6 +2664,8 @@ export function ProjectPage() {
           <p>{timeAgo(data.last_activity_at)}</p>
         </div>
       </div>
+
+      {data.book ? <LivingBookCard projectId={projectId} /> : null}
 
       <div className="workspace-grid">
         <div className="workspace-main">

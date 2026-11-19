@@ -12,7 +12,7 @@ Mission Control is a local-first control centre for an existing ecosystem of AI 
 - **Windows process control** — launch stored commands without a shell, capture logs, stop only Mission Control-owned process trees, detect port conflicts, and reattach to detached servers after a backend restart.
 - **Daily continuity** — project focus, checkpoints, tasks, decisions, activity and a resume card based on the latest saved checkpoint.
 - **Read-only discovery** — bounded scans of `C:\Projects`, `C:\books` and `C:\book-projects`, classification with evidence, exclusions, cancellation and persisted candidates. Discovery never writes to scanned repositories and never enables a launch command; book detection only creates local book workspaces for `content/books` manuscript trees.
-- **Unified engine workspaces (MC09)** - Next, Work and CoCoder expose their real data inside Mission Control: candidates and evidence, opportunities and qualification, repository findings and review operations.
+- **Unified engine workspaces (MC09)** - Next, Work and CoCoder expose their real data inside Mission Control: candidates and evidence, opportunities and qualification, repository findings and review operations. Opening an engine workspace starts its registered application when needed, verifies readiness, then refreshes the source view; explicit Open actions use the same start-if-needed path.
 - **Research export and contextual chat (MC-NEXT-CHAT-01)** - every Next opportunity can be copied as a structured critical-review package for another AI or discussed in a persisted, local-only conversation. The export and chat share one evidence snapshot; no Next writes occur.
 - **Unified inbox and federated search** - one attention queue and one search surface across Next, Work, CoCoder, projects, repositories, tasks, checkpoints and decisions. Source identity is preserved.
 - **Controlled application actions** - registered, validated operations with approval and durable execution history. CoCoder reviews can be launched from Mission Control; Next and Work write operations remain explicitly blocked.
@@ -21,6 +21,7 @@ Mission Control is a local-first control centre for an existing ecosystem of AI 
 - **Hardened experiments (MC11)** - Docker-isolated generated-code execution, two versioned templates, cancellation and duplicate-execution guards, `language.observation.v1`, and a project evidence timeline.
 - **Writer editing (MC-WRITER-01)** - Writer-owned readability reports with six independent subdimensions, findings and source locators, displayed in Mission Control with explicit `NOT_RUN` / `CURRENT` / `STALE` / `PARTIAL` / `ERROR` states and a cross-book review queue.
 - **Writer decision queue (MC-WRITER-02)** - Writer findings grouped by code and severity into a prioritized queue, Workbench-owned Confirm/Dismiss/Defer state read back read-only, and an exact-finding deep link that opens the passage in Workbench. The queue is a reading order, not a score.
+- **Living Book reading room (MC-LIVING-BOOK-01)** - open a book's actual manuscript in Mission Control with a persistent ALIVE companion. Chapter text and images are read-only; ALIVE owns reading state, annotations, living notes and governed model sessions. Distillation and Language are connected. Quality evidence (Mission prose evaluations, Writer readability, technical verification, publication readiness and Artifact Load) is supplied as separate, labelled measures; no composite score is invented and `NOT_RUN` is never shown as zero.
 - **Evidence adapters** - Language, Inference, Math, live read-only Next, Work JSON CLI, CoCoder artifacts, Writer editing reports and Worker health. Unavailable integrations are shown as unavailable; they are not filled with sample data.
 - **Grounded daily briefing** - deterministic by default. Optional OpenAI-compatible AI interpretation only after explicit configuration, consent and request. AI remains advisory.
 - **Local API and OpenAPI docs** - FastAPI at `/api/*` and `/docs`.
@@ -174,6 +175,44 @@ See [the execution-integrity audit](docs/MC11-EXECUTION-INTEGRITY-AUDIT.md),
 [template and Language contract](docs/MC11-TEMPLATES-AND-LANGUAGE.md) and
 [MC11 acceptance report](docs/acceptance/MC11-REPORT.md).
 
+## Living Book reading room (MC-LIVING-BOOK-01)
+
+A book project now has a **Living Book** card and a reading room at
+`/projects/<project>/read`.
+
+The first connected books are **Distillation From First Principles** and
+**Language: When Intelligence Enters the Channel**. Distillation reads an
+approved whole-repository source so the companion can use the chapter text,
+`planning/` evidence, `editorial/` records and experiment material. Language
+reads its manuscript source and uses Writer's readability report.
+
+What the reading room does:
+
+- renders the actual chapter, including front matter removal, tables, code,
+  images, Hugo `bookfig` diagrams, KaTeX math and Mermaid diagrams;
+- keeps chapter, progress and selection state across restarts;
+- keeps retained annotations and a living note against the exact chapter
+  revision;
+- lets you ask ALIVE about the open chapter or the whole book, with citations,
+  model receipts and a visible, revocable bounded session;
+- shows the current quality measures with coverage, freshness and limitations.
+
+What it does not do:
+
+- it does not write to the manuscript;
+- it does not invent a book-quality average;
+- it does not treat `NOT_RUN` as zero or `STALE` as current;
+- it does not call the model on page open.
+
+Connection is explicit. Mission previews the candidate source, the owner ticks a
+read-only approval, and ALIVE records a revocable 30-day live source approval.
+If you prefer, add `MISSION_CONTROL_ALIVE_URL` to point at a loopback ALIVE
+backend (default `http://127.0.0.1:8000`). ALIVE is also seeded as an
+application with a verified backend launch definition.
+
+See [the implementation and boundary notes](docs/MC-LIVING-BOOK-01.md) and
+[acceptance evidence](docs/acceptance/mc-living-book-01/README.md).
+
 ### Docker sandbox setup
 
 The image is local and pinned:
@@ -278,6 +317,7 @@ The Home screen shows:
 1. Click **Books** in the navigation, or **Open** on a book card on Today.
 2. Select Language, Inference or Math in the left rail.
 3. The workspace shows the user-maintained status, milestone, next action, checkpoint and manuscript paths.
+4. Press **Read with ALIVE** to open the reading room. The first visit offers an explicit read-only source connection; after that, the chapter, reading position, notes and conversations resume across restarts.
 
 **Use an engine workspace**
 1. Open **Next**, **Work** or **CoCoder** under **Engines**.
@@ -519,7 +559,7 @@ npm test
 npm run build
 ```
 
-Current result: **87 backend tests passing (1 Docker test skipped when Docker is unavailable), 34 frontend tests passing, production build succeeds.** The suite includes real local process launch/stop/log capture, a backend restart reattachment test, real configured-editor invocation, discovery exclusions, migrations, checkpoint persistence, adapter failure isolation, integration decisions/inbox/search, action parameter and repository validation, workflow approval/scope/stale-approval/adverse-review/replay tests, Docker sandbox isolation, cancellation/duplicate-execution guards, two-template execution, Language observation tests, Writer adapter contract validation and Writer book/chapter presentation. MC-WRITER-01 additionally passed a real Chrome acceptance workflow; see [the MC-WRITER-01 report](docs/acceptance/MC-WRITER-01-REPORT.md).
+Current focused result for MC-LIVING-BOOK-01: **7 ALIVE living-book tests, 6 Mission backend living-book tests and 83 frontend tests pass; the production build succeeds.** A full backend run on 2026-11-19 passed 499 tests with 1 skip; five environment-dependent tests outside the Living Book path failed (editor launch probe, quality evaluator availability, cultivation Git-date probes and a weekly-script clock assumption) and one Pi-critique test errored in the local setup. The suite includes real local process launch/stop/log capture, a backend restart reattachment test, real configured-editor invocation, discovery exclusions, migrations, checkpoint persistence, adapter failure isolation, integration decisions/inbox/search, action parameter and repository validation, workflow approval/scope/stale-approval/adverse-review/replay tests, Docker sandbox isolation, cancellation/duplicate-execution guards, two-template execution, Language observation tests, Writer adapter contract validation and Writer book/chapter presentation. MC-WRITER-01 additionally passed a real Chrome acceptance workflow; see [the MC-WRITER-01 report](docs/acceptance/MC-WRITER-01-REPORT.md).
 
 ## Troubleshooting
 
@@ -605,6 +645,8 @@ Mission Control was built in `C:\Projects\mission`. Integration repositories wer
 - [MC-WRITER-01 integration contract](docs/MC-WRITER-01-WRITER-INTEGRATION.md)
 - [MC-WRITER-01 acceptance report](docs/acceptance/MC-WRITER-01-REPORT.md)
 - [MC-WRITER-01 browser/runtime evidence](docs/acceptance/mc-writer-01/README.md)
+- [MC-LIVING-BOOK-01 implementation and boundaries](docs/MC-LIVING-BOOK-01.md)
+- [MC-LIVING-BOOK-01 acceptance evidence](docs/acceptance/mc-living-book-01/README.md)
 - [First-release acceptance report](docs/acceptance/REPORT.md)
 - [First-release final engineering report](docs/acceptance/FINAL-ENGINEERING-REPORT.md)
 - [UI smoke evidence](docs/acceptance/UI-SMOKE.md)
