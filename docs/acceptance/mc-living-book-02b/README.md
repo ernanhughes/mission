@@ -23,6 +23,7 @@ No manuscript write, no automatic learning, no quality-improvement claim.
 | File SHA-256 after runs | same |
 | Workflow at first real run | v806, six sections, 8 calls, 12,288 output tokens, 900 s |
 | Workflow after token repair | v7/901–906; chapter-14 plan v906, same plan SHA `642e479274374abd157c1eaf8b5a974f9a39caef584f0d65b2fa01c0f979f42b` |
+| Workflow after R1 quality gate | v8/1001–1006 current; v906 evaluation remains readable |
 
 The source was pinned because the live folder changed twice during the audit (1,260 → 1,261 → 1,262
 files). The chapter itself did not change. Pinning preserved one exact edition for the run.

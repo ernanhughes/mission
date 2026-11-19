@@ -5,8 +5,9 @@
 
 **Post-audit activation note:** this document preserves the audit-time state. The live v6/801–806
 family became historical when a real 02B run exposed a 100,000-token ceiling in the section workflow.
-The repair is the immutable **v7/901–906** family; the accepted proposal remains readable as a v806
-run. The audit's v6 references describe what was live before that repair, not the final activation.
+That repair is **v7/901–906**. The follow-up quality gate is **v8/1001–1006**, which is current. The
+accepted proposal remains readable as a v806 run. The audit's v6 references describe what was live
+before those repairs, not the final activation.
 
 **Scope:** one book (Distillation), one chapter (`14-chapter.md`, “Synthetic Data Generation”), one
 task (economy), one transformation (a retained Chapter Improvement proposal), one measurable result

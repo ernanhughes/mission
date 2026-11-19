@@ -44,7 +44,8 @@ Because the changed files are fingerprinted, the repair is a new immutable famil
 | Family | State |
 | --- | --- |
 | v6 / 801–806 | Historical; retained for old runs |
-| v7 / 901–906 | Current; chapter-14 plan v906, six sections, 8 calls, plan `642e4792…` |
+| v7 / 901–906 | Historical after the R1 quality gate; retained for the v906 evaluation run |
+| v8 / 1001–1006 | Current; chapter-14 plan v1006, six sections, 8 calls, plan `642e4792…` |
 
 ## Authority and no-write boundary
 
