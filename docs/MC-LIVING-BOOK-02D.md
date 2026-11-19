@@ -75,7 +75,9 @@ pass. The evaluator is committed as ALIVE `435fc649`.
 
 The machine-readable freeze is
 `docs/acceptance/mc-living-book-02d/experiment-manifest.json`
-(SHA-256 `e9c0365c4ec6644546ad16964467d61ceb17911abced71b9e36f6bb91c2ea678`).
+(revision 2, SHA-256 `543b2acec609200a4a6e44fc33be7e4a4003a5fb8d0a28189331878ddc8d84e2`).
+Revision 2 shortened the criteria from 630 to 565 characters to fit the workflow's 600-character
+admission limit; the refused launch made no model call.
 
 | Field | Frozen value |
 | --- | --- |
@@ -85,7 +87,7 @@ The machine-readable freeze is
 | Source custody | pinned capture `a632c716…`, approval `3996f4b2…` |
 | Workflow | `chapter-improvement` v1006, six sections, 8 calls |
 | Plan SHA-256 | `637feb2227e35a74ef9cd0ada5b688d81e0763879e11a210de9a782e86b085a4` |
-| Criteria | `criteria.txt`, 630 chars, SHA-256 `f8333112…` |
+| Criteria | `criteria.txt`, 565 chars, SHA-256 `6d0ac383…` |
 | Arm A | `use_experience=false` |
 | Arm B | `use_experience=true`, context SHA-256 `e5993c62…` |
 | Experience item | improvement `390ba0bd…`, chapter 14, decision `203b21a5…`, `accepted`, quality `evaluation_failed` |
