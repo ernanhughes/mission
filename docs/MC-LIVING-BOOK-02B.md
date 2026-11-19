@@ -73,6 +73,9 @@ The preview is untrusted evidence in the UI. The workflow receives only the dete
   `applied: false`.
 - A later experience preview retrieves that decision as one eligible item (score 1.75, source text
   included while its pinned approval remains authorized).
+- R1 run `9bf54fd8-d55c-4bcf-a0a6-7aa90a131dc9` completed all 12 v906 stages with 8 calls and
+  54,150 tokens, retained proposal `c8daa07f…`, and evaluated it as `promising`. The proposal is
+  pending; no author decision was invented. See [R1](MC-LIVING-BOOK-02B-R1.md).
 - The chapter file SHA-256 is unchanged: `ad89a4e9…`.
 - The source is pinned to capture `a632c716…` for reproducibility; switching back to live is an owner
   action.
@@ -86,9 +89,9 @@ The preview is untrusted evidence in the UI. The workflow receives only the dete
 | Frontend targeted LivingBookPage tests | 4 passed |
 | Frontend full suite | 82 passed, 2 unrelated flakes; both flaky files pass together in isolation |
 | Frontend production build | passed |
-| ALIVE capability registry + living-book tests | 16 passed |
-| Live plan after v7 activation | 200, v906, six sections, 8 calls, plan `642e…` |
-| Live browser | Improve tab, evidence, v906, recent accepted run, proposal diff, evaluation and decision rendered; no console errors |
+| ALIVE capability registry + living-book + quality-gate tests | 22 passed |
+| Live plan after v8 activation | 200, v1006, six sections, 8 calls, plan `642e…` |
+| Live browser | Improve tab, evidence, v1006, quality-unverified prior decision, pending evaluated run and accepted unverified run rendered; no console errors |
 
 ## Known gaps
 
