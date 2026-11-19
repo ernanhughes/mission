@@ -2,8 +2,10 @@
   "schema": "mc-living-book-02d.experiment-manifest.v1",
   "experiment_id": "MC-LIVING-BOOK-02D-PILOT-1",
   "title": "Incremental context benefit of one retained owner-decision experience on a held-out chapter",
-  "frozen_at": "2026-11-19T23:49:00Z",
+  "frozen_at": "2026-11-20T00:00:00Z",
   "status": "frozen-before-model-runs",
+  "revision": 2,
+  "revision_reason": "The first criteria draft was 630 characters and the workflow admission limit is 600; the refused launch made no model call. Criteria were shortened before either arm ran.",
   "commission": "MC-LIVING-BOOK-02D - Evaluated Experience and Transfer",
   "code_freeze": {
     "alive_commit": "435fc649f5c3fe2a188a8a5c4d8321cab1270f78",
@@ -44,9 +46,9 @@
   },
   "criteria": {
     "ref": "criteria.txt",
-    "characters": 630,
-    "sha256": "f833311270ce6e0638b79f0a6886ea85d0141d0864a456404b650680113cbc7b",
-    "text": "Improve economy in \"Data Filtering and Curriculum Learning\" without dropping technical claims, source citations, uncertainty or the chapter's argument. The chapter reports a negative result; keep the negative result, its measured differences and the explanation of why the curriculum arms ran fewer updates. Preserve all reported numbers, the four regimes, the derived distribution effects, the difficulty and diversity measures, the rights and provenance limits, and the chapter's stated limits. Keep each section's full substance and approximate length; do not omit material. Return a complete proposal; do not write the source."
+    "characters": 565,
+    "sha256": "6d0ac3838618822c3a4015c98ec496aa2897ea248fc27b1bf6c626b585bc6ce4",
+    "text": "Improve economy in \"Data Filtering and Curriculum Learning\" without dropping technical claims, citations, uncertainty or the chapter's argument. The chapter reports a negative result; keep the negative result, its measured differences and why the curriculum arms ran fewer updates. Preserve reported numbers, the four regimes, distribution effects, difficulty and diversity measures, rights and provenance limits, and its stated limits. Keep each section's substance and approximate length; do not omit material. Return a complete proposal; do not write the source."
   },
   "design": {
     "type": "one pre-registered pair; no replication; no rerun after seeing outcomes",
@@ -79,9 +81,9 @@
             "quality_status": "evaluation_failed",
             "quality_unverified": true,
             "promotable": false,
-            "retrieval_score": 0.633,
+            "retrieval_score": 0.635,
             "retrieval_reasons": [
-              "criteria overlap 0.383",
+              "criteria overlap 0.385",
               "owner comment recorded"
             ],
             "expected_rank": 1
