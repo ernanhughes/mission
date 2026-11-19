@@ -24,18 +24,36 @@ def _env_path(name: str, default: Path) -> Path:
 @dataclass(slots=True)
 class RuntimeSettings:
     repo_root: Path = field(default_factory=_repo_root)
-    data_dir: Path = field(default_factory=lambda: _env_path("MISSION_CONTROL_DATA_DIR", _repo_root() / "data"))
-    config_dir: Path = field(default_factory=lambda: _env_path("MISSION_CONTROL_CONFIG_DIR", _repo_root() / "config"))
-    frontend_dist: Path = field(default_factory=lambda: _env_path("MISSION_CONTROL_FRONTEND_DIST", _repo_root() / "frontend" / "dist"))
-    book_root: Path = field(default_factory=lambda: _env_path("MISSION_CONTROL_BOOKS_ROOT", Path(r"C:\books")))
+    data_dir: Path = field(
+        default_factory=lambda: _env_path("MISSION_CONTROL_DATA_DIR", _repo_root() / "data")
+    )
+    config_dir: Path = field(
+        default_factory=lambda: _env_path("MISSION_CONTROL_CONFIG_DIR", _repo_root() / "config")
+    )
+    frontend_dist: Path = field(
+        default_factory=lambda: _env_path(
+            "MISSION_CONTROL_FRONTEND_DIST", _repo_root() / "frontend" / "dist"
+        )
+    )
+    book_root: Path = field(
+        default_factory=lambda: _env_path("MISSION_CONTROL_BOOKS_ROOT", Path(r"C:\books"))
+    )
     fiction_book_root: Path = field(
-        default_factory=lambda: _env_path("MISSION_CONTROL_FICTION_BOOKS_ROOT", Path(r"C:\fiction-books"))
+        default_factory=lambda: _env_path(
+            "MISSION_CONTROL_FICTION_BOOKS_ROOT", Path(r"C:\fiction-books")
+        )
     )
     host: str = field(default_factory=lambda: os.environ.get("MISSION_CONTROL_HOST", "127.0.0.1"))
     port: int = field(default_factory=lambda: int(os.environ.get("MISSION_CONTROL_PORT", "8790")))
-    log_level: str = field(default_factory=lambda: os.environ.get("MISSION_CONTROL_LOG_LEVEL", "INFO"))
-    seed_defaults: bool = field(default_factory=lambda: os.environ.get("MISSION_CONTROL_SEED", "1") != "0")
-    start_monitor: bool = field(default_factory=lambda: os.environ.get("MISSION_CONTROL_MONITOR", "1") != "0")
+    log_level: str = field(
+        default_factory=lambda: os.environ.get("MISSION_CONTROL_LOG_LEVEL", "INFO")
+    )
+    seed_defaults: bool = field(
+        default_factory=lambda: os.environ.get("MISSION_CONTROL_SEED", "1") != "0"
+    )
+    start_monitor: bool = field(
+        default_factory=lambda: os.environ.get("MISSION_CONTROL_MONITOR", "1") != "0"
+    )
     # Workbench owns editorial decisions and the selected book. Mission Control
     # reads those files read-only; it never writes them.
     workbench_decisions_path: Path = field(
@@ -68,6 +86,10 @@ class RuntimeSettings:
     # Writer-commanded execution is unavailable (blocked, never faked).
     writer_quality_runner: str | None = field(
         default_factory=lambda: os.environ.get("MISSION_CONTROL_WRITER_QUALITY_RUNNER")
+    )
+    # ALIVE is the living-book engine. The gateway refuses a non-loopback URL.
+    alive_url: str = field(
+        default_factory=lambda: os.environ.get("MISSION_CONTROL_ALIVE_URL", "http://127.0.0.1:8000")
     )
     dev_origins: tuple[str, ...] = (
         "http://127.0.0.1:5173",

@@ -1,0 +1,229 @@
+{
+  "captured_at": "2026-11-19T21:16:32.2061868Z",
+  "urls": {
+    "mission": "http://127.0.0.1:8790",
+    "alive": "http://127.0.0.1:8000"
+  },
+  "mission": {
+    "status": {
+      "source": {
+        "binding_ref": "bdaefced-4d88-4b62-ad20-ffe044c73d89",
+        "approval_ref": "abc83294-fe42-4473-b4dc-643feac9a8ad",
+        "capture_ref": "dc7dda14-cb81-4c97-9514-32aa0746c545",
+        "label": "Distillation From First Principles",
+        "root": "C:\\books\\distillation",
+        "mode": "live",
+        "status": "current",
+        "files": 1260,
+        "bytes": 14433121,
+        "captured_at": "2026-11-19T21:03:02.316905+00:00",
+        "last_refresh_at": "2026-11-19T21:09:53.788196+00:00",
+        "current": true
+      },
+      "book_id": "72b95337-795f-5327-87c6-ad67e4246086",
+      "http": 200,
+      "model": {
+        "name": "muse-spark-1.3-contributor",
+        "transport": "pi",
+        "ready": true
+      },
+      "state": "ready",
+      "workspace_id": "9a992443-ee5f-4a30-a52d-6760e584baf1"
+    },
+    "quality": {
+      "coverage": {
+        "prose": {
+          "status": "CURRENT",
+          "current": 42,
+          "total": 42,
+          "rubric": "manuscript-prose-v1"
+        },
+        "writer": {
+          "status": "NOT_RUN",
+          "label": "Writer readability",
+          "detail": ""
+        },
+        "technical": {
+          "status": "NOT_RUN",
+          "claims_total": 0
+        },
+        "publication": {
+          "status": "NOT_RUN",
+          "detail": "No publication assessment is recorded for this book."
+        },
+        "artifact_load": {
+          "status": "NOT_RUN"
+        }
+      },
+      "technical": {
+        "chapter": {
+          "claims_total": 0,
+          "claims_source_verified": 0,
+          "claims_unresolved": 0,
+          "by_status": {},
+          "completeness": {
+            "chapter_id": "14-chapter.md",
+            "live_revision": "ad89a4e96412b58818579c79b6c06dd6eac6082b3f6e549c4a337fb7d5acaa05",
+            "regions_total": 0,
+            "regions_processed": 0,
+            "regions_capped": 0,
+            "regions_failed": 0,
+            "regions_not_started": 0,
+            "regions_stale": 0,
+            "claims_total": 0,
+            "claims_source_verified": 0,
+            "claims_stale": 0,
+            "requirements_total": 0,
+            "by_satisfaction": {},
+            "by_applicability": {},
+            "open_gaps": 0,
+            "gap_types": [],
+            "assessment": "NOT_ASSESSED"
+          }
+        },
+        "status": "NOT_RUN"
+      },
+      "prose": {
+        "observed_at": "2026-11-16T21:47:33.820969+00:00",
+        "overall": 3.0,
+        "status": "CURRENT",
+        "rubric": "manuscript-prose-v1",
+        "model": "opencode-go/deepseek-v4.1-flash",
+        "economy": {
+          "score": 2,
+          "evidence": "a rejection audit that discards its rejects is advertising",
+          "evidence_validated": false
+        },
+        "limitations": [
+          "token usage recorded by execution record when available",
+          "Single-run model judgment; repeatability not established by one observation."
+        ]
+      },
+      "publication": {
+        "detail": "No publication assessment is recorded for this book.",
+        "status": "NOT_RUN"
+      },
+      "http": 200
+    },
+    "chapter": {
+      "chapter_id": "14-chapter.md",
+      "http": 200,
+      "title": "Synthetic Data Generation",
+      "sha256": "ad89a4e96412b58818579c79b6c06dd6eac6082b3f6e549c4a337fb7d5acaa05",
+      "word_count": 4067,
+      "rendered_characters": 27034
+    }
+  },
+  "alive": {
+    "local_chapter_file": {
+      "bytes": 27743,
+      "path": "C:\\books\\distillation\\content\\books\\distillation\\14-chapter.md",
+      "sha256": "ad89a4e96412b58818579c79b6c06dd6eac6082b3f6e549c4a337fb7d5acaa05"
+    },
+    "workspace_sources": [
+      {
+        "mode": "live",
+        "files": 1273,
+        "label": "Distillation From First Principles",
+        "status": "current",
+        "storage": "host_root",
+        "expires_at": "2026-12-19T00:50:53.31797+00:00",
+        "binding_ref": "bdaefced-4d88-4b62-ad20-ffe044c73d89",
+        "capture_ref": "c7b03373-211e-476d-808a-550dd0e81138",
+        "approval_ref": "bd77a514-5ddd-4aac-b0d2-e6046157478a",
+        "approved_files": 1273,
+        "captured_files": 1273,
+        "last_refresh_at": "2026-11-19T21:09:53.788196+00:00",
+        "pinned_revision_ref": ""
+      }
+    ],
+    "plan": {
+      "output_tokens": null,
+      "model_calls": null,
+      "wall_seconds": null,
+      "workflow_version": null,
+      "http": 409,
+      "mode": null,
+      "sha256": null,
+      "error": "conversation_source_not_in_workspace"
+    },
+    "experience": {
+      "enabled": true,
+      "selected": [],
+      "context_sha256": "dd0c3f41cb69f854ceef9bed0bbd1bac788b7719d008e95b0199b7bdd38f1695",
+      "eligible_candidates": 0,
+      "http": 200
+    },
+    "book": {
+      "source": {
+        "binding_ref": "bdaefced-4d88-4b62-ad20-ffe044c73d89",
+        "approval_ref": "abc83294-fe42-4473-b4dc-643feac9a8ad",
+        "capture_ref": "dc7dda14-cb81-4c97-9514-32aa0746c545",
+        "label": "Distillation From First Principles",
+        "root": "C:\\books\\distillation",
+        "mode": "live",
+        "status": "current",
+        "files": 1260,
+        "bytes": 14433121,
+        "captured_at": "2026-11-19T21:03:02.316905+00:00",
+        "last_refresh_at": "2026-11-19T21:09:53.788196+00:00",
+        "current": true
+      },
+      "ready": true,
+      "workspace_id": "9a992443-ee5f-4a30-a52d-6760e584baf1",
+      "chapter": {
+        "chapter_id": "14-chapter.md",
+        "path": "content/books/distillation/14-chapter.md",
+        "title": "Synthetic Data Generation",
+        "order": 14,
+        "word_count": 4067,
+        "sha256": "ad89a4e96412b58818579c79b6c06dd6eac6082b3f6e549c4a337fb7d5acaa05",
+        "status": "current"
+      },
+      "http": 200
+    },
+    "memory03_route": {
+      "message": "Not found",
+      "http": 404
+    },
+    "improvements": {
+      "counts": {
+        "pending": 0,
+        "accepted": 0,
+        "rejected": 0,
+        "accepted_with_edits": 0
+      },
+      "http": 200
+    },
+    "workflow_catalogue": {
+      "versions": [
+        706,
+        705,
+        704,
+        703,
+        702,
+        701,
+        606,
+        605,
+        604,
+        603,
+        602,
+        601,
+        506,
+        505,
+        504,
+        503,
+        502,
+        501,
+        5,
+        4,
+        3,
+        2,
+        1
+      ],
+      "has_v801": false,
+      "has_v6": false,
+      "http": 200
+    }
+  }
+}

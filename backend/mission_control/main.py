@@ -27,6 +27,7 @@ from mission_control.api import (
     git_activity,
     health,
     integrations as integrations_api,
+    living_book as living_book_api,
     processes,
     projects,
     publication as publication_api,
@@ -79,7 +80,9 @@ async def _startup_refresh(app: FastAPI) -> None:
                             _cult.sync_source(session, source.id)
                             synced += 1
                         except Exception:
-                            logger.exception("Blog source sync failed for %s; kept last observation", source.id)
+                            logger.exception(
+                                "Blog source sync failed for %s; kept last observation", source.id
+                            )
                 return synced
 
             synced = await asyncio.to_thread(_sync_blogs)
@@ -119,7 +122,9 @@ def create_app(runtime: RuntimeSettings | None = None) -> FastAPI:
                 try:
                     fiction = sync_fiction_books(session, [settings.fiction_book_root])
                 except Exception:
-                    logger.exception("Fiction book detection failed; existing workspaces remain available")
+                    logger.exception(
+                        "Fiction book detection failed; existing workspaces remain available"
+                    )
                 else:
                     if fiction:
                         logger.info("Detected %s fiction book workspaces", len(fiction))
@@ -129,8 +134,8 @@ def create_app(runtime: RuntimeSettings | None = None) -> FastAPI:
         adapter_service = AdapterService(database, settings)
         adapter_service.ensure_statuses()
         discovery_service = DiscoveryService(
-            database, book_root=settings.book_root,
-            fiction_book_root=settings.fiction_book_root)
+            database, book_root=settings.book_root, fiction_book_root=settings.fiction_book_root
+        )
         integration_service = IntegrationService(database, settings)
         workflow_service = WorkflowService(database, settings, integration_service)
         research_chat = ResearchChatService(database, settings)
@@ -147,9 +152,13 @@ def create_app(runtime: RuntimeSettings | None = None) -> FastAPI:
         await process_manager.reconcile_startup()
         refresh_task: asyncio.Task[None] | None = None
         if settings.start_monitor:
-            refresh_task = asyncio.create_task(_startup_refresh(app), name="mission-control-startup-refresh")
+            refresh_task = asyncio.create_task(
+                _startup_refresh(app), name="mission-control-startup-refresh"
+            )
             process_manager.start_monitor()
-        logger.info("Mission Control %s ready on http://%s:%s", __version__, settings.host, settings.port)
+        logger.info(
+            "Mission Control %s ready on http://%s:%s", __version__, settings.host, settings.port
+        )
         try:
             yield
         finally:
@@ -200,14 +209,18 @@ def create_app(runtime: RuntimeSettings | None = None) -> FastAPI:
     )
 
     @app.exception_handler(MissionControlError)
-    async def mission_control_error_handler(_request: Request, exc: MissionControlError) -> JSONResponse:
+    async def mission_control_error_handler(
+        _request: Request, exc: MissionControlError
+    ) -> JSONResponse:
         return JSONResponse(
             status_code=exc.status_code,
             content={"error": {"code": exc.code, "message": exc.message, "detail": exc.detail}},
         )
 
     @app.exception_handler(RequestValidationError)
-    async def validation_error_handler(_request: Request, exc: RequestValidationError) -> JSONResponse:
+    async def validation_error_handler(
+        _request: Request, exc: RequestValidationError
+    ) -> JSONResponse:
         details = []
         for item in exc.errors():
             details.append(
@@ -255,6 +268,7 @@ def create_app(runtime: RuntimeSettings | None = None) -> FastAPI:
     app.include_router(applications.router)
     app.include_router(processes.router)
     app.include_router(projects.router)
+    app.include_router(living_book_api.router)
     app.include_router(discovery.router)
     app.include_router(cultivation.router)
     app.include_router(git_activity.router)
