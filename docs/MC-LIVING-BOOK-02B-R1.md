@@ -111,6 +111,12 @@ sections and eight calls.
 - No quality-improvement or transfer claim is made.
 - The chapter file was not written.
 - The source remains pinned to one exact capture for reproducibility.
+- Recording a new independent evaluation against an already-retained chapter proposal is not
+  available in this slice. The quality gate reads the existing append-only
+  `improvement.evaluated` contract and attaches such evidence if it exists, but there is no
+  chapter independent-evaluation route yet. This is the same structural blocker as evaluation-only
+  execution, and it is why 02D needs a comparative measurement protocol rather than a promotion
+  shortcut.
 
 ## 6. Next
 
