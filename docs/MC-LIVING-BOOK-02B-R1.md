@@ -54,9 +54,12 @@ confirmed call plan: `max(100000, 8 × 30000) = 240,000`. The v906 run below exe
 | Evaluation limits | Text comparison only; hashes, code, citations and ledger numbers were not re-derived |
 | Author decision | **pending** |
 | Chapter SHA-256 | unchanged `ad89a4e9…` |
+| Admission terms | `max_calls: 8`, `max_tokens: 240000` (verified standing event `9b04738c…`) |
 
-The evaluation is a model assessment, not an independent comparative result. It does not establish
-quality improvement or transfer.
+The run used 54,150 tokens, below the old 100,000 ceiling; the repair is verified on the launch path by
+the admission terms. The old refusal is reproduced from the old run’s 39,809 + 63,914 = 103,723
+reservation. The evaluation is a model assessment, not an independent comparative result. It does not
+establish quality improvement or transfer.
 
 ## 4. Experience integrity gate
 
