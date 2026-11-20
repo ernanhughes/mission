@@ -27,10 +27,14 @@ from mission_control.integrations.service import (
     IntegrationService,
     _validate_parameters,
 )
-from mission_control.models import Application, IntegrationExecution
+from mission_control.models import Application, IntegrationExecution, IntegrationRecord
 from mission_control.adapters.service import get_app_adapter
 from mission_control.persistence.db import Database, now_iso
 from mission_control.praxis_proposals.models import PraxisProposal
+from mission_control.praxis_proposals.preflight import (
+    capability_metadata,
+    compute_preflight,
+)
 from mission_control.praxis_proposals.schemas import (
     PraxisProposalEvidence,
     PraxisProposalImport,
@@ -86,6 +90,11 @@ def _proposal_read(row: PraxisProposal) -> PraxisProposalRead:
         acceptance_criteria=list(row.acceptance_criteria_json or []),
         acceptance_provenance=row.acceptance_provenance,
         validation=list(row.validation_json or []),
+        preflight=list(row.preflight_json or []),
+        execution_config=dict(row.execution_config_json or {}),
+        ownership_kind=row.ownership_kind,
+        owner=row.owner,
+        withdrawn_at=row.withdrawn_at,
         approved_by=row.approved_by,
         approved_at=row.approved_at,
         approval_digest=row.approval_digest,
@@ -134,6 +143,11 @@ class PraxisProposalService:
             valid = all(item["ok"] for item in validation)
             status = "awaiting_approval" if valid else "rejected"
             goal = proposal.goal
+            ownership = payload.ownership or {}
+            ownership_kind = str(ownership.get("kind") or "operator")
+            if ownership_kind not in {"operator", "test"}:
+                raise ValidationProblem(
+                    "ownership.kind must be 'operator' or 'test'")
             row = PraxisProposal(
                 proposal_key=key,
                 praxis_id=proposal.id,
@@ -161,11 +175,17 @@ class PraxisProposalService:
                 ],
                 acceptance_provenance=payload.acceptance_provenance,
                 validation_json=validation,
+                preflight_json=[],
+                execution_config_json={},
+                ownership_kind=ownership_kind,
+                owner=str(ownership.get("owner") or ""),
                 rejection_reason=None if valid else "Proposal failed validation",
                 created_at=now_iso(),
                 updated_at=now_iso(),
             )
             session.add(row)
+            session.flush()
+            row.preflight_json = compute_preflight(session, row)
             session.flush()
             return self._read_with_execution(session, row)
 
@@ -261,6 +281,28 @@ class PraxisProposalService:
             check("action_semantics_valid", True, "adapter accepted parameters")
         except ValueError as exc:
             check("action_semantics_valid", False, str(exc))
+            return
+        properties = action.parameters_schema.get("properties") or {}
+        book_id = parameters.get("book_id")
+        if "book_id" in properties and book_id is not None:
+            record = session.scalar(
+                select(IntegrationRecord).where(
+                    IntegrationRecord.application_id == "writer",
+                    IntegrationRecord.resource_type == "writer_editing_book",
+                    IntegrationRecord.external_id == str(book_id))
+            )
+            check("book_registered", record is not None, str(book_id))
+            if record is None:
+                return
+            root = str((record.data or {}).get("project_root") or "")
+            check("book_root_known", bool(root),
+                  root or "resource has no project_root")
+            supplied = parameters.get("book_root")
+            if supplied is not None and root:
+                check("book_root_resolved",
+                      str(supplied).replace("\\", "/").casefold()
+                      == root.replace("\\", "/").casefold(),
+                      f"registered root is {root}")
 
     # --------------------------------------------------------------- approve
     def approve(self, proposal_key: str, *, approved_by: str,
@@ -284,6 +326,34 @@ class PraxisProposalService:
             row.approved_at = now_iso()
             row.approval_digest = row.content_digest
             row.status = "approved"
+            row.updated_at = now_iso()
+            session.flush()
+            return self._read_with_execution(session, row)
+
+    # --------------------------------------------------------------- withdraw
+    def withdraw(self, proposal_key: str, *, owner: str, reason: str,
+                 confirm: bool) -> PraxisProposalRead:
+        """Withdraw a test-owned proposal. Operator proposals are never deleted."""
+        if not confirm:
+            raise Conflict("Explicit confirmation is required to withdraw")
+        if not (reason or "").strip():
+            raise ValidationProblem("A withdrawal reason is required")
+        if not (owner or "").strip():
+            raise ValidationProblem("owner is required")
+        with self.database.session() as session:
+            row = self._get(session, proposal_key)
+            if row.ownership_kind != "test":
+                raise ValidationProblem(
+                    "Only test-owned proposals can be withdrawn; operator "
+                    "proposals require an explicit governance decision")
+            if row.owner.casefold() != owner.strip().casefold():
+                raise ValidationProblem("owner does not match proposal owner")
+            if row.status in {"approved", "execution_requested", "running",
+                              "succeeded", "failed"}:
+                raise Conflict(
+                    f"Proposal is {row.status!r}; it cannot be withdrawn")
+            row.status = "withdrawn"
+            row.withdrawn_at = now_iso()
             row.updated_at = now_iso()
             session.flush()
             return self._read_with_execution(session, row)
@@ -335,6 +405,14 @@ class PraxisProposalService:
             parameters = dict(step.get("parameters") or {})
             row.status = "execution_requested"
             row.execution_requested_at = now_iso()
+            application = session.get(Application, application_id)
+            config = dict(application.adapter_config or {}) if application else {}
+            row.execution_config_json = {
+                "capability_id": step.get("capability_id"),
+                "capability_version": "mc09.1",
+                "timeout_seconds": config.get("timeout_seconds"),
+                "captured_at": now_iso(),
+            }
             row.updated_at = now_iso()
             session.flush()
             key, correlation = row.proposal_key, row.correlation_id
@@ -418,6 +496,7 @@ class PraxisProposalService:
                 evaluation_boundary={
                     "mc_asserts": [
                         "capability and parameters validated against ActionSpec",
+                        "registered resources resolved by Mission Control",
                         "approval identity and digest recorded",
                         "execution record is authoritative",
                     ],
@@ -432,6 +511,8 @@ class PraxisProposalService:
                         "goal achievement against approved acceptance criteria",
                         "effectiveness and improvement claims with explicit uncertainty",
                     ],
+                    "capability_metadata": capability_metadata(session, row),
+                    "preflight_is_advisory": True,
                 },
             )
 
@@ -466,4 +547,8 @@ class PraxisProposalService:
     ) -> PraxisProposalRead:
         if row.execution_id and row.status in {"running", "execution_requested"}:
             self._refresh_execution_status(session, row)
-        return _proposal_read(row)
+        read = _proposal_read(row)
+        # Advisory preflight is recomputed on read so the reviewer sees the
+        # current environment; it is not part of the approval digest.
+        read.preflight = compute_preflight(session, row)
+        return read

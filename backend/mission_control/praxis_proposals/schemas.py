@@ -60,6 +60,15 @@ class PraxisProposalImport(BaseModel):
     proposal: PraxisProposalPayload
     acceptance_criteria: list[PraxisAcceptanceCriterion]
     acceptance_provenance: str
+    ownership: dict[str, str] | None = None
+
+
+class PraxisProposalWithdraw(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    owner: str
+    reason: str
+    confirm: bool = False
 
 
 class PraxisProposalApprove(BaseModel):
@@ -110,6 +119,11 @@ class PraxisProposalRead(BaseModel):
     acceptance_criteria: list[dict[str, Any]]
     acceptance_provenance: str
     validation: list[dict[str, Any]]
+    preflight: list[dict[str, Any]]
+    execution_config: dict[str, Any]
+    ownership_kind: str
+    owner: str
+    withdrawn_at: str | None
     approved_by: str | None
     approved_at: str | None
     approval_digest: str | None
