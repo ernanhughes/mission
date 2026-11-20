@@ -11,8 +11,8 @@ PILOT-1 remains frozen and `inconclusive`.
 | PILOT-2 draft protocol | `docs/acceptance/mc-living-book-02d-r1/PILOT-2-PROTOCOL.md` |
 | PILOT-2 criteria | `docs/acceptance/mc-living-book-02d-r1/pilot2-criteria.txt` |
 | Qualification script | ALIVE `scripts/qualify_provider_02d_r1.py` |
-| Corrected provider receipt | ALIVE `docs/acceptance/mc-living-book-02d-r1/provider-qualification.json` |
-| First provider receipt | ALIVE `docs/acceptance/mc-living-book-02d-r1/provider-qualification-run1.json` |
+| Corrected provider receipt | `provider-qualification.json` (generated in ALIVE, copied here) |
+| First provider receipt | `provider-qualification-run1.json` (generated in ALIVE, copied here) |
 | R1 code commit | ALIVE `6c577812` |
 
 ## What was established

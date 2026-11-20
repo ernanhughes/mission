@@ -1,0 +1,170 @@
+{
+  "schema": "mc-living-book-02d-r1.provider-qualification.v1",
+  "generated_at": "2026-11-20T00:29:53.038785+00:00",
+  "notice": "Direct provider qualification using the exact retained instructions and admitted context. One call per case, no retry, no workflow, no admission, no manuscript write. Pi/egress ambiguity and one-provider-request containment are verified separately by tests/test_pi_egress.py and tests/test_pi_lifecycle.py.",
+  "provider": "meta",
+  "model": "muse-spark-1.3-contributor",
+  "cases": [
+    {
+      "case": "minimal_probe_30s",
+      "kind": "probe",
+      "timeout_seconds": 30,
+      "source_invocation_id": null,
+      "source_role": null,
+      "model": "muse-spark-1.3-contributor",
+      "status": "completed",
+      "started_at": "2026-11-20T00:29:07.474606+00:00",
+      "local_request_id": "e7a86b73001141ffbb1f0120d13fef05",
+      "provider_request_id": "c430a5d0-02fa-4b32-966a-46f5c98b52a6",
+      "duration_ms": 2028.8,
+      "instructions_sha256": "1e469ea8d0f808baba5c2ff6e0c0eca59bfb354dc10613726d4c098d8c52ce66",
+      "context_sha256": "15b6ca0b1d1aeb4acacecbfe55c6aab5ed5433af43354957b900df5c50647620",
+      "payload_bytes": 154,
+      "usage": {
+        "completion_tokens": 78,
+        "prompt_tokens": 91,
+        "total_tokens": 169,
+        "completion_tokens_details": {
+          "reasoning_tokens": 57
+        },
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "response_sha256": "b2b8f2680fcdab03507eccce648df79e00de7a6e747d58f33baff8380e1945f4",
+      "response_chars": 35,
+      "validation": "passed",
+      "validation_error": null
+    },
+    {
+      "case": "section_a_no_experience_30s",
+      "kind": "section",
+      "timeout_seconds": 30,
+      "source_invocation_id": "20508322-7e7d-45a0-b07a-5438781937a9",
+      "source_role": "informed_improver",
+      "model": "muse-spark-1.3-contributor",
+      "status": "completed",
+      "started_at": "2026-11-20T00:29:09.503518+00:00",
+      "local_request_id": "75cecb08f32446ef85ca2464e9b0caa3",
+      "provider_request_id": "d01c3ce6-281f-4d1a-b257-aa83cc71ecba",
+      "duration_ms": 14392.5,
+      "instructions_sha256": "07c0e4609df881fb05d603b3058c9a1fd217f2a51ee350eb62799fd16a16955a",
+      "context_sha256": "9270df4e0638ed058c142686736d076c91154c8e8c25ffb83019e8c06b862af2",
+      "payload_bytes": 16248,
+      "usage": {
+        "completion_tokens": 1350,
+        "prompt_tokens": 3533,
+        "total_tokens": 4883,
+        "completion_tokens_details": {
+          "reasoning_tokens": 298
+        },
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "response_sha256": "e5ea5d9e4e359752bce31dc824a2c7ed2cb671ed817b5a740e7a8cbb0a014913",
+      "response_chars": 4720,
+      "validation": "failed",
+      "validation_error": "Refused: Protected code, table or quotation structure changed."
+    },
+    {
+      "case": "section_b1_experience_30s",
+      "kind": "section",
+      "timeout_seconds": 30,
+      "source_invocation_id": "22a784e6-c9aa-4a6c-9b4d-837bc17296f3",
+      "source_role": "informed_improver",
+      "model": "muse-spark-1.3-contributor",
+      "status": "completed",
+      "started_at": "2026-11-20T00:29:23.898434+00:00",
+      "local_request_id": "2b163e8bfceb4f2b964da179294536a4",
+      "provider_request_id": "67f1f7b3-2dea-44ee-a0eb-4ac0ec3f4426",
+      "duration_ms": 11314.9,
+      "instructions_sha256": "07c0e4609df881fb05d603b3058c9a1fd217f2a51ee350eb62799fd16a16955a",
+      "context_sha256": "2484621b96c792cc194a1ca6e95773cd622961d02ba864958f14d2934d02657e",
+      "payload_bytes": 19351,
+      "usage": {
+        "completion_tokens": 1142,
+        "prompt_tokens": 4242,
+        "total_tokens": 5384,
+        "completion_tokens_details": {
+          "reasoning_tokens": 129
+        },
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "response_sha256": "00bdfbdeeb799af846928ef132601bd0586fd24f8b3b86eaaa30438cc01f6afa",
+      "response_chars": 4563,
+      "validation": "failed",
+      "validation_error": "Refused: Protected code, table or quotation structure changed."
+    },
+    {
+      "case": "section_b1_experience_90s",
+      "kind": "section",
+      "timeout_seconds": 90,
+      "source_invocation_id": "22a784e6-c9aa-4a6c-9b4d-837bc17296f3",
+      "source_role": "informed_improver",
+      "model": "muse-spark-1.3-contributor",
+      "status": "completed",
+      "started_at": "2026-11-20T00:29:35.215458+00:00",
+      "local_request_id": "88b1cceb828a4b6882060fbae540b33b",
+      "provider_request_id": "8890bad9-81d0-4681-bcf7-419ac5260dbc",
+      "duration_ms": 6668.9,
+      "instructions_sha256": "07c0e4609df881fb05d603b3058c9a1fd217f2a51ee350eb62799fd16a16955a",
+      "context_sha256": "2484621b96c792cc194a1ca6e95773cd622961d02ba864958f14d2934d02657e",
+      "payload_bytes": 19351,
+      "usage": {
+        "completion_tokens": 1103,
+        "prompt_tokens": 4242,
+        "total_tokens": 5345,
+        "completion_tokens_details": {
+          "reasoning_tokens": 150
+        },
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "response_sha256": "d77583191e4b3f074808a48bd15c57f979b4a928a216bc527667532a06731367",
+      "response_chars": 4505,
+      "validation": "failed",
+      "validation_error": "Refused: Protected code, table or quotation structure changed."
+    },
+    {
+      "case": "section_b2_experience_90s",
+      "kind": "section",
+      "timeout_seconds": 90,
+      "source_invocation_id": "4a0df1a4-f0e0-4c1a-8c11-b97956ab2753",
+      "source_role": "informed_improver",
+      "model": "muse-spark-1.3-contributor",
+      "status": "completed",
+      "started_at": "2026-11-20T00:29:41.886380+00:00",
+      "local_request_id": "ecd685046f94442ab74533c87d30382e",
+      "provider_request_id": "cecd2a8e-3f59-4691-809c-6c39fcb7de85",
+      "duration_ms": 11150.8,
+      "instructions_sha256": "07c0e4609df881fb05d603b3058c9a1fd217f2a51ee350eb62799fd16a16955a",
+      "context_sha256": "7677476af57b115efdc7c5f956ed0799a551052c8e30933cc353cf33adcb59de",
+      "payload_bytes": 18844,
+      "usage": {
+        "completion_tokens": 1226,
+        "prompt_tokens": 4144,
+        "total_tokens": 5370,
+        "completion_tokens_details": {
+          "reasoning_tokens": 160
+        },
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "response_sha256": "ef94529bbba552be16492840b0573225626e968bcbd0f985307cd42463388441",
+      "response_chars": 4779,
+      "validation": "failed",
+      "validation_error": "Refused: Protected code, table or quotation structure changed."
+    }
+  ],
+  "summary": {
+    "calls": 5,
+    "completed": 5,
+    "timeouts": 0,
+    "validation_passed": 1
+  }
+}

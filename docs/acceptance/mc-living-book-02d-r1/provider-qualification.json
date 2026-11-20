@@ -1,0 +1,170 @@
+{
+  "schema": "mc-living-book-02d-r1.provider-qualification.v1",
+  "generated_at": "2026-11-20T00:31:18.635486+00:00",
+  "notice": "Direct provider qualification using the exact retained instructions and admitted context. One call per case, no retry, no workflow, no admission, no manuscript write. Pi/egress ambiguity and one-provider-request containment are verified separately by tests/test_pi_egress.py and tests/test_pi_lifecycle.py.",
+  "provider": "meta",
+  "model": "muse-spark-1.3-contributor",
+  "cases": [
+    {
+      "case": "minimal_probe_30s",
+      "kind": "probe",
+      "timeout_seconds": 30,
+      "source_invocation_id": null,
+      "source_role": null,
+      "model": "muse-spark-1.3-contributor",
+      "status": "completed",
+      "started_at": "2026-11-20T00:30:22.121569+00:00",
+      "local_request_id": "365dcd4c71284dc28e2c0efe770647ed",
+      "provider_request_id": "f39c79c6-b44a-4bb2-a4ff-8f3a5a02b1e7",
+      "duration_ms": 6881.0,
+      "instructions_sha256": "1e469ea8d0f808baba5c2ff6e0c0eca59bfb354dc10613726d4c098d8c52ce66",
+      "context_sha256": "15b6ca0b1d1aeb4acacecbfe55c6aab5ed5433af43354957b900df5c50647620",
+      "payload_bytes": 154,
+      "usage": {
+        "completion_tokens": 70,
+        "prompt_tokens": 91,
+        "total_tokens": 161,
+        "completion_tokens_details": {
+          "reasoning_tokens": 49
+        },
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "response_sha256": "b2b8f2680fcdab03507eccce648df79e00de7a6e747d58f33baff8380e1945f4",
+      "response_chars": 35,
+      "validation": "passed",
+      "validation_error": null
+    },
+    {
+      "case": "section_a_no_experience_30s",
+      "kind": "section",
+      "timeout_seconds": 30,
+      "source_invocation_id": "20508322-7e7d-45a0-b07a-5438781937a9",
+      "source_role": "informed_improver",
+      "model": "muse-spark-1.3-contributor",
+      "status": "completed",
+      "started_at": "2026-11-20T00:30:29.002787+00:00",
+      "local_request_id": "9daf719befdf4946b10a4a10896bafa9",
+      "provider_request_id": "90b4f81c-21e5-4860-9317-b449e520ad97",
+      "duration_ms": 22992.5,
+      "instructions_sha256": "07c0e4609df881fb05d603b3058c9a1fd217f2a51ee350eb62799fd16a16955a",
+      "context_sha256": "9270df4e0638ed058c142686736d076c91154c8e8c25ffb83019e8c06b862af2",
+      "payload_bytes": 16248,
+      "usage": {
+        "completion_tokens": 1289,
+        "prompt_tokens": 3533,
+        "total_tokens": 4822,
+        "completion_tokens_details": {
+          "reasoning_tokens": 229
+        },
+        "prompt_tokens_details": {
+          "cached_tokens": 3441
+        }
+      },
+      "response_sha256": "1c579fa84319a88f681f42fb86f19ae01e6bfd084123a28b114c89223d24f402",
+      "response_chars": 4747,
+      "validation": "passed",
+      "validation_error": null
+    },
+    {
+      "case": "section_b1_experience_30s",
+      "kind": "section",
+      "timeout_seconds": 30,
+      "source_invocation_id": "22a784e6-c9aa-4a6c-9b4d-837bc17296f3",
+      "source_role": "informed_improver",
+      "model": "muse-spark-1.3-contributor",
+      "status": "completed",
+      "started_at": "2026-11-20T00:30:51.998730+00:00",
+      "local_request_id": "c2950e37d39e42dd84aa0e2ca7c5bb36",
+      "provider_request_id": "5f7c451b-7007-4d6a-9e0d-5bd32f2732a7",
+      "duration_ms": 6354.7,
+      "instructions_sha256": "07c0e4609df881fb05d603b3058c9a1fd217f2a51ee350eb62799fd16a16955a",
+      "context_sha256": "2484621b96c792cc194a1ca6e95773cd622961d02ba864958f14d2934d02657e",
+      "payload_bytes": 19351,
+      "usage": {
+        "completion_tokens": 1087,
+        "prompt_tokens": 4242,
+        "total_tokens": 5329,
+        "completion_tokens_details": {
+          "reasoning_tokens": 57
+        },
+        "prompt_tokens_details": {
+          "cached_tokens": 4209
+        }
+      },
+      "response_sha256": "60b4b608b7437e87c5f23655e942c99905c485a1a4a0e0cc60aee591bcd1e3e2",
+      "response_chars": 4604,
+      "validation": "passed",
+      "validation_error": null
+    },
+    {
+      "case": "section_b1_experience_90s",
+      "kind": "section",
+      "timeout_seconds": 90,
+      "source_invocation_id": "22a784e6-c9aa-4a6c-9b4d-837bc17296f3",
+      "source_role": "informed_improver",
+      "model": "muse-spark-1.3-contributor",
+      "status": "completed",
+      "started_at": "2026-11-20T00:30:58.356126+00:00",
+      "local_request_id": "fca8be6feda64c8a9a213064483ddb71",
+      "provider_request_id": "b1b7b86b-1cf1-45ff-ab5b-74d982e4a68c",
+      "duration_ms": 10580.4,
+      "instructions_sha256": "07c0e4609df881fb05d603b3058c9a1fd217f2a51ee350eb62799fd16a16955a",
+      "context_sha256": "2484621b96c792cc194a1ca6e95773cd622961d02ba864958f14d2934d02657e",
+      "payload_bytes": 19351,
+      "usage": {
+        "completion_tokens": 1051,
+        "prompt_tokens": 4242,
+        "total_tokens": 5293,
+        "completion_tokens_details": {
+          "reasoning_tokens": 103
+        },
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "response_sha256": "dd570995c81523fd07dc891bf55b63eec2483b5a7c067b539cd36fa4d6b9c713",
+      "response_chars": 4455,
+      "validation": "passed",
+      "validation_error": null
+    },
+    {
+      "case": "section_b2_experience_90s",
+      "kind": "section",
+      "timeout_seconds": 90,
+      "source_invocation_id": "4a0df1a4-f0e0-4c1a-8c11-b97956ab2753",
+      "source_role": "informed_improver",
+      "model": "muse-spark-1.3-contributor",
+      "status": "completed",
+      "started_at": "2026-11-20T00:31:08.939278+00:00",
+      "local_request_id": "44908ead6ef943cdae353e962f3f47dd",
+      "provider_request_id": "0031ed8a-b3bd-48af-9b54-e271728356e6",
+      "duration_ms": 9693.2,
+      "instructions_sha256": "07c0e4609df881fb05d603b3058c9a1fd217f2a51ee350eb62799fd16a16955a",
+      "context_sha256": "7677476af57b115efdc7c5f956ed0799a551052c8e30933cc353cf33adcb59de",
+      "payload_bytes": 18844,
+      "usage": {
+        "completion_tokens": 1115,
+        "prompt_tokens": 4144,
+        "total_tokens": 5259,
+        "completion_tokens_details": {
+          "reasoning_tokens": 101
+        },
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "response_sha256": "2f727346425836d27ec5027433f6d90e8a31a4c6fb44dfe67d610c92e8759462",
+      "response_chars": 4776,
+      "validation": "passed",
+      "validation_error": null
+    }
+  ],
+  "summary": {
+    "calls": 5,
+    "completed": 5,
+    "timeouts": 0,
+    "validation_passed": 5
+  }
+}

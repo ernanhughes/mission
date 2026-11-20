@@ -156,8 +156,8 @@ The draft protocol is
 | Item | Location |
 | --- | --- |
 | Qualification script | ALIVE `scripts/qualify_provider_02d_r1.py` |
-| Corrected receipt | ALIVE `docs/acceptance/mc-living-book-02d-r1/provider-qualification.json` |
-| First-run receipt | ALIVE `docs/acceptance/mc-living-book-02d-r1/provider-qualification-run1.json` |
+| Corrected receipt | `docs/acceptance/mc-living-book-02d-r1/provider-qualification.json` (generated in ALIVE, copied here) |
+| First-run receipt | `docs/acceptance/mc-living-book-02d-r1/provider-qualification-run1.json` (generated in ALIVE, copied here) |
 | R1 code | ALIVE commit `6c577812` |
 | R1 docs | this file and `docs/acceptance/mc-living-book-02d-r1/` |
 | PILOT-2 criteria | `docs/acceptance/mc-living-book-02d-r1/pilot2-criteria.txt`, SHA-256 `9d33af57…` |
