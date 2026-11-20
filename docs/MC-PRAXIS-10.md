@@ -10,7 +10,8 @@ the same governance as other actions.
   (enum `technical-nonfiction-v1`).
 - `book_id` format is validated (`^[a-z0-9][a-z0-9._-]{0,127}$`); Mission
   Control additionally requires an existing `writer_editing_book` integration
-  resource before execution.
+  resource before execution, and rejects a resource whose `source_version` is
+  not `writer-editing-summary-v1` (stale registration).
 - Risk: `bounded_local_computation`; side effect: `local_generated_artifacts`
   (Writer writes its own report under `.writer/editing`); no manuscript edit.
 - Approval required; the existing confirmation and single-flight rules apply.
@@ -29,6 +30,7 @@ before execution. No arbitrary filesystem path is accepted.
 ## Tests
 
 `backend/tests/test_writer_scoped_audit.py`: ActionSpec exposure, typed report
-parsing (mocked runner), identifier rejection, typed failure, unregistered-book
-rejection through the execution API, and governed proposal validation with
-resource resolution and preflight.
+parsing (mocked runner), identifier rejection, typed failure and timeout,
+unregistered-book rejection through the execution API, stale-resource rejection
+at execution and during proposal validation, and governed proposal validation
+with resource resolution and preflight.

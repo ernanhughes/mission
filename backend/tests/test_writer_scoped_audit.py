@@ -103,6 +103,75 @@ def test_scoped_audit_failure_is_typed(monkeypatch) -> None:
     assert "registry error" in (result.error or "")
 
 
+def test_scoped_audit_timeout_is_typed(monkeypatch) -> None:
+    async def fake_run_tool(*args, **kwargs):
+        raise __import__("subprocess").TimeoutExpired(["writer"], 180)
+
+    monkeypatch.setattr("mission_control.adapters.writer.run_tool", fake_run_tool)
+    result = asyncio.run(WriterAdapter().execute_action(
+        "audit_registered_book", {"book_id": "distillation"}, _context()))
+    assert result.status == "failed"
+    assert "TimeoutExpired" in (result.error or "")
+
+
+def _registered_book(client: TestClient, *, resource_id: str, book_id: str,
+                     source_version: str = "writer-editing-summary-v1") -> None:
+    from mission_control.models import IntegrationRecord
+    from mission_control.persistence.db import now_iso
+
+    with client.app.state.database.session() as session:  # type: ignore[union-attr]
+        session.add(IntegrationRecord(
+            id=resource_id, application_id="writer",
+            resource_type="writer_editing_book", external_id=book_id,
+            title=book_id, summary="", state="NEEDS_REVIEW",
+            evidence=[], data={"project_root": f"C:\\books\\{book_id}"},
+            source_version=source_version,
+            observed_at=now_iso(), created_at=now_iso()))
+
+
+def test_execution_rejects_stale_book_resource(client: TestClient) -> None:
+    _registered_book(client, resource_id="res-stale-book",
+                     book_id="stale-book", source_version="writer-editing-summary-v0")
+    response = client.post(
+        "/api/integrations/writer/actions/audit_registered_book/execute",
+        json={"parameters": {"book_id": "stale-book"}, "confirm": True})
+    assert response.status_code == 422
+    assert "stale" in response.text.casefold()
+
+
+def test_proposal_validation_rejects_stale_book(client: TestClient) -> None:
+    _registered_book(client, resource_id="res-stale-book-2",
+                     book_id="stale-book-2", source_version="writer-editing-summary-v0")
+    body = {
+        "schema_version": "mc-praxis-proposal-v1",
+        "proposal": {
+            "id": "prop-stale-audit", "version": "1", "status": "validated",
+            "goal": {"goal_id": "res-1", "title": "stale audit",
+                     "source": "next_opportunity", "provenance": {},
+                     "stale": None},
+            "steps": [{"capability_id": "writer.audit_registered_book",
+                       "parameters": {"book_id": "stale-book-2"},
+                       "rationale": "audit one stale book"}],
+            "capability_versions": {"writer.audit_registered_book": "mc10.1"},
+            "pi_model": "test", "protocol": "praxis-compose-v2",
+            "evidence_refs": [], "expected_benefits": [], "risks": [],
+            "assumptions": [], "estimated_cost": {},
+            "observed_composition_cost_usd": None,
+            "correlation": {"run_id": "stale"},
+        },
+        "acceptance_criteria": [{"id": "ac", "statement": "report produced",
+                                 "source": "human:ernan"}],
+        "acceptance_provenance": "test",
+    }
+    response = client.post("/api/praxis/proposals", json=body)
+    assert response.status_code == 200, response.text
+    row = response.json()
+    assert row["status"] == "rejected"
+    checks = {item["check"]: item["ok"] for item in row["validation"]}
+    assert checks["book_registered"] is True
+    assert checks["book_current"] is False
+
+
 def test_execution_rejects_unregistered_book_before_running(client: TestClient) -> None:
     response = client.post(
         "/api/integrations/writer/actions/audit_registered_book/execute",
