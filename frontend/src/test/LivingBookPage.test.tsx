@@ -303,6 +303,24 @@ describe("LivingBookPage", () => {
         selected: [],
         abstained: false,
       },
+      recent_runs: [
+        {
+          run_id: "run-a",
+          status: "COMPLETED",
+          terminal: true,
+          terminal_reason: "required_stages_completed",
+          created_at: "2026-11-20T00:00:00Z",
+          workflow_version: 806,
+        },
+        {
+          run_id: "run-b",
+          status: "UNKNOWN",
+          terminal: true,
+          terminal_reason: "adapter_execution_failure",
+          created_at: "2026-11-20T00:01:00Z",
+          workflow_version: 806,
+        },
+      ],
       authority: { read: "Approved source", model: "Separate admission", action: "Proposal only", write: "None" },
       notice: "No manuscript file is changed.",
       use_experience: false,
@@ -354,6 +372,104 @@ describe("LivingBookPage", () => {
       state: { decision: "accepted", decided_at: "2026-11-19T22:00:00Z" },
       history: [{ decision: "accepted", recorded_at: "2026-11-19T22:00:00Z" }],
     };
+    const comparison = {
+      schema: "living-book-improvement-comparison.v1",
+      book_id: "book-1",
+      workspace_id: "workspace-1",
+      chapter_path: "content/books/distillation/01-chapter.md",
+      conditions: [
+        {
+          run_id: "run-a",
+          status: "COMPLETED",
+          terminal: true,
+          status_label: "Proposal retained; awaiting author decision",
+          reason: null,
+          chapter_path: "content/books/distillation/01-chapter.md",
+          use_experience: false,
+          experience: { enabled: false, selected: [], items: [] },
+          proposal: {
+            artifact_id: "artifact-1",
+            artifact_sha256: "b".repeat(64),
+            sha256: "c".repeat(64),
+            excerpt: "# What Is Knowledge Distillation?",
+            excerpt_is_partial: false,
+          },
+          change: { differs: true, lines_added: 1, lines_removed: 1 },
+          generation_evaluation: { status: "evaluated", verdict: "promising", kind: "model_assessment" },
+          independent_evaluation: {
+            run_id: "eval-a",
+            status: "COMPLETED",
+            rubric_version: "chapter-evaluation-v1",
+            verdict: "benefit",
+            assessment: "Scripted assessment.",
+            deltas: { economy: { original: 2, proposed: 3, delta: 1 } },
+            delta_total: 1,
+            delta_economy: 1,
+            mechanical: { status: "pass", attention: [], attention_count: 0, checks: [] },
+            usage: { calls: 1, tokens: 10 },
+            stages: [],
+          },
+          evaluation_attempts: [],
+          original: { path: "content/books/distillation/01-chapter.md", sha256: "a".repeat(64) },
+          decision: { decision: "pending" },
+          usage: { calls: 8, tokens: 1000 },
+          budget: {},
+          plan: { sha256: "e".repeat(64) },
+          stages: [],
+          receipts: { plan_sha256: "e".repeat(64), evaluation_run_id: "eval-a" },
+        },
+        {
+          run_id: "run-b",
+          status: "UNKNOWN",
+          terminal: true,
+          status_label: "Stopped (UNKNOWN)",
+          reason: "Section workflow stopped.",
+          chapter_path: "content/books/distillation/01-chapter.md",
+          use_experience: true,
+          experience: {
+            enabled: true,
+            context_sha256: "f".repeat(64),
+            context_chars: 100,
+            selected: [{ improvement_id: "old-1", quality_status: "evaluation_failed" }],
+            items: [
+              {
+                ref: "improvement:old-1",
+                decision: "accepted",
+                quality: { status: "evaluation_failed", quality_unverified: true },
+              },
+            ],
+            quality: { evaluation_failed: 1, unverified: 1 },
+            promotion: { eligible: false, reason: "context only" },
+          },
+          proposal: null,
+          change: null,
+          generation_evaluation: null,
+          independent_evaluation: null,
+          evaluation_attempts: [],
+          original: { path: "content/books/distillation/01-chapter.md", sha256: "a".repeat(64) },
+          decision: { decision: "unavailable" },
+          usage: { calls: 2, tokens: 30 },
+          budget: {},
+          plan: { sha256: "e".repeat(64) },
+          stages: [
+            {
+              stage_id: "section_1",
+              state: "UNKNOWN",
+              error_category: "adapter_execution_failure",
+            },
+          ],
+          receipts: { plan_sha256: "e".repeat(64) },
+        },
+      ],
+      conclusion: {
+        label: "inconclusive",
+        valid: false,
+        reason: "the experience run has no retained proposal.",
+        rules: "mc-living-book-02d.pair-comparison.v1",
+      },
+      notice: "One pair of independent model assessments. Not proof.",
+      applied: false,
+    };
     let decided = false;
     const calls = mockFetch(({ path, method }) => {
       if (path === "/api/living-book/projects/distillation" && method === "GET")
@@ -362,6 +478,7 @@ describe("LivingBookPage", () => {
       if (path.endsWith("/quality") && method === "GET") return json(quality);
       if (path.endsWith("/notes/01-chapter.md") && method === "GET") return json(null);
       if (path.includes("/improvement/preview") && method === "GET") return json(preview);
+      if (path.includes("/improvement/comparison") && method === "GET") return json(comparison);
       if (path.endsWith("/improvement") && method === "POST") return json(pending);
       if (path.endsWith("/improvement/run-1") && method === "GET")
         return json(decided ? accepted : pending);
@@ -397,4 +514,16 @@ describe("LivingBookPage", () => {
     expect((await screen.findAllByText("Accepted")).length).toBeGreaterThan(0);
     expect(calls.some((call) => call.path.endsWith("/decision"))).toBe(true);
     expect(calls.some((call) => call.method === "POST" && call.path.endsWith("/improvement"))).toBe(true);
+
+    await user.click(screen.getByRole("button", { name: /Back to preview/i }));
+    await user.click(await screen.findByLabelText("Compare run-a"));
+    await user.click(screen.getByLabelText("Compare run-b"));
+    await user.click(screen.getByRole("button", { name: /Compare selected/i }));
+    expect(
+      await screen.findByRole("heading", { name: "Two runs, one pair" }),
+    ).toBeInTheDocument();
+    expect(screen.getAllByText(/inconclusive/).length).toBeGreaterThan(0);
+    expect(screen.getByText(/No proposal retained/)).toBeInTheDocument();
+    expect(screen.getAllByText(/Experience supplied/).length).toBeGreaterThan(0);
+    expect(calls.some((call) => call.path.includes("/improvement/comparison"))).toBe(true);
   });

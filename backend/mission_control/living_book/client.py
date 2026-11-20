@@ -278,3 +278,28 @@ class AliveClient:
             body=body,
             timeout=30.0,
         )
+
+    async def workflow_runs(self, workspace_id: str) -> dict[str, Any]:
+        return await self._request(
+            "GET", f"/workspaces/{quote(workspace_id, safe='')}/workflows", timeout=30.0
+        )
+
+    async def chapter_evaluations(
+        self, workspace_id: str, source_run_id: str
+    ) -> dict[str, Any]:
+        return await self._request(
+            "GET",
+            f"/workspaces/{quote(workspace_id, safe='')}/chapter-evaluations"
+            f"?source_run_id={quote(source_run_id, safe='')}",
+            timeout=30.0,
+        )
+
+    async def chapter_evaluation(
+        self, workspace_id: str, evaluation_run_id: str
+    ) -> dict[str, Any]:
+        return await self._request(
+            "GET",
+            f"/workspaces/{quote(workspace_id, safe='')}/chapter-evaluations/"
+            f"{quote(evaluation_run_id, safe='')}",
+            timeout=30.0,
+        )

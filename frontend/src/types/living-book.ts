@@ -295,6 +295,14 @@ export type LivingBookImprovementPreview = {
     created_at?: string;
     source_version?: { status?: string };
   }>;
+  recent_runs?: Array<{
+    run_id: string;
+    status: string;
+    terminal: boolean;
+    terminal_reason?: string | null;
+    created_at?: string;
+    workflow_version?: number;
+  }>;
   authority: Record<string, string>;
   notice: string;
   use_experience: boolean;
@@ -354,6 +362,94 @@ export type LivingBookImprovementRun = {
   history: Array<Record<string, any>>;
   experience?: Record<string, any> | null;
   plan?: Record<string, any> | null;
+  notice: string;
+  applied: boolean;
+};
+
+export type LivingBookIndependentEvaluation = {
+  run_id?: string | null;
+  status?: string | null;
+  rubric_version?: string | null;
+  verdict?: string;
+  assessment?: string;
+  limitations?: string;
+  preservation_observations?: string[];
+  deltas: Record<
+    string,
+    { original: number | null; proposed: number | null; delta: number | null }
+  >;
+  delta_total: number;
+  delta_economy: number | null;
+  mechanical: {
+    status?: string;
+    attention: string[];
+    attention_count: number;
+    checks: Array<Record<string, any>>;
+    note?: string;
+  };
+  usage?: { calls?: number; tokens?: number } | null;
+  proposal_sha256?: string | null;
+  original_sha256?: string | null;
+  stages: Array<Record<string, any>>;
+};
+
+export type LivingBookImprovementComparisonCondition = {
+  run_id?: string | null;
+  status?: string | null;
+  terminal?: boolean;
+  status_label?: string;
+  reason?: string | null;
+  chapter_path?: string | null;
+  use_experience: boolean;
+  experience: Record<string, any>;
+  proposal?: {
+    artifact_id: string;
+    artifact_sha256: string;
+    sha256: string;
+    coverage?: string | null;
+    limitations?: string | null;
+    excerpt: string;
+    excerpt_is_partial: boolean;
+  } | null;
+  change?: {
+    differs?: boolean;
+    lines_added?: number;
+    lines_removed?: number;
+  } | null;
+  generation_evaluation?: Record<string, any> | null;
+  independent_evaluation?: LivingBookIndependentEvaluation | null;
+  evaluation_attempts: Array<{
+    run_id?: string | null;
+    status?: string | null;
+    terminal_reason?: string | null;
+    verdict?: string | null;
+  }>;
+  original?: { path?: string | null; sha256?: string | null } | null;
+  decision?: { decision?: string; decided_at?: string | null } | null;
+  usage?: { calls?: number; tokens?: number } | null;
+  budget?: Record<string, any> | null;
+  plan?: Record<string, any> | null;
+  stages: Array<{
+    stage_id: string;
+    state: string;
+    error_category?: string | null;
+    pi_run_id?: string | null;
+  }>;
+  receipts: Record<string, any>;
+};
+
+export type LivingBookImprovementComparison = {
+  schema: string;
+  book_id?: string;
+  workspace_id?: string;
+  chapter_path?: string | null;
+  conditions: LivingBookImprovementComparisonCondition[];
+  conclusion: {
+    label: string;
+    valid: boolean;
+    reason: string;
+    rules: string;
+  };
   notice: string;
   applied: boolean;
 };

@@ -326,6 +326,23 @@ async def start_improvement(
     )
 
 
+@router.get("/projects/{project_id}/improvement/comparison")
+async def improvement_comparison(
+    project_id: str,
+    request: Request,
+    run_ids: list[str] = Query(...),
+    session: Session = Depends(get_session),
+):
+    return await _run(
+        improvement.comparison(
+            session,
+            request.app.state.settings,
+            project_id,
+            run_ids,
+        )
+    )
+
+
 @router.get("/projects/{project_id}/improvement/{run_id}")
 async def improvement_detail(
     project_id: str,

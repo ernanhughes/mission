@@ -1,6 +1,6 @@
 # MC-LIVING-BOOK-02D — Evaluated Experience and Transfer
 
-Status: **Phase A complete; Phase B design frozen; Arm A complete; Arm B retry pending.**
+Status: **Phase A complete; Phase B design frozen; pilot outcome `inconclusive` because Arm B produced no proposal; Phase D comparison view implemented.**
 This is a research pilot, not a claim that the Living Book has learned.
 
 ## Purpose
@@ -120,14 +120,29 @@ model family as the generator. It is not human or third-party review.
 | --- | --- | --- | --- | --- | --- |
 | A | `1bae6afa-3b24-4cf6-8683-bad990faf8e7` | COMPLETED | 8 | 51,312 | `93914a3d…`, artifact `08978b9a…` |
 | B attempt 1 | `e493ef43-4316-42e2-8c37-cb917a5b1494` | UNKNOWN | 2 | 31,454 | none |
-| B retry | pending | — | — | — | — |
+| B retry | `5033629a-7e85-4cb7-9a5e-4f419376e37a` | UNKNOWN | 2 | 30,834 | none |
+| A evaluation | `7f5f348d-0e52-4057-a77b-c5a559add843` | COMPLETED | 1 | 13,945 | verdict `benefit` |
 
 Arm A matched the frozen source, plan, 8 calls and empty experience context. Its generation-time
-evaluation is `promising`; its decision remains pending. Arm B's first attempt completed the
-review stage, then its section-1 Pi request was admitted and timed out after ~33 seconds
-(`ambiguous_provider_request`, no response). The run retained no proposal and is excluded from
-the outcome. The one-retry rule was recorded before the retry and permits no changes to the
-frozen inputs.
+evaluation is `promising`; its decision remains pending.
+
+Both B attempts completed the review stage, then their first experience-bearing section request
+was admitted and timed out after ~33 seconds (`ambiguous_provider_request`, no response). Neither
+retained a proposal, so neither is a quality observation. The one-retry rule was recorded before
+the retry and permitted no changes to the frozen inputs; the retry's authorization input hash was
+identical.
+
+### Result
+
+The independent evaluation of Arm A returned `benefit` with a clean mechanical pass: economy
+2→3, argument 3→4, provenance 3→4, technical 4→4, clarity 3→3, completeness 3→3 (total +3).
+That is one blind model assessment of one proposal, not proof.
+
+Arm B has no proposal and no independent evaluation. Under the pre-registered rules the
+comparison is invalid and the outcome is **`inconclusive`**. This is not evidence that experience
+helps, does not help, or harms. The observed timeouts are consistent with the larger
+experience-bearing request, but the pilot cannot separate request size from transport behaviour;
+testing that requires a separately pre-registered experiment with a higher transport ceiling.
 
 ## Phase C — evaluation and outcome rules
 
@@ -151,16 +166,25 @@ general transfer.
 
 ## Phase D — author-facing comparison
 
-After the runs, the Mission Living Book improvement surface will show, for each proposal:
+The Mission Living Book improvement surface now lists every run for the chapter, including runs
+that stopped before a proposal. The author selects two runs and opens a read-only comparison.
 
-- the retrieved experience and its evidence status;
-- the comparison condition (A/B) without presenting B as a treatment that works;
-- the independent evaluation, rubric dimensions and mechanical attention items;
-- run ids, model calls, tokens and receipts;
-- the neutral conclusion label, uncertainty and limitations.
+The comparison shows, side by side:
 
-Re-evaluating a retained proposal from the UI remains deferred until the backend path is
-qualified; the backend path is now qualified for one proposal.
+- the retrieved experience, its quality status (`evaluation_failed` here), its promotion status
+  and its exact context hash;
+- the condition (`No experience` / `Experience supplied`) without presenting B as a treatment
+  that works;
+- each proposal or an explicit `No proposal retained` state with the failed stages;
+- the independent evaluation, rubric dimensions, mechanical attention items and limitations;
+- the generation assessment and author-decision state;
+- run ids, evaluation run ids, plan and original hashes, model calls and tokens; and
+- the neutral conclusion label, its rule and the non-claim notice.
+
+The backend endpoint is
+`GET /api/living-book/projects/{project_id}/improvement/comparison?run_ids=…&run_ids=…`.
+It makes no model call and writes nothing. Re-evaluating a retained proposal from the UI remains
+deferred until the backend path is qualified; the backend path is now qualified for one proposal.
 
 ## Non-claims
 
