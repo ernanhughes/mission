@@ -173,6 +173,27 @@ class ImprovementAlive(FakeAlive):
         self.decided = body["decision"] == "accepted"
         return await self.improvement(workspace_id, run_id)
 
+    async def workflow_runs(self, workspace_id: str):
+        return {
+            "runs": [
+                {
+                    "id": "run-1",
+                    "status": "COMPLETED",
+                    "terminal": True,
+                    "terminal_reason": "required_stages_completed",
+                    "created_at": "2026-11-20T00:00:00Z",
+                    "chapter_path": "content/books/distillation/01-chapter.md",
+                    "workflow": {"name": "chapter-improvement", "version": 806},
+                }
+            ]
+        }
+
+    async def chapter_evaluations(self, workspace_id: str, source_run_id: str):
+        return {"source_run_id": source_run_id, "evaluations": []}
+
+    async def chapter_evaluation(self, workspace_id: str, evaluation_run_id: str):
+        raise LivingBookError("evaluation not found", 404)
+
 
 def _setup(client: TestClient, tmp_path: Path, *, attachment_current: bool = True):
     root = _book_tree(tmp_path)
@@ -209,6 +230,7 @@ def test_preview_builds_bounded_evidence_and_plan(
     assert body["intent_sha256"]
     assert body["source"]["workspace_attachment_current"] is True
     assert any(item["status"] == "NOT_RUN" for item in body["excluded"])
+    assert body["recent_runs"][0]["run_id"] == "run-1"
 
 
 def test_preview_blocks_a_stale_workspace_attachment(
@@ -348,3 +370,142 @@ def test_decision_refuses_a_changed_proposal_and_earlier_version(
     )
     assert edits.status_code == 422
     assert not fake.decisions
+
+
+class ComparisonAlive(ImprovementAlive):
+    async def workflow_run(self, workspace_id: str, run_id: str):
+        if run_id == "run-missing":
+            raise LivingBookError("run not found", 404)
+        if run_id != "run-b":
+            return await super().workflow_run(workspace_id, run_id)
+        return {
+            "run": {
+                "id": "run-b",
+                "status": "UNKNOWN",
+                "terminal": True,
+                "workflow": {"name": "chapter-improvement", "version": 806},
+                "budget": {"max_model_calls": 8, "max_output_tokens": 12288},
+            },
+            "stages": [
+                {"stage_id": "review", "state": "COMPLETED"},
+                {
+                    "stage_id": "section_1",
+                    "state": "UNKNOWN",
+                    "error_category": "adapter_execution_failure",
+                    "pi_run_id": "pi-b",
+                },
+            ],
+            "usage": {"calls": 2, "tokens": 30},
+            "plan": {"sha256": "e" * 64},
+            "experience": {
+                "enabled": True,
+                "items": [{"ref": "improvement:prior", "decision": "accepted"}],
+                "retrieval": {
+                    "context_sha256": "f" * 64,
+                    "context_chars": 100,
+                    "selected": [{"improvement_id": "prior", "quality_status": "evaluation_failed"}],
+                    "quality": {"evaluation_failed": 1, "unverified": 1},
+                    "promotion": {"eligible": False, "reason": "context only"},
+                },
+            },
+            "reason": "Section workflow stopped.",
+        }
+
+    async def improvement(self, workspace_id: str, run_id: str):
+        if run_id != "run-b":
+            return await super().improvement(workspace_id, run_id)
+        return {
+            "provenance": "no_proposal",
+            "chapter_path": "content/books/distillation/01-chapter.md",
+            "original": {
+                "path": "content/books/distillation/01-chapter.md",
+                "sha256": "a" * 64,
+            },
+            "proposal": None,
+            "change": None,
+            "evaluation": None,
+            "state": {"decision": "unavailable"},
+            "history": [],
+        }
+
+    async def chapter_evaluations(self, workspace_id: str, source_run_id: str):
+        if source_run_id == "run-b":
+            return {"source_run_id": source_run_id, "evaluations": []}
+        return {
+            "source_run_id": source_run_id,
+            "evaluations": [
+                {
+                    "id": "eval-a",
+                    "status": "COMPLETED",
+                    "terminal_reason": "required_stages_completed",
+                    "evaluation": {"verdict": "benefit"},
+                }
+            ],
+        }
+
+    async def chapter_evaluation(self, workspace_id: str, evaluation_run_id: str):
+        assert evaluation_run_id == "eval-a"
+        return {
+            "run": {"id": "eval-a", "status": "COMPLETED"},
+            "rubric_version": "chapter-evaluation-v1",
+            "proposal_sha256": "b" * 64,
+            "original_sha256": "a" * 64,
+            "usage": {"calls": 1, "tokens": 100},
+            "evaluation": {
+                "verdict": "benefit",
+                "assessment": "A scripted assessment.",
+                "limitations": "Not proof.",
+                "preservation_observations": [],
+                "dimensions": {
+                    "technical_preservation": {"original": 4, "proposed": 4},
+                    "argument_preservation": {"original": 3, "proposed": 4},
+                    "clarity": {"original": 3, "proposed": 3},
+                    "economy": {"original": 2, "proposed": 3},
+                    "completeness": {"original": 3, "proposed": 3},
+                    "provenance_integrity": {"original": 3, "proposed": 4},
+                },
+            },
+            "mechanical": {"status": "pass", "attention": [], "checks": []},
+            "stages": [{"stage_id": "evaluate", "state": "COMPLETED"}],
+        }
+
+
+def test_comparison_shows_an_incomplete_arm_as_inconclusive(
+    client: TestClient, tmp_path, monkeypatch
+):
+    root = _book_tree(tmp_path)
+    _project(client, root)
+    _add_evaluation(client)
+    fake = ComparisonAlive(root / "content" / "books" / "distillation")
+    fake.registered = True
+    monkeypatch.setattr(service, "_client", lambda session, settings: fake)
+
+    response = client.get(
+        "/api/living-book/projects/living-test/improvement/comparison",
+        params=[("run_ids", "run-a"), ("run_ids", "run-b")],
+    )
+    assert response.status_code == 200, response.text
+    body = response.json()
+    assert body["conclusion"]["label"] == "inconclusive"
+    assert body["conclusion"]["valid"] is False
+    assert "no retained proposal" in body["conclusion"]["reason"]
+    assert body["applied"] is False
+    assert [item["run_id"] for item in body["conditions"]] == ["run-a", "run-b"]
+    a, b = body["conditions"]
+    assert a["independent_evaluation"]["verdict"] == "benefit"
+    assert a["independent_evaluation"]["delta_total"] == 3
+    assert b["proposal"] is None
+    assert b["experience"]["enabled"] is True
+    assert b["experience"]["context_sha256"] == "f" * 64
+    assert b["stages"][1]["error_category"] == "adapter_execution_failure"
+
+    same = client.get(
+        "/api/living-book/projects/living-test/improvement/comparison",
+        params=[("run_ids", "run-a"), ("run_ids", "run-a")],
+    )
+    assert same.status_code == 422
+    missing = client.get(
+        "/api/living-book/projects/living-test/improvement/comparison",
+        params=[("run_ids", "run-a"), ("run_ids", "run-missing")],
+    )
+    assert missing.status_code == 404

@@ -1,4 +1,4 @@
-import { RefreshCw, Sparkles, Wrench } from "lucide-react";
+import { ArrowLeft, RefreshCw, Scale, Sparkles, Wrench } from "lucide-react";
 import { useEffect, useState } from "react";
 import { api, errorMessage } from "../../api/client";
 import { useApi } from "../../api/useApi";
@@ -6,6 +6,8 @@ import { InlineError, LoadingBlock, Tag } from "../../components/ui";
 import { useToast } from "../../components/Toast";
 import { formatDateTime } from "../../lib/format";
 import type {
+  LivingBookImprovementComparison,
+  LivingBookImprovementComparisonCondition,
   LivingBookImprovementPreview,
   LivingBookImprovementRun,
 } from "../../types/living-book";
@@ -28,12 +30,45 @@ function tone(status: string): string {
 }
 
 function score(value: unknown): string {
-  return typeof value === "number" ? value.toFixed(2) : "—";
+  return typeof value === "number" ? value.toFixed(2) : "-";
+}
+
+function rubric(value: unknown): string {
+  return typeof value === "number" ? String(value) : "-";
+}
+
+function delta(value: unknown): string {
+  if (typeof value !== "number") return "-";
+  return value > 0 ? `+${value}` : String(value);
 }
 
 function authorityLabel(value: string): string {
   return value.charAt(0).toUpperCase() + value.slice(1);
 }
+
+function conditionLabel(condition: LivingBookImprovementComparisonCondition): string {
+  return condition.use_experience ? "Experience supplied" : "No experience";
+}
+
+function comparisonTone(label: string): string {
+  if (label === "benefit_observed") return "success";
+  if (label === "harm_observed") return "danger";
+  if (label === "inconclusive") return "warning";
+  return "default";
+}
+
+function comparisonLabel(label: string): string {
+  return label.replaceAll("_", " ");
+}
+
+const DIMENSION_ORDER = [
+  "technical_preservation",
+  "argument_preservation",
+  "clarity",
+  "economy",
+  "completeness",
+  "provenance_integrity",
+];
 
 export function ImprovementPanel({
   projectId,
@@ -52,6 +87,8 @@ export function ImprovementPanel({
   const [comment, setComment] = useState("");
   const [acknowledge, setAcknowledge] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [compareIds, setCompareIds] = useState<string[]>([]);
+  const [compareOpen, setCompareOpen] = useState(false);
 
   const previewPath = `/api/living-book/projects/${projectId}/improvement/preview?chapter_id=${encodeURIComponent(
     chapterId,
@@ -63,6 +100,13 @@ export function ImprovementPanel({
       : null,
     { pollMs: runId ? 2500 : 0 },
   );
+  const comparisonQuery =
+    compareOpen && compareIds.length === 2
+      ? `/api/living-book/projects/${projectId}/improvement/comparison?run_ids=${
+          encodeURIComponent(compareIds[0])
+        }&run_ids=${encodeURIComponent(compareIds[1])}`
+      : null;
+  const comparison = useApi<LivingBookImprovementComparison>(comparisonQuery);
 
   useEffect(() => {
     setRunId(null);
@@ -70,7 +114,17 @@ export function ImprovementPanel({
     setComment("");
     setAcknowledge(false);
     setUseExperience(false);
+    setCompareIds([]);
+    setCompareOpen(false);
   }, [chapterId]);
+
+  function toggleCompare(run: string) {
+    setCompareIds((current) => {
+      if (current.includes(run)) return current.filter((item) => item !== run);
+      if (current.length >= 2) return [current[1], run];
+      return [...current, run];
+    });
+  }
 
   async function start() {
     const value = preview.data;
@@ -155,6 +209,18 @@ export function ImprovementPanel({
     } finally {
       setRefreshing(false);
     }
+  }
+
+  if (compareOpen) {
+    return (
+      <ImprovementComparisonView
+        comparison={comparison.data}
+        loading={comparison.loading}
+        error={comparison.error ? errorMessage(comparison.error) : null}
+        onBack={() => setCompareOpen(false)}
+        onReload={comparison.reload}
+      />
+    );
   }
 
   if (runId) {
@@ -407,6 +473,47 @@ export function ImprovementPanel({
               </li>
             ))}
           </ul>
+        </section>
+      ) : null}
+
+      {value.recent_runs?.length ? (
+        <section className="living-improve-card">
+          <span className="eyebrow">Compare runs</span>
+          <p className="muted small">
+            Select one run without experience and one with experience. Runs that stopped before
+            retaining a proposal remain selectable, so an incomplete comparison is visible rather
+            than hidden.
+          </p>
+          <ul className="living-improve-compare-list">
+            {value.recent_runs.map((item) => (
+              <li key={item.run_id}>
+                <label className="living-improve-check">
+                  <input
+                    type="checkbox"
+                    aria-label={`Compare ${item.run_id}`}
+                    checked={compareIds.includes(item.run_id)}
+                    disabled={!compareIds.includes(item.run_id) && compareIds.length >= 2}
+                    onChange={() => toggleCompare(item.run_id)}
+                  />
+                  <span>
+                    <code>{item.run_id.slice(0, 8)}.</code> {item.status}
+                    {item.terminal_reason ? ` - ${item.terminal_reason}` : ""}
+                    {item.created_at ? ` - ${formatDateTime(item.created_at)}` : ""}
+                  </span>
+                </label>
+              </li>
+            ))}
+          </ul>
+          <div className="living-improve-actions">
+            <button
+              className="button button-secondary button-small"
+              disabled={compareIds.length !== 2}
+              onClick={() => setCompareOpen(true)}
+            >
+              <Scale size={14} /> Compare selected
+            </button>
+            <span className="muted small">{compareIds.length}/2 selected.</span>
+          </div>
         </section>
       ) : null}
 
@@ -688,7 +795,7 @@ function ImprovementRunView({
             {run.history.map((item, index) => (
               <li key={item.event_id || index}>
                 <strong>{item.decision}</strong>
-                {item.comment ? <span> — {item.comment}</span> : null}
+                {item.comment ? <span> - {item.comment}</span> : null}
                 {item.recorded_at ? (
                   <span className="muted small"> {formatDateTime(item.recorded_at)}</span>
                 ) : null}
@@ -697,6 +804,322 @@ function ImprovementRunView({
           </ul>
         </section>
       ) : null}
+    </div>
+  );
+}
+
+function dimensionCell(
+  condition: LivingBookImprovementComparisonCondition,
+  name: string,
+): string {
+  const value = condition.independent_evaluation?.deltas?.[name];
+  if (!value) return "-";
+  return `${rubric(value.original)} -> ${rubric(value.proposed)} (${delta(value.delta)})`;
+}
+
+function ComparisonConditionCard({
+  condition,
+}: {
+  condition: LivingBookImprovementComparisonCondition;
+}) {
+  const experience = condition.experience || {};
+  const quality = experience.quality || {};
+  const selected = experience.selected || [];
+  const items = experience.items || [];
+  const evaluation = condition.independent_evaluation;
+  const proposal = condition.proposal;
+  const failed = condition.stages.filter(
+    (stage) => stage.state === "UNKNOWN" || stage.state === "FAILED",
+  );
+
+  return (
+    <section className="living-improve-card living-improve-compare-card">
+      <div className="living-improve-row">
+        <div>
+          <span className="eyebrow">Condition</span>
+          <h4>{conditionLabel(condition)}</h4>
+        </div>
+        <Tag tone={tone(condition.status || "unknown")}>{condition.status || "unknown"}</Tag>
+      </div>
+      <p className="muted small">
+        <code>{condition.run_id}</code> - {condition.status_label}
+      </p>
+      {condition.reason ? <p className="muted small">{condition.reason}</p> : null}
+
+      <div className="living-improve-compare-block">
+        <span className="eyebrow">Experience</span>
+        {condition.use_experience ? (
+          <>
+            <p className="muted small">
+              {selected.length} selected item(s), {experience.context_chars ?? 0} characters.
+              Quality: {quality.evaluation_failed ?? 0} failed, {quality.unverified ?? 0}{" "}
+              unverified.
+            </p>
+            <code className="living-improve-hash">
+              context {String(experience.context_sha256 || "").slice(0, 16)}.
+            </code>
+            {items.length ? (
+              <ul className="living-improve-experience">
+                {items.slice(0, 3).map((item: Record<string, any>) => (
+                  <li key={item.ref || item.improvement_id}>
+                    <strong>{item.decision || "item"}</strong>
+                    {item.quality?.status ? (
+                      <Tag tone={tone(item.quality.status)}>{item.quality.status}</Tag>
+                    ) : null}
+                    {item.quality?.quality_unverified ? (
+                      <span className="muted small"> quality unverified</span>
+                    ) : null}
+                    <code>{item.ref || item.improvement_id}</code>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+            {experience.promotion?.eligible === false ? (
+              <p className="muted small">
+                Context only, not a proven lesson. {experience.promotion.reason}
+              </p>
+            ) : null}
+          </>
+        ) : (
+          <p className="muted small">No experience was supplied.</p>
+        )}
+      </div>
+
+      <div className="living-improve-compare-block">
+        <span className="eyebrow">Proposal</span>
+        {proposal ? (
+          <>
+            <p className="muted small">
+              Proposal {String(proposal.sha256).slice(0, 12)}. -{" "}
+              {condition.change
+                ? `${condition.change.lines_added ?? 0} added, ${
+                    condition.change.lines_removed ?? 0
+                  } removed`
+                : "No diff"}
+            </p>
+            <blockquote>
+              {proposal.excerpt}
+              {proposal.excerpt_is_partial ? (
+                <small>Excerpt only; open the run for the full proposal.</small>
+              ) : null}
+            </blockquote>
+          </>
+        ) : (
+          <>
+            <p className="muted small">
+              No proposal retained. This condition is incomplete, not a quality result.
+            </p>
+            {failed.length ? (
+              <ul className="living-improve-history">
+                {failed.slice(0, 5).map((stage) => (
+                  <li key={stage.stage_id}>
+                    <code>{stage.stage_id}</code> {stage.state}
+                    {stage.error_category ? ` - ${stage.error_category}` : ""}
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+          </>
+        )}
+      </div>
+
+      <div className="living-improve-compare-block">
+        <span className="eyebrow">Independent evaluation</span>
+        {evaluation ? (
+          <>
+            <div className="living-improve-row">
+              <strong>{evaluation.verdict}</strong>
+              <Tag tone={tone(evaluation.verdict || "unknown")}>
+                {evaluation.rubric_version || "rubric"}
+              </Tag>
+            </div>
+            {evaluation.assessment ? <p>{evaluation.assessment}</p> : null}
+            <p className="muted small">
+              Mechanical {evaluation.mechanical.status || "unknown"}; attention:{" "}
+              {evaluation.mechanical.attention.length
+                ? evaluation.mechanical.attention.join(", ")
+                : "none"}
+              .
+            </p>
+            {evaluation.preservation_observations?.length ? (
+              <ul className="living-improve-limits">
+                {evaluation.preservation_observations.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            ) : null}
+            {evaluation.limitations ? (
+              <p className="muted small">{evaluation.limitations}</p>
+            ) : null}
+            <p className="muted small">
+              {evaluation.usage?.calls ?? 0} call(s) - {evaluation.usage?.tokens ?? 0} tokens -{" "}
+              <code>{evaluation.run_id}</code>
+            </p>
+          </>
+        ) : (
+          <>
+            <p className="muted small">No completed independent evaluation.</p>
+            {condition.evaluation_attempts.length ? (
+              <ul className="living-improve-history">
+                {condition.evaluation_attempts.map((item) => (
+                  <li key={item.run_id || "attempt"}>
+                    <code>{item.run_id}</code> {item.status}
+                    {item.terminal_reason ? ` - ${item.terminal_reason}` : ""}
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+          </>
+        )}
+      </div>
+
+      <div className="living-improve-compare-block">
+        <span className="eyebrow">Assessment and receipts</span>
+        <p className="muted small">
+          Generation:{" "}
+          {condition.generation_evaluation?.verdict ||
+            condition.generation_evaluation?.status ||
+            "not recorded"}{" "}
+          - {condition.generation_evaluation?.kind || "model assessment"}
+        </p>
+        <p className="muted small">
+          Decision: {condition.decision?.decision || "unavailable"} - {condition.usage?.calls ?? 0}{" "}
+          run call(s) - {condition.usage?.tokens ?? 0} tokens
+        </p>
+        <p className="muted small">
+          Original <code>{String(condition.original?.sha256 || "").slice(0, 16)}</code> - plan{" "}
+          <code>{String(condition.receipts?.plan_sha256 || "").slice(0, 16)}</code>
+        </p>
+        <p className="muted small">
+          Evaluation run <code>{condition.receipts?.evaluation_run_id || "none"}</code>
+        </p>
+      </div>
+    </section>
+  );
+}
+
+function ImprovementComparisonView({
+  comparison,
+  loading,
+  error,
+  onBack,
+  onReload,
+}: {
+  comparison: LivingBookImprovementComparison | null;
+  loading: boolean;
+  error: string | null;
+  onBack: () => void;
+  onReload: () => void;
+}) {
+  if (loading && !comparison) return <LoadingBlock label="Loading the run comparison" compact />;
+  if (error) {
+    return (
+      <div className="living-improve">
+        <InlineError message={error} />
+        <div className="living-improve-actions">
+          <button className="button button-secondary button-small" onClick={onBack}>
+            <ArrowLeft size={14} /> Back to preview
+          </button>
+          <button className="button button-secondary button-small" onClick={onReload}>
+            <RefreshCw size={14} /> Reload
+          </button>
+        </div>
+      </div>
+    );
+  }
+  if (!comparison) return null;
+  const a =
+    comparison.conditions.find((item) => !item.use_experience) || comparison.conditions[0];
+  const b =
+    comparison.conditions.find((item) => item.use_experience) || comparison.conditions[1];
+  const dimensions = DIMENSION_ORDER.filter((name) =>
+    comparison.conditions.some(
+      (item) => item.independent_evaluation?.deltas?.[name] !== undefined,
+    ),
+  );
+
+  return (
+    <div className="living-improve">
+      <div className="living-improve-head">
+        <div>
+          <span className="eyebrow">Evidence comparison</span>
+          <h3>Two runs, one pair</h3>
+          <p className="muted small">
+            {comparison.chapter_path} - both proposals are assessed independently; the book is not
+            changed.
+          </p>
+        </div>
+        <div className="living-improve-run-head-actions">
+          <button className="text-link" onClick={onBack}>
+            <ArrowLeft size={14} /> Back to preview
+          </button>
+          <Tag tone={comparisonTone(comparison.conclusion.label)}>
+            {comparisonLabel(comparison.conclusion.label)}
+          </Tag>
+        </div>
+      </div>
+
+      <section className="living-improve-card">
+        <span className="eyebrow">Conclusion</span>
+        <div className="living-improve-row">
+          <strong>{comparisonLabel(comparison.conclusion.label)}</strong>
+          <Tag tone={comparison.conclusion.valid ? "default" : "warning"}>
+            {comparison.conclusion.valid ? "comparison valid" : "comparison incomplete"}
+          </Tag>
+        </div>
+        <p>{comparison.conclusion.reason}</p>
+        <p className="muted small">
+          Rules {comparison.conclusion.rules}. {comparison.notice}
+        </p>
+      </section>
+
+      <div className="living-improve-compare-grid">
+        {comparison.conditions.map((condition) => (
+          <ComparisonConditionCard key={condition.run_id} condition={condition} />
+        ))}
+      </div>
+
+      <section className="living-improve-card">
+        <span className="eyebrow">Side-by-side rubric</span>
+        {dimensions.length ? (
+          <div className="living-improve-compare-table-wrap">
+            <table className="living-improve-compare-table">
+              <thead>
+                <tr>
+                  <th>Dimension</th>
+                  <th>{conditionLabel(a)}</th>
+                  <th>{conditionLabel(b)}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {dimensions.map((name) => (
+                  <tr key={name}>
+                    <td>{name.replaceAll("_", " ")}</td>
+                    <td>{dimensionCell(a, name)}</td>
+                    <td>{dimensionCell(b, name)}</td>
+                  </tr>
+                ))}
+                <tr>
+                  <td>total</td>
+                  <td>{delta(a.independent_evaluation?.delta_total)}</td>
+                  <td>{delta(b.independent_evaluation?.delta_total)}</td>
+                </tr>
+                <tr>
+                  <td>mechanical attention</td>
+                  <td>{a.independent_evaluation?.mechanical.attention_count ?? "-"}</td>
+                  <td>{b.independent_evaluation?.mechanical.attention_count ?? "-"}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <p className="muted small">No completed independent evaluations to compare.</p>
+        )}
+        <p className="muted small">
+          Original to proposed (delta). Rubric judgments, not measurements. Both assessments come
+          from the same model family as the generator.
+        </p>
+      </section>
     </div>
   );
 }

@@ -1,0 +1,237 @@
+{
+  "schema": "mc-living-book-02d.results.v1",
+  "experiment_id": "MC-LIVING-BOOK-02D-PILOT-1",
+  "manifest_sha256": "4fdc321b9ee4fdfc795b7c73055818c8366db6a56fe88434f87a0807d7e93474",
+  "finished_at": "2026-11-19T23:58:48Z",
+  "outcome": "inconclusive",
+  "outcome_reason": "Arm B produced no proposal. Two attempts reached the review stage and then timed out at the first experience-bearing section request. There is no B proposal to evaluate, so the pre-registered A/B comparison cannot be made.",
+  "hypotheses": {
+    "H1": {
+      "question": "Does adding the workspace's existing context-only owner-decision experience change the quality of a later chapter proposal compared with no experience?",
+      "status": "not_tested",
+      "reason": "The no-experience arm completed, but the experience arm produced no proposal after two infrastructure timeouts."
+    },
+    "H2": {
+      "question": "Does an independently evaluated lesson transfer to a different held-out chapter?",
+      "status": "not_tested",
+      "reason": "No independently evaluated lesson is eligible. The only eligible experience remains quality-unverified with evaluation_failed."
+    }
+  },
+  "sources": {
+    "chapter_path": "content/books/distillation/15-chapter.md",
+    "chapter_sha256": "5bf5c4c7e06c2bea92156a8ff78fbe00a8da3151f6cb92a537f8b3826f2e464f",
+    "chapter_unchanged_after_runs": true,
+    "chapter_14_sha256": "ad89a4e96412b58818579c79b6c06dd6eac6082b3f6e549c4a337fb7d5acaa05",
+    "chapter_14_unchanged_after_runs": true,
+    "plan_sha256": "637feb2227e35a74ef9cd0ada5b688d81e0763879e11a210de9a782e86b085a4",
+    "criteria_sha256": "6d0ac3838618822c3a4015c98ec496aa2897ea248fc27b1bf6c626b585bc6ce4",
+    "experience_context_sha256": "e5993c625ac957e55de39b5b5be060bddb808c4ab60b18cc37c7b5edd610653a",
+    "experience_context_chars": 2070
+  },
+  "conditions": {
+    "A": {
+      "use_experience": false,
+      "run_id": "1bae6afa-3b24-4cf6-8683-bad990faf8e7",
+      "status": "COMPLETED",
+      "terminal_reason": "required_stages_completed",
+      "workflow_version": 1006,
+      "model_calls": 8,
+      "charged_tokens": 51312,
+      "proposal": {
+        "artifact_id": "08978b9a-2051-4b57-8e5e-9fbfd6b2d408",
+        "artifact_sha256": "03afe1cf80fcf44be40f6502c37b99867ed0188239a46ac239f2dd6a8dec8ba6",
+        "proposal_sha256": "93914a3d29824b96e7353289d5733bdfc70503c81ae01c913230eeafd3116ef1",
+        "lines_added": 61,
+        "lines_removed": 181,
+        "retained": true
+      },
+      "generation_evaluation": {
+        "status": "evaluated",
+        "verdict": "promising",
+        "kind": "model_assessment"
+      },
+      "decision_state": "pending",
+      "decision_history_count": 0
+    },
+    "B": {
+      "use_experience": true,
+      "proposal": null,
+      "retained": false,
+      "attempts": [
+        {
+          "attempt": 1,
+          "run_id": "e493ef43-4316-42e2-8c37-cb917a5b1494",
+          "status": "UNKNOWN",
+          "terminal_reason": "adapter_execution_failure",
+          "model_calls": 2,
+          "charged_tokens": 31454,
+          "review_stage": "COMPLETED",
+          "section_1_stage": "UNKNOWN",
+          "pi_run_id": "ca6d4fa6-1396-4b53-8d9f-0da1998ca64b",
+          "pi_terminal_reason": "ambiguous_provider_request",
+          "provider_error_category": "timeout",
+          "provider_latency_ms": 33086,
+          "provider_usage": null,
+          "excluded_from_outcome": true
+        },
+        {
+          "attempt": 2,
+          "run_id": "5033629a-7e85-4cb7-9a5e-4f419376e37a",
+          "status": "UNKNOWN",
+          "terminal_reason": "adapter_execution_failure",
+          "model_calls": 2,
+          "charged_tokens": 30834,
+          "review_stage": "COMPLETED",
+          "section_1_stage": "UNKNOWN",
+          "pi_run_id": "17332de5-1079-46ac-93f3-4ad0f573e9c2",
+          "pi_terminal_reason": "ambiguous_provider_request",
+          "provider_error_category": "timeout",
+          "provider_latency_ms": 33159,
+          "provider_usage": null,
+          "excluded_from_outcome": true,
+          "note": "The one allowed infrastructure retry. The retry's authorization input_sha256 was identical to attempt 1."
+        }
+      ],
+      "decision_state": "unavailable"
+    }
+  },
+  "experience_injection": {
+    "requested": true,
+    "selected_items": 1,
+    "item": {
+      "improvement_id": "390ba0bd-0662-4788-b24c-284721cf4dd6",
+      "chapter_path": "content/books/distillation/14-chapter.md",
+      "decision": "accepted",
+      "quality_status": "evaluation_failed",
+      "quality_unverified": true,
+      "promotable": false,
+      "retrieval_score": 0.635,
+      "quality_note": "The evaluation did not complete. Owner acceptance does not establish quality."
+    },
+    "context_sha256_verified_in_both_attempts": true,
+    "verification": "Both B attempts exposed enabled=true, one item, 2,070 context characters and context_sha256 e5993c62..."
+  },
+  "independent_evaluation": {
+    "A": {
+      "run_id": "7f5f348d-0e52-4057-a77b-c5a559add843",
+      "status": "COMPLETED",
+      "verdict": "benefit",
+      "assessment": "Proposal tightens prose while retaining the chapter's negative result, four-arm design, update mismatch, equations, tables, and caveats. Mechanical checks pass with headings, numbers, equations, URLs and tables preserved. No material technical or argument loss was found; condensation is substantive rather than deletional.",
+      "dimensions": {
+        "technical_preservation": {
+          "original": 4,
+          "proposed": 4,
+          "delta": 0
+        },
+        "argument_preservation": {
+          "original": 3,
+          "proposed": 4,
+          "delta": 1
+        },
+        "clarity": {
+          "original": 3,
+          "proposed": 3,
+          "delta": 0
+        },
+        "economy": {
+          "original": 2,
+          "proposed": 3,
+          "delta": 1
+        },
+        "completeness": {
+          "original": 3,
+          "proposed": 3,
+          "delta": 0
+        },
+        "provenance_integrity": {
+          "original": 3,
+          "proposed": 4,
+          "delta": 1
+        }
+      },
+      "delta_total": 3,
+      "mechanical": {
+        "schema": "chapter-mechanical-preservation.v1",
+        "status": "pass",
+        "attention": [],
+        "checks": {
+          "headings": {
+            "status": "pass",
+            "original": 19,
+            "proposed": 19
+          },
+          "code_blocks": {
+            "status": "pass",
+            "checked": 0,
+            "missing": 0
+          },
+          "urls": {
+            "status": "pass",
+            "checked": 3,
+            "missing": 0
+          },
+          "numbers": {
+            "status": "pass",
+            "checked": 140,
+            "missing": 0
+          },
+          "equations": {
+            "status": "pass",
+            "checked": 17,
+            "missing": 0
+          },
+          "qualifications": {
+            "status": "pass",
+            "original": 55,
+            "proposed": 55
+          },
+          "quotes_and_tables": {
+            "status": "pass",
+            "checked": 16,
+            "missing": 0
+          }
+        }
+      },
+      "limitations": "Evaluation based on provided texts and deterministic presence checks only; no independent verification of empirical claims or full semantic equivalence beyond sampled passages.",
+      "pi_run_id": "c380b58f-f846-483c-b0d1-396bbfcc16a2",
+      "pi_state": "SETTLED",
+      "model_calls": 1,
+      "charged_tokens": 13945,
+      "prompt_tokens": 13278,
+      "completion_tokens": 667,
+      "latency_ms": 6805.8,
+      "cost_usd": null,
+      "cost_note": "ALIVE has no price table for this transport; cost is unknown, not zero."
+    },
+    "B": null
+  },
+  "comparison": {
+    "valid": false,
+    "label": "inconclusive",
+    "reason": "No B proposal or independent B evaluation exists.",
+    "delta_total_b_minus_a": null,
+    "delta_economy_b_minus_a": null,
+    "claim": "No incremental benefit, no-benefit or harm conclusion follows from this pair."
+  },
+  "receipts": {
+    "manifest": "docs/acceptance/mc-living-book-02d/experiment-manifest.json",
+    "freeze": "docs/acceptance/mc-living-book-02d/freeze-receipt.json",
+    "criteria": "docs/acceptance/mc-living-book-02d/criteria.txt",
+    "a_run": "ALIVE workflow run 1bae6afa-3b24-4cf6-8683-bad990faf8e7",
+    "a_evaluation": "ALIVE chapter-evaluation run 7f5f348d-0e52-4057-a77b-c5a559add843",
+    "b_attempt_1": "ALIVE workflow run e493ef43-4316-42e2-8c37-cb917a5b1494",
+    "b_attempt_2": "ALIVE workflow run 5033629a-7e85-4cb7-9a5e-4f419376e37a",
+    "pi_receipts": [
+      "c380b58f-f846-483c-b0d1-396bbfcc16a2",
+      "ca6d4fa6-1396-4b53-8d9f-0da1998ca64b",
+      "17332de5-1079-46ac-93f3-4ad0f573e9c2"
+    ]
+  },
+  "non_claims": [
+    "The outcome is inconclusive; it is not evidence that experience helps, does not help, or harms.",
+    "The experience item is not an independently evaluated lesson; its evaluation failed and it remains quality-unverified.",
+    "Arm A's benefit verdict is one blind model assessment of one proposal, not proof of quality or learning.",
+    "No decision was accepted or changed; no promotion occurred.",
+    "No manuscript was edited, promoted or deployed."
+  ]
+}

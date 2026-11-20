@@ -24,6 +24,7 @@ LivingBookProblem = living_service.LivingBookProblem
 SCHEMA = "living-book-improvement-preview.v1"
 INTENT_SCHEMA = "living-book-improvement-intent.v1"
 RUN_SCHEMA = "living-book-improvement-run.v1"
+COMPARISON_SCHEMA = "living-book-improvement-comparison.v1"
 FOCUSES = {"economy": "economy"}
 PROSE_MEASURE = "mission.prose.manuscript-prose-v1"
 MAX_BRIEF = 600
@@ -368,6 +369,24 @@ async def preview(
     except (LivingBookError, LivingBookUnavailable) as error:
         warnings.append(f"Recent improvements could not be listed: {error}")
 
+    recent_runs: list[dict[str, Any]] = []
+    try:
+        listing = await client.workflow_runs(str(book["workspace_id"]))
+        recent_runs = [
+            {
+                "run_id": item.get("id"),
+                "status": item.get("status"),
+                "terminal": item.get("terminal"),
+                "terminal_reason": item.get("terminal_reason"),
+                "created_at": item.get("created_at"),
+                "workflow_version": (item.get("workflow") or {}).get("version"),
+            }
+            for item in (listing.get("runs") or [])
+            if item.get("chapter_path") == chapter.get("path")
+        ][:10]
+    except (LivingBookError, LivingBookUnavailable) as error:
+        warnings.append(f"Recent runs could not be listed: {error}")
+
     experience: dict[str, Any] | None = None
     if criteria:
         try:
@@ -447,6 +466,7 @@ async def preview(
         "plan": plan_view,
         "experience": experience,
         "recent_improvements": recent,
+        "recent_runs": recent_runs,
         "authority": AUTHORITY,
         "notice": NOTICE,
         "use_experience": use_experience,
@@ -646,6 +666,279 @@ async def detail(
         "experience": run.get("experience"),
         "plan": run.get("plan"),
         "notice": NOTICE,
+        "applied": False,
+    }
+
+
+def _evaluation_summary(detail: dict[str, Any] | None) -> dict[str, Any] | None:
+    if not detail:
+        return None
+    evaluation = detail.get("evaluation") or {}
+    dimensions = evaluation.get("dimensions") or {}
+    deltas: dict[str, dict[str, Any]] = {}
+    for name, value in dimensions.items():
+        original = value.get("original")
+        proposed = value.get("proposed")
+        deltas[name] = {
+            "original": original,
+            "proposed": proposed,
+            "delta": proposed - original
+            if isinstance(original, int) and isinstance(proposed, int)
+            else None,
+        }
+    mechanical = detail.get("mechanical") or {}
+    attention = mechanical.get("attention") or []
+    total = sum(item["delta"] for item in deltas.values() if isinstance(item["delta"], int))
+    economy = deltas.get("economy") or {}
+    return {
+        "run_id": detail.get("run", {}).get("id"),
+        "status": detail.get("run", {}).get("status"),
+        "rubric_version": detail.get("rubric_version"),
+        "verdict": evaluation.get("verdict"),
+        "assessment": evaluation.get("assessment"),
+        "limitations": evaluation.get("limitations"),
+        "preservation_observations": evaluation.get("preservation_observations") or [],
+        "deltas": deltas,
+        "delta_total": total,
+        "delta_economy": economy.get("delta"),
+        "mechanical": {
+            "status": mechanical.get("status"),
+            "attention": attention,
+            "attention_count": len(attention),
+            "checks": mechanical.get("checks") or [],
+            "note": mechanical.get("note"),
+        },
+        "usage": detail.get("usage"),
+        "proposal_sha256": detail.get("proposal_sha256"),
+        "original_sha256": detail.get("original_sha256"),
+        "stages": detail.get("stages") or [],
+    }
+
+
+def _condition_view(
+    run: dict[str, Any],
+    improvement: dict[str, Any],
+    evaluation: dict[str, Any] | None,
+    attempts: list[dict[str, Any]],
+) -> dict[str, Any]:
+    view_run = run.get("run") or {}
+    experience = run.get("experience") or {}
+    retrieval = experience.get("retrieval") or {}
+    proposal = improvement.get("proposal") or None
+    proposal_view = None
+    if proposal:
+        markdown = proposal.get("markdown") or ""
+        proposal_view = {
+            "artifact_id": proposal.get("artifact_id"),
+            "artifact_sha256": proposal.get("artifact_sha256"),
+            "sha256": proposal.get("sha256"),
+            "coverage": proposal.get("coverage"),
+            "limitations": proposal.get("limitations"),
+            "excerpt": markdown[:1200],
+            "excerpt_is_partial": len(markdown) > 1200,
+        }
+    change = improvement.get("change") or None
+    return {
+        "run_id": view_run.get("id"),
+        "status": view_run.get("status"),
+        "terminal": view_run.get("terminal"),
+        "status_label": _status_label(view_run, improvement),
+        "reason": run.get("reason"),
+        "chapter_path": improvement.get("chapter_path"),
+        "use_experience": bool(experience.get("enabled")),
+        "experience": {
+            "enabled": bool(experience.get("enabled")),
+            "context_sha256": retrieval.get("context_sha256"),
+            "context_chars": retrieval.get("context_chars"),
+            "selected": retrieval.get("selected") or [],
+            "items": experience.get("items") or [],
+            "quality": retrieval.get("quality"),
+            "promotion": retrieval.get("promotion"),
+        },
+        "proposal": proposal_view,
+        "change": {
+            "differs": change.get("differs"),
+            "lines_added": change.get("lines_added"),
+            "lines_removed": change.get("lines_removed"),
+        }
+        if change
+        else None,
+        "generation_evaluation": improvement.get("evaluation"),
+        "independent_evaluation": _evaluation_summary(evaluation),
+        "evaluation_attempts": [
+            {
+                "run_id": item.get("id"),
+                "status": item.get("status"),
+                "terminal_reason": item.get("terminal_reason"),
+                "verdict": (item.get("evaluation") or {}).get("verdict"),
+            }
+            for item in attempts
+        ],
+        "original": improvement.get("original"),
+        "decision": improvement.get("state"),
+        "usage": run.get("usage"),
+        "budget": view_run.get("budget"),
+        "plan": run.get("plan"),
+        "stages": [
+            {
+                "stage_id": item.get("stage_id"),
+                "state": item.get("state"),
+                "error_category": item.get("error_category"),
+                "pi_run_id": item.get("pi_run_id"),
+            }
+            for item in (run.get("stages") or [])
+        ],
+        "receipts": {
+            "run_id": view_run.get("id"),
+            "evaluation_run_id": (evaluation or {}).get("run", {}).get("id"),
+            "proposal_sha256": (proposal or {}).get("sha256"),
+            "plan_sha256": (run.get("plan") or {}).get("sha256"),
+            "original_sha256": (improvement.get("original") or {}).get("sha256"),
+        },
+    }
+
+
+def _conclusion(conditions: list[dict[str, Any]]) -> dict[str, Any]:
+    rules = "mc-living-book-02d.pair-comparison.v1"
+    a = next((item for item in conditions if not item["use_experience"]), None)
+    b = next((item for item in conditions if item["use_experience"]), None)
+    if a is None or b is None:
+        return {
+            "label": "inconclusive",
+            "valid": False,
+            "reason": "Select one run without experience and one run with experience.",
+            "rules": rules,
+        }
+    missing = []
+    if not a.get("proposal"):
+        missing.append("the no-experience run has no retained proposal")
+    if not b.get("proposal"):
+        missing.append("the experience run has no retained proposal")
+    ea = a.get("independent_evaluation")
+    eb = b.get("independent_evaluation")
+    if not ea:
+        missing.append("the no-experience run has no completed independent evaluation")
+    if not eb:
+        missing.append("the experience run has no completed independent evaluation")
+    if missing:
+        return {
+            "label": "inconclusive",
+            "valid": False,
+            "reason": "; ".join(missing) + ".",
+            "rules": rules,
+        }
+    if ea.get("verdict") == "inconclusive" or eb.get("verdict") == "inconclusive":
+        return {
+            "label": "inconclusive",
+            "valid": True,
+            "reason": "At least one independent evaluation returned inconclusive.",
+            "rules": rules,
+        }
+    guardrails = ("technical_preservation", "argument_preservation", "provenance_integrity")
+    b_guard = [
+        (eb["deltas"].get(name) or {}).get("delta")
+        for name in guardrails
+    ]
+    b_guard_values = [value for value in b_guard if isinstance(value, int)]
+    if (
+        eb.get("verdict") == "harm"
+        or any(value < 0 for value in b_guard_values)
+        or eb["mechanical"]["attention_count"] > ea["mechanical"]["attention_count"]
+        or eb["delta_total"] < ea["delta_total"]
+    ):
+        return {
+            "label": "harm_observed",
+            "valid": True,
+            "reason": "The experience arm shows harm or a preservation/measurement regression.",
+            "rules": rules,
+        }
+    if (
+        eb.get("verdict") == "benefit"
+        and ea.get("verdict") != "benefit"
+        and eb["delta_total"] > ea["delta_total"]
+        and isinstance(eb.get("delta_economy"), int)
+        and isinstance(ea.get("delta_economy"), int)
+        and eb["delta_economy"] > ea["delta_economy"]
+        and eb["mechanical"]["attention_count"] <= ea["mechanical"]["attention_count"]
+        and all(value >= 0 for value in b_guard_values)
+    ):
+        return {
+            "label": "benefit_observed",
+            "valid": True,
+            "reason": (
+                "In this pair the experience arm's independent assessment is benefit, its "
+                "rubric deltas exceed the no-experience arm's and no guardrail fell."
+            ),
+            "rules": rules,
+        }
+    return {
+        "label": "no_benefit_observed",
+        "valid": True,
+        "reason": "The pair is valid and neither the benefit nor the harm rule is met.",
+        "rules": rules,
+    }
+
+
+async def comparison(
+    session: Session,
+    settings,
+    project_id: str,
+    run_ids: list[str],
+) -> dict[str, Any]:
+    if len(run_ids) != 2 or len(set(run_ids)) != 2:
+        raise LivingBookProblem(
+            "Select exactly two different improvement runs.",
+            state="comparison_requires_two_runs",
+            status=422,
+        )
+    context = living_service._project_context(session, project_id)
+    client = living_service._client(session, settings)
+    book = await _book_detail(client, context)
+    workspace_id = str(book["workspace_id"])
+    conditions = []
+    for run_id in run_ids:
+        try:
+            run = await client.workflow_run(workspace_id, run_id)
+        except LivingBookError as error:
+            if error.status == 404:
+                raise LivingBookProblem(
+                    "That improvement run is not in this book's workspace.",
+                    state="run_not_found",
+                    status=404,
+                ) from None
+            raise
+        improvement = await client.improvement(workspace_id, run_id)
+        listed = await client.chapter_evaluations(workspace_id, run_id)
+        attempts = listed.get("evaluations") or []
+        completed = [
+            item
+            for item in attempts
+            if item.get("status") == "COMPLETED" and item.get("evaluation")
+        ]
+        evaluation = (
+            await client.chapter_evaluation(workspace_id, str(completed[0]["id"]))
+            if completed
+            else None
+        )
+        conditions.append(_condition_view(run, improvement, evaluation, attempts))
+    chapters = {item.get("chapter_path") for item in conditions}
+    if len(chapters) != 1:
+        raise LivingBookProblem(
+            "Compare two runs of the same chapter.",
+            state="comparison_chapters_differ",
+            status=422,
+        )
+    return {
+        "schema": COMPARISON_SCHEMA,
+        "book_id": book.get("id"),
+        "workspace_id": workspace_id,
+        "chapter_path": conditions[0].get("chapter_path"),
+        "conditions": conditions,
+        "conclusion": _conclusion(conditions),
+        "notice": (
+            "One pair of independent model assessments. The label follows the frozen 02D "
+            "comparison rules; it is not proof of learning, quality or general transfer."
+        ),
         "applied": False,
     }
 
