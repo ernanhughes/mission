@@ -489,6 +489,7 @@ def test_comparison_shows_an_incomplete_arm_as_inconclusive(
     assert body["conclusion"]["label"] == "inconclusive"
     assert body["conclusion"]["valid"] is False
     assert "no retained proposal" in body["conclusion"]["reason"]
+    assert "Cost is unknown" in body["notice"]
     assert body["applied"] is False
     assert [item["run_id"] for item in body["conditions"]] == ["run-a", "run-b"]
     a, b = body["conditions"]
