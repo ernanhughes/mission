@@ -937,7 +937,8 @@ async def comparison(
         "conclusion": _conclusion(conditions),
         "notice": (
             "One pair of independent model assessments. The label follows the frozen 02D "
-            "comparison rules; it is not proof of learning, quality or general transfer."
+            "comparison rules; it is not proof of learning, quality or general transfer. "
+            "Cost is unknown: ALIVE has no price table for this transport."
         ),
         "applied": False,
     }
