@@ -15,7 +15,7 @@ comparison verified.** This is a research pilot. It does not establish learning 
 | Rubric | `chapter-evaluation-v1` (six dimensions, 0–4) |
 | Mechanical preservation | seven deterministic presence checks |
 | ALIVE commit | `435fc649` (evaluation path), `6eedbf75` (usage receipts) |
-| Mission commits | `2653647` (comparison view), `4671876` (Pi receipt in the view), `35ad2f9` (cost unknown) |
+| Mission commits | `2653647` (comparison view), `4671876` (Pi receipt), `35ad2f9` (cost unknown), `5ade60a` (retrieval receipt) |
 
 The route accepts one retained proposal and its original, binds both identities in the Grant,
 rechecks them at dispatch, and records an append-only evaluation run. It never regenerates,
