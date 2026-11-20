@@ -4,6 +4,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { IntegrationWorkspacePage } from "../pages/IntegrationWorkspacePage";
 import { apiError, json, mockFetch, renderRoute } from "./helpers";
 import {
+  makeApplication,
   makeCoCoderRecord,
   makeIntegration,
   makeIntegrationRecord,
@@ -30,6 +31,54 @@ const execution = {
   artifact_ref: "C:\\data\\integrations\\cocoder\\review.json",
   created_at: "2026-10-24T00:00:00+00:00",
 };
+
+const ENGINE_PORTS = { next: 8000, work: 8767, cocoder: 8768 } as const;
+const ENGINE_NAMES = { next: "Next", work: "Work", cocoder: "CoCoder" } as const;
+
+function makeEngineApplication(
+  appId: "next" | "work" | "cocoder",
+  options: { state?: string; launch?: boolean } = {},
+) {
+  const base = makeApplication();
+  const state = options.state ?? "running";
+  const launch = options.launch ?? true;
+  const port = ENGINE_PORTS[appId];
+  const url = `http://127.0.0.1:${port}/`;
+  return makeApplication({
+    id: appId,
+    name: ENGINE_NAMES[appId],
+    status: {
+      ...base.status,
+      state,
+      label: state === "running" ? "Running" : "Stopped",
+      detail:
+        state === "running"
+          ? "PID 42 is owned by Mission Control."
+          : "A launch action is configured but no managed process is running.",
+      ownership: state === "running" ? "managed" : "none",
+      process_id: state === "running" ? "proc-1" : null,
+    },
+    actions: {
+      ...base.actions,
+      open_url: { enabled: launch, reason: launch ? null : "No browser URL is configured." },
+    },
+    launch_definitions: launch
+      ? [
+          {
+            ...base.launch_definitions[0],
+            id: `${appId}-web`,
+            application_id: appId,
+            name: `${ENGINE_NAMES[appId]} web`,
+            launch_type: "server",
+            browser_url: url,
+            health_type: "http",
+            health_url: url,
+            expected_port: port,
+          },
+        ]
+      : [],
+  });
+}
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -91,6 +140,7 @@ describe("IntegrationWorkspacePage", () => {
     const record = makeIntegrationRecord();
     const calls = mockFetch(({ path, method, body }) => {
       if (path === "/api/integrations/next") return json(makeIntegration());
+      if (path === "/api/applications/next") return json(makeEngineApplication("next"));
       if (path === "/api/projects") return json([makeProject()]);
       if (path === "/api/integrations/next/resources" && method === "GET")
         return json([record]);
@@ -173,6 +223,7 @@ describe("IntegrationWorkspacePage", () => {
           }),
         );
       if (path === "/api/projects") return json([makeProject()]);
+      if (path === "/api/applications/work") return json(makeEngineApplication("work"));
       if (path === "/api/integrations/work/resources") return json([record]);
       if (path === `/api/integrations/work/resources/${record.id}`) return json(record);
       return apiError(404, `Unhandled ${path}`);
@@ -233,6 +284,7 @@ describe("IntegrationWorkspacePage", () => {
           }),
         );
       if (path === "/api/projects") return json([makeProject()]);
+      if (path === "/api/applications/cocoder") return json(makeEngineApplication("cocoder"));
       if (path === "/api/integrations/executions") return json([execution]);
       if (path === "/api/integrations/cocoder/resources") return json([record]);
       if (path === "/api/integrations/cocoder/actions/run_review/execute" && method === "POST") {
@@ -274,6 +326,7 @@ describe("IntegrationWorkspacePage", () => {
     const markdown = "# Research review package\n\n## A. Review instructions\n\nDo not assume the opportunity is valid.";
     const calls = mockFetch(({ path, method }) => {
       if (path === "/api/integrations/next") return json(makeIntegration());
+      if (path === "/api/applications/next") return json(makeEngineApplication("next"));
       if (path === "/api/projects") return json([makeProject()]);
       if (path === "/api/integrations/next/resources") return json([record]);
       if (path === `/api/integrations/next/resources/${record.id}`) return json(record);
@@ -314,6 +367,7 @@ describe("IntegrationWorkspacePage", () => {
       "A controlled comparison with a held-out task would falsify the claimed gain.";
     const calls = mockFetch(({ path, method, body }) => {
       if (path === "/api/integrations/next") return json(makeIntegration());
+      if (path === "/api/applications/next") return json(makeEngineApplication("next"));
       if (path === "/api/projects") return json([makeProject()]);
       if (path === "/api/integrations/next/resources") return json([record]);
       if (path === `/api/integrations/next/resources/${record.id}`) return json(record);
@@ -407,5 +461,176 @@ describe("IntegrationWorkspacePage", () => {
     await user.click(screen.getByRole("button", { name: /^Send$/i }));
     expect(await screen.findByText(secondAnswer)).toBeInTheDocument();
     expect(screen.getByText("What is genuinely new here?")).toBeInTheDocument();
+  });
+
+  it("starts a stopped engine once and refreshes its integration", async () => {
+    let started = false;
+    let ensures = 0;
+    let refreshes = 0;
+    mockFetch(({ path, method }) => {
+      if (path === "/api/integrations/next") return json(makeIntegration());
+      if (path === "/api/applications/next")
+        return json(makeEngineApplication("next", { state: started ? "running" : "stopped" }));
+      if (path === "/api/applications/next/ensure-open" && method === "POST") {
+        ensures += 1;
+        started = true;
+        return json({
+          url: "http://127.0.0.1:8000/",
+          application_id: "next",
+          state: "started",
+          ownership: "managed",
+          process_id: "proc-9",
+          detail: "HTTP 200 from http://127.0.0.1:8000/openapi.json",
+        });
+      }
+      if (path === "/api/integrations/next/refresh" && method === "POST") {
+        refreshes += 1;
+        return json(makeIntegration());
+      }
+      if (path === "/api/projects") return json([makeProject()]);
+      if (path === "/api/integrations/next/resources") return json([]);
+      return apiError(404, `Unhandled ${method} ${path}`);
+    });
+    renderRoute(<IntegrationWorkspacePage appId="next" />, "/next");
+
+    expect(await screen.findByText("Next is running")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Open Next UI/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Refresh data/i })).toBeInTheDocument();
+    await waitFor(() => {
+      expect(ensures).toBe(1);
+      expect(refreshes).toBe(1);
+    });
+  });
+
+  it("does not start an engine that is already running", async () => {
+    const calls = mockFetch(({ path }) => {
+      if (path === "/api/integrations/next") return json(makeIntegration());
+      if (path === "/api/applications/next") return json(makeEngineApplication("next"));
+      if (path === "/api/projects") return json([makeProject()]);
+      if (path === "/api/integrations/next/resources") return json([]);
+      return apiError(404, `Unhandled ${path}`);
+    });
+    renderRoute(<IntegrationWorkspacePage appId="next" />, "/next");
+
+    await screen.findByText("Live integration available");
+    await waitFor(() => {
+      expect(calls.some((call) => call.path === "/api/applications/next")).toBe(true);
+    });
+    expect(
+      calls.some((call) => call.path === "/api/applications/next/ensure-open"),
+    ).toBe(false);
+  });
+
+  it("shows a launch failure with retry and logs, then recovers", async () => {
+    let attempts = 0;
+    let started = false;
+    const refresh = vi.fn();
+    mockFetch(({ path, method }) => {
+      if (path === "/api/integrations/next") return json(makeIntegration());
+      if (path === "/api/applications/next")
+        return json(makeEngineApplication("next", { state: started ? "running" : "stopped" }));
+      if (path === "/api/applications/next/ensure-open" && method === "POST") {
+        attempts += 1;
+        if (attempts === 1) {
+          return apiError(422, "Executable not found: C:\\missing\\python.exe", "launch_failed");
+        }
+        started = true;
+        return json({
+          url: "http://127.0.0.1:8000/",
+          application_id: "next",
+          state: "started",
+          ownership: "managed",
+          process_id: "proc-9",
+          detail: "ready",
+        });
+      }
+      if (path === "/api/integrations/next/refresh" && method === "POST") {
+        refresh();
+        return json(makeIntegration());
+      }
+      if (path === "/api/projects") return json([makeProject()]);
+      if (path === "/api/integrations/next/resources") return json([]);
+      return apiError(404, `Unhandled ${method} ${path}`);
+    });
+    const user = userEvent.setup();
+    renderRoute(<IntegrationWorkspacePage appId="next" />, "/next");
+
+    const alert = await screen.findByRole("alert");
+    expect(alert).toHaveTextContent(/Next could not start/i);
+    expect(alert).toHaveTextContent(/Executable not found/i);
+    expect(screen.getByRole("link", { name: "View logs" })).toHaveAttribute(
+      "href",
+      "/applications",
+    );
+
+    await user.click(screen.getByRole("button", { name: "Retry" }));
+    expect(await screen.findByText("Next is running")).toBeInTheDocument();
+    expect(attempts).toBe(2);
+    expect(refresh).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not start an engine with no launch definition", async () => {
+    const calls = mockFetch(({ path }) => {
+      if (path === "/api/integrations/next") return json(makeIntegration());
+      if (path === "/api/applications/next")
+        return json(makeEngineApplication("next", { state: "stopped", launch: false }));
+      if (path === "/api/projects") return json([makeProject()]);
+      if (path === "/api/integrations/next/resources") return json([]);
+      return apiError(404, `Unhandled ${path}`);
+    });
+    renderRoute(<IntegrationWorkspacePage appId="next" />, "/next");
+
+    expect(await screen.findByText("Next has no launch configured")).toBeInTheDocument();
+    const banner = screen
+      .getByText("Next has no launch configured")
+      .closest(".engine-start-banner");
+    expect(within(banner as HTMLElement).getByRole("link", { name: "Configure" })).toHaveAttribute(
+      "href",
+      "/applications",
+    );
+    expect(
+      calls.some((call) => call.path === "/api/applications/next/ensure-open"),
+    ).toBe(false);
+  });
+
+  it("retries only the data refresh after a successful start", async () => {
+    let started = false;
+    let refreshes = 0;
+    const ensures = vi.fn();
+    mockFetch(({ path, method }) => {
+      if (path === "/api/integrations/next") return json(makeIntegration());
+      if (path === "/api/applications/next")
+        return json(makeEngineApplication("next", { state: started ? "running" : "stopped" }));
+      if (path === "/api/applications/next/ensure-open" && method === "POST") {
+        ensures();
+        started = true;
+        return json({
+          url: "http://127.0.0.1:8000/",
+          application_id: "next",
+          state: "started",
+          ownership: "managed",
+          process_id: "proc-9",
+          detail: "ready",
+        });
+      }
+      if (path === "/api/integrations/next/refresh" && method === "POST") {
+        refreshes += 1;
+        if (refreshes === 1) return apiError(503, "Source read timed out");
+        return json(makeIntegration());
+      }
+      if (path === "/api/projects") return json([makeProject()]);
+      if (path === "/api/integrations/next/resources") return json([]);
+      return apiError(404, `Unhandled ${method} ${path}`);
+    });
+    const user = userEvent.setup();
+    renderRoute(<IntegrationWorkspacePage appId="next" />, "/next");
+
+    expect(
+      await screen.findByText(/Next is running, but its data could not be refreshed/i),
+    ).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Retry" }));
+    expect(await screen.findByText("Next is running")).toBeInTheDocument();
+    expect(ensures).toHaveBeenCalledTimes(1);
+    expect(refreshes).toBe(2);
   });
 });

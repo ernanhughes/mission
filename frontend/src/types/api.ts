@@ -1999,11 +1999,13 @@ export type IntelligenceCoverage = {
   completed: number;
 };
 
-export type EnsureOpenResult = {
+export type EnsureOpenResponse = {
   url: string;
   application_id: string;
-  state: string;
-  ownership: string;
+  state: "started" | "running" | "running_external" | string;
+  ownership: "managed" | "external" | string;
   process_id: string | null;
   detail: string | null;
 };
+
+export type EnsureOpenResult = EnsureOpenResponse;

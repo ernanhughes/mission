@@ -210,9 +210,10 @@ def open_documentation(
 
 
 @router.post("/applications/{application_id}/open-url", response_model=OpenUrlResponse)
-def open_url(
+async def open_url(
     application_id: str,
     session: Session = Depends(get_session),
+    request: Request = None,  # type: ignore[assignment]
 ) -> OpenUrlResponse:
     app = session.get(Application, application_id)
     if app is None:
@@ -228,6 +229,26 @@ def open_url(
             "No browser URL is configured for this application",
             detail="Add a browser URL to a launch definition.",
         )
+    # Open means "start it if needed, then show it" for launchable services.
+    # URL-only definitions and disabled definitions keep the previous
+    # behaviour: open the stored destination without spawning anything.
+    launchable = any(
+        item.enabled
+        and item.launch_type in {"command", "server"}
+        and item.browser_url
+        for item in definitions
+    )
+    if launchable:
+        if not app.enabled or app.archived:
+            raise CapabilityUnavailable("Application is disabled or archived")
+        if app.control_policy.get("allow_launch") is False:
+            raise CapabilityUnavailable(
+                "Launching is disabled by this application's control policy"
+            )
+        if request is None:  # pragma: no cover - Request is provided by FastAPI
+            raise CapabilityUnavailable("Application startup is unavailable")
+        result = await request.app.state.process_manager.ensure_open(application_id)
+        url = result["url"]
     setting = session.get(Setting, "browser")
     browser_config = setting.value if setting and isinstance(setting.value, dict) else {}
     opened_externally = False

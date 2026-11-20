@@ -124,7 +124,16 @@ export function ApplicationCard({
       {browserUrl ? (
         <div className="app-url">
           <ExternalLink size={12} aria-hidden="true" />
-          <a href={browserUrl} target="_blank" rel="noopener noreferrer">
+          <a
+            href={browserUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Start the application if needed, then open its web interface"
+            onClick={(event) => {
+              event.preventDefault();
+              void openUrl();
+            }}
+          >
             {browserUrl}
           </a>
         </div>

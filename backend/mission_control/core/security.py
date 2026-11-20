@@ -73,6 +73,7 @@ class SecurityHeadersMiddleware:
                 else:
                     csp = (
                         b"default-src 'self'; img-src 'self' data:; "
+                        b"font-src 'self' data:; "
                         b"style-src 'self' 'unsafe-inline'; script-src 'self'; "
                         b"connect-src 'self' http://127.0.0.1:5173 http://localhost:5173; "
                         b"frame-ancestors 'none'; base-uri 'none'; form-action 'self'"
