@@ -31,6 +31,8 @@ The B contexts add the experience item: 2,672 bytes versus 28 bytes disabled in 
 difference is the separately generated review: B1 review 2,085 bytes, B2 1,653 bytes, A 1,603
 bytes. The review stage is not experience-conditioned; it is a non-deterministic model call.
 
+Full prompt payloads including instructions were 16,248 bytes (A), 19,351 (B1) and 18,844 (B2).
+
 Both ambiguous requests were durably `dispatched` before the upstream call. Each Pi run admitted
 exactly one provider request (`max_provider_requests: 1`, `provider_requests: 1`,
 `inbound_requests: 1`). No retry was attempted. The provider returned no response, no HTTP status,
