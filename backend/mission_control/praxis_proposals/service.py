@@ -294,6 +294,13 @@ class PraxisProposalService:
             check("book_registered", record is not None, str(book_id))
             if record is None:
                 return
+            from mission_control.adapters.writer import SUMMARY_SCHEMA
+
+            check("book_current",
+                  str(record.source_version or "") == SUMMARY_SCHEMA,
+                  "registered resource matches the current Writer summary schema"
+                  if str(record.source_version or "") == SUMMARY_SCHEMA
+                  else "stale book resource; refresh the Writer integration")
             root = str((record.data or {}).get("project_root") or "")
             check("book_root_known", bool(root),
                   root or "resource has no project_root")

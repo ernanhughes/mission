@@ -396,6 +396,12 @@ class IntegrationService:
                 if registered is None:
                     raise ValidationProblem(
                         "book_id is not a registered Writer book")
+                from mission_control.adapters.writer import SUMMARY_SCHEMA
+
+                if str(registered.source_version or "") != SUMMARY_SCHEMA:
+                    raise ValidationProblem(
+                        "registered Writer book is stale; refresh the Writer "
+                        "integration before auditing it")
             execution = IntegrationExecution(
                 id=f"exec-{uuid.uuid4().hex[:16]}",
                 application_id=application_id,
