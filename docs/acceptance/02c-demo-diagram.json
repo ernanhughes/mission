@@ -1,0 +1,115 @@
+{
+ "id": "bd440465-2c2a-42d9-a018-b33f25736917",
+ "schema": "living-book-semantic-record.v1",
+ "task": "diagram",
+ "transformation_class": "re-express",
+ "source": {
+  "binding_ref": "0e4c8a5b-b8de-4c60-a5a6-be453b033556",
+  "approval_ref": "d1eccad3-9c40-4c2a-9d0a-2189687b080c",
+  "chapter_id": "07-chapter.md",
+  "chapter_sha256": "002f2fab2030ab270ede52549933d1dc628f9fac424e336fc93675159ae83e5b"
+ },
+ "passage": {
+  "start": 3429,
+  "end": 3749,
+  "text": "rd and today's diagram pretending to describe the same source state. From this follows an obligation:\n\n> **Every consequential element of a rendering should identify the record entry it came from and the exact source version and passage supporting that entry. Traceability is required, but it is not proof of correctness.",
+  "sha256": "ce7790c150a2e7eca4106a99df4e61a0ec9afa230a5f753ae784305d22916302"
+ },
+ "obligations": {
+  "numbers": [],
+  "equations": [],
+  "code_blocks": 0,
+  "urls": [],
+  "qualification_sentences": 2,
+  "quote_table_lines": [
+   "> **Every consequential element of a rendering should identify the record entry it came from and the exact source version and passage supporting that entry. Traceability is required, but it is not proof of correctness."
+  ],
+  "note": "Every listed item must appear in the rendering or be explicitly recorded as not_represented with a reason. Values are obligations, not scores."
+ },
+ "record": {
+  "raw": ""
+ },
+ "rendering": {
+  "format": "markdown",
+  "content": ""
+ },
+ "citations": [],
+ "added": [],
+ "verification": {
+  "standing": "attention",
+  "reason": "Candidate sections could not be parsed (empty model output); raw retained for inspection.",
+  "checks": [
+   {
+    "id": "headings",
+    "status": "pass",
+    "detail": "Heading sequence is unchanged.",
+    "original": 0,
+    "proposed": 0
+   },
+   {
+    "id": "code_blocks",
+    "status": "pass",
+    "detail": "0 of 0 original fenced block(s) were not found exactly.",
+    "missing": 0,
+    "checked": 0
+   },
+   {
+    "id": "urls",
+    "status": "pass",
+    "detail": "0 of 0 original URL(s) were not found.",
+    "missing": [],
+    "checked": 0
+   },
+   {
+    "id": "numbers",
+    "status": "pass",
+    "detail": "0 of 0 original numeric token(s) were not found.",
+    "missing": [],
+    "checked": 0
+   },
+   {
+    "id": "equations",
+    "status": "pass",
+    "detail": "0 of 0 original equation fragment(s) changed or disappeared.",
+    "missing": 0,
+    "checked": 0
+   },
+   {
+    "id": "qualifications",
+    "status": "attention",
+    "detail": "Fewer qualification-bearing sentences were found; verify that uncertainty and limits were preserved.",
+    "original": 2,
+    "proposed": 0
+   },
+   {
+    "id": "quotes_and_tables",
+    "status": "attention",
+    "detail": "1 of 1 original quote/table line(s) were not found exactly.",
+    "missing": 1,
+    "checked": 1
+   }
+  ],
+  "attention": [
+   "qualifications",
+   "quotes_and_tables",
+   "unparseable"
+  ],
+  "missing": [
+   {
+    "check": "quotes_and_tables",
+    "missing": 1
+   }
+  ]
+ },
+ "model": {
+  "name": "muse-spark-1.3-contributor",
+  "conversation_id": "605c101c-9d2b-4611-b8cf-6960c20e07cc",
+  "message_id": "7a90e1e9-7b97-4cc3-a9d6-ee351d60a34b",
+  "fixture": false
+ },
+ "conversation_id": "605c101c-9d2b-4611-b8cf-6960c20e07cc",
+ "book_id": "b5ac31b2-bf95-5806-b2b2-8263236ed38f",
+ "chapter_id": "07-chapter.md",
+ "created_at": "2026-11-20T18:12:28.671298+00:00",
+ "rejected": false
+}

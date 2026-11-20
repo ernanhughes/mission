@@ -1,0 +1,1254 @@
+{
+ "run": {
+  "id": "618224ff-ee12-4c96-96f6-69729da56e4f",
+  "workflow": {
+   "name": "chapter-improvement",
+   "version": 1006,
+   "definition_id": "d38e4c3a-50ec-46e7-b53f-3a3606d48071",
+   "definition_sha256": "5cd3400f1417e87fd25db62ad0776e987a422313294634d59b263db5a83b76c3",
+   "schema_version": 1
+  },
+  "goal_id": "12986f27-666e-41e9-b5be-c0db749a798f",
+  "investigation_id": "3dda2b14-be89-46a6-bbdb-2764364058e4",
+  "trigger": "authorized-execution",
+  "input_ref": "event:54a9a87e-ba59-4063-907b-f168a907f17d",
+  "input_sha256": "55540db3dbe3a571a5e2d999027a892467f018cbc3ecd6f0431d3f9d1016b2e9",
+  "authorization_ref": "640c1731-36f3-431c-aa8f-05631c4e05d3",
+  "budget": {
+   "wall_seconds": 900,
+   "max_model_calls": 8,
+   "max_output_tokens": 12288
+  },
+  "status": "FAILED",
+  "terminal": true,
+  "terminal_reason": "adapter_execution_failure",
+  "created_at": "2026-11-20T17:58:14.378959+00:00",
+  "started_at": "2026-11-20T17:58:14.416797+00:00",
+  "finished_at": "2026-11-20T17:58:58.954443+00:00"
+ },
+ "bespoke_recommendation_ref": null,
+ "original": {
+  "path": "content/books/distillation/16-chapter.md",
+  "text": "+++\ntitle = \"Dataset Distillation\"\ndate = '2026-11-15T00:00:00+00:00'\ndescription = \"Dataset distillation optimises the training examples themselves so a small synthetic set can train a fresh student. This chapter derives the bilevel objective and gradient matching, compares trajectory and distribution matching, and runs a bounded E2-shape condensation demo.\"\nweight = 16\ndraft = false\nseries = [\"Distillation From First Principles\"]\ncategories = [\"AI\", \"Machine Learning\"]\ntags = [\"dataset-distillation\", \"gradient-matching\", \"coreset\", \"data-centric\", \"evaluation\"]\n+++\n\nSixteen randomly chosen examples trained students to a mean held-out accuracy\nof 0.756\nin this chapter's experiment, against 0.807 for the full 1,200.\nSixteen examples synthesised by dataset distillation reached 0.762, a\ndifference from the random sixteen that sits inside the seed noise; on two of\nthe three seeds the random subset did better. The method is real and the\nmathematics is sound, but on this task it had almost nothing to improve on, and\nthe chapter reports that rather than a win.\n\nChapter 15 subtracted examples and reordered them. This chapter takes\nthe stronger step: synthesise the training set itself. The question is:\n\n> Can a small synthetic dataset preserve enough information to train a\n> student almost as well as the original data?\n\nThe central argument is that dataset distillation optimises the\n*training examples* so that a model trained on a small synthetic set\nbehaves like one trained on a larger dataset. The output is a dataset,\nnot a student \u2014 and that single distinction organises everything that\nfollows. The chapter ends with a bounded demonstration whose honest\nresult is weak: on a simple task, the condensed set's mean accuracy is\nwithin seed noise of a random subset's, and the condensation objective\nbarely moves. A weak\nresult with a controlled design teaches more than a strong result\nwithout one.\n\n## Distilling a dataset instead of a model\n\nModel distillation, the subject of Parts I and II, transfers a\nteacher's supervision into a smaller student's weights. The dataset is\nfixed; the student moves. Dataset distillation reverses the roles: the\nstudent-training algorithm is fixed, and the *dataset* moves. A small\nset of synthetic examples \u2014 pixels that need not look like anything,\nlabels that may be fixed or optimised \u2014 is adjusted until fresh\nstudents trained on it behave like students trained on the full source.\nThe test of success is downstream: held-out correctness of students\nthat never saw the source data, not the value of the optimisation\nobjective that produced the synthetic set.\n\nThree neighbouring ideas must not be confused with it. Synthetic data\ngeneration (Chapter 14) produces examples without optimising them\nagainst a training objective. Coreset selection *chooses* a subset of\nreal examples; it never synthesises a pixel. Filtering (Chapter 15)\nremoves rows. Dataset distillation alone creates training inputs by\noptimising them \u2014 and pays for that privilege in second-order compute,\nas this chapter measures.\n\n## KD-019 and the central idea\n\n**Dataset distillation** (KD-019) is the synthesis of a compact dataset\nthat trains a fresh model to approximate the performance or learning\nbehaviour obtainable from a larger source dataset. The registry\ndefinition fixes four points. First, the optimised object is the\ndataset: examples and possibly labels \u2014 our demo fixes labels and\noptimises pixels only, a declared restriction (optimised soft labels\ncan carry extra supervision, but they also entangle the distillation\nwith the teacher's output space, a complication the demo does not\nneed).\n\nSecond, the consumer is a fixed training algorithm \u2014 gradient\ndescent from stated initialisations for a stated budget. Third, the\nsynthetic examples may differ arbitrarily from real data; nothing\nrequires them to be plausible inputs. Fourth, the verdict is downstream\nheld-out correctness of freshly trained students.\nA method that minimises its own matching loss while its students fail\nis a failed distillation with a well-optimised auxiliary metric \u2014 the\nvolume-equals-value confusion of Chapter 14 in a new costume.\n\n## The bilevel optimisation problem\n\nLet \\\\(D_{\\\\mathrm{real}} = \\\\{(x_i, y_i)\\\\}_{i=1}^{N}\\\\) be the source\ntraining set and \\\\(D_{\\\\mathrm{syn}} = \\\\{(\\\\tilde{x}_j, \\\\tilde{y}_j)\\\\}_{j=1}^{M}\\\\)\nthe synthetic set, with \\\\(M \\\\ll N\\\\). Let \\\\(A(D, \\\\theta_0)\\\\) be the\nmodel-training algorithm applied to dataset \\\\(D\\\\) from initial\nparameters \\\\(\\\\theta_0\\\\). The inner loop trains on synthetic data,\n\\\\(\\\\theta^*(D_{\\\\mathrm{syn}}, \\\\theta_0)\\\\); the outer loop chooses the\nsynthetic data to minimise training loss on real data:\n\n\\\\[\n\\\\min_{D_{\\\\mathrm{syn}}} \\\\;\n\\\\mathbb{E}_{\\\\theta_0 \\\\sim P_{\\\\mathrm{init}}} \\\\left[ \\\\;\nL_{\\\\mathrm{real,train}} \\\\left( \\\\theta^*(D_{\\\\mathrm{syn}}, \\\\theta_0) \\\\right)\n\\\\; \\\\right].\n\\\\]\n\nThree things make this hard. Differentiating through many training steps\nis expensive and memory-hungry: the outer gradient flows through every\ninner update, so truncating the unrolling (as gradient matching does to\na single step) trades fidelity for feasibility, and the chapter prices\nthat trade explicitly. The expectation over initialisations\nmatters: a synthetic set that teaches one initialisation may fail the\nnext \u2014 Wang et al. (2018) evaluate multiple initialisation settings for\nexactly this reason, and our demo condenses against sixty different\ninits.\n\nAnd the outer objective uses *training* loss on real data: the\nheld-out test set must never enter synthetic-data optimisation, or the\ndownstream evaluation is circular \u2014 a set tuned against its own exam\nproves nothing about teaching. Our runner enforces this by\nconstruction \u2014 condensation receives the training partition only \u2014 and\na test asserts the manifest contains no test reference in the\ncondensation configuration.\n\nThe exact bilevel problem is not solved here. Everything practical is\nan approximation: one-step surrogates, truncated unrolling, matching\nobjectives that stand in for the outer loss. The chapter is explicit\nabout which approximation it implements and what it gives up.\n\n![Dataset distillation optimises the dataset, not the weights](/images/books/distillation/ch16/bilevel.svg)\n\n*Figure 1. The two loops and the four arms. The inner loop is fixed;\nthe outer loop moves pixels; fresh held-out students deliver the\nverdict. Mechanism schematic, not measured data.*\n\n## Coresets and ordinary subset selection\n\nThe honest baselines come first. A random class-balanced subset takes\n\\\\(K\\\\) examples per class with a seeded shuffle \u2014 no intelligence,\nfull reproducibility. A coreset applies a predeclared rule: ours keeps,\nper class, the \\\\(K\\\\) examples with the smallest total L2 distance to\ntheir classmates in pixel space (exact medoids over the 300 training\nmembers per class, ties by lowest index \u2014 deterministic, no seed, no\ntest or validation contact). Both contain only real examples; neither\nsynthesises anything.\n\nThe trade-off is instructive. Random subsets are unbiased but\nhigh-variance: seed 1's random 16 reached 0.853 while seed 0's reached\n0.592. Coresets are stable (0.644\u20130.715 across seeds, the tightest\nspread of any arm) but mediocre (mean 0.670, worst of the four on\naggregate \u2014 though not on every seed: it beats random on seed 0):\nmedoids are the most *typical* examples, and typical examples are not\nthe most *teachable* ones.\n\nTypicality is a property of the source\ndistribution; teachability is a property of the learning algorithm. A\ncoreset optimises the first and hopes for the second. This chapter keeps\nboth baselines because any synthesis method must beat selection before\nit can claim to be more than selection \u2014 and in our demo, the synthesis\ndoes not clearly do so.\n\n## Gradient matching\n\nIf a synthetic batch induces the same parameter gradients as a real\nbatch, one gradient step on either batch moves the student the same\nway. That is the whole idea (Zhao et al., 2021): match gradients\ninstead of unrolling training. Let \\\\(g_{\\\\mathrm{real}}(\\\\theta) =\n\\\\nabla_\\\\theta L(D_{\\\\mathrm{real}}; \\\\theta)\\\\) and\n\\\\(g_{\\\\mathrm{syn}}(\\\\theta)\\\\) likewise. The matching objective is:\n\n\\\\[\n\\\\mathbb{E}_{\\\\theta \\\\sim P_\\\\theta} \\\\left[ \\\\;\nd\\\\left(g_{\\\\mathrm{syn}}(\\\\theta), g_{\\\\mathrm{real}}(\\\\theta)\\\\right)\n\\\\; \\\\right],\n\\\\]\n\nwith \\\\(P_\\\\theta\\\\) the distribution over probe initialisations. Our\ndemonstration uses the simplest declared distance,\n\\\\(d(g_s, g_r) = \\\\|g_s - g_r\\\\|_2^2\\\\), flat over all parameters and\nsummed over classes \u2014 not the paper's per-layer normalised distances,\nand the chapter says so.\n\nImplementation has three load-bearing details, each tested. First, real\ngradients are detached fixed targets; the outer backward pass must not\ndifferentiate through them. Second, synthetic gradients need\n`create_graph=True` so the outer loss differentiates through the\ngradient computation into the pixels \u2014 and the test suite verifies the\nsynthetic images receive nonzero gradients while the probe model's\nweights are byte-identical before and after (a `model_mutated`\nassertion runs on every outer step). Third, labels are fixed: only\npixels move. The original paper explores more; the demo declares less\nand checks what it declares.\n\nA single outer step on seed 0 makes the mechanism concrete. Fresh probe\n(init seed 1000), real batches of 32 per class, synthetic 4 per class:\nper-class distances 0.00175/0.00182/0.00200/0.00191, total 0.00749, outer\ngradient norm on the pixels 0.00511. One SGD step (lr 0.1) nudges 16\nimages down that gradient and clamps to [0,1]. Nothing about the step\nis mysterious; the mystery the chapter refuses to manufacture is\nwhether sixty such steps add up to a better dataset.\n\nIn this demo, they\ndo not: the distance ends at 0.00502 on seed 0 and drifts slightly *up*\non seeds 1 and 2. The objective is flat because the synthetic set starts\nfrom real images whose probe gradients already match. Gradient matching\nfrom a real-image initialisation on a tiny network has almost nothing to\nfix.\n\n## Why synthetic images receive gradients\n\nDifferentiating through a gradient computation surprises readers who\nthink of gradients as the end of the line. The chain is mechanical:\nsynthetic pixels \u2192 forward pass \u2192 cross-entropy \u2192 parameter gradients\n(a differentiable function of the pixels via the forward pass) \u2192\nsquared distance to fixed real gradients \u2192 scalar. Every arrow is\ndifferentiable, so `backward()` on the scalar reaches the pixels. The\ncost is second-order computation: the outer backward differentiates\nthrough the inner gradient, roughly doubling the backward cost and\nholding the inner graph in memory.\n\nOn our tiny CNN (372 parameters,\n16 synthetic images) that is milliseconds; on a ResNet with thousands\nof synthetic images it is the reason dataset distillation is\ncompute-limited \u2014 the limitation the evidence posture of this chapter\npromises to be frank about. Finite-difference checks in the test suite\nconfirm the outer gradients point downhill on the distance; the failure\nof the distance to fall further is a property of the optimisation\nlandscape, not of the implementation.\n\n## Training-trajectory matching\n\nGradient matching compares single steps. Trajectory matching (Cazenavette\net al., 2022) compares destinations: train a probe on synthetic data\nfor several iterations and minimise the distance between its parameters\nand the parameters of an expert trained on real data. Experts are\npre-computed and stored \u2014 the paper's key efficiency move \u2014 and the\ndistilled set is optimised to steer fresh probes toward expert states\nacross many steps rather than to imitate one gradient.\n\nThe trade-offs are direct. Trajectory matching sees longer-horizon\nbehaviour and, in the paper's experiments, handles higher-resolution\ndata better; it costs expert-trajectory storage, multi-step unrolling,\nand tight coupling to the architecture the experts used. **It is not\nimplemented in this chapter.** The contract requires a conceptual\ncomparison, not a second optimisation system, and building one would\nbreak the compute ceiling that keeps this demo honest. The reader gets\nthe derivation, the cost model, and the pointer \u2014 not a half-built\ntrajectory matcher presented as a result.\n\n## Distribution matching\n\nA third family skips gradients entirely and matches statistics:\nclass-conditional feature means, for instance, minimising \\\\(\\\\sum_c\n\\\\|\\\\mu_c^{\\\\mathrm{real}} - \\\\mu_c^{\\\\mathrm{syn}}\\\\|_2^2\\\\) over some\nfeature map \\\\(\\\\phi\\\\), where \\\\(\\\\mu_c\\\\) is the mean feature of class\n\\\\(c\\\\) in each set. On the E2 shapes a pixel-space version is easy to\npicture: the mean horizontal-stroke image is a grey horizontal band\n( strokes at all positions averaged), and a synthetic set whose\nclass-means reproduce those bands matches the first moment exactly. It\nis cheap, stable, and conceptually clean \u2014 and it proves nothing about\ndownstream students. Equal means do not imply equal trainability: a\nsynthetic set can match every class mean while containing no single\nimage the student algorithm can learn stroke position from, because the\nmean of strokes at all positions is a blur at no position.\n\nA student\ntrained on blurs learns blurs. The chapter treats distribution matching\nas a mechanism with stated assumptions, not as an implemented arm: the\nmoment it matches is a property of the source, and teachability is a\nproperty of the learning algorithm \u2014 the same distinction the coreset\nresult demonstrates empirically. One matching objective per demo is\nenough; three would be a catalogue, and catalogues are not evidence.\n\n## Designing the tiny condensation experiment\n\nSource: the E2 four-class shape task (12\u00d712 single-channel images,\nhorizontal/vertical/diagonal strokes plus Gaussian noise), regenerated\nunder a frozen D1 protocol \u2014 1,200 train, 400 validation, 1,000 test\nper dataset seed (0, 1, 2) \u2014 without touching historical E2 records.\nCompression: 16 synthetic examples (4 per class), ratio \\\\(R = 75\\\\)\nby count, 700,800 \u2192 9,344 bytes by storage. Arms: A full-data, B random\nbalanced 16, C medoid coreset 16, D gradient-matched 16. Condensation:\n60 outer steps, real batches of 32 per class, SGD lr 0.1 on pixels,\nfresh probe init per step from a pool disjoint from evaluation inits.\n\nThe student everywhere \u2014 probe and fresh \u2014 is the E2 small CNN\n(channels (4,8), ~372 parameters), trained with Adam 0.002, batch 32,\nand best-validation checkpointing that always runs the full 600-update\nbudget before restoring, so the checkpoint rule cannot unmatch the\nbudgets it selects among. Evaluation inits equal the dataset seed\n(identical across arms within a seed); condensation inits live above\n1000 plus a per-seed offset. The two pools never intersect, and the\nconfig records the policy in one line so the separation is checkable,\nnot claimed.\n\nThe Chapter 15 lesson is structural, not decorative: every arm trains\nfor *exactly* 600 optimiser updates (batch 32, Adam 0.002, seeded\nreplacement sampling), with best-validation checkpointing that runs the\nfull budget before restoring. A test reads the manifest and asserts all\ntwelve runs report 600. Updates matched; unique exposures measured\n(and differing by construction: the full arm sees ~1,200 uniques, small\narms revisit 16). Rights: RM-108\n(`optimise_and_evaluate_distilled_dataset`, verified-permitted), gate\npassed before any optimisation. No external data, models, or inference.\n\n## Comparing full, random, coreset and distilled sets\n\nThe frozen run (`D1-20261115T161713Z-8bbf14`) trained 12 students (4\narms \u00d7 3 seeds). Held-out accuracy (primary), per dataset seed:\n\n| Seed | A-full (1200) | B-random (16) | C-coreset (16) | D-distilled (16) |\n| ---: | ---: | ---: | ---: | ---: |\n| 0 | 0.698 | 0.592 | 0.644 | 0.671 |\n| 1 | 0.782 | 0.853 | 0.651 | 0.832 |\n| 2 | 0.942 | 0.824 | 0.715 | 0.782 |\n\nAggregates: A 0.807 \u00b1 0.124, B 0.756 \u00b1 0.143, C 0.670 \u00b1 0.039, D\n0.762 \u00b1 0.082. Cross-entropy follows (A 0.516, B 0.664, C 0.766, D\n0.654); ECE is lowest for the coreset students (0.061 against\n0.105\u20130.139 elsewhere), a calibration footnote, not a success \u2014 the\ncoreset is confidently mediocre where the other small arms are\nuncertain and occasionally right. Every arm ran exactly 600 updates\n(asserted per run in the manifest, not merely configured): the Chapter\n15 failure mode \u2014 equal epoch caps producing unequal update counts \u2014\nwas designed out, and a test enforces it.\n\nSeed spread dominates every\ncomparison (seed 2's full-data student reaches 0.942; seed 0's reaches\n0.698), so the honest reading is ordinal within seeds, not cardinal\nacross them: D beats B only on seed 0 (+0.079) and trails on seeds 1\nand 2 (\u22120.021/\u22120.042); D beats A only on seed 1 (+0.050) and trails on\nseeds 0 and 2. All six gaps sit inside seed noise.\n\nThree findings, all descriptive (three seeds cannot carry tests).\nFirst, sixteen random examples already reach 0.756 against 0.807 for\n1,200 \u2014 on this simple task there is almost no headroom for synthesis\nto exploit, which is precisely when dataset distillation is least\nneeded. Second, the distilled set (0.762) differs from the random\nsubset (0.756) by +0.006 \u2014 small relative to the variation across the\nthree runs (SDs 0.08\u20130.14), and this experiment cannot establish whether\nthe methods are equivalent. Condensation consumed its 60 outer steps to move\nthe matching distance from ~0.007 to ~0.005\u20130.009 \u2014 nowhere \u2014 because\nreal-image initialisation already matches probe gradients on this tiny\nnetwork.\n\nThird, the coreset trails random on seeds 1 and 2 but beats\nit on seed 0 (0.644 vs 0.592): typicality is not teachability, and the\nexception is as instructive as the rule. The comparison table the contract\nrequires is therefore a table in which the headline method ties the\ndumbest baseline and loses nothing by admitting it.\n\n## What the fresh students learned\n\nPer-class accuracy (in `evaluation-results.json`) shows no arm\ncollapsing on a single shape: even the weakest students score all four\nclasses well above chance, and the ranking of shapes is stable across\narms (diagonals slightly harder everywhere \u2014 longer strokes, more\npositional variance). The distilled students' errors distribute like\nthe random students' errors \u2014 unsurprising, since the distilled pixels\nare random-subset pixels with negligible optimisation drift. Within\nseeds the ordering is mixed rather than consistent: D beats B only on\nseed 0, loses to A except on seed 1, and the coreset is worst on seeds\n1 and 2 while random is worst on seed 0 \u2014 a pattern the aggregates\nblur and the per-seed table preserves.\n\nStored synthetic images are visually near-identical to their\ninitialisations; the chapter does not pretend otherwise. Initialisation\nsensitivity is reported structurally rather than solved: condensation\nprobed sixty inits per seed while evaluation used one init per seed\nfrom a disjoint pool, and the distilled set transfers across that gap\nexactly as well as the random set does \u2014 which is to say, the transfer\nquestion is untested at the margin where it would matter, because the\ncondensation itself did nothing measurable.\n\n## Initialisation and architecture sensitivity\n\nWang et al. distil for fixed initialisations and evaluate across\nsettings; Zhao et al. match gradients at sampled inits; Cazenavette et\nal. match trajectories from many starting points. The pattern is\nconsistent: synthetic sets overfit their optimisation context, and the\nantidote is breadth of inits during condensation plus fresh inits at\nevaluation. Our demo implements the breadth (60 probe inits per seed)\nand the freshness (disjoint eval inits) \u2014 and still finds nothing,\nbecause breadth over a flat objective is breadth over nothing.\n\nThe\nnegative result is therefore jointly about the objective and the\ncoverage: a follow-up on a harder task would need a steeper matching\nsignal *and* broad inits before concluding anything general. The\ndeeper sensitivity \u2014 architecture change \u2014 is not measured: condensation\nand evaluation share the (4,8) CNN by design, and the chapter records\nthat as a limitation rather than assuming transfer. A distilled set\nthat teaches one architecture need not teach another, and no claim here\ncrosses that gap.\n\n## Compression, compute and storage\n\nBy count, \\\\(R = 1200/16 = 75\\\\). By bytes, 700,800 \u2192 9,344 (75\u00d7 \u2014\npixels dominate; labels are negligible either way). By time, the ledger\nsplits three ways: condensation 0.7\u20131.5 s per seed (paid once),\nstudent training ~2\u20134 s per arm per seed (paid per student), and the\ncomparison nobody runs \u2014 reuse.\n\nCondensation is worthwhile only if the\ndistilled set trains enough students to amortise its preparation: at\nthese numbers, ~1 s of condensation pays for itself after the first\nreused student *if* the distilled set beats the free alternative\n(random selection, cost ~0 s). It does not beat it here, so the economic\nconclusion is clean: on this task, dataset distillation costs more than\nselection and delivers students it cannot be shown to improve on. The chapter claims no general\neconomic advantage and reports the numbers that would be needed to\nassess one.\n\n## Rights and source inheritance\n\nDistilled pixels derive from source images and inherit their terms: a\nsynthetic dataset is not automatically free of source rights, and\noptimising pixels does not launder provenance. RM-108 authorises\noptimisation and evaluation only \u2014 redistribution, sale, or publication\nof the distilled set are separately permissioned and not granted. That\nrestriction has a practical edge the chapter states plainly: the party\nthat most wants a distilled set (someone who cannot handle the source\n\u2014 too large, too licensed, too private) is exactly the party that must\ncheck whether the distilled derivative carries the source's\nrestrictions.\n\nCompression in bytes is not compression in obligations. The\nmanifest records source fingerprints, the synthetic fingerprint, and the\nfull condensation configuration so any downstream user can re-derive\nexactly what was made from what. The E2 source records are untouched;\nRM-104's pending re-attestation remains open and unrelated. Personal\ndata: the shapes are synthetic strokes plus noise \u2014 nothing personal\nexists to leak, and the record says so instead of performing privacy\nanalysis on noise.\n\n## When dataset distillation fails\n\nIt fails exactly here: easy task, strong subset baseline, flat matching\nobjective, shared architecture, no headroom. It fails in the literature\nwhen synthetic sets overfit one init, when the student architecture\nchanges, when bilevel unrolling becomes unstable or unaffordable, and\nwhen the matching loss falls while students do not \u2014 the auxiliary\nmetric improving as the actual goal stalls. None of this indicts the\nidea: on hard tasks with large sources, the cited papers report\ncondensation compressing thousands of images into tens with real student\nrecovery.\n\nIt indicts\nthe inference from \"smaller dataset\" to \"better deal\" without the\ncontrolled comparison this chapter runs. Dataset distillation is a\nhypothesis about what a training algorithm needs; like the filters of\nChapter 15, it needs held-out evidence, matched budgets, and a subset\nbaseline that is allowed to win. Here the subset baseline nearly wins\noutright, and the chapter lets it.\n\n## Limits of this chapter's evidence\n\n- **Set-up:** one easy synthetic image task, three dataset seeds, and tiny CNNs.\n  Sixteen random examples already came close to the full data, so there was\n  almost no headroom.\n- **Measurements:** the arm differences sit inside the seed noise and are\n  descriptive; three seeds cannot carry a significance test. Updates were\n  matched at exactly 600 per run; unique exposures differ by construction.\n- **Implementation:** flat MSE gradient matching, one inner step, no unrolling\n  or augmentation, labels fixed. Trajectory and distribution matching are\n  derived, not implemented.\n- **Scope:** condensation and evaluation share the student architecture, so\n  nothing here shows transfer to another architecture. The literature results\n  are the cited authors' and were not replicated.\n\n## What Part III has established\n\nPart III began with audits (Chapter 12: what is in the data), defined\nthe teaching contract (Chapter 13: what the student should learn),\ngenerated candidates (Chapter 14: what generation produces), selected\nand ordered them (Chapter 15: what selection silently optimises), and\nnow synthesises them (Chapter 16: what a training algorithm needs).\nA read-only check of Chapter 15's central limitation confirms it is\npreserved, not contradicted: its per-seed tables show random arms at\n600\u2013660 updates against curriculum arms at 360\u2013440, and its evidence\nrecord carries the mismatch as an explicit caveat \u2014 nothing in this\nchapter re-runs or revises that experiment, and the handoff to Part IV\nkeeps the warning attached.\n\nThe arc is one claim with five stages:\nteaching data is an engineered object, and every engineering step \u2014\nauditing, specifying, generating, selecting, synthesising \u2014 changes\nwhat the student can learn in ways that must be measured, not assumed. Two of the four empirical stages in\nthis book returned negative results (filtering/curriculum hurt;\ncondensation tied random selection). Both are reported as findings, and\nboth constrain the fourth part: Part IV moves to transformer-based\ninstruction distillation, where the same questions \u2014 what is selected,\nwhat is synthesised, what the student actually learns \u2014 return at\nlanguage-model scale.\n\n## References\n\nWang, T., Zhu, J.-Y., Torralba, A. and Efros, A. A. (2020). Dataset\nDistillation. *arXiv:1811.10959.*\nhttps://arxiv.org/abs/1811.10959\n\nZhao, B., Mopuri, K. R. and Bilen, H. (2021). Dataset Condensation\nwith Gradient Matching. *International Conference on Learning\nRepresentations.* https://arxiv.org/abs/2006.05929\n\nCazenavette, G., Wang, T., Torralba, A., Efros, A. A. and Zhu, J.-Y.\n(2022). Dataset Distillation by Matching Training Trajectories.\n*Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern\nRecognition*, pp. 10718\u201310727.\nhttps://openaccess.thecvf.com/content/CVPR2022/html/Cazenavette_Dataset_Distillation_by_Matching_Training_Trajectories_CVPR_2022_paper.html\n",
+  "sha256": "a4e0ee678f56c95b95a17498acc6473ed7b327a2ea44bc1f3c5b7e665257352f",
+  "source_ref": "a632c716-f82b-42a0-85eb-e275caea0e96",
+  "approval_id": "3996f4b2-7a40-411f-8ad3-8bab777313b0",
+  "content_sha256": "fc7f0f3d07879928b3dd28e7db18d1899e6cec98cee15cffc28738deeb67dadd"
+ },
+ "stages": [
+  {
+   "id": "0dc27be3-b57c-4401-a7e5-ffdedd629768",
+   "run_id": "618224ff-ee12-4c96-96f6-69729da56e4f",
+   "stage_id": "evaluate",
+   "attempt": 1,
+   "type": "pi_agent",
+   "operation": "chapter.informed_section_evaluate",
+   "state": "CANCELLED",
+   "terminal": true,
+   "input_ref": null,
+   "input_sha256": null,
+   "output_ref": null,
+   "output_sha256": null,
+   "pi_run_id": null,
+   "model_invocation_id": null,
+   "evidence_refs": [],
+   "validation_status": "not_run",
+   "validation": {
+    "contract_status": "not_run",
+    "structural_status": "not_established",
+    "reference_identity_status": "not_established",
+    "semantic_status": "unverified",
+    "independent_verification": false,
+    "uncited_claims_permitted": true
+   },
+   "error_category": "adapter_execution_failure",
+   "error_detail": null,
+   "uncertainty": "none",
+   "created_at": "2026-11-20T17:58:14.382588+00:00",
+   "started_at": null,
+   "finished_at": "2026-11-20T17:58:58.954410+00:00",
+   "duration_seconds": null
+  },
+  {
+   "id": "3f9df701-c1da-4ff5-9b3c-89edcaaa6ee7",
+   "run_id": "618224ff-ee12-4c96-96f6-69729da56e4f",
+   "stage_id": "review",
+   "attempt": 1,
+   "type": "pi_agent",
+   "operation": "chapter.informed_section_review",
+   "state": "COMPLETED",
+   "terminal": true,
+   "input_ref": "workflow:618224ff-ee12-4c96-96f6-69729da56e4f",
+   "input_sha256": "845f8954d7645b349c435a0c4e38c492a17c8df0a569338a432ba3e42108f8eb",
+   "output_ref": "event:4e47dcca-14cc-41be-ab93-9dc6a0ecb531",
+   "output_sha256": "1cb054126cb767655aee8cb9650989da614f22a76473af44aa60c6ea22551ba4",
+   "pi_run_id": "a7791faf-c20d-49ca-8a93-d6a14a0ea7b0",
+   "model_invocation_id": "d288e344-4c66-463a-8f84-d32cfeddbf0f",
+   "evidence_refs": [],
+   "validation_status": "passed",
+   "validation": {
+    "contract_status": "passed",
+    "structural_status": "passed",
+    "reference_identity_status": "not_established",
+    "semantic_status": "unverified",
+    "independent_verification": false,
+    "uncited_claims_permitted": true
+   },
+   "error_category": null,
+   "error_detail": null,
+   "uncertainty": "none",
+   "created_at": "2026-11-20T17:58:14.382576+00:00",
+   "started_at": "2026-11-20T17:58:19.631758+00:00",
+   "finished_at": "2026-11-20T17:58:37.159345+00:00",
+   "duration_seconds": 17.527587
+  },
+  {
+   "id": "1266651f-5204-473e-a431-ce384761b6b7",
+   "run_id": "618224ff-ee12-4c96-96f6-69729da56e4f",
+   "stage_id": "section_1",
+   "attempt": 1,
+   "type": "pi_agent",
+   "operation": "chapter.informed_section_improve",
+   "state": "FAILED",
+   "terminal": true,
+   "input_ref": "workflow:618224ff-ee12-4c96-96f6-69729da56e4f",
+   "input_sha256": "ab17f7de928be02159e6975b9f7de4da2f0b75a5a9b7534f5018d0d532a7cfed",
+   "output_ref": null,
+   "output_sha256": null,
+   "pi_run_id": "6571ff93-be86-42c8-a4f7-d0dacc306753",
+   "model_invocation_id": "17cf35eb-b520-4de9-915e-6572cdb82878",
+   "evidence_refs": [],
+   "validation_status": "not_run",
+   "validation": {
+    "contract_status": "not_run",
+    "structural_status": "not_established",
+    "reference_identity_status": "not_established",
+    "semantic_status": "unverified",
+    "independent_verification": false,
+    "uncited_claims_permitted": true
+   },
+   "error_category": "adapter_execution_failure",
+   "error_detail": null,
+   "uncertainty": "none",
+   "created_at": "2026-11-20T17:58:14.382581+00:00",
+   "started_at": "2026-11-20T17:58:41.032365+00:00",
+   "finished_at": "2026-11-20T17:58:58.954333+00:00",
+   "duration_seconds": 17.921968
+  },
+  {
+   "id": "5aeeb639-a599-4f9d-b904-6f603d590bdf",
+   "run_id": "618224ff-ee12-4c96-96f6-69729da56e4f",
+   "stage_id": "check_proposal",
+   "attempt": 1,
+   "type": "validation",
+   "operation": "chapter.section_assemble",
+   "state": "CANCELLED",
+   "terminal": true,
+   "input_ref": null,
+   "input_sha256": null,
+   "output_ref": null,
+   "output_sha256": null,
+   "pi_run_id": null,
+   "model_invocation_id": null,
+   "evidence_refs": [],
+   "validation_status": "not_run",
+   "validation": {
+    "contract_status": "not_run",
+    "structural_status": "not_established",
+    "reference_identity_status": "not_established",
+    "semantic_status": "unverified",
+    "independent_verification": false,
+    "uncited_claims_permitted": true
+   },
+   "error_category": "adapter_execution_failure",
+   "error_detail": null,
+   "uncertainty": "none",
+   "created_at": "2026-11-20T17:58:14.382586+00:00",
+   "started_at": null,
+   "finished_at": "2026-11-20T17:58:58.954395+00:00",
+   "duration_seconds": null
+  },
+  {
+   "id": "64141cd4-98f9-4497-a974-60eea3db1836",
+   "run_id": "618224ff-ee12-4c96-96f6-69729da56e4f",
+   "stage_id": "check_outcome",
+   "attempt": 1,
+   "type": "validation",
+   "operation": "chapter.check",
+   "state": "CANCELLED",
+   "terminal": true,
+   "input_ref": null,
+   "input_sha256": null,
+   "output_ref": null,
+   "output_sha256": null,
+   "pi_run_id": null,
+   "model_invocation_id": null,
+   "evidence_refs": [],
+   "validation_status": "not_run",
+   "validation": {
+    "contract_status": "not_run",
+    "structural_status": "not_established",
+    "reference_identity_status": "not_established",
+    "semantic_status": "unverified",
+    "independent_verification": false,
+    "uncited_claims_permitted": true
+   },
+   "error_category": "adapter_execution_failure",
+   "error_detail": null,
+   "uncertainty": "none",
+   "created_at": "2026-11-20T17:58:14.382589+00:00",
+   "started_at": null,
+   "finished_at": "2026-11-20T17:58:58.954417+00:00",
+   "duration_seconds": null
+  },
+  {
+   "id": "64dc979a-70cd-4d55-a44d-54eb20cb40e9",
+   "run_id": "618224ff-ee12-4c96-96f6-69729da56e4f",
+   "stage_id": "record_outcome",
+   "attempt": 1,
+   "type": "deterministic",
+   "operation": "result.record",
+   "state": "CANCELLED",
+   "terminal": true,
+   "input_ref": null,
+   "input_sha256": null,
+   "output_ref": null,
+   "output_sha256": null,
+   "pi_run_id": null,
+   "model_invocation_id": null,
+   "evidence_refs": [],
+   "validation_status": "not_run",
+   "validation": {
+    "contract_status": "not_run",
+    "structural_status": "not_established",
+    "reference_identity_status": "not_established",
+    "semantic_status": "unverified",
+    "independent_verification": false,
+    "uncited_claims_permitted": true
+   },
+   "error_category": "adapter_execution_failure",
+   "error_detail": null,
+   "uncertainty": "none",
+   "created_at": "2026-11-20T17:58:14.382590+00:00",
+   "started_at": null,
+   "finished_at": "2026-11-20T17:58:58.954425+00:00",
+   "duration_seconds": null
+  },
+  {
+   "id": "66be0b8a-3d86-4c46-b9ff-aa9085438c77",
+   "run_id": "618224ff-ee12-4c96-96f6-69729da56e4f",
+   "stage_id": "section_5",
+   "attempt": 1,
+   "type": "pi_agent",
+   "operation": "chapter.informed_section_improve",
+   "state": "CANCELLED",
+   "terminal": true,
+   "input_ref": null,
+   "input_sha256": null,
+   "output_ref": null,
+   "output_sha256": null,
+   "pi_run_id": null,
+   "model_invocation_id": null,
+   "evidence_refs": [],
+   "validation_status": "not_run",
+   "validation": {
+    "contract_status": "not_run",
+    "structural_status": "not_established",
+    "reference_identity_status": "not_established",
+    "semantic_status": "unverified",
+    "independent_verification": false,
+    "uncited_claims_permitted": true
+   },
+   "error_category": "adapter_execution_failure",
+   "error_detail": null,
+   "uncertainty": "none",
+   "created_at": "2026-11-20T17:58:14.382585+00:00",
+   "started_at": null,
+   "finished_at": "2026-11-20T17:58:58.954380+00:00",
+   "duration_seconds": null
+  },
+  {
+   "id": "8951e975-6c38-4ab5-91fe-20a26c5bf60e",
+   "run_id": "618224ff-ee12-4c96-96f6-69729da56e4f",
+   "stage_id": "section_3",
+   "attempt": 1,
+   "type": "pi_agent",
+   "operation": "chapter.informed_section_improve",
+   "state": "CANCELLED",
+   "terminal": true,
+   "input_ref": null,
+   "input_sha256": null,
+   "output_ref": null,
+   "output_sha256": null,
+   "pi_run_id": null,
+   "model_invocation_id": null,
+   "evidence_refs": [],
+   "validation_status": "not_run",
+   "validation": {
+    "contract_status": "not_run",
+    "structural_status": "not_established",
+    "reference_identity_status": "not_established",
+    "semantic_status": "unverified",
+    "independent_verification": false,
+    "uncited_claims_permitted": true
+   },
+   "error_category": "adapter_execution_failure",
+   "error_detail": null,
+   "uncertainty": "none",
+   "created_at": "2026-11-20T17:58:14.382583+00:00",
+   "started_at": null,
+   "finished_at": "2026-11-20T17:58:58.954365+00:00",
+   "duration_seconds": null
+  },
+  {
+   "id": "bd7daca9-8e3e-4097-8f1c-48e8f6fb17f1",
+   "run_id": "618224ff-ee12-4c96-96f6-69729da56e4f",
+   "stage_id": "section_4",
+   "attempt": 1,
+   "type": "pi_agent",
+   "operation": "chapter.informed_section_improve",
+   "state": "CANCELLED",
+   "terminal": true,
+   "input_ref": null,
+   "input_sha256": null,
+   "output_ref": null,
+   "output_sha256": null,
+   "pi_run_id": null,
+   "model_invocation_id": null,
+   "evidence_refs": [],
+   "validation_status": "not_run",
+   "validation": {
+    "contract_status": "not_run",
+    "structural_status": "not_established",
+    "reference_identity_status": "not_established",
+    "semantic_status": "unverified",
+    "independent_verification": false,
+    "uncited_claims_permitted": true
+   },
+   "error_category": "adapter_execution_failure",
+   "error_detail": null,
+   "uncertainty": "none",
+   "created_at": "2026-11-20T17:58:14.382584+00:00",
+   "started_at": null,
+   "finished_at": "2026-11-20T17:58:58.954372+00:00",
+   "duration_seconds": null
+  },
+  {
+   "id": "c8f352cf-d1f5-443d-b56f-2c60bfc6fa42",
+   "run_id": "618224ff-ee12-4c96-96f6-69729da56e4f",
+   "stage_id": "section_6",
+   "attempt": 1,
+   "type": "pi_agent",
+   "operation": "chapter.informed_section_improve",
+   "state": "CANCELLED",
+   "terminal": true,
+   "input_ref": null,
+   "input_sha256": null,
+   "output_ref": null,
+   "output_sha256": null,
+   "pi_run_id": null,
+   "model_invocation_id": null,
+   "evidence_refs": [],
+   "validation_status": "not_run",
+   "validation": {
+    "contract_status": "not_run",
+    "structural_status": "not_established",
+    "reference_identity_status": "not_established",
+    "semantic_status": "unverified",
+    "independent_verification": false,
+    "uncited_claims_permitted": true
+   },
+   "error_category": "adapter_execution_failure",
+   "error_detail": null,
+   "uncertainty": "none",
+   "created_at": "2026-11-20T17:58:14.382585+00:00",
+   "started_at": null,
+   "finished_at": "2026-11-20T17:58:58.954388+00:00",
+   "duration_seconds": null
+  },
+  {
+   "id": "e47fdfc8-6d66-47f3-8df3-db4b48559a31",
+   "run_id": "618224ff-ee12-4c96-96f6-69729da56e4f",
+   "stage_id": "section_2",
+   "attempt": 1,
+   "type": "pi_agent",
+   "operation": "chapter.informed_section_improve",
+   "state": "CANCELLED",
+   "terminal": true,
+   "input_ref": null,
+   "input_sha256": null,
+   "output_ref": null,
+   "output_sha256": null,
+   "pi_run_id": null,
+   "model_invocation_id": null,
+   "evidence_refs": [],
+   "validation_status": "not_run",
+   "validation": {
+    "contract_status": "not_run",
+    "structural_status": "not_established",
+    "reference_identity_status": "not_established",
+    "semantic_status": "unverified",
+    "independent_verification": false,
+    "uncited_claims_permitted": true
+   },
+   "error_category": "adapter_execution_failure",
+   "error_detail": null,
+   "uncertainty": "none",
+   "created_at": "2026-11-20T17:58:14.382582+00:00",
+   "started_at": null,
+   "finished_at": "2026-11-20T17:58:58.954358+00:00",
+   "duration_seconds": null
+  },
+  {
+   "id": "ef95ffea-b080-4b4f-b2f2-3cb479abbb2c",
+   "run_id": "618224ff-ee12-4c96-96f6-69729da56e4f",
+   "stage_id": "save_proposal",
+   "attempt": 1,
+   "type": "deterministic",
+   "operation": "result.record",
+   "state": "CANCELLED",
+   "terminal": true,
+   "input_ref": null,
+   "input_sha256": null,
+   "output_ref": null,
+   "output_sha256": null,
+   "pi_run_id": null,
+   "model_invocation_id": null,
+   "evidence_refs": [],
+   "validation_status": "not_run",
+   "validation": {
+    "contract_status": "not_run",
+    "structural_status": "not_established",
+    "reference_identity_status": "not_established",
+    "semantic_status": "unverified",
+    "independent_verification": false,
+    "uncited_claims_permitted": true
+   },
+   "error_category": "adapter_execution_failure",
+   "error_detail": null,
+   "uncertainty": "none",
+   "created_at": "2026-11-20T17:58:14.382587+00:00",
+   "started_at": null,
+   "finished_at": "2026-11-20T17:58:58.954404+00:00",
+   "duration_seconds": null
+  }
+ ],
+ "outputs": {
+  "review": {
+   "review": {
+    "quotes": [
+     "0.698), so the honest reading is ordinal within seeds, not cardinal",
+     "exactly as well as the random set does \u2014 which is to say, the transfer",
+     "L_{\\\\mathrm{real,train}} \\\\left( \\\\theta^*(D_{\\\\mathrm{syn}}, \\\\theta_0) \\\\right)"
+    ],
+    "strengths": [
+     "Honest null-result framing within seed noise",
+     "Clear dataset-not-student distinction",
+     "Strong baselines and matched budgets",
+     "Explicit limitations and rights handling"
+    ],
+    "assessment": "Chapter is coherent and unusually honest about a null result, keeping downstream held-out accuracy as verdict rather than matching loss. Economy can improve by tightening repeated distinctions between typicality/teachability, selection/synthesis, and matching-loss versus student success; by consolidating repeated budget-matching and init-disjointness statements; and by shortening conceptual trajectory/distribution sections without losing cost models. Transitions from bilevel theory to gradient matching to demo design are clear but dense with restated caveats. Preserve all numbers, methods, rights, and descriptive-not-significant framing.",
+    "priorities": [
+     "Tighten local repetition while keeping technical claims and uncertainty",
+     "Clarify section handoffs between theory, baselines, and experiment",
+     "Preserve per-seed ordinal reading over cross-seed aggregates",
+     "Keep budget-matching and init-separation guarantees explicit but concise",
+     "Maintain established-findings versus hypotheses and literature boundaries"
+    ]
+   },
+   "chapter_context": {
+    "style": "Precise technical exposition with frank negative-result reporting and explicit scope limits.",
+    "purpose": "Derive dataset distillation objectives and report an honest weak-result condensation demo against selection baselines.",
+    "argument": "Dataset distillation optimises training examples via bilevel/matching objectives, but the bounded E2 demo ties random selection within seed noise.",
+    "preserve": [
+     "all reported accuracies and aggregates",
+     "bilevel and matching formulations",
+     "experiment design and budget matching",
+     "limitations and uncertainty language",
+     "rights RM-108 and provenance",
+     "literature attributions"
+    ],
+    "terminology": [
+     "dataset distillation",
+     "gradient matching",
+     "trajectory matching",
+     "distribution matching",
+     "coreset",
+     "bilevel optimisation"
+    ]
+   }
+  }
+ },
+ "plan": {
+  "sha256": "45970e69ebbe01e9e73b99d3b229bcd5fe5e35de6304f193446c39ca685c02ed",
+  "version": "chapter-spans/v1",
+  "coverage": "complete_source_text",
+  "sections": [
+   {
+    "id": "s1",
+    "end": 4892,
+    "start": 0,
+    "sha256": "ae2df659aa263d1055de659dbf0c17812e6f7562601dc707b5c8600a17d4c616",
+    "headings": [
+     "## Distilling a dataset instead of a model",
+     "## KD-019 and the central idea",
+     "## The bilevel optimisation problem"
+    ],
+    "estimated_tokens": 1236
+   },
+   {
+    "id": "s2",
+    "end": 9741,
+    "start": 4892,
+    "sha256": "5516cc942ab4e8589afeb65ec762f81d19989c8fcc8d07c017cff63ffe1f2f4b",
+    "headings": [
+     "## Coresets and ordinary subset selection",
+     "## Gradient matching"
+    ],
+    "estimated_tokens": 1232
+   },
+   {
+    "id": "s3",
+    "end": 14281,
+    "start": 9741,
+    "sha256": "e7d61c206c2ea991cb751d54ac20bacf84b55b8e1ec565a2e20be389621748ea",
+    "headings": [
+     "## Why synthetic images receive gradients",
+     "## Training-trajectory matching",
+     "## Distribution matching",
+     "## Designing the tiny condensation experiment"
+    ],
+    "estimated_tokens": 1162
+   },
+   {
+    "id": "s4",
+    "end": 18584,
+    "start": 14281,
+    "sha256": "1b9d4bc7acd5a4636a6e413110e184c4cf131f6351eca77f6a327e8bd5e08327",
+    "headings": [
+     "## Comparing full, random, coreset and distilled sets",
+     "## What the fresh students learned"
+    ],
+    "estimated_tokens": 1115
+   },
+   {
+    "id": "s5",
+    "end": 23266,
+    "start": 18584,
+    "sha256": "46cfa051c80afeda09f56b27bc16c4759c3f82b3b6fa3026b89e1b15afd237c4",
+    "headings": [
+     "## Initialisation and architecture sensitivity",
+     "## Compression, compute and storage",
+     "## Rights and source inheritance",
+     "## When dataset distillation fails"
+    ],
+    "estimated_tokens": 1195
+   },
+   {
+    "id": "s6",
+    "end": 26197,
+    "start": 23266,
+    "sha256": "c8e4363d911e21c17cc79339cbf032f3577829a3611e9a2ef93b9992801d5a57",
+    "headings": [
+     "## Limits of this chapter's evidence",
+     "## What Part III has established",
+     "## References"
+    ],
+    "estimated_tokens": 747
+   }
+  ],
+  "characters": 26197,
+  "model_calls": 8,
+  "source_bytes": 26344,
+  "wall_seconds": 900,
+  "output_tokens": 12288,
+  "token_estimator": "ASCII chars/4 + 2 per non-ASCII character; planning estimate only"
+ },
+ "definition": {
+  "id": "d38e4c3a-50ec-46e7-b53f-3a3606d48071",
+  "name": "chapter-improvement",
+  "version": 1006,
+  "schema_version": 1,
+  "title": "Chapter Improvement in 6 sections",
+  "description": "Bounded section-aware Chapter Improvement. Complete source coverage, saved proposal and whole-chapter evaluation. No source edits.",
+  "status": "active",
+  "source": "builtin",
+  "stage_count": 12,
+  "definition_sha256": "5cd3400f1417e87fd25db62ad0776e987a422313294634d59b263db5a83b76c3",
+  "integrity": {
+   "verified": true
+  },
+  "created_at": "2026-11-19T22:41:53.876759+00:00",
+  "status_updated_at": "2026-11-19T22:41:53.876762+00:00",
+  "definition": {
+   "name": "chapter-improvement",
+   "title": "Chapter Improvement in 6 sections",
+   "inputs": {
+    "plan": {
+     "type": "object",
+     "required": true
+    },
+    "criteria": {
+     "type": "string",
+     "required": true
+    },
+    "original": {
+     "type": "object",
+     "required": true
+    },
+    "strategy": {
+     "type": "object",
+     "required": true
+    },
+    "experience": {
+     "type": "object",
+     "required": true
+    },
+    "original_ref": {
+     "type": "object",
+     "required": true
+    },
+    "workspace_id": {
+     "type": "string",
+     "required": true
+    },
+    "workspace_context": {
+     "type": "object",
+     "required": true
+    },
+    "experience_retrieval": {
+     "type": "object",
+     "required": true
+    }
+   },
+   "limits": {
+    "max_model_calls": 8,
+    "max_wall_seconds": 900,
+    "max_total_output_tokens": 12288
+   },
+   "stages": [
+    {
+     "id": "review",
+     "type": "pi_agent",
+     "title": "Review chapter",
+     "inputs": {
+      "plan": "$input.plan",
+      "criteria": "$input.criteria",
+      "original": "$input.original",
+      "workspace_context": "$input.workspace_context"
+     },
+     "limits": {
+      "max_attempts": 1,
+      "timeout_seconds": 90,
+      "max_output_tokens": 1536
+     },
+     "operation": "chapter.informed_section_review",
+     "depends_on": [],
+     "on_failure": "stop",
+     "output_schema": {
+      "type": "object",
+      "required": [
+       "chapter_context",
+       "review"
+      ],
+      "properties": {
+       "review": {
+        "type": "object"
+       },
+       "chapter_context": {
+        "type": "object"
+       }
+      }
+     }
+    },
+    {
+     "id": "section_1",
+     "type": "pi_agent",
+     "title": "Improve section 1",
+     "inputs": {
+      "plan": "$input.plan",
+      "index": 0,
+      "review": "$stage.review.review",
+      "criteria": "$input.criteria",
+      "original": "$input.original",
+      "strategy": "$input.strategy",
+      "experience": "$input.experience",
+      "chapter_context": "$stage.review.chapter_context",
+      "workspace_context": "$input.workspace_context"
+     },
+     "limits": {
+      "max_attempts": 1,
+      "timeout_seconds": 90,
+      "max_output_tokens": 1536
+     },
+     "operation": "chapter.informed_section_improve",
+     "depends_on": [
+      "review"
+     ],
+     "on_failure": "stop",
+     "output_schema": {
+      "type": "object",
+      "required": [
+       "revision"
+      ],
+      "properties": {
+       "revision": {
+        "type": "object"
+       }
+      }
+     }
+    },
+    {
+     "id": "section_2",
+     "type": "pi_agent",
+     "title": "Improve section 2",
+     "inputs": {
+      "plan": "$input.plan",
+      "index": 1,
+      "review": "$stage.review.review",
+      "criteria": "$input.criteria",
+      "original": "$input.original",
+      "strategy": "$input.strategy",
+      "experience": "$input.experience",
+      "chapter_context": "$stage.review.chapter_context",
+      "workspace_context": "$input.workspace_context"
+     },
+     "limits": {
+      "max_attempts": 1,
+      "timeout_seconds": 90,
+      "max_output_tokens": 1536
+     },
+     "operation": "chapter.informed_section_improve",
+     "depends_on": [
+      "review",
+      "section_1"
+     ],
+     "on_failure": "stop",
+     "output_schema": {
+      "type": "object",
+      "required": [
+       "revision"
+      ],
+      "properties": {
+       "revision": {
+        "type": "object"
+       }
+      }
+     }
+    },
+    {
+     "id": "section_3",
+     "type": "pi_agent",
+     "title": "Improve section 3",
+     "inputs": {
+      "plan": "$input.plan",
+      "index": 2,
+      "review": "$stage.review.review",
+      "criteria": "$input.criteria",
+      "original": "$input.original",
+      "strategy": "$input.strategy",
+      "experience": "$input.experience",
+      "chapter_context": "$stage.review.chapter_context",
+      "workspace_context": "$input.workspace_context"
+     },
+     "limits": {
+      "max_attempts": 1,
+      "timeout_seconds": 90,
+      "max_output_tokens": 1536
+     },
+     "operation": "chapter.informed_section_improve",
+     "depends_on": [
+      "review",
+      "section_2"
+     ],
+     "on_failure": "stop",
+     "output_schema": {
+      "type": "object",
+      "required": [
+       "revision"
+      ],
+      "properties": {
+       "revision": {
+        "type": "object"
+       }
+      }
+     }
+    },
+    {
+     "id": "section_4",
+     "type": "pi_agent",
+     "title": "Improve section 4",
+     "inputs": {
+      "plan": "$input.plan",
+      "index": 3,
+      "review": "$stage.review.review",
+      "criteria": "$input.criteria",
+      "original": "$input.original",
+      "strategy": "$input.strategy",
+      "experience": "$input.experience",
+      "chapter_context": "$stage.review.chapter_context",
+      "workspace_context": "$input.workspace_context"
+     },
+     "limits": {
+      "max_attempts": 1,
+      "timeout_seconds": 90,
+      "max_output_tokens": 1536
+     },
+     "operation": "chapter.informed_section_improve",
+     "depends_on": [
+      "review",
+      "section_3"
+     ],
+     "on_failure": "stop",
+     "output_schema": {
+      "type": "object",
+      "required": [
+       "revision"
+      ],
+      "properties": {
+       "revision": {
+        "type": "object"
+       }
+      }
+     }
+    },
+    {
+     "id": "section_5",
+     "type": "pi_agent",
+     "title": "Improve section 5",
+     "inputs": {
+      "plan": "$input.plan",
+      "index": 4,
+      "review": "$stage.review.review",
+      "criteria": "$input.criteria",
+      "original": "$input.original",
+      "strategy": "$input.strategy",
+      "experience": "$input.experience",
+      "chapter_context": "$stage.review.chapter_context",
+      "workspace_context": "$input.workspace_context"
+     },
+     "limits": {
+      "max_attempts": 1,
+      "timeout_seconds": 90,
+      "max_output_tokens": 1536
+     },
+     "operation": "chapter.informed_section_improve",
+     "depends_on": [
+      "review",
+      "section_4"
+     ],
+     "on_failure": "stop",
+     "output_schema": {
+      "type": "object",
+      "required": [
+       "revision"
+      ],
+      "properties": {
+       "revision": {
+        "type": "object"
+       }
+      }
+     }
+    },
+    {
+     "id": "section_6",
+     "type": "pi_agent",
+     "title": "Improve section 6",
+     "inputs": {
+      "plan": "$input.plan",
+      "index": 5,
+      "review": "$stage.review.review",
+      "criteria": "$input.criteria",
+      "original": "$input.original",
+      "strategy": "$input.strategy",
+      "experience": "$input.experience",
+      "chapter_context": "$stage.review.chapter_context",
+      "workspace_context": "$input.workspace_context"
+     },
+     "limits": {
+      "max_attempts": 1,
+      "timeout_seconds": 90,
+      "max_output_tokens": 1536
+     },
+     "operation": "chapter.informed_section_improve",
+     "depends_on": [
+      "review",
+      "section_5"
+     ],
+     "on_failure": "stop",
+     "output_schema": {
+      "type": "object",
+      "required": [
+       "revision"
+      ],
+      "properties": {
+       "revision": {
+        "type": "object"
+       }
+      }
+     }
+    },
+    {
+     "id": "check_proposal",
+     "type": "validation",
+     "title": "Validate and assemble complete proposal",
+     "inputs": {
+      "s1": "$stage.section_1.revision",
+      "s2": "$stage.section_2.revision",
+      "s3": "$stage.section_3.revision",
+      "s4": "$stage.section_4.revision",
+      "s5": "$stage.section_5.revision",
+      "s6": "$stage.section_6.revision",
+      "plan": "$input.plan",
+      "review": "$stage.review.review",
+      "original_ref": "$input.original_ref",
+      "workspace_id": "$input.workspace_id"
+     },
+     "limits": {
+      "max_attempts": 1,
+      "timeout_seconds": 90,
+      "max_output_tokens": null
+     },
+     "operation": "chapter.section_assemble",
+     "depends_on": [
+      "review",
+      "section_1",
+      "section_2",
+      "section_3",
+      "section_4",
+      "section_5",
+      "section_6"
+     ],
+     "on_failure": "stop",
+     "output_schema": {
+      "type": "object",
+      "required": [
+       "assessment",
+       "result"
+      ],
+      "properties": {
+       "result": {
+        "type": "object"
+       },
+       "assessment": {
+        "type": "object"
+       }
+      }
+     }
+    },
+    {
+     "id": "save_proposal",
+     "type": "deterministic",
+     "title": "Save proposed version",
+     "inputs": {
+      "result": "$stage.check_proposal.result",
+      "assessment": "$stage.check_proposal.assessment"
+     },
+     "limits": {
+      "max_attempts": 1,
+      "timeout_seconds": 90,
+      "max_output_tokens": null
+     },
+     "operation": "result.record",
+     "depends_on": [
+      "check_proposal"
+     ],
+     "on_failure": "stop",
+     "output_schema": {
+      "type": "object",
+      "required": [
+       "artifact_id",
+       "sha256"
+      ],
+      "properties": {
+       "sha256": {
+        "type": "string"
+       },
+       "artifact_id": {
+        "type": "string"
+       }
+      }
+     }
+    },
+    {
+     "id": "evaluate",
+     "type": "pi_agent",
+     "title": "Evaluate original and saved proposal",
+     "inputs": {
+      "review": "$stage.review.review",
+      "criteria": "$input.criteria",
+      "original": "$input.original",
+      "artifact_id": "$stage.save_proposal.artifact_id",
+      "artifact_sha256": "$stage.save_proposal.sha256"
+     },
+     "limits": {
+      "max_attempts": 1,
+      "timeout_seconds": 90,
+      "max_output_tokens": 1536
+     },
+     "operation": "chapter.informed_section_evaluate",
+     "depends_on": [
+      "review",
+      "save_proposal"
+     ],
+     "on_failure": "stop",
+     "output_schema": {
+      "type": "object",
+      "required": [
+       "evaluation"
+      ],
+      "properties": {
+       "evaluation": {
+        "type": "object"
+       }
+      }
+     }
+    },
+    {
+     "id": "check_outcome",
+     "type": "validation",
+     "title": "Check outcome structure",
+     "inputs": {
+      "review": "$stage.review.review",
+      "original": "$input.original",
+      "evaluation": "$stage.evaluate.evaluation",
+      "artifact_id": "$stage.save_proposal.artifact_id",
+      "workspace_id": "$input.workspace_id"
+     },
+     "limits": {
+      "max_attempts": 1,
+      "timeout_seconds": 90,
+      "max_output_tokens": null
+     },
+     "operation": "chapter.check",
+     "depends_on": [
+      "evaluate",
+      "review",
+      "save_proposal"
+     ],
+     "on_failure": "stop",
+     "output_schema": {
+      "type": "object",
+      "required": [
+       "assessment",
+       "result"
+      ],
+      "properties": {
+       "result": {
+        "type": "object"
+       },
+       "assessment": {
+        "type": "object"
+       }
+      }
+     }
+    },
+    {
+     "id": "record_outcome",
+     "type": "deterministic",
+     "title": "Record workflow outcome",
+     "inputs": {
+      "result": "$stage.check_outcome.result",
+      "assessment": "$stage.check_outcome.assessment"
+     },
+     "limits": {
+      "max_attempts": 1,
+      "timeout_seconds": 90,
+      "max_output_tokens": null
+     },
+     "operation": "result.record",
+     "depends_on": [
+      "check_outcome"
+     ],
+     "on_failure": "stop",
+     "output_schema": {
+      "type": "object",
+      "required": [
+       "artifact_id",
+       "sha256"
+      ],
+      "properties": {
+       "sha256": {
+        "type": "string"
+       },
+       "artifact_id": {
+        "type": "string"
+       }
+      }
+     }
+    }
+   ],
+   "version": 1006,
+   "description": "Bounded section-aware Chapter Improvement. Complete source coverage, saved proposal and whole-chapter evaluation. No source edits.",
+   "schema_version": 1
+  }
+ },
+ "usage": {
+  "calls": 2,
+  "tokens": 30991
+ },
+ "reason": "Improve section 1: The step could not complete: its model call or checks failed, or the source approval, model authorization or budget changed after the run started. No further call was sent. The workflow timeline has its receipt.",
+ "experience": {
+  "enabled": true,
+  "recorded": true,
+  "retrieval": {
+   "scope": "workspace",
+   "config": {
+    "scope": "workspace",
+    "max_items": 5,
+    "max_context_chars": 4000,
+    "max_excerpt_lines": 6
+   },
+   "enabled": true,
+   "omitted": [],
+   "quality": {
+    "note": "Quality evidence is attached, never promoted: a failed, missing, negative or contradicted evaluation remains visible and cannot become a proven improvement.",
+    "evaluated": 0,
+    "unverified": 1,
+    "contradicted": 0,
+    "evaluation_failed": 1,
+    "promotion_available": false
+   },
+   "selected": [
+    {
+     "rank": 1,
+     "score": 0.647,
+     "run_id": "c335aacf-cd5a-43a3-8914-d6dacd2dfc8a",
+     "reasons": [
+      "criteria overlap 0.397",
+      "owner comment recorded"
+     ],
+     "decision": "accepted",
+     "promotable": false,
+     "improvement_id": "390ba0bd-0662-4788-b24c-284721cf4dd6",
+     "quality_status": "evaluation_failed",
+     "decision_event_id": "203b21a5-ea2e-57d9-a877-a24a8ebda394",
+     "quality_unverified": true,
+     "source_text_included": true,
+     "source_text_approvals": [
+      "3996f4b2-7a40-411f-8ad3-8bab777313b0"
+     ]
+    }
+   ],
+   "promotion": {
+    "reason": "Chapter experience is owner-decision context. Improvement or transfer requires a separate comparative evaluation; owner acceptance alone is not such evidence.",
+    "status": "context_only",
+    "eligible": false
+   },
+   "workspace_id": "9a992443-ee5f-4a30-a52d-6760e584baf1",
+   "context_chars": 2070,
+   "context_sha256": "e5993c625ac957e55de39b5b5be060bddb808c4ab60b18cc37c7b5edd610653a",
+   "ranking_method": "deterministic rules over recorded metadata: criteria word overlap (Jaccard, words of 3+ letters), +0.5 same chapter path, +0.25 owner comment recorded; ties by most recent decision, then improvement id. Scores order candidates; they are not similarity probabilities and no embeddings are used.",
+   "pending_excluded": 3,
+   "eligible_candidates": 1,
+   "withheld_source_text": 0
+  },
+  "items": [
+   {
+    "ref": "improvement:390ba0bd-0662-4788-b24c-284721cf4dd6",
+    "intent": {
+     "criteria": "Improve economy in \"Synthetic Data Generation\" without dropping technical claims, source citations or uncertainty. Mission prose evidence (CURRENT, observed 2026-11-16): overall 3.0; economy 2; quoted evidence \"a rejection audit that discards its rejects is advertising\" (evidence_validated=false; not chapter text). Preserve the chapter's argument, technical qualifications, examples and references. Keep each section's full substance and approximate length; do not omit material. Return a complete proposal; do not write the source."
+    },
+    "quality": {
+     "note": "The evaluation did not complete. Owner acceptance does not establish quality.",
+     "status": "evaluation_failed",
+     "history": [],
+     "verdict": null,
+     "error_category": "authority_refused",
+     "owner_decision": "accepted",
+     "evaluation_status": "evaluation_failed",
+     "quality_unverified": true
+    },
+    "decision": "accepted",
+    "promotion": {
+     "reason": "The evaluation did not complete. Owner acceptance does not establish quality.",
+     "status": "context_only",
+     "eligible": false,
+     "quality_status": "evaluation_failed"
+    },
+    "decided_at": "2026-11-19T21:43:20.891909+00:00",
+    "chapter_path": "content/books/distillation/14-chapter.md",
+    "owner_comment": "economy: retained the proposal; evaluation stopped at the old token ceiling, not a quality verdict",
+    "proposal_change": {
+     "excerpt": [
+      "- of 87,296 possible inputs; the generator spread its draws evenly across",
+      "+ of 87,296 possible inputs; the generator spread draws evenly across",
+      "- the result. Plenty is cheap; coverage,",
+      "- correctness, and provenance are what have to be earned.",
+      "+ the result. Plenty is cheap; coverage, correctness, and provenance are what have to be earned.",
+      "- teaching: examples at useful scale, with their correctness checked,"
+     ],
+     "lines_added": 55,
+     "lines_removed": 286,
+     "excerpt_is_partial": true
+    },
+    "model_assessment": {
+     "status": "evaluation_failed"
+    },
+    "decision_event_id": "203b21a5-ea2e-57d9-a877-a24a8ebda394",
+    "earlier_decisions": 0,
+    "owner_reason_recorded": true
+   }
+  ],
+  "supplied": "not_dispatched",
+  "coverage": {
+   "expected": 6,
+   "dispatched": 0,
+   "verified": 0
+  },
+  "invocations": [
+   {
+    "stage_id": "section_1",
+    "model_invocation_id": "17cf35eb-b520-4de9-915e-6572cdb82878",
+    "model": "muse-spark-1.3-contributor",
+    "matched": true,
+    "dispatched": false
+   },
+   {
+    "stage_id": "section_5",
+    "model_invocation_id": null,
+    "model": null,
+    "matched": false,
+    "dispatched": false
+   },
+   {
+    "stage_id": "section_3",
+    "model_invocation_id": null,
+    "model": null,
+    "matched": false,
+    "dispatched": false
+   },
+   {
+    "stage_id": "section_4",
+    "model_invocation_id": null,
+    "model": null,
+    "matched": false,
+    "dispatched": false
+   },
+   {
+    "stage_id": "section_6",
+    "model_invocation_id": null,
+    "model": null,
+    "matched": false,
+    "dispatched": false
+   },
+   {
+    "stage_id": "section_2",
+    "model_invocation_id": null,
+    "model": null,
+    "matched": false,
+    "dispatched": false
+   }
+  ],
+  "model_invocation_id": null,
+  "model": null
+ },
+ "strategy": {
+  "recorded": true,
+  "enabled": false
+ },
+ "recommendation": {
+  "recorded": false,
+  "reason": "No strategy selection was supplied to this run."
+ }
+}
