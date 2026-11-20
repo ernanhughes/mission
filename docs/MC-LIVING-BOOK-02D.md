@@ -186,6 +186,11 @@ The backend endpoint is
 It makes no model call and writes nothing. Re-evaluating a retained proposal from the UI remains
 deferred until the backend path is qualified; the backend path is now qualified for one proposal.
 
+Live verification at `/projects/distillation/read`, chapter 15: the preview listed all three
+runs, selecting A and the B retry opened the comparison, the conclusion was `inconclusive`, A
+showed its `benefit` evaluation, B showed `No proposal retained` with the `section_1` Pi receipt,
+and the browser reported no console errors. The comparison request returned 200.
+
 ## Non-claims
 
 - The B condition is not proven learning.
