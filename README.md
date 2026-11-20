@@ -213,6 +213,16 @@ application with a verified backend launch definition.
 See [the implementation and boundary notes](docs/MC-LIVING-BOOK-01.md) and
 [acceptance evidence](docs/acceptance/mc-living-book-01/README.md).
 
+### Praxis governed proposals (MC-PRAXIS-07)
+
+Praxis can import an advisory proposal, but Mission Control remains the
+authority: import is inert, approval requires an identified human bound to an
+immutable snapshot digest, and execution reuses the existing integration and
+ActionSpec confirmation machinery. There is no endpoint that executes an
+arbitrary action from a request body. See
+[the governed proposal contract](docs/MC-PRAXIS-07.md) and the routes under
+`/api/praxis/proposals`.
+
 ### Docker sandbox setup
 
 The image is local and pinned:
