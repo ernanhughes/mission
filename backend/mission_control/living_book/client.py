@@ -164,6 +164,38 @@ class AliveClient:
             "POST", f"/living-books/{quote(book_id, safe='')}/ask", body=body, timeout=240.0
         )
 
+    async def represent(self, book_id: str, body: dict[str, Any]) -> dict[str, Any]:
+        return await self._request(
+            "POST",
+            f"/living-books/{quote(book_id, safe='')}/representations",
+            body=body,
+            timeout=240.0,
+        )
+
+    async def representations(
+        self, book_id: str, chapter_id: str | None = None
+    ) -> dict[str, Any]:
+        path = f"/living-books/{quote(book_id, safe='')}/representations"
+        if chapter_id:
+            path += "?chapter_id=" + quote(chapter_id, safe="")
+        return await self._request("GET", path, timeout=30.0)
+
+    async def representation(self, book_id: str, representation_id: str) -> dict[str, Any]:
+        return await self._request(
+            "GET",
+            f"/living-books/{quote(book_id, safe='')}/representations/"
+            f"{quote(representation_id, safe='')}",
+            timeout=30.0,
+        )
+
+    async def reject_representation(self, book_id: str, representation_id: str) -> dict[str, Any]:
+        return await self._request(
+            "POST",
+            f"/living-books/{quote(book_id, safe='')}/representations/"
+            f"{quote(representation_id, safe='')}/reject",
+            timeout=30.0,
+        )
+
     async def conversation(self, book_id: str, conversation_id: str) -> dict[str, Any]:
         return await self._request(
             "GET",

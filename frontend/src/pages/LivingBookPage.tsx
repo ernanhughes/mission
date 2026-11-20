@@ -23,6 +23,7 @@ import {
   Tag,
 } from "../components/ui";
 import { BookMarkdown, bookSlug } from "../features/living-book/BookMarkdown";
+import { ExplorePanel } from "../features/living-book/ExplorePanel";
 import { ImprovementPanel } from "../features/living-book/ImprovementPanel";
 import type {
   LivingBookChapterContent,
@@ -33,7 +34,7 @@ import type {
 } from "../types/living-book";
 import { formatDateTime } from "../lib/format";
 
-type CompanionTab = "ask" | "notes" | "quality" | "improve";
+type CompanionTab = "ask" | "notes" | "quality" | "improve" | "explore";
 
 const QUALITY_LABELS: Record<string, string> = {
   prose: "Prose evaluation",
@@ -722,6 +723,14 @@ export function LivingBookPage() {
                 <button
                   className="button button-secondary button-small"
                   onClick={() => {
+                    setTab("explore");
+                  }}
+                >
+                  <Sparkles size={13} /> Explore
+                </button>
+                <button
+                  className="button button-secondary button-small"
+                  onClick={() => {
                     setPendingQuote(selection);
                     setTab("notes");
                   }}
@@ -744,6 +753,9 @@ export function LivingBookPage() {
             </button>
             <button className={tab === "improve" ? "is-current" : ""} onClick={() => setTab("improve")}>
               <Wrench size={14} /> Improve
+            </button>
+            <button className={tab === "explore" ? "is-current" : ""} onClick={() => setTab("explore")}>
+              <Sparkles size={14} /> Explore
             </button>
           </div>
 
@@ -994,6 +1006,30 @@ export function LivingBookPage() {
                 onSourceRefreshed={() => {
                   status.reload();
                   setRefreshToken((value) => value + 1);
+                }}
+              />
+            </div>
+          ) : null}
+
+          {tab === "explore" && chapterId ? (
+            <div className="living-companion-body">
+              <ExplorePanel
+                projectId={projectId}
+                chapterId={chapterId}
+                selection={selection}
+                conversationId={conversation?.id ?? null}
+                onAskAbout={(prompt, conversationId) => {
+                  if (conversationId && conversationId !== conversation?.id) {
+                    void api
+                      .get<LivingBookConversation>(
+                        `/api/living-book/projects/${projectId}/conversations/${encodeURIComponent(conversationId)}`,
+                      )
+                      .then((value) => setConversation(value))
+                      .catch(() => undefined);
+                  }
+                  setAskText(prompt);
+                  setAskScope("chapter");
+                  setTab("ask");
                 }}
               />
             </div>

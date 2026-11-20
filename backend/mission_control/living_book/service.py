@@ -482,6 +482,53 @@ async def conversation(
     return await client.conversation(book["id"], conversation_id)
 
 
+async def represent(
+    session: Session, settings, project_id: str, body: dict[str, Any]
+) -> dict[str, Any]:
+    context = _project_context(session, project_id)
+    client = _client(session, settings)
+    book = await _book_for(client, context)
+    return await client.represent(
+        book["id"],
+        {
+            "chapter_id": body.get("chapter_id"),
+            "task": body.get("task", "explain"),
+            "quote": body.get("quote"),
+            "start": body.get("start"),
+            "end": body.get("end"),
+            "conversation_id": body.get("conversation_id"),
+            "idempotency_key": body["idempotency_key"],
+        },
+    )
+
+
+async def representations(
+    session: Session, settings, project_id: str, chapter_id: str | None
+) -> dict[str, Any]:
+    context = _project_context(session, project_id)
+    client = _client(session, settings)
+    book = await _book_for(client, context)
+    return await client.representations(book["id"], chapter_id)
+
+
+async def representation(
+    session: Session, settings, project_id: str, representation_id: str
+) -> dict[str, Any]:
+    context = _project_context(session, project_id)
+    client = _client(session, settings)
+    book = await _book_for(client, context)
+    return await client.representation(book["id"], representation_id)
+
+
+async def reject_representation(
+    session: Session, settings, project_id: str, representation_id: str
+) -> dict[str, Any]:
+    context = _project_context(session, project_id)
+    client = _client(session, settings)
+    book = await _book_for(client, context)
+    return await client.reject_representation(book["id"], representation_id)
+
+
 async def quality(
     session: Session, settings, project_id: str, chapter_id: str | None
 ) -> dict[str, Any]:
