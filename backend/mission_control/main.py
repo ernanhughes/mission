@@ -30,6 +30,7 @@ from mission_control.api import (
     living_book as living_book_api,
     processes,
     projects,
+    praxis_proposals as praxis_proposals_api,
     publication as publication_api,
     quality as quality_api,
     research as research_api,
@@ -47,6 +48,7 @@ from mission_control.core.security import OriginGuardMiddleware, SecurityHeaders
 from mission_control.discovery.books import sync_detected_books, sync_fiction_books
 from mission_control.discovery.service import DiscoveryService
 from mission_control.integrations.service import IntegrationService
+from mission_control.praxis_proposals.service import PraxisProposalService
 from mission_control.persistence.db import Database
 from mission_control.persistence.migrations import apply_migrations
 from mission_control.persistence.seed import seed_defaults
@@ -138,6 +140,7 @@ def create_app(runtime: RuntimeSettings | None = None) -> FastAPI:
         )
         integration_service = IntegrationService(database, settings)
         workflow_service = WorkflowService(database, settings, integration_service)
+        praxis_proposal_service = PraxisProposalService(database, integration_service)
         research_chat = ResearchChatService(database, settings)
         git_activity_service = GitActivityService(database)
         app.state.database = database
@@ -147,6 +150,7 @@ def create_app(runtime: RuntimeSettings | None = None) -> FastAPI:
         app.state.discovery = discovery_service
         app.state.integration_service = integration_service
         app.state.workflow_service = workflow_service
+        app.state.praxis_proposal_service = praxis_proposal_service
         app.state.research_chat = research_chat
         app.state.git_activity = git_activity_service
         await process_manager.reconcile_startup()
@@ -274,6 +278,7 @@ def create_app(runtime: RuntimeSettings | None = None) -> FastAPI:
     app.include_router(git_activity.router)
     app.include_router(adapters.router)
     app.include_router(integrations_api.router)
+    app.include_router(praxis_proposals_api.router)
     app.include_router(research_api.router)
     app.include_router(workflows_api.router)
     app.include_router(writer_api.router)
