@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
   AlertTriangle,
@@ -12,6 +12,7 @@ import {
   FileJson,
   FlaskConical,
   Gauge,
+  Loader2,
   MessageSquare,
   Play,
   RefreshCw,
@@ -39,6 +40,7 @@ import {
   Stat,
   Tag,
 } from "../components/ui";
+import { ensureApplicationOpen, ensureApplicationStarted } from "../features/applications/ensureApplicationOpen";
 import { ResearchChatPanel } from "../features/research/ResearchChatPanel";
 import { copyText } from "../lib/clipboard";
 import {
@@ -49,6 +51,7 @@ import {
   truncate,
 } from "../lib/format";
 import type {
+  Application,
   ExperimentWorkflow,
   Integration,
   IntegrationDecision,
@@ -151,6 +154,131 @@ const configs: Record<"next" | "work" | "cocoder", WorkspaceConfig> = {
 
 const decisionHelp =
   "Saved locally in Mission Control. Source application state is not modified or claimed as synchronised.";
+
+type EngineStartupState =
+  | { phase: "idle" }
+  | { phase: "starting" }
+  | { phase: "refreshing" }
+  | { phase: "ready"; detail: string }
+  | { phase: "failed"; stage: "start" | "refresh"; message: string }
+  | { phase: "unconfigured"; message: string };
+
+function engineLaunchDefinition(app: Application) {
+  return (
+    app.launch_definitions.find(
+      (definition) =>
+        definition.enabled &&
+        (definition.launch_type === "command" || definition.launch_type === "server") &&
+        Boolean(definition.browser_url),
+    ) ?? null
+  );
+}
+
+function engineStartupBlocker(app: Application): string | null {
+  if (!app.enabled || app.archived) {
+    return `${app.name} is disabled in the application registry.`;
+  }
+  if (app.control_policy.allow_launch === false) {
+    return `Launching ${app.name} is disabled by its control policy.`;
+  }
+  const launchable = app.launch_definitions.some(
+    (definition) =>
+      definition.enabled &&
+      (definition.launch_type === "command" || definition.launch_type === "server"),
+  );
+  if (!launchable) {
+    return `${app.name} has no enabled command or server launch definition.`;
+  }
+  if (!engineLaunchDefinition(app)) {
+    return `${app.name}'s launch definition has no browser URL, so Mission Control cannot verify it as a web engine.`;
+  }
+  return null;
+}
+
+function EngineStartupBanner({
+  title,
+  state,
+  onOpenUi,
+  onRetry,
+  onRefreshData,
+}: {
+  title: string;
+  state: EngineStartupState;
+  onOpenUi: () => void;
+  onRetry: () => void;
+  onRefreshData: () => void;
+}) {
+  if (state.phase === "idle") return null;
+
+  let icon = <Loader2 size={17} className="spin" aria-hidden="true" />;
+  let heading = `Starting ${title}…`;
+  let detail = "Mission Control is launching the registered engine. This workspace stays usable while it starts.";
+  let actions = null;
+
+  if (state.phase === "refreshing") {
+    heading = `Refreshing ${title} data…`;
+    detail = "The engine is running. Mission Control is reading its source now.";
+  } else if (state.phase === "ready") {
+    icon = <CheckCircle2 size={17} aria-hidden="true" />;
+    heading = `${title} is running`;
+    detail = state.detail || "The engine answered and this workspace has been refreshed.";
+    actions = (
+      <>
+        <button type="button" className="button button-primary button-small" onClick={onOpenUi}>
+          <ExternalLink size={14} /> Open {title} UI
+        </button>
+        <button type="button" className="button button-ghost button-small" onClick={onRefreshData}>
+          <RefreshCw size={14} /> Refresh data
+        </button>
+      </>
+    );
+  } else if (state.phase === "failed") {
+    icon = <AlertTriangle size={17} aria-hidden="true" />;
+    heading =
+      state.stage === "refresh"
+        ? `${title} is running, but its data could not be refreshed`
+        : `${title} could not start`;
+    detail = state.message;
+    actions = (
+      <>
+        <button type="button" className="button button-secondary button-small" onClick={onRetry}>
+          Retry
+        </button>
+        <Link className="button button-ghost button-small" to="/applications">
+          View logs
+        </Link>
+      </>
+    );
+  } else if (state.phase === "unconfigured") {
+    icon = <CircleSlash size={17} aria-hidden="true" />;
+    heading = `${title} has no launch configured`;
+    detail = state.message;
+    actions = (
+      <Link className="button button-secondary button-small" to="/applications">
+        Configure
+      </Link>
+    );
+  }
+
+  return (
+    <div
+      className={`engine-start-banner ${state.phase}`}
+      role={state.phase === "failed" ? "alert" : "status"}
+      aria-live={state.phase === "failed" ? "assertive" : "polite"}
+    >
+      <div className="engine-start-main">
+        <span className="engine-start-icon" aria-hidden="true">
+          {icon}
+        </span>
+        <div>
+          <strong>{heading}</strong>
+          <p>{detail}</p>
+        </div>
+      </div>
+      {actions ? <div className="engine-start-actions">{actions}</div> : null}
+    </div>
+  );
+}
 
 function resourceScore(record: IntegrationRecord): string | null {
   if (record.application_id === "next") {
@@ -858,11 +986,13 @@ function DetailView({
 export function IntegrationWorkspacePage({ appId }: { appId: "next" | "work" | "cocoder" }) {
   const config = configs[appId];
   const Icon = config.icon;
+  const toast = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
   const selectedId = searchParams.get("record");
   const [activeTab, setActiveTab] = useState(config.tabs[0].id);
   const [searchText, setSearchText] = useState("");
   const integration = useApi<Integration>(`/api/integrations/${appId}`, { pollMs: 45000 });
+  const application = useApi<Application>(`/api/applications/${appId}`, { pollMs: 15000 });
   const projects = useApi<Project[]>("/api/projects");
   const tab = config.tabs.find((item) => item.id === activeTab) ?? config.tabs[0];
   const recordPath = tab.resourceType
@@ -889,6 +1019,8 @@ export function IntegrationWorkspacePage({ appId }: { appId: "next" | "work" | "
       : null,
     { pollMs: 2500 },
   );
+  const [startup, setStartup] = useState<EngineStartupState>({ phase: "idle" });
+  const autoAttempted = useRef<string | null>(null);
 
   useEffect(() => {
     if (selectedId && detail.data) {
@@ -914,17 +1046,98 @@ export function IntegrationWorkspacePage({ appId }: { appId: "next" | "work" | "
     return rows;
   }, [records.data, tab, searchText]);
 
+  const reloadView = useCallback(() => {
+    integration.reload();
+    records.reload();
+    overview.reload();
+    executions.reload();
+    detail.reload();
+    application.reload();
+  }, [
+    integration.reload,
+    records.reload,
+    overview.reload,
+    executions.reload,
+    detail.reload,
+    application.reload,
+  ]);
+
+  const refreshEngineData = useCallback(async () => {
+    await api.post(`/api/integrations/${appId}/refresh`);
+    reloadView();
+  }, [appId, reloadView]);
+
+  const startEngine = useCallback(async () => {
+    setStartup({ phase: "starting" });
+    try {
+      const result = await ensureApplicationStarted(appId);
+      application.reload();
+      setStartup({ phase: "refreshing" });
+      try {
+        await refreshEngineData();
+        setStartup({ phase: "ready", detail: result.detail ?? "" });
+      } catch (caught) {
+        setStartup({
+          phase: "failed",
+          stage: "refresh",
+          message: `The engine is running, but refreshing its source failed: ${errorMessage(caught)}`,
+        });
+      }
+    } catch (caught) {
+      application.reload();
+      setStartup({ phase: "failed", stage: "start", message: errorMessage(caught) });
+    }
+  }, [appId, application.reload, refreshEngineData]);
+
+  const refreshData = useCallback(async () => {
+    setStartup({ phase: "refreshing" });
+    try {
+      await refreshEngineData();
+      setStartup({ phase: "ready", detail: "Source data refreshed." });
+    } catch (caught) {
+      setStartup({ phase: "failed", stage: "refresh", message: errorMessage(caught) });
+    }
+  }, [refreshEngineData]);
+
+  const retryStartup = useCallback(() => {
+    if (startup.phase === "failed" && startup.stage === "refresh") {
+      void refreshData();
+      return;
+    }
+    void startEngine();
+  }, [startup, refreshData, startEngine]);
+
+  useEffect(() => {
+    const app = application.data;
+    if (!app || app.id !== appId) return;
+    if (autoAttempted.current === appId) return;
+    autoAttempted.current = appId;
+    if (app.status.state === "running") return;
+    const blocker = engineStartupBlocker(app);
+    if (blocker) {
+      setStartup({ phase: "unconfigured", message: blocker });
+      return;
+    }
+    void startEngine();
+  }, [appId, application.data, startEngine]);
+
+  async function openEngineUi() {
+    try {
+      await ensureApplicationOpen(appId, config.title);
+    } catch (caught) {
+      const message = errorMessage(caught);
+      toast.push("error", `${config.title} could not open`, message);
+      setStartup({ phase: "failed", stage: "start", message });
+    }
+  }
+
   async function refreshAll() {
     try {
       await api.post(`/api/integrations/${appId}/refresh`);
     } catch {
       // The integration panel shows the diagnostic.
     }
-    integration.reload();
-    records.reload();
-    overview.reload();
-    executions.reload();
-    detail.reload();
+    reloadView();
   }
 
   return (
@@ -952,6 +1165,19 @@ export function IntegrationWorkspacePage({ appId }: { appId: "next" | "work" | "
           </>
         }
       />
+
+      <EngineStartupBanner
+        title={config.title}
+        state={startup}
+        onOpenUi={() => void openEngineUi()}
+        onRetry={retryStartup}
+        onRefreshData={() => void refreshData()}
+      />
+      {application.error ? (
+        <InlineError
+          message={`Engine registration could not be loaded: ${application.error.message}`}
+        />
+      ) : null}
 
       {integration.loading && !integration.data ? <LoadingBlock label={`Connecting to ${config.title}`} /> : null}
       {integration.error ? <ErrorState message={integration.error.message} onRetry={integration.reload} /> : null}

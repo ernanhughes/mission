@@ -290,6 +290,53 @@ applications:
     launch_definitions: []
     source: default
 
+  - id: alive
+    name: ALIVE
+    description: Persistent, local-first working intelligence and the Living Book engine.
+    category: writing
+    icon: "A"
+    tags: [living-book, reading, memory, local-ai]
+    enabled: true
+    pinned: false
+    display_order: 45
+    repository_path: 'C:\Projects\alive'
+    documentation_paths:
+      - 'C:\Projects\alive\README.md'
+      - 'C:\Projects\alive\docs\ARCHITECTURE.md'
+    integration:
+      adapter: null
+      enabled: false
+      config:
+        base_url: http://127.0.0.1:8000
+    relationships:
+      projects: [distillation, language, inference, math]
+      outcomes: [books, ai-business]
+    control_policy:
+      allow_launch: true
+      confirmation_required: false
+    launch_definitions:
+      - id: alive-backend
+        name: ALIVE backend
+        launch_type: server
+        executable: 'C:\Projects\alive\.venv\Scripts\python.exe'
+        arguments: ['-m', 'alive.server', '--host', '127.0.0.1', '--port', '8000']
+        working_directory: 'C:\Projects\alive'
+        env_names: []
+        browser_url: http://127.0.0.1:8000/docs
+        health_type: http
+        health_url: http://127.0.0.1:8000/api/v1/health
+        expected_port: 8000
+        is_primary: true
+        enabled: true
+        verified: true
+        verification_note: >-
+          Verified against the local checkout: the ALIVE virtual-environment
+          Python starts the existing backend with `-m alive.server` and the
+          documented health endpoint answers. The dashboard is a separate Vite
+          development process and is not required for the Living Book API.
+        shutdown_behavior: terminate
+    source: default
+
   - id: workbench
     name: Workbench
     description: Human-owned context workbench for paragraph-level book editing.

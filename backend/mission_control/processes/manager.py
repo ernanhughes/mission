@@ -805,11 +805,36 @@ class ProcessManager:
                         "the existing listener."
                     ),
                 )
+            # Any other registered application may already be running outside
+            # Mission Control. A successful configured health probe is evidence
+            # of availability, not ownership; adopt it without claiming it.
+            probe_target = SimpleNamespace(
+                health_type=browser.health_type,
+                health_url=browser.health_url,
+                expected_port=browser.expected_port,
+            )
+            health = await probe(probe_target, timeout=2.0)
+            if health.state == "healthy":
+                try:
+                    await self.check_health(application_id, timeout=2.0)
+                except Exception:  # pragma: no cover - observation only
+                    logger.warning("External health observation failed for %s", application_id, exc_info=True)
+                return {
+                    "url": browser.browser_url,
+                    "application_id": application_id,
+                    "state": "running_external",
+                    "ownership": "external",
+                    "process_id": None,
+                    "detail": (
+                        f"{health.detail}. A responding endpoint is evidence of availability; "
+                        "Mission Control does not own it and will not stop it."
+                    ),
+                }
             raise Conflict(
                 f"Port {browser.expected_port} is already in use",
                 detail=(
-                    "Mission Control will not claim or terminate the existing listener. "
-                    "Use its health/URL action to inspect it instead."
+                    f"{health.detail}. Mission Control will not claim or terminate "
+                    "the existing listener."
                 ),
             )
         try:

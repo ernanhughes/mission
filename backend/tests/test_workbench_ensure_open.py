@@ -58,6 +58,40 @@ def patch_workbench_launch(client: TestClient, port: int, mode: str = "workbench
     return response.json()
 
 
+def engine_definition(app_id: str, port: int, mode: str = "other") -> dict:
+    url = f"http://127.0.0.1:{port}/"
+    return {
+        "id": f"{app_id}-web",
+        "name": "Engine web UI",
+        "launch_type": "server",
+        "executable": PYTHON_EXECUTABLE,
+        "arguments": ["workbench_probe.py", str(port), mode],
+        "working_directory": str(FIXTURES),
+        "env_names": [],
+        "browser_url": url,
+        "health_type": "http",
+        "health_url": url,
+        "expected_port": port,
+        "is_primary": True,
+        "enabled": True,
+        "verified": True,
+        "verification_note": "test fixture",
+        "shutdown_behavior": "terminate",
+    }
+
+
+def create_engine_app(client: TestClient, app_id: str, port: int, mode: str = "other") -> None:
+    payload = {
+        "id": app_id,
+        "name": app_id,
+        "category": "supporting",
+        "repository_path": str(FIXTURES),
+        "launch_definitions": [engine_definition(app_id, port, mode)],
+    }
+    response = client.post("/api/applications", json=payload)
+    assert response.status_code == 201, response.text
+
+
 def wait_for_port(port: int, timeout: float = 10.0) -> None:
     deadline = time.time() + timeout
     while time.time() < deadline:
@@ -186,6 +220,132 @@ def test_ensure_open_adopts_external_workbench_without_claiming(client: TestClie
         except subprocess.TimeoutExpired:
             external.kill()
         stop_all(client)
+
+
+def test_ensure_open_starts_a_generic_engine_app_and_reuses_it(client: TestClient) -> None:
+    port = free_port()
+    create_engine_app(client, "engine-generic", port)
+    try:
+        first = client.post("/api/applications/engine-generic/ensure-open")
+        assert first.status_code == 200, first.text
+        body = first.json()
+        assert body["url"] == f"http://127.0.0.1:{port}/"
+        assert body["state"] == "started"
+        assert body["ownership"] == "managed"
+        assert body["process_id"]
+
+        second = client.post("/api/applications/engine-generic/ensure-open")
+        assert second.status_code == 200, second.text
+        assert second.json()["state"] == "running"
+        assert second.json()["process_id"] == body["process_id"]
+
+        running = [
+            process
+            for process in client.get("/api/processes?application_id=engine-generic").json()
+            if process["status"] == "running"
+        ]
+        assert len(running) == 1
+    finally:
+        stop_all(client)
+
+
+def test_ensure_open_adopts_a_healthy_external_engine_without_claiming(
+    client: TestClient,
+) -> None:
+    port = free_port()
+    create_engine_app(client, "engine-generic", port)
+    external = subprocess.Popen(
+        [PYTHON_EXECUTABLE, "workbench_probe.py", str(port), "other"],
+        cwd=str(FIXTURES),
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.STDOUT,
+    )
+    try:
+        wait_for_port(port)
+        response = client.post("/api/applications/engine-generic/ensure-open")
+        assert response.status_code == 200, response.text
+        body = response.json()
+        assert body["state"] == "running_external"
+        assert body["ownership"] == "external"
+        assert body["process_id"] is None
+        assert "does not own" in body["detail"]
+        # Mission Control must not claim or stop what it did not launch.
+        running = [
+            process
+            for process in client.get("/api/processes?application_id=engine-generic").json()
+            if process["status"] == "running"
+        ]
+        assert running == []
+    finally:
+        external.terminate()
+        try:
+            external.wait(timeout=5)
+        except subprocess.TimeoutExpired:
+            external.kill()
+        stop_all(client)
+
+
+def test_open_url_starts_a_stopped_launchable_app(client: TestClient) -> None:
+    port = free_port()
+    create_engine_app(client, "engine-open", port)
+    try:
+        response = client.post("/api/applications/engine-open/open-url")
+        assert response.status_code == 200, response.text
+        body = response.json()
+        assert body["url"] == f"http://127.0.0.1:{port}/"
+        assert body["opened_externally"] is False
+        running = [
+            process
+            for process in client.get("/api/processes?application_id=engine-open").json()
+            if process["status"] == "running"
+        ]
+        assert len(running) == 1
+    finally:
+        stop_all(client)
+
+
+def test_open_url_does_not_start_a_url_only_definition(client: TestClient) -> None:
+    payload = {
+        "id": "engine-url-only",
+        "name": "Engine URL only",
+        "category": "supporting",
+        "repository_path": str(FIXTURES),
+        "launch_definitions": [
+            {
+                "id": "engine-url-only-link",
+                "name": "Documentation link",
+                "launch_type": "url",
+                "browser_url": "http://127.0.0.1:65500/",
+                "is_primary": True,
+                "enabled": True,
+            }
+        ],
+    }
+    assert client.post("/api/applications", json=payload).status_code == 201
+    response = client.post("/api/applications/engine-url-only/open-url")
+    assert response.status_code == 200, response.text
+    assert response.json()["url"] == "http://127.0.0.1:65500/"
+    processes = client.get("/api/processes?application_id=engine-url-only").json()
+    assert [process for process in processes if process["status"] == "running"] == []
+
+
+def test_open_url_does_not_start_a_disabled_definition(client: TestClient) -> None:
+    port = free_port()
+    definition = engine_definition("engine-disabled", port)
+    definition["enabled"] = False
+    payload = {
+        "id": "engine-disabled",
+        "name": "Engine disabled",
+        "category": "supporting",
+        "repository_path": str(FIXTURES),
+        "launch_definitions": [definition],
+    }
+    assert client.post("/api/applications", json=payload).status_code == 201
+    response = client.post("/api/applications/engine-disabled/open-url")
+    assert response.status_code == 200, response.text
+    assert response.json()["url"] == f"http://127.0.0.1:{port}/"
+    processes = client.get("/api/processes?application_id=engine-disabled").json()
+    assert [process for process in processes if process["status"] == "running"] == []
 
 
 def test_ensure_open_reports_missing_environment(client: TestClient) -> None:
