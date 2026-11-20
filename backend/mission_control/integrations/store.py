@@ -185,6 +185,7 @@ def _preview_data(data: dict[str, Any]) -> dict[str, Any]:
         "scores",
         "source_mode",
         "repository_path",
+        "project_root",
         "base",
         "head",
         "finding_count",

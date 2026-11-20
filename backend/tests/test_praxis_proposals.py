@@ -287,3 +287,222 @@ def test_praxis_cannot_write_arbitrary_action_endpoint(client: TestClient) -> No
                            json={"application_id": "writer",
                                  "action_id": "audit_registered_books"})
     assert response.status_code == 404
+
+
+# -- MC-PRAXIS-09: preflight, resources, ownership, execution provenance -------
+
+def _seed_timeout_executions(client: TestClient, count: int = 2,
+                             seconds: float = 60.0) -> list[str]:
+    from mission_control.models import IntegrationExecution
+    from mission_control.persistence.db import now_iso
+
+    ids: list[str] = []
+    with client.app.state.database.session() as session:  # type: ignore[union-attr]
+        for index in range(count):
+            execution_id = f"exec-hist-{index}"
+            ids.append(execution_id)
+            session.add(IntegrationExecution(
+                id=execution_id, application_id="writer",
+                action_id="audit_registered_books", parameters={},
+                status="failed", risk="bounded_local_computation",
+                approval_required=True,
+                started_at="2026-11-20T15:44:28+00:00",
+                ended_at=f"2026-11-20T15:45:{28 + index}+00:00",
+                error=f"TimeoutExpired: timed out after {seconds:g} seconds",
+                result={}, created_at=now_iso()))
+    return ids
+
+
+def _set_writer_timeout(client: TestClient, timeout: float) -> None:
+    from mission_control.models import Application
+
+    with client.app.state.database.session() as session:  # type: ignore[union-attr]
+        app = session.get(Application, "writer")
+        assert app is not None
+        config = dict(app.adapter_config or {})
+        config["timeout_seconds"] = timeout
+        app.adapter_config = config
+
+
+def _seed_book_resource(client: TestClient, book_id: str,
+                        root: str, observed_at: str | None = None) -> None:
+    from mission_control.models import IntegrationRecord
+    from mission_control.persistence.db import now_iso
+
+    with client.app.state.database.session() as session:  # type: ignore[union-attr]
+        session.add(IntegrationRecord(
+            id=f"res-book-{book_id}", application_id="writer",
+            resource_type="writer_editing_book", external_id=book_id,
+            title=book_id, summary="", state="NEEDS_REVIEW",
+            evidence=[], data={"project_root": root, "status": "NEEDS_REVIEW"},
+            source_version="writer-editing-summary-v1",
+            observed_at=observed_at or now_iso(), created_at=now_iso()))
+
+
+def test_preflight_warns_at_60s_and_refreshes_at_180s(client: TestClient) -> None:
+    _set_writer_timeout(client, 60)
+    ids = _seed_timeout_executions(client)
+    row = _import(client, _payload())
+    findings = {f["id"]: f for f in row["preflight"]}
+    assert "preflight[0].timeout_risk" in findings
+    risk = findings["preflight[0].timeout_risk"]
+    assert risk["severity"] == "warning"
+    assert risk["blocking"] is False and risk["advisory"] is True
+    assert any(exec_id in " ".join(risk["evidence"]) for exec_id in ids)
+    assert risk["environment_ref"]["timeout_seconds"] == 60
+    assert "historical_timeout_failures" in " ".join(findings)
+    historical = findings["preflight[0].historical_timeout_failures"]
+    assert "historical timeout 60" in " ".join(historical["evidence"])
+
+    _set_writer_timeout(client, 180)
+    refreshed = client.get(f"/api/praxis/proposals/{row['proposal_key']}").json()
+    after = {f["id"]: f for f in refreshed["preflight"]}
+    assert "preflight[0].timeout_risk" not in after
+    assert "preflight[0].runtime_within_timeout" in after
+    # Historical failures stay visible; current config is not declared inadequate.
+    assert "preflight[0].historical_timeout_failures" in after
+    assert after["preflight[0].runtime_within_timeout"]["environment_ref"][
+        "timeout_seconds"] == 180
+    # Advisory refresh does not alter approval/rejection state.
+    assert refreshed["status"] == "awaiting_approval"
+
+
+def test_book_resource_resolution_is_authoritative(client: TestClient) -> None:
+    _seed_book_resource(client, "agent-architectures", "C:\\books\\agent-architectures")
+
+    def campaign(book_id: str, root: str, proposal_id: str) -> dict:
+        body = _payload()
+        body["proposal"]["id"] = proposal_id
+        body["proposal"]["steps"] = [{
+            "capability_id": "writer.book_campaign_create",
+            "parameters": {"book_id": book_id, "book_root": root,
+                           "mode": "DISCOVER"},
+            "rationale": "campaign",
+        }]
+        return body
+
+    good = _import(client, campaign("agent-architectures",
+                                    "C:\\books\\agent-architectures", "prop-book-ok"))
+    checks = _findings(good)
+    assert good["status"] == "awaiting_approval"
+    assert checks["book_registered"] is True
+    assert checks["book_root_known"] is True
+    assert checks["book_root_resolved"] is True
+    assert any(f["id"].endswith("book_resolved") for f in good["preflight"])
+
+    mismatch = _import(client, campaign("agent-architectures",
+                                        "C:\\Windows", "prop-book-bad-root"))
+    assert mismatch["status"] == "rejected"
+    assert _findings(mismatch)["book_root_resolved"] is False
+
+    unknown = _import(client, campaign("does-not-exist",
+                                       "C:\\books\\does-not-exist",
+                                       "prop-book-unknown"))
+    assert unknown["status"] == "rejected"
+    assert _findings(unknown)["book_registered"] is False
+
+
+def test_withdraw_is_test_owned_only(client: TestClient) -> None:
+    operator = _import(client, _payload())
+    refused = client.post(
+        f"/api/praxis/proposals/{operator['proposal_key']}/withdraw",
+        json={"owner": "pytest", "reason": "cleanup", "confirm": True})
+    assert refused.status_code == 422
+    assert "test-owned" in refused.text
+
+    body = _payload()
+    body["proposal"]["id"] = "prop-test-owned"
+    body["ownership"] = {"kind": "test", "owner": "pytest"}
+    test_row = _import(client, body)
+    assert test_row["ownership_kind"] == "test"
+    assert test_row["owner"] == "pytest"
+
+    wrong_owner = client.post(
+        f"/api/praxis/proposals/{test_row['proposal_key']}/withdraw",
+        json={"owner": "someone-else", "reason": "cleanup", "confirm": True})
+    assert wrong_owner.status_code == 422
+
+    withdrawn = client.post(
+        f"/api/praxis/proposals/{test_row['proposal_key']}/withdraw",
+        json={"owner": "pytest", "reason": "test cleanup", "confirm": True})
+    assert withdrawn.status_code == 200
+    assert withdrawn.json()["status"] == "withdrawn"
+    assert withdrawn.json()["withdrawn_at"]
+
+    execute = client.post(
+        f"/api/praxis/proposals/{test_row['proposal_key']}/execute",
+        json={"requested_by": "pytest", "confirm": True})
+    assert execute.status_code == 409
+
+    listing = client.get("/api/praxis/proposals").json()
+    assert any(item["proposal_key"] == test_row["proposal_key"]
+               and item["status"] == "withdrawn" for item in listing)
+
+
+def test_approved_test_proposal_cannot_be_withdrawn(client: TestClient) -> None:
+    body = _payload()
+    body["proposal"]["id"] = "prop-test-approved"
+    body["ownership"] = {"kind": "test", "owner": "pytest"}
+    row = _import(client, body)
+    key = row["proposal_key"]
+    client.post(f"/api/praxis/proposals/{key}/approve",
+                json={"approved_by": "ernan", "confirm": True})
+    refused = client.post(f"/api/praxis/proposals/{key}/withdraw",
+                          json={"owner": "pytest", "reason": "cleanup",
+                                "confirm": True})
+    assert refused.status_code == 409
+    assert "cannot be withdrawn" in refused.text
+
+
+def test_execution_config_is_captured_at_request(client: TestClient) -> None:
+    _set_writer_timeout(client, 180)
+    row = _import(client, _payload())
+    key = row["proposal_key"]
+    client.post(f"/api/praxis/proposals/{key}/approve",
+                json={"approved_by": "ernan", "confirm": True})
+
+    async def fake_start_action(application_id, action_id, parameters, *, confirm):
+        class _Read:
+            id = "exec-config-1"
+
+        return _Read()
+
+    client.app.state.integration_service.start_action = fake_start_action  # type: ignore[union-attr]
+    executed = client.post(f"/api/praxis/proposals/{key}/execute",
+                           json={"requested_by": "ernan", "confirm": True})
+    body = executed.json()
+    assert body["execution_config"]["timeout_seconds"] == 180
+    assert body["execution_config"]["capability_id"] == \
+        "writer.audit_registered_books"
+    assert body["execution_config"]["capability_version"] == "mc09.1"
+
+
+def test_stale_book_resource_is_advisory(client: TestClient) -> None:
+    _seed_book_resource(client, "stale-book", "C:\\books\\stale-book",
+                        observed_at="2020-01-01T00:00:00+00:00")
+    body = _payload()
+    body["proposal"]["id"] = "prop-stale-book"
+    body["proposal"]["steps"] = [{
+        "capability_id": "writer.book_campaign_create",
+        "parameters": {"book_id": "stale-book",
+                       "book_root": "C:\\books\\stale-book", "mode": "PLAN"},
+        "rationale": "campaign",
+    }]
+    row = _import(client, body)
+    assert row["status"] == "awaiting_approval"
+    stale = [f for f in row["preflight"]
+             if f["id"].endswith("book_resource_stale")]
+    assert stale and stale[0]["advisory"] is True
+    assert stale[0]["blocking"] is False
+
+
+def test_preflight_is_advisory_not_authoritative(client: TestClient) -> None:
+    """A preflight warning must not block approval by itself."""
+    _set_writer_timeout(client, 10)
+    _seed_timeout_executions(client, count=1)
+    row = _import(client, _payload())
+    assert any(f["severity"] == "warning" for f in row["preflight"])
+    approved = client.post(f"/api/praxis/proposals/{row['proposal_key']}/approve",
+                           json={"approved_by": "ernan", "confirm": True})
+    assert approved.status_code == 200
+    assert approved.json()["status"] == "approved"

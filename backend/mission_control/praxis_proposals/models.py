@@ -61,6 +61,17 @@ class PraxisProposal(Base):
     validation_json: Mapped[list[dict[str, Any]]] = mapped_column(
         JSON, default=list, nullable=False
     )
+    preflight_json: Mapped[list[dict[str, Any]]] = mapped_column(
+        JSON, default=list, nullable=False
+    )
+    execution_config_json: Mapped[dict[str, Any]] = mapped_column(
+        JSON, default=dict, nullable=False
+    )
+    ownership_kind: Mapped[str] = mapped_column(
+        String, default="operator", nullable=False
+    )
+    owner: Mapped[str] = mapped_column(String, default="", nullable=False)
+    withdrawn_at: Mapped[str | None] = mapped_column(String)
     approved_by: Mapped[str | None] = mapped_column(String)
     approved_at: Mapped[str | None] = mapped_column(String)
     approval_digest: Mapped[str | None] = mapped_column(String)

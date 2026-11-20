@@ -16,6 +16,7 @@ from mission_control.praxis_proposals.schemas import (
     PraxisProposalImport,
     PraxisProposalRead,
     PraxisProposalReject,
+    PraxisProposalWithdraw,
 )
 from mission_control.praxis_proposals.service import PraxisProposalService
 
@@ -62,6 +63,18 @@ def reject_proposal(
     return _service(request).reject(
         proposal_key,
         rejected_by=payload.rejected_by,
+        reason=payload.reason,
+        confirm=payload.confirm,
+    )
+
+
+@router.post("/{proposal_key}/withdraw", response_model=PraxisProposalRead)
+def withdraw_proposal(
+    proposal_key: str, payload: PraxisProposalWithdraw, request: Request
+) -> PraxisProposalRead:
+    return _service(request).withdraw(
+        proposal_key,
+        owner=payload.owner,
         reason=payload.reason,
         confirm=payload.confirm,
     )
