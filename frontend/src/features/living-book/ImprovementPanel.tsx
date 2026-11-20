@@ -858,6 +858,15 @@ function ComparisonConditionCard({
             <code className="living-improve-hash">
               context {String(experience.context_sha256 || "").slice(0, 16)}.
             </code>
+            {selected.length ? (
+              <p className="muted small">
+                Retrieved rank {selected[0].rank ?? 1}; score {score(selected[0].score)};{" "}
+                {selected[0].source_text_included
+                  ? "source text included"
+                  : "source text withheld"}
+                .
+              </p>
+            ) : null}
             {items.length ? (
               <ul className="living-improve-experience">
                 {items.slice(0, 3).map((item: Record<string, any>) => (
