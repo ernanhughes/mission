@@ -915,6 +915,7 @@ function ComparisonConditionCard({
                   <li key={stage.stage_id}>
                     <code>{stage.stage_id}</code> {stage.state}
                     {stage.error_category ? ` - ${stage.error_category}` : ""}
+                    {stage.pi_run_id ? ` - Pi ${stage.pi_run_id}` : ""}
                   </li>
                 ))}
               </ul>
