@@ -33,6 +33,7 @@ from mission_control.models import (
     Application,
     ExperimentWorkflow,
     IntegrationExecution,
+    IntegrationRecord,
     ProjectRepository,
     Repository,
 )
@@ -385,6 +386,16 @@ class IntegrationService:
                 adapter.validate_action(action_id, parameters, self._action_context(session, application))
             except ValueError as exc:
                 raise ValidationProblem(str(exc)) from exc
+            if application_id == "writer" and "book_id" in (parameters or {}):
+                registered = session.scalar(
+                    select(IntegrationRecord).where(
+                        IntegrationRecord.application_id == "writer",
+                        IntegrationRecord.resource_type == "writer_editing_book",
+                        IntegrationRecord.external_id == str(parameters["book_id"]))
+                )
+                if registered is None:
+                    raise ValidationProblem(
+                        "book_id is not a registered Writer book")
             execution = IntegrationExecution(
                 id=f"exec-{uuid.uuid4().hex[:16]}",
                 application_id=application_id,
