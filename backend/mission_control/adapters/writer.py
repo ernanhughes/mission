@@ -11,6 +11,7 @@ writes Writer-owned report artifacts only.
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 from typing import Any
 
@@ -28,8 +29,10 @@ from mission_control.integrations.runner import run_tool
 
 CLI_SCHEMA = "writer.editing.cli.v1"
 SUMMARY_SCHEMA = "writer-editing-summary-v1"
+REPORT_SCHEMA = "writer-editing-report-v1"
 RESOURCE_TYPE = "writer_editing_book"
 PROFILE = "technical-nonfiction-v1"
+_BOOK_ID = re.compile(r"^[a-z0-9][a-z0-9._-]{0,127}$")
 
 
 def _book_summary(book: dict[str, Any]) -> str:
@@ -100,6 +103,33 @@ class WriterAdapter(Adapter):
                         "default": PROFILE,
                     }
                 },
+                "additionalProperties": False,
+            },
+        ),
+        ActionSpec(
+            id="audit_registered_book",
+            title="Run a Writer editing audit for one registered book",
+            description=(
+                "Runs Writer's actual read-only editing audit for one registered "
+                "book. Writer writes its own report artifacts under .writer/editing; "
+                "no manuscript is edited. book_id must be a registered book "
+                "identifier resolved by Mission Control."
+            ),
+            risk="bounded_local_computation",
+            capability="execute_action",
+            approval_required=True,
+            side_effect="local_generated_artifacts",
+            parameters_schema={
+                "type": "object",
+                "properties": {
+                    "book_id": {"type": "string"},
+                    "profile": {
+                        "type": "string",
+                        "enum": [PROFILE],
+                        "default": PROFILE,
+                    },
+                },
+                "required": ["book_id"],
                 "additionalProperties": False,
             },
         ),
@@ -385,6 +415,16 @@ class WriterAdapter(Adapter):
     def validate_action(
         self, action_id: str, parameters: dict[str, Any], context: ActionContext
     ) -> None:
+        if action_id == "audit_registered_book":
+            book_id = str(parameters.get("book_id") or "").strip()
+            if not book_id:
+                raise ValueError("book_id is required")
+            if not _BOOK_ID.match(book_id):
+                raise ValueError("book_id is not a valid registered book identifier")
+            profile = str(parameters.get("profile") or PROFILE)
+            if profile != PROFILE:
+                raise ValueError(f"Unsupported Writer editing profile: {profile}")
+            return
         if action_id == "audit_registered_books":
             profile = str(parameters.get("profile") or PROFILE)
             if profile != PROFILE:
@@ -473,6 +513,8 @@ class WriterAdapter(Adapter):
     async def execute_action(
         self, action_id: str, parameters: dict[str, Any], context: ActionContext
     ) -> ActionResult:
+        if action_id == "audit_registered_book":
+            return await self._execute_scoped_audit(action_id, parameters, context)
         if action_id.startswith(("book_campaign_", "book_strategy_")):
             return await self._execute_campaign_action(action_id, parameters, context)
         if action_id != "audit_registered_books":
@@ -543,6 +585,103 @@ class WriterAdapter(Adapter):
                 "generated_at": summary.get("generated_at"),
             },
             artifact_ref=str(summary.get("store_path") or "writer:editing"),
+            exit_code=0,
+        )
+
+    async def _execute_scoped_audit(
+        self, action_id: str, parameters: dict[str, Any], context: ActionContext
+    ) -> ActionResult:
+        repo = (
+            Path(context.application_repository_path)
+            if context.application_repository_path
+            else None
+        )
+        if repo is None or not repo.is_dir():
+            return ActionResult(
+                status="failed",
+                error="Writer repository is not configured or unavailable.",
+            )
+        try:
+            self.validate_action(action_id, parameters, context)
+        except ValueError as exc:
+            return ActionResult(status="failed", error=str(exc))
+        book_id = str(parameters.get("book_id"))
+        profile = str(parameters.get("profile") or PROFILE)
+        target = AdapterTarget(
+            name="Writer",
+            application_id="writer",
+            repository_paths=[(str(repo), "primary")],
+            config=dict(context.config or {}),
+        )
+        executable, arguments, working_directory, timeout = self._command(
+            target,
+            repo,
+            ["editing", "audit", book_id, "--profile", profile, "--json"],
+        )
+        try:
+            result = await run_tool(
+                executable,
+                arguments,
+                working_directory=working_directory,
+                env_names=list((context.config or {}).get("env_names") or []),
+                timeout_seconds=timeout,
+            )
+        except Exception as exc:
+            return ActionResult(
+                status="failed",
+                error=f"{exc.__class__.__name__}: {str(exc)[:800]}",
+            )
+        envelope = self._parse_envelope(result.stdout)
+        report = (envelope or {}).get("result")
+        meta = (envelope or {}).get("meta") or {}
+        valid = (
+            result.exit_code == 0
+            and envelope is not None
+            and bool(envelope.get("ok"))
+            and str(meta.get("schema_version") or "") == CLI_SCHEMA
+            and isinstance(report, dict)
+            and str(report.get("schema_version") or "") == REPORT_SCHEMA
+        )
+        if not valid:
+            return ActionResult(
+                status="failed",
+                output=(result.stdout or "")[-8000:],
+                result={"stderr": (result.stderr or "")[-2000:]},
+                exit_code=result.exit_code,
+                error=(
+                    "Writer scoped audit failed or did not return the editing "
+                    "report contract."
+                    if result.exit_code == 0
+                    else (result.stderr or result.stdout or "Writer audit failed")[-1200:]
+                ),
+            )
+        findings = [f for f in (report.get("findings") or [])
+                    if isinstance(f, dict)]
+        counts: dict[str, int] = {}
+        for finding in findings:
+            severity = str(finding.get("severity") or "unknown").casefold()
+            counts[severity] = counts.get(severity, 0) + 1
+        artifacts = [str(item) for item in (envelope.get("artifacts") or [])]
+        return ActionResult(
+            status="succeeded",
+            output=(
+                f"Writer audit for {book_id}: {len(findings)} finding(s) "
+                f"(high={counts.get('high', 0)}, medium={counts.get('medium', 0)}, "
+                f"low={counts.get('low', 0)}), partial={bool(report.get('partial'))}."
+            ),
+            result={
+                "schema_version": REPORT_SCHEMA,
+                "book_id": book_id,
+                "title": (report.get("book") or {}).get("title"),
+                "report_id": report.get("report_id"),
+                "partial": bool(report.get("partial")),
+                "finding_counts": counts,
+                "findings": findings[:200],
+                "limitations": list(report.get("limitations") or [])[:10],
+                "generated_at": report.get("generated_at"),
+            },
+            artifact_ref=(artifacts[0] if artifacts
+                          else "writer:editing"),
             exit_code=0,
         )
 
