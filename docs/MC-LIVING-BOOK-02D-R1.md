@@ -42,6 +42,17 @@ The configured Pi run deadline was 120 s. The effective provider HTTP timeout wa
 `ALIVE_META_TIMEOUT=30` s; the failures landed at ~33 s. Arm A's own section latencies reached
 29.686 s (section 5), so the 30 s ceiling is tight even without experience.
 
+Reconciliation identifiers available for the historical requests:
+
+| Attempt | Model invocation / sent `X-Request-ID` | Pi run | Provider body hash | Approved request hash | Response |
+| --- | --- | --- | --- | --- | --- |
+| A section-1 | `20508322-7e7d-45a0-b07a-5438781937a9` | `22c36ac1-8bab-49af-b0b7-154458f141c2` | `14a9c857…` | `879d1c20…` | `83c294bd…` |
+| B1 section-1 | `22a784e6-c9aa-4a6c-9b4d-837bc17296f3` | `ca6d4fa6-1396-4b53-8d9f-0da1998ca64b` | `48e91477…` | `f3c329cd…` | none |
+| B2 section-1 | `4a0df1a4-f0e0-4c1a-8c11-b97956ab2753` | `17332de5-1079-46ac-93f3-4ad0f573e9c2` | `f07cd454…` | `00c83b51…` | none |
+
+The provider may be able to correlate the two ambiguous requests by the sent `X-Request-ID`. ALIVE
+cannot itself determine provider-side completion or billing from the retained receipts.
+
 **Conclusion supported by the evidence:** the best-supported cause is transient provider latency
 crossing the 30-second client timeout, not a deterministic experience-payload failure. The exact
 B contexts later completed at the 30-second setting. The evidence does not prove the remote cause,
