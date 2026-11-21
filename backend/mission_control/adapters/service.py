@@ -20,6 +20,7 @@ from mission_control.adapters.book_adapters import (
 )
 from mission_control.adapters.cocoder import CoCoderAdapter
 from mission_control.adapters.next import NextAdapter
+from mission_control.adapters.technical import TechnicalAdapter
 from mission_control.adapters.work import WorkAdapter
 from mission_control.adapters.worker import WorkerAdapter
 from mission_control.adapters.writer import WriterAdapter
@@ -47,6 +48,7 @@ _APP_ADAPTERS: dict[str, Adapter] = {
     "worker": WorkerAdapter(),
     "work": WorkAdapter(),
     "writer": WriterAdapter(),
+    "technical": TechnicalAdapter(),
 }
 _PROJECT_ADAPTERS: dict[str, Adapter] = {
     "language": LanguageBookAdapter(),
