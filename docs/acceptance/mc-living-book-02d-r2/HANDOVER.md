@@ -22,14 +22,18 @@ No push, merge, or deploy — owner to approve.
 | ALIVE `test_living_book` + `living_chapter` + `chapter_evaluation` + semantics | 31 passed, 1 failed in one heavy combined run (flake: passes solo, passes in smaller combos with the new tests, pristine combo passes) |
 | Mission living-book (represent/new, living_book, improvement) | 15 passed |
 | Mission `tsc --noEmit`, `vite build`, `LivingBookPage.test.tsx` | clean / clean / 4 passed |
+| Browser (isolated branch stack :8791 + ALIVE :8000) | reading room + Explore panel verified via DOM/API; screenshots unavailable |
 
 ## Model calls and cost
 
 13 R2 calls (probe 2 + Arm A 8 + Arm B 2 + eval-A 1), 108,266 tokens
-charged; ~7 02C demo calls (~25k tokens estimated). Monetary cost UNKNOWN
+charged; ~10 02C demo calls on the order of 70k charged tokens
+(conservative reservations included; real validated usage lower; largest
+single item 41k incl. one 32k conservative charge). Monetary cost UNKNOWN
 (ALIVE has no price table) — authorised as risk-bounded, never reported
-as zero. No further paid calls were made after the diagram attempt; all
-subsequent verification was offline against retained outputs.
+as zero. The final browser-driven `explain` via the Mission proxy
+(record `bd2b2d86`, 2 calls, 8,233 tokens) closed the live-verification
+loop; no further paid calls were made after it.
 
 ## Demonstrated live
 
@@ -37,17 +41,18 @@ subsequent verification was offline against retained outputs.
 - Arm A end-to-end (proposal + benefit evaluation); Arm B correctly admitted
   context then failed closed on output truncation.
 - Comparison UI shows the pair as `inconclusive`/`valid:false` (API-verified).
-- 02C: real `explain` response parsed to RECORD/RENDERING/ADDED with 4 exact
+- 02C: real `explain` responses parsed to RECORD/RENDERING/ADDED with exact
   chapter citations; validation refinement recomputed offline; failures
   (truncation ×2, confused refusal ×1, empty ×1) all retained as
-  attention/refused with reasons; representations survive restarts (4/4);
-  reject path works.
+  attention/refused with reasons; representations survive restarts;
+  reject path works; Mission-proxy live call (`bd2b2d86`) completed through
+  the real stack; Explore tab verified in the browser against an isolated
+  branch stack.
 
 ## Fixture-only (no real-model proof yet)
 
 - Completed real-model `diagram`/`compare` rendering.
-- Mission-proxy live call (covered by fake-based tests).
-- Browser-driven UI observation (no browser tooling in this environment).
+- Browser screenshot capture (no visible desktop window in this environment).
 
 ## Manuscript integrity
 

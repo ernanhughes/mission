@@ -19,8 +19,8 @@ quality system. No new manuscript source.
 
 ## 2. Real-model evidence (authorised small budget)
 
-Language ch07 passage (321 chars, traceability obligation), chapter
-`002f2fab20…`, via the live conversation path:
+Language ch07 (chapter `002f2fab20…`, 39-chapter book, source `current`,
+ALIVE `ready`), via the live conversation path:
 
 - Attempt 1 (700-char passage): model output exceeded the 1,536-token
   conversation ceiling → truncated → failed closed, retained as
@@ -34,6 +34,13 @@ Language ch07 passage (321 chars, traceability obligation), chapter
   with reason. Instruction labels de-numbered in response.
 - Attempt 4 (`diagram`): output again hit the 1,536 ceiling → truncated →
   `attention` retained.
+- Attempt 5 (Mission-proxy live call, `explain` via
+  `POST /api/living-book/projects/language/representations`): completed,
+  record `bd2b2d86`, class `reveal`, standing `attention`
+  (chapter-exact but not passage-exact quotes on a single-sentence passage;
+  grounding unverified), rendering retained, 2 validated calls, 8,233
+  tokens, fixture `false`. The Mission→ALIVE path is proven live, not only
+  by fake-based tests.
 
 Under the refined validator (passage vs chapter citation split), attempt 2
 recomputes to standing `attention`, class `reveal`: 2 passage-grounded
@@ -70,8 +77,14 @@ NOT yet reliably completable; do not claim otherwise.
 - Mission: `test_living_book_represent.py` (3, fake ALIVE), plus existing
   living-book suites re-run green.
 - Frontend: `tsc --noEmit` clean, `vite build` clean, `LivingBookPage.test.tsx`
-  (4 passed). No browser-driven verification was available in this
-  environment; UI acceptance is build + unit + API-level.
+  (4 passed). Browser verification against an isolated stack (branch code on
+  :8791, ALIVE on :8000, fresh DB): reading room loads live book data
+  (39 chapters, source current, ALIVE ready), chapter navigation works,
+  passage selection binds to the Explore panel, all 5 task buttons render,
+  and one live `explain` was created through the UI path (record above).
+  Screenshots were not possible (no visible desktop window); verification
+  is DOM-text + API-record based. No model calls were spent from the
+  browser beyond the single authorised proxy call.
 
 ## 5. Acceptance-scenario mapping
 
