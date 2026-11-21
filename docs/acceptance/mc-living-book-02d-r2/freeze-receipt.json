@@ -1,0 +1,33 @@
+{
+ "alive": "e63d0899a5e542500b0c4b4b9a692936fbfc62",
+ "approval_ref": "3996f4b2-7a40-411f-8bab777313b0",
+ "binding_sha256": "30f106e148b1cf53b16c9a38514739b49ec2236b9f40d82e99a3081459e8edf8",
+ "capture_ref": "a632c716-f82b-42a0-85eb-e275caea0e96",
+ "chapter_path": "content/books/distillation/16-chapter.md",
+ "chapter_sha256": "a4e0ee678f56c95b95a17498acc6473ed7b327a2ea44bc1f3c5b7e665257352f",
+ "context_chars": 2070,
+ "context_sha256": "e5993c625ac957e55de39b5b5be060bddb808c4ab60b18cc37c7b5edd610653a",
+ "criteria_sha256": "9d33af5771b5a49cfb291b9ee4396b84818d73f10911d23f8418355803e9a122",
+ "definition_sha256": "5cd3400f1417e87fd25db62ad0776e987a422313294634d59b263db5a83b76c3",
+ "eligible_candidates": 1,
+ "evaluation_definition_sha256": "13cc2b251d34564f819f4412eac44c3c14961bf8461e381ccfe707eaee812ce7",
+ "experience_item": {
+  "decision": "accepted",
+  "decision_event_id": "203b21a5-ea2e-57d9-a877-a24a8ebda394",
+  "improvement_id": "390ba0bd-0662-4788-b24c-284721cf4dd6",
+  "quality_status": "evaluation_failed",
+  "retrieval_score": 0.647
+ },
+ "manifest": "PILOT-2-MANIFEST.json rev 1",
+ "method": "live ALIVE e63d0899 HTTP reads (workspace, plan preview, experience retrieval, improvements listing); offline file-hash recomputation for chapter + criteria",
+ "mission": "885b81f961b589ff390257b62d50671d9f83f435",
+ "model_calls_per_run": 8,
+ "plan_sha256": "45970e69ebbe01e9e73b99d3b229bcd5fe5e35de6304f193446c39ca685c02ed",
+ "prior_improvement_runs_on_chapter16": 0,
+ "result": "all frozen identities confirmed; no mismatch; experimental path proceeds to authorised probe + execution",
+ "sections": 6,
+ "verified_at": "2026-11-20T12:00:00Z",
+ "workflow_mode": "sections",
+ "workflow_version": 1006,
+ "workspace_id": "9a992443-ee5f-4a30-a52d-6760e584baf1"
+}
