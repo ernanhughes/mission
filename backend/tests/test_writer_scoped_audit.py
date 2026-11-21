@@ -20,8 +20,12 @@ def _envelope(findings: list[dict], partial: bool = False) -> str:
         "exit_code": 0,
         "result": {
             "schema_version": "writer-editing-report-v1",
-            "book": {"project_id": "distillation", "title": "distillation"},
+            "book": {"project_id": "distillation", "title": "distillation",
+                     "source_revision": "abc123", "source_dirty": False},
             "report_id": "edit-test-1",
+            "profile": {"id": "technical-nonfiction-v1"},
+            "canonical_fingerprint": "fp-test-1",
+            "scope": {"mode": "book"},
             "partial": partial,
             "findings": findings,
             "limitations": ["Audit is read-only."],
@@ -77,6 +81,11 @@ def test_scoped_audit_parses_typed_report(monkeypatch) -> None:
     assert result.result["book_id"] == "distillation"
     assert result.result["report_id"] == "edit-test-1"
     assert result.result["finding_counts"] == {"high": 2, "low": 1}
+    assert result.result["findings_total"] == 3
+    assert result.result["profile"]["id"] == "technical-nonfiction-v1"
+    assert result.result["canonical_fingerprint"] == "fp-test-1"
+    assert result.result["source_revision"] == "abc123"
+    assert result.result["source_dirty"] is False
     assert result.result["partial"] is False
     assert result.artifact_ref.endswith("edit-test-1.json")
 
@@ -221,4 +230,6 @@ def test_proposal_validation_resolves_scoped_book(client: TestClient) -> None:
     checks = {item["check"]: item["ok"] for item in row["validation"]}
     assert checks["book_registered"] is True
     assert checks["book_root_known"] is True
-    assert any(f["id"].endswith("book_resolved") for f in row["preflight"])
+    resolved = [f for f in row["preflight"] if f["id"].endswith("book_resolved")]
+    assert resolved and resolved[0]["severity"] == "info"
+    assert "no book_root was supplied" in resolved[0]["message"]

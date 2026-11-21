@@ -170,14 +170,23 @@ def compute_preflight(session: Session, row: Any) -> list[dict[str, Any]]:
             else:
                 root = str((record.data or {}).get("project_root") or "")
                 supplied = str(parameters.get("book_root") or "")
-                agreed = bool(root) and supplied.replace("\\", "/").casefold() \
-                    == root.replace("\\", "/").casefold()
+                if supplied:
+                    agreed = bool(root) and supplied.replace("\\", "/").casefold() \
+                        == root.replace("\\", "/").casefold()
+                    message = (f"Book {book_id!r} resolves to {root!r}; supplied "
+                               f"book_root {'matches' if agreed else 'differs'}.")
+                    severity = "info" if agreed else "warning"
+                else:
+                    agreed = bool(root)
+                    message = (f"Book {book_id!r} resolves to {root!r}; no "
+                               "book_root was supplied, so MC uses the "
+                               "registered root.")
+                    severity = "info" if agreed else "warning"
                 findings.append(_finding(
                     finding_id=f"preflight[{index}].book_resolved",
-                    severity="info" if agreed else "warning",
+                    severity=severity,
                     capability_id=capability_id,
-                    message=(f"Book {book_id!r} resolves to {root!r}; supplied "
-                             f"book_root {'matches' if agreed else 'differs'}."),
+                    message=message,
                     evidence=[f"writer_editing_book:{record.external_id}"],
                     environment=environment))
                 try:
