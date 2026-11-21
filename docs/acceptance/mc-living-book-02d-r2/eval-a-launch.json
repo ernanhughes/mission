@@ -1,0 +1,27 @@
+{
+ "id": "e7fd68df-bf68-48e0-adbc-dd983ea5d61f",
+ "workflow": {
+  "name": "chapter-evaluation",
+  "version": 1,
+  "definition_id": "58e82d51-2f69-4432-82af-a5c7418380f8",
+  "definition_sha256": "13cc2b251d34564f819f4412eac44c3c14961bf8461e381ccfe707eaee812ce7",
+  "schema_version": 1
+ },
+ "goal_id": "7661e700-0615-4d99-ae5f-ea0788ab4721",
+ "investigation_id": "8274c475-b4c6-4b3e-b008-ee1b5e16a9a1",
+ "trigger": "authorized-execution",
+ "input_ref": "event:94b00df8-ebb3-4169-bc6d-1b22c15acf61",
+ "input_sha256": "1616cacdcb2f1e53535f1070fd2f1e685a40f766c903af5faf5145e26b1fcf71",
+ "authorization_ref": "f0254dbc-f0a4-446e-a78d-cce0627547a5",
+ "budget": {
+  "max_model_calls": 1,
+  "max_output_tokens": 4096,
+  "wall_seconds": 300
+ },
+ "status": "PENDING",
+ "terminal": false,
+ "terminal_reason": null,
+ "created_at": "2026-11-20T18:00:33.767044+00:00",
+ "started_at": null,
+ "finished_at": null
+}

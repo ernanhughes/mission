@@ -1,0 +1,114 @@
+{
+ "experiment_id": "MC-LIVING-BOOK-02D-PILOT-2",
+ "manifest_sha256": "0f860cc6110ca69874803d994e3c711856b81c6b3c075cfb480f4772f8ca6f6a",
+ "finished_at": "2026-11-20T18:30:00Z",
+ "outcome": "inconclusive",
+ "outcome_reason": "Arm A completed with a retained proposal and a benefit independent evaluation; Arm B failed at section_1 (provider_output_truncated) with no proposal and no evaluation. Valid comparison impossible under frozen rules; no rerun per frozen hard-stop.",
+ "hypotheses": {
+  "H1": {
+   "status": "not_tested",
+   "reason": "The experience arm produced no proposal after a generation-capacity failure at the first experience-bearing call; the paired quality comparison cannot be made."
+  }
+ },
+ "arms": {
+  "a": {
+   "run_id": "06e22f94-6294-43a3-b386-fd3838351062",
+   "status": "COMPLETED",
+   "calls": 8,
+   "tokens": 52487,
+   "proposal_sha256": "c2f1ece1aad6cd94e8a8cee14b76fdbe4774f60e3dcdb7a2eb38423e40947fdd",
+   "proposal_artifact": "dbafc12e-534c-4566-b3d6-146f2a84a2b9",
+   "experience": "none",
+   "review_bytes": 2609,
+   "decision": "pending"
+  },
+  "b": {
+   "run_id": "618224ff-ee12-4c96-96f6-69729da56e4f",
+   "status": "FAILED",
+   "calls": 2,
+   "tokens": 30991,
+   "proposal": null,
+   "evaluation_run_id": null,
+   "evaluation_verdict": null,
+   "experience": "relevant chapter-14 context, correctly admitted (context e5993c62, 2070 chars, item 390ba0bd score 0.647)",
+   "review_bytes": 2299,
+   "decision": "unavailable"
+  }
+ },
+ "arm_a_evaluation": {
+  "evaluation_run_id": "e7fd68df-bf68-48e0-adbc-dd983ea5d61f",
+  "verdict": "benefit",
+  "dimensions": {
+   "technical_preservation": [
+    3,
+    3
+   ],
+   "argument_preservation": [
+    3,
+    3
+   ],
+   "clarity": [
+    3,
+    3
+   ],
+   "economy": [
+    2,
+    3
+   ],
+   "completeness": [
+    3,
+    3
+   ],
+   "provenance_integrity": [
+    3,
+    3
+   ]
+  },
+  "delta_total": 1,
+  "delta_economy": 1,
+  "mechanical_status": "attention",
+  "mechanical_attention": [
+   "equations",
+   "qualifications"
+  ],
+  "tokens": 14317
+ },
+ "arm_b_failure": {
+  "stage": "section_1 (first experience-bearing call)",
+  "stage_duration_s": 17.9,
+  "error_category": "adapter_execution_failure",
+  "terminal_reason": "provider_output_truncated",
+  "failure_kind": "model output reached the 1536-token section ceiling and was truncated; Revision validation failed closed. NOT a provider timeout, NOT ambiguity.",
+  "model_invocation_id": "17cf35eb-b520-4de9-915e-6572cdb82878",
+  "pi_run_id": "6571ff93-be86-42c8-a4f7-d0dacc306753",
+  "provider_usage": {
+   "prompt_tokens": 4436,
+   "completion_tokens": 1536,
+   "total_tokens": 5972
+  },
+  "single_dispatch_containment": "ceiling 1, inbound 1, admitted 1, failed 1, ambiguous 0, no retry, no re-dispatch. One upstream call, terminal failure.",
+  "no_proposal_retained": true
+ },
+ "budget_observed": {
+  "improvement_runs": 2,
+  "improvement_calls": 10,
+  "evaluation_runs": 1,
+  "evaluation_calls": 1,
+  "probe_calls": 2,
+  "total_calls": 13,
+  "total_tokens_charged": 108266,
+  "monetary": "unknown (no price table; not zero)"
+ },
+ "source_integrity": {
+  "chapter_14_sha256": "ad89a4e96412b58818579c79b6c06dd6eac6082b3f6e549c4a337fb7d5acaa05",
+  "chapter_15_sha256": "5bf5c4c7e06c2bea92156a8ff78fbe00a8da3151f6cb92a537f8b3826f2e464f",
+  "chapter_16_sha256": "a4e0ee678f56c95b95a17498acc6473ed7b327a2ea44bc1f3c5b7e665257352f",
+  "manuscript_write": false,
+  "promotion_change": false
+ },
+ "conclusion": {
+  "label": "inconclusive",
+  "basis": "Arm B retained no proposal and therefore has no independent evaluation. The pre-registered valid-comparison rule is not satisfied; the block is inconclusive with no rerun.",
+  "label_meaning": "One pre-registered pair under a complete-pipeline comparison. Not evidence that experience helps, does not help, or harms."
+ }
+}

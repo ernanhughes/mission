@@ -1,0 +1,277 @@
+{
+ "run": {
+  "id": "e7fd68df-bf68-48e0-adbc-dd983ea5d61f",
+  "workflow": {
+   "name": "chapter-evaluation",
+   "version": 1,
+   "definition_id": "58e82d51-2f69-4432-82af-a5c7418380f8",
+   "definition_sha256": "13cc2b251d34564f819f4412eac44c3c14961bf8461e381ccfe707eaee812ce7",
+   "schema_version": 1
+  },
+  "goal_id": "7661e700-0615-4d99-ae5f-ea0788ab4721",
+  "investigation_id": "8274c475-b4c6-4b3e-b008-ee1b5e16a9a1",
+  "trigger": "authorized-execution",
+  "input_ref": "event:94b00df8-ebb3-4169-bc6d-1b22c15acf61",
+  "input_sha256": "1616cacdcb2f1e53535f1070fd2f1e685a40f766c903af5faf5145e26b1fcf71",
+  "authorization_ref": "f0254dbc-f0a4-446e-a78d-cce0627547a5",
+  "budget": {
+   "wall_seconds": 300,
+   "max_model_calls": 1,
+   "max_output_tokens": 4096
+  },
+  "status": "COMPLETED",
+  "terminal": true,
+  "terminal_reason": "required_stages_completed",
+  "created_at": "2026-11-20T18:00:33.767044+00:00",
+  "started_at": "2026-11-20T18:00:33.783723+00:00",
+  "finished_at": "2026-11-20T18:00:42.642917+00:00"
+ },
+ "usage": {
+  "calls": 1,
+  "tokens": 14317
+ },
+ "source_run_id": "06e22f94-6294-43a3-b386-fd3838351062",
+ "artifact_id": "dbafc12e-534c-4566-b3d6-146f2a84a2b9",
+ "proposal_sha256": "c2f1ece1aad6cd94e8a8cee14b76fdbe4774f60e3dcdb7a2eb38423e40947fdd",
+ "original_sha256": "a4e0ee678f56c95b95a17498acc6473ed7b327a2ea44bc1f3c5b7e665257352f",
+ "rubric_version": "chapter-evaluation-v1",
+ "stages": [
+  {
+   "id": "b05b71b4-9756-403d-bbe0-6a95b6088808",
+   "run_id": "e7fd68df-bf68-48e0-adbc-dd983ea5d61f",
+   "stage_id": "evaluate",
+   "attempt": 1,
+   "type": "pi_agent",
+   "operation": "chapter.independent_evaluate",
+   "state": "COMPLETED",
+   "terminal": true,
+   "input_ref": "workflow:e7fd68df-bf68-48e0-adbc-dd983ea5d61f",
+   "input_sha256": "a717f91d76788236193ff4049d8acda524f87f69c8b58c89a2b98d026c54b6f2",
+   "output_ref": "event:c9df32ac-8eae-4d6c-8d9d-7f1c91f5bec5",
+   "output_sha256": "19fa6669760971f5154396f703082a2ef09c491b503198380e6849e145183537",
+   "pi_run_id": "b7363586-90a8-424e-ab1b-15199f92e178",
+   "model_invocation_id": "7309bbbc-e3ab-47d9-b1ab-4519202b9afc",
+   "evidence_refs": [],
+   "validation_status": "passed",
+   "validation": {
+    "contract_status": "passed",
+    "structural_status": "passed",
+    "reference_identity_status": "not_established",
+    "semantic_status": "unverified",
+    "independent_verification": false,
+    "uncited_claims_permitted": true
+   },
+   "error_category": null,
+   "error_detail": null,
+   "uncertainty": "none",
+   "created_at": "2026-11-20T18:00:33.769148+00:00",
+   "started_at": "2026-11-20T18:00:34.151317+00:00",
+   "finished_at": "2026-11-20T18:00:42.401594+00:00",
+   "duration_seconds": 8.250277
+  }
+ ],
+ "outputs": {
+  "evaluate": {
+   "evaluation": {
+    "verdict": "benefit",
+    "assessment": "Proposal tightens prose throughout while keeping experiment, numbers, structure and honest negative result. Rewordings shorten definitions and cost models but retain core claims, budgets, seeds and limits. Equation and qualification flags are formatting/condensation, not material loss.",
+    "dimensions": {
+     "clarity": {
+      "evidence": "Shorter sentences e.g. downstream verdict and gradient chain improve readability without losing nuance.",
+      "original": 3,
+      "proposed": 3
+     },
+     "economy": {
+      "evidence": "Removes redundancies like volume-equals-value aside, catalogue aside, reuse ledger while keeping method details.",
+      "original": 2,
+      "proposed": 3
+     },
+     "completeness": {
+      "evidence": "Keeps examples, E2 design, per-seed table, ECE, rights RM-108/RM-104, failure modes, limits bullets.",
+      "original": 3,
+      "proposed": 3
+     },
+     "provenance_integrity": {
+      "evidence": "Wang/Zhao/Cazenavette citations and 3 URLs kept; training vs test separation, shared-architecture limitation, literature-not-replicated retained.",
+      "original": 3,
+      "proposed": 3
+     },
+     "argument_preservation": {
+      "evidence": "Same 18 headings in order, same arc: baselines must be beaten, synthesis ties random, teachability vs typicality, Part III handoff.",
+      "original": 3,
+      "proposed": 3
+     },
+     "technical_preservation": {
+      "evidence": "Table, aggregates 0.807/0.756/0.670/0.762, 600 updates, 60 steps, R=75 preserved. Equation changes are brace/typo formatting, same bilevel and matching objectives.",
+      "original": 3,
+      "proposed": 3
+     }
+    },
+    "limitations": "Judgment from texts and deterministic checks only; no rerun of code, manifests, or external sources. Small paraphrases not exhaustively diffed.",
+    "original_quote": "A method that minimises its own matching loss while its students fail is a failed distillation",
+    "proposed_quote": "a method that minimises its matching loss while its students fail is a failed distillation",
+    "preservation_observations": []
+   },
+   "mechanical": {
+    "note": "Deterministic presence checks only. A pass is not proof of meaning preservation; an attention item is not proof of harm. The evaluator must explain each item.",
+    "checks": [
+     {
+      "id": "headings",
+      "detail": "Heading sequence is unchanged.",
+      "status": "pass",
+      "original": 18,
+      "proposed": 18
+     },
+     {
+      "id": "code_blocks",
+      "detail": "0 of 0 original fenced block(s) were not found exactly.",
+      "status": "pass",
+      "checked": 0,
+      "missing": 0
+     },
+     {
+      "id": "urls",
+      "detail": "0 of 3 original URL(s) were not found.",
+      "status": "pass",
+      "checked": 3,
+      "missing": []
+     },
+     {
+      "id": "numbers",
+      "detail": "0 of 105 original numeric token(s) were not found.",
+      "status": "pass",
+      "checked": 105,
+      "missing": []
+     },
+     {
+      "id": "equations",
+      "detail": "3 of 21 original equation fragment(s) changed or disappeared.",
+      "status": "attention",
+      "checked": 21,
+      "missing": 3
+     },
+     {
+      "id": "qualifications",
+      "detail": "Fewer qualification-bearing sentences were found; verify that uncertainty and limits were preserved.",
+      "status": "attention",
+      "original": 66,
+      "proposed": 63
+     },
+     {
+      "id": "quotes_and_tables",
+      "detail": "0 of 7 original quote/table line(s) were not found exactly.",
+      "status": "pass",
+      "checked": 7,
+      "missing": 0
+     }
+    ],
+    "schema": "chapter-mechanical-preservation.v1",
+    "status": "attention",
+    "attention": [
+     "equations",
+     "qualifications"
+    ]
+   }
+  }
+ },
+ "evaluation": {
+  "verdict": "benefit",
+  "assessment": "Proposal tightens prose throughout while keeping experiment, numbers, structure and honest negative result. Rewordings shorten definitions and cost models but retain core claims, budgets, seeds and limits. Equation and qualification flags are formatting/condensation, not material loss.",
+  "dimensions": {
+   "clarity": {
+    "evidence": "Shorter sentences e.g. downstream verdict and gradient chain improve readability without losing nuance.",
+    "original": 3,
+    "proposed": 3
+   },
+   "economy": {
+    "evidence": "Removes redundancies like volume-equals-value aside, catalogue aside, reuse ledger while keeping method details.",
+    "original": 2,
+    "proposed": 3
+   },
+   "completeness": {
+    "evidence": "Keeps examples, E2 design, per-seed table, ECE, rights RM-108/RM-104, failure modes, limits bullets.",
+    "original": 3,
+    "proposed": 3
+   },
+   "provenance_integrity": {
+    "evidence": "Wang/Zhao/Cazenavette citations and 3 URLs kept; training vs test separation, shared-architecture limitation, literature-not-replicated retained.",
+    "original": 3,
+    "proposed": 3
+   },
+   "argument_preservation": {
+    "evidence": "Same 18 headings in order, same arc: baselines must be beaten, synthesis ties random, teachability vs typicality, Part III handoff.",
+    "original": 3,
+    "proposed": 3
+   },
+   "technical_preservation": {
+    "evidence": "Table, aggregates 0.807/0.756/0.670/0.762, 600 updates, 60 steps, R=75 preserved. Equation changes are brace/typo formatting, same bilevel and matching objectives.",
+    "original": 3,
+    "proposed": 3
+   }
+  },
+  "limitations": "Judgment from texts and deterministic checks only; no rerun of code, manifests, or external sources. Small paraphrases not exhaustively diffed.",
+  "original_quote": "A method that minimises its own matching loss while its students fail is a failed distillation",
+  "proposed_quote": "a method that minimises its matching loss while its students fail is a failed distillation",
+  "preservation_observations": []
+ },
+ "mechanical": {
+  "note": "Deterministic presence checks only. A pass is not proof of meaning preservation; an attention item is not proof of harm. The evaluator must explain each item.",
+  "checks": [
+   {
+    "id": "headings",
+    "detail": "Heading sequence is unchanged.",
+    "status": "pass",
+    "original": 18,
+    "proposed": 18
+   },
+   {
+    "id": "code_blocks",
+    "detail": "0 of 0 original fenced block(s) were not found exactly.",
+    "status": "pass",
+    "checked": 0,
+    "missing": 0
+   },
+   {
+    "id": "urls",
+    "detail": "0 of 3 original URL(s) were not found.",
+    "status": "pass",
+    "checked": 3,
+    "missing": []
+   },
+   {
+    "id": "numbers",
+    "detail": "0 of 105 original numeric token(s) were not found.",
+    "status": "pass",
+    "checked": 105,
+    "missing": []
+   },
+   {
+    "id": "equations",
+    "detail": "3 of 21 original equation fragment(s) changed or disappeared.",
+    "status": "attention",
+    "checked": 21,
+    "missing": 3
+   },
+   {
+    "id": "qualifications",
+    "detail": "Fewer qualification-bearing sentences were found; verify that uncertainty and limits were preserved.",
+    "status": "attention",
+    "original": 66,
+    "proposed": 63
+   },
+   {
+    "id": "quotes_and_tables",
+    "detail": "0 of 7 original quote/table line(s) were not found exactly.",
+    "status": "pass",
+    "checked": 7,
+    "missing": 0
+   }
+  ],
+  "schema": "chapter-mechanical-preservation.v1",
+  "status": "attention",
+  "attention": [
+   "equations",
+   "qualifications"
+  ]
+ }
+}

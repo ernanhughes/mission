@@ -58,6 +58,16 @@ class NoteRequest(BaseModel):
     regenerate: bool = False
 
 
+class RepresentRequest(BaseModel):
+    chapter_id: str = Field(min_length=1, max_length=256)
+    task: Literal["explain", "relationships", "diagram", "compare", "assumptions"] = "explain"
+    quote: str | None = Field(default=None, max_length=4000)
+    start: int | None = Field(default=None, ge=0)
+    end: int | None = Field(default=None, ge=0)
+    conversation_id: str | None = Field(default=None, max_length=36)
+    idempotency_key: str = Field(min_length=1, max_length=60)
+
+
 class ImprovementLaunchRequest(BaseModel):
     chapter_id: str = Field(min_length=1, max_length=256)
     focus: Literal["economy"] = "economy"
@@ -274,6 +284,63 @@ async def conversation(
             request.app.state.settings,
             project_id,
             conversation_id,
+        )
+    )
+
+
+@router.post("/projects/{project_id}/representations")
+async def create_representation(
+    project_id: str,
+    payload: RepresentRequest,
+    request: Request,
+    session: Session = Depends(get_session),
+):
+    return await _run(
+        service.represent(
+            session,
+            request.app.state.settings,
+            project_id,
+            payload.model_dump(),
+        )
+    )
+
+
+@router.get("/projects/{project_id}/representations")
+async def list_representations(
+    project_id: str,
+    request: Request,
+    chapter_id: str | None = Query(default=None, max_length=256),
+    session: Session = Depends(get_session),
+):
+    return await _run(
+        service.representations(session, request.app.state.settings, project_id, chapter_id)
+    )
+
+
+@router.get("/projects/{project_id}/representations/{representation_id}")
+async def read_representation(
+    project_id: str,
+    representation_id: str,
+    request: Request,
+    session: Session = Depends(get_session),
+):
+    return await _run(
+        service.representation(
+            session, request.app.state.settings, project_id, representation_id
+        )
+    )
+
+
+@router.post("/projects/{project_id}/representations/{representation_id}/reject")
+async def reject_representation(
+    project_id: str,
+    representation_id: str,
+    request: Request,
+    session: Session = Depends(get_session),
+):
+    return await _run(
+        service.reject_representation(
+            session, request.app.state.settings, project_id, representation_id
         )
     )
 

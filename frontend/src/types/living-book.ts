@@ -176,6 +176,40 @@ export type LivingBookCitation = {
   line_end?: number;
 };
 
+export type LivingBookRepresentationTask =
+  | "explain"
+  | "relationships"
+  | "diagram"
+  | "compare"
+  | "assumptions";
+
+export type LivingBookRepresentation = {
+  id: string;
+  schema?: string;
+  book_id?: string;
+  chapter_id: string;
+  task: LivingBookRepresentationTask | string;
+  transformation_class: string;
+  source?: Record<string, any>;
+  passage?: { start?: number; end?: number; text?: string; sha256?: string };
+  record?: Record<string, any>;
+  rendering?: { format?: string; content?: string };
+  citations?: LivingBookCitation[];
+  added?: string[];
+  verification?: {
+    standing?: "verified" | "attention" | "refused" | string;
+    reason?: string;
+    checks?: Array<Record<string, any>>;
+    attention?: string[];
+    missing?: Array<Record<string, any>>;
+  };
+  model?: Record<string, any>;
+  conversation_id?: string | null;
+  created_at?: string;
+  rejected?: boolean;
+  rejected_at?: string | null;
+};
+
 export type LivingBookMessage = {
   id: string;
   role: "user" | "assistant" | string;

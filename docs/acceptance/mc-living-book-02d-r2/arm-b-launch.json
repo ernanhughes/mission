@@ -1,0 +1,39 @@
+{
+ "launched_at": "2026-11-20",
+ "run": {
+  "id": "618224ff-ee12-4c96-96f6-69729da56e4f",
+  "workflow": {
+   "name": "chapter-improvement",
+   "version": 1006,
+   "definition_id": "d38e4c3a-50ec-46e7-b53f-3a3606d48071",
+   "definition_sha256": "5cd3400f1417e87fd25db62ad0776e987a422313294634d59b263db5a83b76c3",
+   "schema_version": 1
+  },
+  "goal_id": "12986f27-666e-41e9-b5be-c0db749a798f",
+  "investigation_id": "3dda2b14-be89-46a6-bbdb-2764364058e4",
+  "trigger": "authorized-execution",
+  "input_ref": "event:54a9a87e-ba59-4063-907b-f168a907f17d",
+  "input_sha256": "55540db3dbe3a571a5e2d999027a892467f018cbc3ecd6f0431d3f9d1016b2e9",
+  "authorization_ref": "640c1731-36f3-431c-aa8f-05631c4e05d3",
+  "budget": {
+   "max_model_calls": 8,
+   "max_output_tokens": 12288,
+   "wall_seconds": 900
+  },
+  "status": "PENDING",
+  "terminal": false,
+  "terminal_reason": null,
+  "created_at": "2026-11-20T17:58:14.378959+00:00",
+  "started_at": null,
+  "finished_at": null
+ },
+ "plan": {
+  "workflow_version": 1006,
+  "workflow_definition_id": "d38e4c3a-50ec-46e7-b53f-3a3606d48071",
+  "workflow_definition_sha256": "5cd3400f1417e87fd25db62ad0776e987a422313294634d59b263db5a83b76c3",
+  "workflow_binding_sha256": "30f106e148b1cf53b16c9a38514739b49ec2236b9f40d82e99a3081459e8edf8",
+  "sha256": "45970e69ebbe01e9e73b99d3b229bcd5fe5e35de6304f193446c39ca685c02ed",
+  "mode": "sections",
+  "model_calls": 8
+ }
+}
