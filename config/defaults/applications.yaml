@@ -123,6 +123,22 @@ applications:
         shutdown_behavior: terminate
     source: default
 
+  - id: technical
+    name: Technical
+    description: Bounded deterministic verification of registered technical claims.
+    category: quality
+    icon: "T"
+    tags: [verification, technical, claims]
+    enabled: true
+    pinned: false
+    display_order: 25
+    repository_path: 'C:\Projects\mission'
+    integration:
+      adapter: technical
+      enabled: true
+      config: {}
+    source: default
+
   - id: writer
     name: Writer
     description: Context-engineering runtime and CLI for AI-assisted long-form writing.

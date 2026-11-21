@@ -46,7 +46,7 @@ from mission_control.schemas import (
 
 logger = logging.getLogger(__name__)
 
-INTEGRATION_APPLICATIONS = ("next", "work", "cocoder", "writer")
+INTEGRATION_APPLICATIONS = ("next", "work", "cocoder", "writer", "technical")
 _ALLOWED_CONFIG_KEYS = {
     "next": {"dsn_env", "sqlite_path", "limit"},
     "work": {
@@ -58,6 +58,7 @@ _ALLOWED_CONFIG_KEYS = {
         "limit",
     },
     "cocoder": {"executable", "artifact_dir", "artifact_paths", "env_names", "timeout_seconds"},
+    "technical": set(),
     "writer": {
         "executable",
         "working_directory",
