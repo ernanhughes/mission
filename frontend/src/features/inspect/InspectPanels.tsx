@@ -41,6 +41,26 @@ function toneForStatus(status: unknown): "accent" | "danger" | "warn" | "default
   return "default";
 }
 
+/**
+ * Render one composition step. Snapshot steps are objects
+ * ({order, capability_id, description, inputs, outputs}); older or hand-made
+ * snapshots may carry plain strings. Never interpolate the object itself:
+ * String({...}) renders as "[object Object]".
+ */
+function formatCompositionStep(step: unknown): string {
+  if (typeof step === "string") return step.slice(0, 240);
+  if (step && typeof step === "object") {
+    const s = step as Record<string, unknown>;
+    const parts: string[] = [];
+    if (s.order !== undefined && s.order !== null) parts.push(`${String(s.order)}.`);
+    if (typeof s.capability_id === "string" && s.capability_id) parts.push(s.capability_id);
+    if (typeof s.description === "string" && s.description) parts.push(`— ${s.description}`);
+    const text = parts.join(" ").trim();
+    if (text) return text.slice(0, 240);
+  }
+  return String(step ?? "").slice(0, 240);
+}
+
 export function InspectStaleNote({
   stale,
   staleReason,
@@ -745,7 +765,7 @@ export function CompositionList({
             {Array.isArray(composition.steps) && composition.steps.length ? (
               <ol className="plain-list">
                 {composition.steps.map((step: unknown, index: number) => (
-                  <li key={index} className="muted small">{String(step).slice(0, 240)}</li>
+                  <li key={index} className="muted small">{formatCompositionStep(step)}</li>
                 ))}
               </ol>
             ) : null}
