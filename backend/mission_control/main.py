@@ -27,6 +27,7 @@ from mission_control.api import (
     git_activity,
     health,
     integrations as integrations_api,
+    inspect as inspect_api,
     living_book as living_book_api,
     processes,
     projects,
@@ -278,6 +279,7 @@ def create_app(runtime: RuntimeSettings | None = None) -> FastAPI:
     app.include_router(git_activity.router)
     app.include_router(adapters.router)
     app.include_router(integrations_api.router)
+    app.include_router(inspect_api.router)
     app.include_router(praxis_proposals_api.router)
     app.include_router(research_api.router)
     app.include_router(workflows_api.router)
