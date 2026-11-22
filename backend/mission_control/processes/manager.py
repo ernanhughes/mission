@@ -114,6 +114,13 @@ _ENV_ALLOWLIST = (
     "PROGRAMDATA",
     "PROGRAMFILES",
     "PROGRAMFILES(X86)",
+    # Identity, not a credential: getpass.getuser() needs USERNAME (Windows)
+    # or LOGNAME/USER (POSIX) to resolve the owner inside managed children.
+    # ALIVE's approval endpoints record owner-cli:<user>; without it every
+    # approval fails with "No username set in the environment".
+    "USERNAME",
+    "LOGNAME",
+    "USER",
 )
 
 

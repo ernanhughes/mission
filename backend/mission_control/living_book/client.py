@@ -17,9 +17,11 @@ class LivingBookUnavailable(RuntimeError):
 
 
 class LivingBookError(RuntimeError):
-    def __init__(self, message: str, status: int | None = None):
+    def __init__(self, message: str, status: int | None = None,
+                 correlation_id: str | None = None):
         super().__init__(message)
         self.status = status
+        self.correlation_id = correlation_id
 
 
 LOOPBACK_HOSTS = {"127.0.0.1", "localhost", "::1"}
@@ -98,7 +100,8 @@ class AliveClient:
                 if isinstance(detail, str)
                 else f"ALIVE returned HTTP {response.status_code}."
             )
-            raise LivingBookError(message[:1000], response.status_code)
+            correlation = response.headers.get("x-correlation-id")
+            raise LivingBookError(message[:1000], response.status_code, correlation)
         if payload is None and allow_null and content_type.startswith("application/json"):
             return None
         if not isinstance(payload, dict) or not content_type.startswith("application/json"):

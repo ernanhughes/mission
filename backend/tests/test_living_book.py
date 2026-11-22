@@ -5,6 +5,7 @@ from pathlib import Path
 from fastapi.testclient import TestClient
 
 from mission_control.living_book import service
+from mission_control.living_book.client import LivingBookError, LivingBookUnavailable
 from mission_control.models import QualityEvaluation, now_iso
 
 
@@ -361,3 +362,206 @@ def test_assets_are_bounded_to_book_images(client: TestClient, tmp_path):
         params={"path": "content/books/distillation/01-chapter.md"},
     )
     assert non_image.status_code == 422
+
+
+def _project_with_id(client: TestClient, root: Path, project_id: str, title: str) -> str:
+    response = client.post(
+        "/api/projects",
+        json={
+            "id": project_id,
+            "name": title,
+            "kind": "book",
+            "repository_path": str(root),
+            "book_title": f"{title} Book",
+        },
+    )
+    assert response.status_code == 201, response.text
+    updated = client.patch(
+        f"/api/books/book-{project_id}",
+        json={"manuscript_paths": [str(root / "content" / "books" / "distillation")]},
+    )
+    assert updated.status_code == 200, updated.text
+    return project_id
+
+
+def test_connect_distinguishes_alive_internal_error(client: TestClient, tmp_path, monkeypatch):
+    root = _book_tree(tmp_path)
+    _project(client, root)
+
+    class Broken(FakeAlive):
+        async def approve_source(self, capture_id: str, **kwargs):
+            raise LivingBookError(
+                "Operation failed; check integration configuration",
+                500,
+                "corr-test-1",
+            )
+
+    monkeypatch.setattr(service, "_client", lambda session, settings: Broken(root))
+    response = client.post(
+        "/api/living-book/projects/living-test/connect",
+        json={"root": str(root), "approve": True},
+    )
+    assert response.status_code == 502, response.text
+    message = response.json()["error"]["message"]
+    assert "ALIVE failed internally" in message
+    assert "corr-test-1" in message
+    assert "proc-" in message
+
+
+def test_connect_when_alive_offline_reports_unavailable(
+    client: TestClient, tmp_path, monkeypatch
+):
+    root = _book_tree(tmp_path)
+    _project(client, root)
+
+    class Down(FakeAlive):
+        async def preview_source(self, path: str):
+            raise LivingBookUnavailable("ALIVE is not reachable at http://127.0.0.1:8000.")
+
+    monkeypatch.setattr(service, "_client", lambda session, settings: Down(root))
+    response = client.post(
+        "/api/living-book/projects/living-test/connect",
+        json={"root": str(root), "approve": True},
+    )
+    assert response.status_code == 503, response.text
+
+
+def test_connect_rejects_unknown_root(client: TestClient, tmp_path, monkeypatch):
+    root = _book_tree(tmp_path)
+    _project(client, root)
+    fake = FakeAlive(root / "content" / "books" / "distillation")
+    monkeypatch.setattr(service, "_client", lambda session, settings: fake)
+    response = client.post(
+        "/api/living-book/projects/living-test/connect",
+        json={"root": str(tmp_path / "elsewhere"), "approve": True},
+    )
+    assert response.status_code == 422, response.text
+    assert fake.calls == []
+
+
+def test_windows_path_normalization_matches_separators_and_case():
+    assert service._norm("C:\\books\\math") == service._norm("c:/books/math")
+    assert service._norm(None) == ""
+    assert service._norm("C:\\books\\math\\") == service._norm("C:/books/math")
+
+
+def test_duplicate_connect_registers_distinct_captures(client: TestClient, tmp_path, monkeypatch):
+    root = _book_tree(tmp_path)
+    _project(client, root)
+
+    class Counting(FakeAlive):
+        def __init__(self, root: Path):
+            super().__init__(root)
+            self.count = 0
+
+        async def register_source(self, label: str, path: str, confirm_root: str):
+            self.count += 1
+            self.calls.append(("register", path))
+            return {"capture": {"id": f"capture-{self.count}", "content_sha256": "a" * 64}}
+
+    fake = Counting(root / "content" / "books" / "distillation")
+    monkeypatch.setattr(service, "_client", lambda session, settings: fake)
+    first = client.post(
+        "/api/living-book/projects/living-test/connect",
+        json={"root": str(root), "approve": True},
+    )
+    second = client.post(
+        "/api/living-book/projects/living-test/connect",
+        json={"root": str(root), "approve": True},
+    )
+    assert first.status_code == 200, first.text
+    assert second.status_code == 200, second.text
+    assert first.json()["capture"]["id"] != second.json()["capture"]["id"]
+
+
+def test_register_book_failure_surfaces_without_silent_success(
+    client: TestClient, tmp_path, monkeypatch
+):
+    root = _book_tree(tmp_path)
+    _project(client, root)
+
+    class NoSession(FakeAlive):
+        async def register_book(self, body):
+            raise LivingBookError("ALIVE could not create a reading session.", 400)
+
+    monkeypatch.setattr(service, "_client", lambda session, settings: NoSession(root))
+    response = client.post(
+        "/api/living-book/projects/living-test/connect",
+        json={"root": str(root), "approve": True},
+    )
+    assert response.status_code == 400, response.text
+    assert "reading session" in response.json()["error"]["message"]
+
+
+def test_connect_sends_bounded_ttl_and_scoped_request(client: TestClient, tmp_path, monkeypatch):
+    from mission_control.living_book import service as living_service
+
+    root = _book_tree(tmp_path)
+    _project(client, root)
+    seen: dict = {}
+
+    class Recording(FakeAlive):
+        async def approve_source(self, capture_id: str, **kwargs):
+            seen.update(kwargs)
+            return await super().approve_source(capture_id, **kwargs)
+
+    monkeypatch.setattr(service, "_client", lambda session, settings: Recording(root))
+    response = client.post(
+        "/api/living-book/projects/living-test/connect",
+        json={"root": str(root), "approve": True},
+    )
+    assert response.status_code == 200, response.text
+    assert seen["ttl_seconds"] == living_service.PROJECT_REVIEW_TTL == 30 * 24 * 3600
+    assert str(seen["request_id"]).startswith("mission-living-book-living-test-")
+
+
+def test_connect_transfers_paths_not_manuscript_content(
+    client: TestClient, tmp_path, monkeypatch
+):
+    root = _book_tree(tmp_path)
+    _project(client, root)
+    fake = FakeAlive(root / "content" / "books" / "distillation")
+    monkeypatch.setattr(service, "_client", lambda session, settings: fake)
+    response = client.post(
+        "/api/living-book/projects/living-test/connect",
+        json={"root": str(root), "approve": True},
+    )
+    assert response.status_code == 200, response.text
+    kinds = [call[0] for call in fake.calls]
+    assert kinds == ["preview", "register", "approve", "book"]
+    for _kind, *args in fake.calls:
+        for arg in args:
+            if isinstance(arg, dict):
+                assert "markdown" not in arg
+                assert "content" not in arg or isinstance(arg["content"], str) and len(arg["content"]) < 500
+            else:
+                assert len(str(arg)) < 500
+
+
+def test_memory_project_connects_independently(client: TestClient, tmp_path, monkeypatch):
+    root = _book_tree(tmp_path)
+    _project(client, root)
+    _project_with_id(client, root, "living-memory", "Living Memory")
+    fake = FakeAlive(root / "content" / "books" / "distillation")
+    monkeypatch.setattr(service, "_client", lambda session, settings: fake)
+    first = client.post(
+        "/api/living-book/projects/living-test/connect",
+        json={"root": str(root), "approve": True},
+    )
+    second = client.post(
+        "/api/living-book/projects/living-memory/connect",
+        json={"root": str(root), "approve": True},
+    )
+    assert first.status_code == 200, first.text
+    assert second.status_code == 200, second.text
+
+
+def test_revoke_session_passthrough(client: TestClient, tmp_path, monkeypatch):
+    root = _book_tree(tmp_path)
+    _project(client, root)
+    fake = FakeAlive(root / "content" / "books" / "distillation")
+    fake.registered = True
+    monkeypatch.setattr(service, "_client", lambda session, settings: fake)
+    response = client.post("/api/living-book/projects/living-test/sessions/consent-1/revoke")
+    assert response.status_code == 200, response.text
+    assert response.json()["state"] == "revoked"
