@@ -76,7 +76,7 @@ projects:
       artifacts/math01/report.json. A verification result is not a claim about
       physical reality and is not automatically a book-completion signal.
     repositories:
-      - path: 'C:\Projects\math'
+      - path: 'C:\books\math'
         name: math
         classification: research_project
         confidence: 0.98

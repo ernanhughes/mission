@@ -6831,6 +6831,41 @@ button.nav-link {
   margin: 6px 0;
 }
 
+.award-ladder {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 8px 0;
+}
+
+.award-step {
+  padding: 4px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border, #2a3a55);
+  font-size: 12px;
+  opacity: 0.55;
+}
+
+.award-step[data-state="attained"] {
+  opacity: 1;
+  font-weight: 600;
+}
+
+.award-step.award-green[data-state="attained"] {
+  border-color: #2fbf85;
+  background: rgba(47, 191, 133, 0.18);
+}
+
+.award-step.award-silver[data-state="attained"] {
+  border-color: #9fb3c8;
+  background: rgba(159, 179, 200, 0.22);
+}
+
+.award-step.award-gold[data-state="attained"] {
+  border-color: #d8a91f;
+  background: rgba(216, 169, 31, 0.2);
+}
+
 .hud-chevron-open {
   transform: rotate(180deg);
 }

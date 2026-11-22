@@ -297,9 +297,18 @@ def test_starter_catalogue_seeded(client: TestClient) -> None:
     assert "inventory verification" in books["baseline_note"]
     blog = goals["blog_posts"]
     assert blog["state"] == "achieved"
-    assert blog["progress"]["current"] == 100
     assert blog["progress"]["estimate_label"] is not None
     assert blog["baseline_provenance"] == "user_assertion"
+    # MC-WEBSITES-CULTIVATION-01: the lifetime milestone never resets, but the
+    # displayed count follows the live Hugo observation once the repaired
+    # source has synced. Without a live source the attested baseline stands.
+    sources = {s["id"]: s for s in client.get("/api/cultivation/sources").json()}
+    src = sources.get("src-blog-posts")
+    if src is not None and src["last_status"] == "ok":
+        assert blog["evidence_source"] == "hugo_blog"
+        assert blog["progress"]["current"] == src["observed"]["published"]
+    else:
+        assert blog["progress"]["current"] == 100
     weekly = goals["weekly_blog"]
     assert weekly["skill_id"] == "blog-posts"
     assert weekly["measurement_type"] == "recurring"

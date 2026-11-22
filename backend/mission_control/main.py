@@ -37,6 +37,7 @@ from mission_control.api import (
     scripts as scripts_api,
     settings as settings_api,
     technical as technical_api,
+    websites as websites_api,
     workflows as workflows_api,
     writer as writer_api,
 )
@@ -66,39 +67,48 @@ async def _startup_refresh(app: FastAPI) -> None:
     try:
         count = await asyncio.to_thread(refresh_repositories, app.state.database)
         logger.info("Observed Git metadata for %s repositories", count)
-        # Best-effort live cultivation sync (read-only, idempotent, never fails startup).
-        # Blog posts behave like the Self-Hypnosis track: the filesystem is authoritative,
-        # the last valid observation is kept as stale when the source is unavailable.
-        try:
-            from mission_control.cultivation import service as _cult
-
-            def _sync_blogs() -> int:
-                synced = 0
-                with app.state.database.session() as session:
-                    for source in _cult.list_sources(session):
-                        if source.kind != "hugo_blog":
-                            continue
-                        try:
-                            _cult.sync_source(session, source.id)
-                            synced += 1
-                        except Exception:
-                            logger.exception(
-                                "Blog source sync failed for %s; kept last observation", source.id
-                            )
-                return synced
-
-            synced = await asyncio.to_thread(_sync_blogs)
-            if synced:
-                logger.info("Synced %s blog source(s) on startup", synced)
-        except asyncio.CancelledError:
-            raise
-        except Exception:
-            logger.exception("Startup blog sync failed; kept last observations")
         await app.state.adapter_service.refresh_all(force=False)
     except asyncio.CancelledError:
         raise
     except Exception:
         logger.exception("Startup observation failed; the dashboard remains available")
+
+
+async def _startup_blog_sync(app: FastAPI) -> None:
+    """Best-effort live blog sync (read-only, idempotent, never fails startup).
+
+    Blog posts behave like the Self-Hypnosis track: the filesystem is
+    authoritative, the last valid observation is kept as stale when the source
+    is unavailable. This runs on every startup regardless of unrelated
+    repository-monitor settings; missing sources are repaired first so the
+    weekly panel never reads 0 from a disconnected path.
+    """
+    try:
+        from mission_control.cultivation import service as _cult
+
+        def _sync_blogs() -> int:
+            synced = 0
+            with app.state.database.session() as session:
+                _cult.repair_blog_source(session)
+                for source in _cult.list_sources(session):
+                    if source.kind != "hugo_blog":
+                        continue
+                    try:
+                        _cult.sync_source(session, source.id)
+                        synced += 1
+                    except Exception:
+                        logger.exception(
+                            "Blog source sync failed for %s; kept last observation", source.id
+                        )
+            return synced
+
+        synced = await asyncio.to_thread(_sync_blogs)
+        if synced:
+            logger.info("Synced %s blog source(s) on startup", synced)
+    except asyncio.CancelledError:
+        raise
+    except Exception:
+        logger.exception("Startup blog sync failed; kept last observations")
 
 
 def create_app(runtime: RuntimeSettings | None = None) -> FastAPI:
@@ -153,7 +163,16 @@ def create_app(runtime: RuntimeSettings | None = None) -> FastAPI:
         app.state.praxis_proposal_service = praxis_proposal_service
         app.state.research_chat = research_chat
         app.state.git_activity = git_activity_service
+        from mission_control.websites.service import WebsitesState as _WebsitesState
+
+        app.state.websites = _WebsitesState()
         await process_manager.reconcile_startup()
+        try:
+            await _startup_blog_sync(app)
+        except asyncio.CancelledError:
+            raise
+        except Exception:
+            logger.exception("Startup blog sync failed; kept last observations")
         refresh_task: asyncio.Task[None] | None = None
         if settings.start_monitor:
             refresh_task = asyncio.create_task(
@@ -289,6 +308,7 @@ def create_app(runtime: RuntimeSettings | None = None) -> FastAPI:
     app.include_router(briefing.router)
     app.include_router(settings_api.router)
     app.include_router(scripts_api.router)
+    app.include_router(websites_api.router)
 
     dist = settings.frontend_dist
     if dist.exists() and (dist / "index.html").exists():

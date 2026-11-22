@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { useSearchParams } from "react-router-dom";
 import { CalendarRange, Lock, Medal, Plus, Sprout } from "lucide-react";
 import { api, apiPath, errorMessage } from "../api/client";
@@ -50,6 +50,17 @@ function GoalBar(props: { goal: CultivationGoal }) {
 
 function progressText(goal: CultivationGoal): string {
   return currentLabel(goal.progress);
+}
+
+function sourceForGoal(sources: CultivationSource[], goalId: string): CultivationSource | null {
+  // A goal resolves either by direct attachment or via the weekly-rhythm
+  // link (config.period_goal_id), so the lifetime and weekly displays share
+  // the same authoritative observation without duplicate sources.
+  return (
+    sources.find((row) => row.goal_id === goalId) ??
+    sources.find((row) => String((row.config as Record<string, unknown> | null)?.period_goal_id ?? "") === goalId) ??
+    null
+  );
 }
 
 export function CultivationPage() {
@@ -331,7 +342,7 @@ export function CultivationPage() {
               goal={selected}
               skills={skills.data ?? []}
               stages={config.data?.stages ?? []}
-              source={(sources.data ?? []).find((row) => row.goal_id === selected.id) ?? null}
+              source={sourceForGoal(sources.data ?? [], selected.id)}
               onChanged={reloadAll}
               onClose={() => select("")}
               onArchive={(state) => void archive(selected, state)}
@@ -449,6 +460,28 @@ function GoalDetail(props: {
   const [skillId, setSkillId] = useState(goal.skill_id ?? "");
   const [syncing, setSyncing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const autoSynced = useRef(false);
+
+  // Opening a goal with a never-synced live source obtains a fresh
+  // observation once; afterwards the explicit Refresh button controls syncs.
+  useEffect(() => {
+    if (!props.source || props.source.last_sync_at || autoSynced.current) return;
+    autoSynced.current = true;
+    void (async () => {
+      setSyncing(true);
+      try {
+        await api.post(`/api/cultivation/sources/${props.source!.id}/sync`, {});
+        items.reload();
+        events.reload();
+        props.onChanged();
+      } catch {
+        // The stale/last-known display stays; the error surfaces on manual refresh.
+      } finally {
+        setSyncing(false);
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.source?.id]);
 
   const stageLabel = (id: string) => props.stages.find((stage) => stage.id === id)?.label ?? id;
   const metric = goal.measurement_type !== "count" && goal.measurement_type !== "qualified_count";
@@ -842,37 +875,129 @@ function ScriptGoalExtras(props: { goalId: string }) {
   );
 }
 
+type WeeklyAward = {
+  level: "none" | "green" | "silver" | "gold";
+  label: string;
+  this_week: number;
+};
+
+function awardFromObserved(observed: Record<string, unknown>): WeeklyAward {
+  const raw = observed.weekly_award as Partial<WeeklyAward> | undefined;
+  const thisWeek = Number(observed.this_week ?? raw?.this_week ?? 0);
+  const level =
+    raw?.level === "gold" || raw?.level === "silver" || raw?.level === "green" || raw?.level === "none"
+      ? raw.level
+      : thisWeek >= 3
+        ? "gold"
+        : thisWeek === 2
+          ? "silver"
+          : thisWeek === 1
+            ? "green"
+            : "none";
+  const label =
+    typeof raw?.label === "string" && raw.label
+      ? raw.label
+      : level === "gold"
+        ? "Gold"
+        : level === "silver"
+          ? "Silver"
+          : level === "green"
+            ? "Green"
+            : "Not yet achieved";
+  return { level, label, this_week: Number.isFinite(thisWeek) ? thisWeek : 0 };
+}
+
+const AWARD_STEPS = [
+  { level: "green", label: "Green", need: 1 },
+  { level: "silver", label: "Silver", need: 2 },
+  { level: "gold", label: "Gold", need: 3 },
+] as const;
+
+function AwardLadder({ current }: { current: number }) {
+  return (
+    <div className="award-ladder" aria-label={`Publishing award progress: ${current} this week`}>
+      {AWARD_STEPS.map((step) => {
+        const attained = current >= step.need;
+        return (
+          <span
+            key={step.level}
+            className={`award-step award-${step.level}${attained ? " award-attained" : ""}`}
+            data-state={attained ? "attained" : "pending"}
+            title={`${step.label}: ${step.need}+ post${step.need === 1 ? "" : "s"} this week`}
+          >
+            {step.label} · {step.need}+
+          </span>
+        );
+      })}
+    </div>
+  );
+}
+
+function LatestPosts({ observed, count }: { observed: Record<string, unknown>; count: number }) {
+  const recent = (Array.isArray(observed.recent_posts) ? observed.recent_posts : []) as Array<
+    Record<string, unknown>
+  >;
+  const latest = recent.slice(0, count);
+  if (latest.length === 0) return null;
+  return (
+    <div>
+      <h4>Latest published posts</h4>
+      {latest.map((post) => (
+        <p key={String(post.identity ?? post.relpath)} className="row-line">
+          <strong>{String(post.title ?? post.identity)}</strong>
+          <span className="muted"> · {String(post.date ?? "").slice(0, 10)}</span>
+          <br />
+          <code>{String(post.relpath ?? "")}</code>
+        </p>
+      ))}
+    </div>
+  );
+}
+
 function BlogGoalExtras(props: { goalId: string; observed: Record<string, unknown> }) {
   const observed = props.observed ?? {};
+  const award = awardFromObserved(observed);
   if (props.goalId === "weekly_blog") {
-    const thisWeek = Number(observed.this_week ?? 0);
     const required = 1;
-    const remaining = Math.max(0, required - thisWeek);
-    const status = thisWeek >= required ? "Complete" : "In Progress";
+    const remaining = Math.max(0, required - award.this_week);
+    const status = award.this_week >= required ? "Complete" : "In Progress";
     return (
       <div className="panel review-card">
         <div className="activity-head">
           <strong>Weekly publication</strong>
-          <Tag tone={thisWeek >= required ? "accent" : undefined}>{status}</Tag>
+          <Tag tone={award.this_week >= required ? "accent" : undefined}>{status}</Tag>
+          <Tag tone={award.level !== "none" ? "accent" : undefined}>{award.label}</Tag>
         </div>
         <p className="muted">
-          Week {String(observed.week_start_date ?? "—")} → {String(observed.week_end_date ?? "—")} (Europe/Dublin, Monday–Sunday) · {thisWeek}/{required} · {remaining} remaining
+          Week {String(observed.week_start_date ?? "—")} → {String(observed.week_end_date ?? "—")} (Europe/Dublin, Monday–Sunday) · {award.this_week}/{required} · {remaining} remaining
         </p>
+        <AwardLadder current={award.this_week} />
         <p className="muted">Technology / Finance preferred, other topics still count. A future-scheduled post never counts early. Current week is never marked missed before Sunday ends.</p>
+        <LatestPosts observed={observed} count={2} />
       </div>
     );
   }
   return (
     <div className="panel review-card">
       <div className="activity-head">
-        <strong>Publication overview</strong>
-        <Tag tone="accent">Live</Tag>
+        <strong>Publishing awards</strong>
+        <Tag tone="accent">{award.label}</Tag>
       </div>
       <p className="muted">
-        Published: <strong>{Number(observed.published ?? 0)}</strong> · Drafts: <strong>{Number(observed.drafts ?? 0)}</strong> · Scheduled:{" "}
-        {Number(observed.scheduled ?? 0)} · Technology: {Number(observed.tech_published ?? 0)} · Finance: {Number(observed.finance_published ?? 0)}
+        Lifetime published: <strong>{Number(observed.published ?? 0)}</strong>
+        {" · "}This week: <strong>{award.this_week}</strong> · {award.label}
       </p>
-      <p className="muted">Lifetime achievement (total published) is separate from weekly discipline (one per week). Filesystem is authoritative; stored observations are supporting evidence.</p>
+      <AwardLadder current={award.this_week} />
+      <p className="muted">
+        Gold means 3+ qualifying posts this week, never an editorial quality score.
+        Lifetime achievement (100 posts) never resets, even while the weekly reward resets each Monday.
+      </p>
+      <p className="muted">
+        Drafts: <strong>{Number(observed.drafts ?? 0)}</strong> · Scheduled:{" "}
+        {Number(observed.scheduled ?? 0)} · Technology: {Number(observed.tech_published ?? 0)} · Finance:{" "}
+        {Number(observed.finance_published ?? 0)}
+      </p>
+      <LatestPosts observed={observed} count={2} />
     </div>
   );
 }
