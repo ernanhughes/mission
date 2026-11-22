@@ -67,11 +67,9 @@ def test_chapter_39_current_with_matching_hash(client: TestClient) -> None:
     body = response.json()
     assert body["overall"] == "CURRENT"
     assert len(body["evaluations"]) == 2
-    providers = {
-        item["envelope"]["producer"]["runtime_name"]
-        for item in body["evaluations"]
-    }
+    providers = {item["envelope"]["producer"]["runtime_name"] for item in body["evaluations"]}
     assert providers == {"artifact", "qc"}
+
     # Native scales preserved, no composite invented: no score-averaging
     # keys anywhere in the stored envelope.
     def _keys(node: Any) -> set[str]:
@@ -261,10 +259,7 @@ def test_invalid_envelopes_rejected(client: TestClient) -> None:
         == 422
     )
     not_object = {"project_id": "inference", "envelope": [1, 2, 3]}
-    assert (
-        client.post("/api/writer/evaluations/ingest", json=not_object).status_code
-        == 422
-    )
+    assert client.post("/api/writer/evaluations/ingest", json=not_object).status_code == 422
 
 
 def test_findings_keep_native_family_no_tech_verdict(client: TestClient) -> None:
@@ -285,3 +280,72 @@ def test_findings_keep_native_family_no_tech_verdict(client: TestClient) -> None
     assert {finding["family"] for finding in envelope["findings"]} == {"qc"}
     # No technical-verification claim is manufactured from QC findings.
     assert "VERIFIED" not in json.dumps(envelope["findings"])
+
+
+def test_adapter_refresh_does_not_demote_evaluations(client: TestClient) -> None:
+    """W3-found regression: a writer adapter refresh (other resource types)
+    must not mark current evaluations historical."""
+    from mission_control.adapters.base import ResourceSeed
+    from mission_control.integrations.store import upsert_resources
+    from mission_control.models import IntegrationRecord
+
+    art = _load("artifact-39-chapter.json")
+    client.post(
+        "/api/writer/evaluations/ingest",
+        json={"project_id": "inference", "envelope": art},
+    )
+    with client.app.state.database.session() as session:
+        upsert_resources(
+            session,
+            "writer",
+            [
+                ResourceSeed(
+                    resource_type="writer_editing_book",
+                    external_id="inference",
+                    title="Inference",
+                    summary="summary",
+                    state="CURRENT",
+                    data={},
+                )
+            ],
+        )
+        session.commit()
+        rows = session.scalars(
+            select(IntegrationRecord).where(
+                IntegrationRecord.application_id == "writer",
+                IntegrationRecord.resource_type == "writer_evaluation",
+                IntegrationRecord.current.is_(True),
+            )
+        ).all()
+    assert len(rows) == 1
+    assert rows[0].external_id == art["evaluation_id"]
+
+
+def test_chapter_id_filename_form_matches_stem(client: TestClient) -> None:
+    """W3 closure: stem and filename chapter ids resolve identically."""
+    art = _load("artifact-39-chapter.json")
+    client.post(
+        "/api/writer/evaluations/ingest",
+        json={"project_id": "inference", "envelope": art},
+    )
+    stem = client.get(
+        "/api/writer/evaluations/chapter",
+        params={
+            "project_id": "inference",
+            "chapter_id": "39-chapter",
+            "source_hash": art["work_object"]["source_hash"],
+        },
+    ).json()
+    dotted = client.get(
+        "/api/writer/evaluations/chapter",
+        params={
+            "project_id": "inference",
+            "chapter_id": "39-chapter.md",
+            "source_hash": art["work_object"]["source_hash"],
+        },
+    ).json()
+    assert stem["overall"] == "CURRENT"
+    assert dotted["overall"] == "CURRENT"
+    assert [e["evaluation_id"] for e in stem["evaluations"]] == [
+        e["evaluation_id"] for e in dotted["evaluations"]
+    ]

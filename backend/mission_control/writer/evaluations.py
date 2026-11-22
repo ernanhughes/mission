@@ -73,23 +73,17 @@ def validate_envelope(payload: Any) -> dict[str, Any]:
     if not isinstance(payload, dict):
         raise EnvelopeValidationError("envelope must be a JSON object")
     if payload.get("schema_version") != SCHEMA_VERSION:
-        raise EnvelopeValidationError(
-            f"schema_version must be {SCHEMA_VERSION!r}"
-        )
+        raise EnvelopeValidationError(f"schema_version must be {SCHEMA_VERSION!r}")
     _require_str(payload, "evaluation_id", where="envelope")
     status = payload.get("status")
     if status not in ENVELOPE_STATUSES:
-        raise EnvelopeValidationError(
-            f"status must be one of {ENVELOPE_STATUSES}"
-        )
+        raise EnvelopeValidationError(f"status must be one of {ENVELOPE_STATUSES}")
     work = payload.get("work_object")
     if not isinstance(work, dict):
         raise EnvelopeValidationError("work_object must be an object")
     _require_str(work, "target_id", where="work_object")
     source_hash = _require_str(work, "source_hash", where="work_object")
-    if len(source_hash) != 64 or any(
-        ch not in "0123456789abcdef" for ch in source_hash.lower()
-    ):
+    if len(source_hash) != 64 or any(ch not in "0123456789abcdef" for ch in source_hash.lower()):
         raise EnvelopeValidationError("work_object.source_hash must be sha256 hex")
     producer = payload.get("producer")
     if not isinstance(producer, dict):
@@ -194,18 +188,15 @@ def ingest_envelope(
                     f"dimension(s), {len(envelope['findings'])} finding(s)"
                 ),
                 state=str(envelope["status"]),
-                source_version=str(
-                    envelope.get("producer", {}).get("method_version", "")
-                ),
+                source_version=str(envelope.get("producer", {}).get("method_version", "")),
                 source_timestamp=envelope.get("observed_at"),
                 observed_at=now_iso(),
                 stale_after_seconds=0,
                 evidence=[str(envelope["work_object"].get("source_path") or "")],
                 data=envelope,
-                search_text=(
-                    f"writer_evaluation {provider} {target_id} "
-                    f"{envelope['status']}"
-                )[:30_000],
+                search_text=(f"writer_evaluation {provider} {target_id} {envelope['status']}")[
+                    :30_000
+                ],
                 current=True,
             )
             session.add(record)
@@ -241,32 +232,109 @@ def chapter_file_sha(path: str | Path) -> str | None:
         return None
 
 
-def resolve_chapter_sha(
-    database: Database, project_id: str, target_id: str
-) -> str | None:
-    """Best-effort server-side chapter hash via the book manuscript paths.
+def _stem(chapter_id: str) -> str:
+    """Envelope target_ids are extension-less stems ("39-chapter") while
+    callers may use filenames ("39-chapter.md"). Normalize for lookup only;
+    the compared bytes still decide freshness."""
+    return chapter_id[: -len(".md")] if chapter_id.endswith(".md") else chapter_id
 
-    Returns None when no exactly-one ``<target_id>.md`` candidate exists.
-    Conservative by design: ambiguity refuses rather than guesses.
+
+def resolve_chapter_sha(database: Database, project_id: str, target_id: str) -> str | None:
+    """Best-either server-side chapter hash via the book manuscript paths.
+
+    Accepts stem or filename form. Returns None when no exactly-one
+    candidate file exists. Conservative by design: ambiguity refuses
+    rather than guesses.
     """
     with database.session() as session:
         book = session.scalar(select(Book).where(Book.project_id == project_id))
         if book is None:
             return None
+        stem = _stem(target_id)
         candidates: list[Path] = []
         for root in book.manuscript_paths or []:
             try:
                 base = Path(root)
                 if not base.is_absolute() or not base.is_dir():
                     continue
-                match = base / f"{target_id}.md"
-                if match.is_file():
-                    candidates.append(match)
+                for candidate in (base / stem, base / f"{stem}.md"):
+                    if candidate.is_file() and candidate not in candidates:
+                        candidates.append(candidate)
             except OSError:
                 continue
         if len(candidates) != 1:
             return None
         return chapter_file_sha(candidates[0])
+
+
+def chapter_evaluations_from_session(
+    session,
+    project_id: str,
+    chapter_id: str,
+    *,
+    source_hash: str | None,
+) -> dict[str, Any]:
+    """Session-core of chapter_evaluations (no session management)."""
+    rows = session.scalars(
+        select(IntegrationRecord)
+        .where(
+            IntegrationRecord.application_id == APPLICATION_ID,
+            IntegrationRecord.resource_type == RESOURCE_TYPE,
+        )
+        .order_by(IntegrationRecord.observed_at.desc())
+    ).all()
+    items: list[dict[str, Any]] = []
+    for row in rows:
+        data = row.data if isinstance(row.data, dict) else {}
+        work = data.get("work_object", {})
+        if not isinstance(work, dict) or work.get("target_id") != chapter_id:
+            continue
+        if project_id and row.project_id and row.project_id != project_id:
+            continue
+        items.append(
+            {
+                "record_id": row.id,
+                "evaluation_id": row.external_id,
+                "current": bool(row.current),
+                "observed_at": row.observed_at,
+                "envelope": data,
+            }
+        )
+    for item in items:
+        envelope = item["envelope"]
+        env_status = envelope.get("status")
+        env_hash = (envelope.get("work_object", {}) or {}).get("source_hash")
+        if env_status == "unavailable":
+            item["derived"] = DERIVED_UNAVAILABLE
+        elif source_hash is None:
+            item["derived"] = DERIVED_UNVERIFIED
+        elif env_hash == source_hash:
+            item["derived"] = DERIVED_CURRENT
+        else:
+            item["derived"] = DERIVED_STALE
+    if not items:
+        overall = DERIVED_NOT_RUN
+    elif any(item["current"] and item["derived"] == DERIVED_UNAVAILABLE for item in items):
+        overall = DERIVED_UNAVAILABLE
+    elif any(item["current"] and item["derived"] == DERIVED_CURRENT for item in items):
+        overall = DERIVED_CURRENT
+    elif any(item["current"] for item in items) and all(
+        item["derived"] in (DERIVED_STALE, DERIVED_UNVERIFIED) for item in items if item["current"]
+    ):
+        overall = (
+            DERIVED_STALE
+            if all(item["derived"] == DERIVED_STALE for item in items if item["current"])
+            else DERIVED_UNVERIFIED
+        )
+    else:
+        overall = DERIVED_UNVERIFIED
+    return {
+        "project_id": project_id,
+        "chapter_id": chapter_id,
+        "overall": overall,
+        "source_hash_compared": source_hash,
+        "evaluations": items,
+    }
 
 
 def chapter_evaluations(
@@ -281,77 +349,12 @@ def chapter_evaluations(
     ``source_hash`` (the bytes the caller actually read) drives freshness:
     equal -> CURRENT, different -> STALE, absent-but-unresolvable ->
     UNVERIFIED, no records -> NOT_RUN, envelope unavailable -> UNAVAILABLE.
+    Chapter ids accept stem or filename form ("39-chapter" == "39-chapter.md").
     """
-    with database.session() as session:
-        rows = session.scalars(
-            select(IntegrationRecord)
-            .where(
-                IntegrationRecord.application_id == APPLICATION_ID,
-                IntegrationRecord.resource_type == RESOURCE_TYPE,
-            )
-            .order_by(IntegrationRecord.observed_at.desc())
-        ).all()
-        items: list[dict[str, Any]] = []
-        for row in rows:
-            data = row.data if isinstance(row.data, dict) else {}
-            work = data.get("work_object", {})
-            if not isinstance(work, dict) or work.get("target_id") != chapter_id:
-                continue
-            if project_id and row.project_id and row.project_id != project_id:
-                continue
-            items.append(
-                {
-                    "record_id": row.id,
-                    "evaluation_id": row.external_id,
-                    "current": bool(row.current),
-                    "observed_at": row.observed_at,
-                    "envelope": data,
-                }
-            )
+    chapter_id = _stem(chapter_id)
     if source_hash is None:
         source_hash = resolve_chapter_sha(database, project_id, chapter_id)
-    for item in items:
-        envelope = item["envelope"]
-        env_status = envelope.get("status")
-        env_hash = (envelope.get("work_object", {}) or {}).get("source_hash")
-        if env_status == "unavailable":
-            item["derived"] = DERIVED_UNAVAILABLE
-        elif source_hash is None:
-            item["derived"] = DERIVED_UNVERIFIED
-        elif env_hash == source_hash:
-            item["derived"] = DERIVED_CURRENT
-        else:
-            item["derived"] = DERIVED_STALE
-    current_items = [item for item in items if item["current"]]
-    if not items:
-        overall = DERIVED_NOT_RUN
-    elif any(
-        item["current"] and item["derived"] == DERIVED_UNAVAILABLE
-        for item in items
-    ):
-        overall = DERIVED_UNAVAILABLE
-    elif any(
-        item["current"] and item["derived"] == DERIVED_CURRENT for item in items
-    ):
-        overall = DERIVED_CURRENT
-    elif any(item["current"] for item in items) and all(
-        item["derived"] in (DERIVED_STALE, DERIVED_UNVERIFIED) for item in items
-        if item["current"]
-    ):
-        overall = (
-            DERIVED_STALE
-            if all(
-                item["derived"] == DERIVED_STALE for item in items if item["current"]
-            )
-            else DERIVED_UNVERIFIED
+    with database.session() as session:
+        return chapter_evaluations_from_session(
+            session, project_id, chapter_id, source_hash=source_hash
         )
-    else:
-        overall = DERIVED_UNVERIFIED
-    _ = current_items
-    return {
-        "project_id": project_id,
-        "chapter_id": chapter_id,
-        "overall": overall,
-        "source_hash_compared": source_hash,
-        "evaluations": items,
-    }
