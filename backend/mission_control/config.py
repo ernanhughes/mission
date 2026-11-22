@@ -43,6 +43,11 @@ class RuntimeSettings:
             "MISSION_CONTROL_FICTION_BOOKS_ROOT", Path(r"C:\fiction-books")
         )
     )
+    websites_root: Path = field(
+        default_factory=lambda: _env_path(
+            "MISSION_CONTROL_WEBSITES_ROOT", Path(r"C:\websites")
+        )
+    )
     host: str = field(default_factory=lambda: os.environ.get("MISSION_CONTROL_HOST", "127.0.0.1"))
     port: int = field(default_factory=lambda: int(os.environ.get("MISSION_CONTROL_PORT", "8790")))
     log_level: str = field(

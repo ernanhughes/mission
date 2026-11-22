@@ -7,6 +7,7 @@ labelled with their provenance and never silently converted into evidence.
 
 from __future__ import annotations
 
+import logging
 import uuid
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -42,6 +43,8 @@ from mission_control.models import (
     Setting,
 )
 from mission_control.persistence.db import now_iso
+
+logger = logging.getLogger(__name__)
 
 MEASUREMENT_TYPES = {"count", "threshold_up", "threshold_down", "recurring", "qualified_count"}
 RECURRING_MODES = {"daily", "period"}
@@ -2443,10 +2446,234 @@ def _sync_hugo_blog(session: Session, source: CultivationSource) -> dict[str, An
         return {"source_id": source.id, "status": "ok", "observed": observed,
                 "stale": False, "goal_id": None}
     _attach_live_source(session, source, goal, "hugo_blog")
-    return _reconcile_observed_items(
+    result = _reconcile_observed_items(
         session, source, goal, scan, item_type="blog_post",
         source_application="hugo_blog", item_id_fn=_hugo_item_id,
         completed_label="Published post observed")
+    _reconcile_period_measurements(session, source, scan)
+    return result
+
+
+# ------------------------------------------------- blog source repair (MC-WEBSITES-CULTIVATION-01)
+#
+# The blog source was historically seeded only when
+# ``C:\\Projects\\programmer.ie\\content\\post`` existed. When the site moves
+# (e.g. to ``C:\\websites\\programmer.ie``) the counter disconnects while the
+# weekly panel reads 0. Repair repoints the seeded source at the real Hugo
+# content directory without duplicating sources or touching user configuration:
+# a valid, still-existing path is never overwritten.
+
+BLOG_SOURCE_ID = "src-blog-posts"
+BLOG_LIFETIME_GOAL_ID = "blog_posts"
+BLOG_WEEK_GOAL_ID = "weekly_blog"
+
+BLOG_SOURCE_CANDIDATES = (
+    r"C:\Projects\programmer.ie\content\post",
+    r"C:\Projects\programmer.ie\content\posts",
+    r"C:\websites\programmer.ie\content\post",
+    r"C:\websites\programmer.ie\content\posts",
+)
+
+
+def _read_hugo_post_sections(site_root: Path) -> list[str]:
+    """Authoritative post sections from the site's Hugo configuration."""
+    import json as _json
+
+    for config_file in ("hugo.toml", "hugo.yaml", "hugo.yml", "hugo.json",
+                        "config.toml", "config.yaml", "config.yml", "config.json"):
+        candidate = site_root / config_file
+        if not candidate.is_file():
+            continue
+        try:
+            text = candidate.read_text(encoding="utf-8", errors="replace")
+            if config_file.endswith(".toml"):
+                import tomllib as _tomllib
+
+                data = _tomllib.loads(text)
+            elif config_file.endswith(".json"):
+                data = _json.loads(text)
+            else:
+                import yaml as _yaml
+
+                data = _yaml.safe_load(text)
+        except Exception:
+            continue
+        if not isinstance(data, dict):
+            continue
+        params = data.get("params") or data.get("Params") or {}
+        sections = params.get("postSections") or params.get("postsections") or []
+        if isinstance(sections, str):
+            sections = [sections]
+        cleaned = [str(item).strip().strip("/") for item in sections
+                   if str(item).strip()]
+        if cleaned:
+            return cleaned[:10]
+        return ["post"]
+    return ["post"]
+
+
+def resolve_blog_source_path(candidates: list[str] | tuple[str, ...] | None = None) -> str | None:
+    """First existing candidate, preferring the Hugo-configured post section.
+
+    The authoritative section comes from the discovered site's own Hugo
+    configuration (``postSections``), not from an assumed directory name.
+    Returns None when no candidate exists.
+    """
+    options = list(candidates or BLOG_SOURCE_CANDIDATES)
+    existing = [path for path in options if Path(path).is_dir()]
+    if not existing:
+        return None
+    for path in existing:
+        site_root = Path(path).parent.parent
+        sections = _read_hugo_post_sections(site_root)
+        if Path(path).name in sections:
+            return path
+    return existing[0]
+
+
+def blog_source_for_goal(session: Session, goal_id: str) -> CultivationSource | None:
+    """Authoritative Hugo blog source for a goal, lifetime or weekly.
+
+    A goal resolves either by direct attachment (``source.goal_id``) or via the
+    weekly-rhythm link (``config.period_goal_id``), so both the lifetime and
+    the weekly presentation consume the same observation without duplicate
+    sources.
+    """
+    direct = session.scalars(select(CultivationSource).where(
+        CultivationSource.goal_id == goal_id,
+        CultivationSource.kind == "hugo_blog").order_by(
+        desc(CultivationSource.last_sync_at)).limit(1)).first()
+    if direct is not None:
+        return direct
+    for source in session.scalars(select(CultivationSource).where(
+            CultivationSource.kind == "hugo_blog")).all():
+        config = source.config if isinstance(source.config, dict) else {}
+        if str(config.get("period_goal_id") or "") == goal_id:
+            return source
+    return None
+
+
+def repair_blog_source(session: Session) -> dict[str, Any]:
+    """Repair the seeded blog source registration (idempotent, non-destructive).
+
+    - A source with a valid, still-existing path is never touched.
+    - A seeded source pointing at a missing directory is repointed at the
+      resolved real Hugo content directory (no duplicate sources).
+    - A missing seeded source is recreated only when a real directory exists.
+    - The weekly-rhythm link (``period_goal_id``) is backfilled when absent.
+    Historical achievements, evidence and user configuration are preserved.
+    """
+    outcome: dict[str, Any] = {"repaired": False, "created": False, "path": None}
+    if session.get(CultivationGoal, BLOG_LIFETIME_GOAL_ID) is None:
+        return outcome
+    source = session.get(CultivationSource, BLOG_SOURCE_ID)
+    resolved = resolve_blog_source_path()
+    outcome["path"] = resolved
+    if source is not None:
+        if source.kind != "hugo_blog":
+            return outcome
+        config = dict(source.config or {})
+        if "period_goal_id" not in config and session.get(CultivationGoal, BLOG_WEEK_GOAL_ID) is not None:
+            config["period_goal_id"] = BLOG_WEEK_GOAL_ID
+            source.config = config
+            source.updated_at = now_iso()
+            outcome["repaired"] = True
+            logger.info("Linked blog source to weekly_blog goal")
+        current = (source.path or "").strip()
+        if current and Path(current).is_dir():
+            return outcome
+        # Missing or stale registration: repoint at the real directory.
+        if resolved is None:
+            source.last_error = (
+                "Blog source directory is unavailable and no Hugo content "
+                "directory was found; kept the last observation."
+            )
+            source.updated_at = now_iso()
+            session.flush()
+            return outcome
+        if current != resolved:
+            previous = current or "(unset)"
+            source.path = resolved
+            source.last_error = (
+                f"Repointed from {previous} to {resolved}; kept history and achievements."
+            )
+            source.updated_at = now_iso()
+            outcome["repaired"] = True
+            _record_event(session, goal_id=source.goal_id, event_type="source_repaired",
+                          from_value=previous, to_value=resolved,
+                          note=(f"Blog source repointed to the real Hugo content "
+                                f"directory {resolved}; history preserved."))
+            logger.info("Repaired blog source path %s -> %s", previous, resolved)
+        session.flush()
+        return outcome
+    # No seeded source: create one only when a real directory exists.
+    if resolved is None:
+        return outcome
+    session.add(CultivationSource(
+        id=BLOG_SOURCE_ID, name="programmer.ie posts", kind="hugo_blog",
+        skill_id="blog-posts" if session.get(CultivationSkill, "blog-posts") else None,
+        goal_id=BLOG_LIFETIME_GOAL_ID, path=resolved,
+        config={"period_goal_id": BLOG_WEEK_GOAL_ID},
+        last_status="never_synced", created_at=now_iso(), updated_at=now_iso()))
+    session.flush()
+    outcome["created"] = True
+    outcome["repaired"] = True
+    logger.info("Created blog source at %s", resolved)
+    return outcome
+
+
+def _reconcile_period_measurements(session: Session, source: CultivationSource, scan: Any) -> int:
+    """Retract current-week period measurements for posts no longer published.
+
+    Past weeks stay as observed history; only measurements dated inside the
+    current Europe/Dublin week whose post is no longer qualifying are removed,
+    so a published→draft change is reflected in current weekly progress while
+    older backdated posts are never awarded for the current week.
+    """
+    from zoneinfo import ZoneInfo
+
+    config = source.config if isinstance(source.config, dict) else {}
+    period_goal_id = config.get("period_goal_id")
+    if not period_goal_id:
+        return 0
+    goal = session.get(CultivationGoal, str(period_goal_id))
+    if goal is None:
+        return 0
+    from mission_control.cultivation.sources import dublin_week_range
+
+    week_start, week_end = dublin_week_range()
+    try:
+        dublin = ZoneInfo(DUBLIN_TZ)
+    except Exception:
+        dublin = timezone.utc  # type: ignore[assignment]
+    published = {post.relpath for post in scan.posts if post.state == "published"}
+    marker = f"sync:{source.id}"
+    removed = 0
+    rows = session.scalars(select(CultivationMeasurement).where(
+        CultivationMeasurement.goal_id == goal.id,
+        CultivationMeasurement.source == marker)).all()
+    for measurement in rows:
+        try:
+            observed = datetime.fromisoformat(
+                (measurement.observed_at or "").replace("Z", "+00:00"))
+        except ValueError:
+            continue
+        if observed.tzinfo is None:
+            observed = observed.replace(tzinfo=timezone.utc)
+        if not (week_start <= observed.astimezone(dublin) <= week_end):
+            continue
+        note = measurement.note or ""
+        relpath = note.split(":", 1)[1].strip().rstrip(".") if ":" in note else ""
+        if relpath and relpath not in published:
+            session.delete(measurement)
+            removed += 1
+    if removed:
+        session.flush()
+        _record_event(session, goal_id=goal.id, event_type="correction",
+                      note=(f"Retracted {removed} current-week publication(s) no longer "
+                            f"observed as published by '{source.name}'. History for past "
+                            f"weeks is preserved."))
+    return removed
 
 
 def _sync_numbered_files(session: Session, source: CultivationSource) -> dict[str, Any]:

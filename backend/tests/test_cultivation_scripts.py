@@ -246,8 +246,11 @@ def test_git_add_dates_preferred_over_mtime(client: TestClient, tmp_path: Path) 
             "--date=2020-01-05T00:00:00+00:00")
     (root / "Script002.md").write_text("# New.\n", encoding="utf-8")
     run_git("-c", "user.email=t@t", "-c", "user.name=t", "add", "Script002.md")
+    # The recent commit stays inside the 7-day window whenever the test runs;
+    # the 2020 commit stays outside it by design.
+    recent = (datetime.now(timezone.utc) - timedelta(days=2)).strftime("%Y-%m-%dT%H:%M:%S+00:00")
     run_git("-c", "user.email=t@t", "-c", "user.name=t", "commit", "-m", "second",
-            "--date=2026-11-08T00:00:00+00:00")
+            f"--date={recent}")
     # All mtimes are now: mtime dating alone would put both scripts in-window.
     now = time.time()
     os.utime(root / "Script001.md", (now, now))

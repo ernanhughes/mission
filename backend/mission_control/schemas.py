@@ -360,6 +360,36 @@ class BookDetectionRead(BaseModel):
     count: int
 
 
+class WebsiteRead(BaseModel):
+    id: str
+    name: str
+    path: str
+    is_hugo: bool
+    site_type: str
+    evidence: list[str] = []
+    hugo_config: str | None = None
+    content_section: str | None = None
+    title: str | None = None
+    available: bool = True
+    launch_supported: bool = False
+    hugo_available: bool = False
+    running: bool = False
+    preview_url: str | None = None
+    port: int | None = None
+    process_id: str | None = None
+
+
+class WebsiteLaunchRead(BaseModel):
+    id: str
+    name: str
+    path: str
+    url: str
+    port: int
+    process_id: str | None = None
+    reused: bool = False
+    detail: str | None = None
+
+
 class BookUpdate(RawModel):
     title: str | None = Field(default=None, min_length=1, max_length=200)
     status: BookStatus | None = None
