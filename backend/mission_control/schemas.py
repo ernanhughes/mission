@@ -2843,7 +2843,11 @@ class WriterAuditRequest(RawModel):
 
 class WorkflowCreate(RawModel):
     record_id: str | None = Field(default=None, max_length=200)
-    template: Literal["trace_reduce_v1", "brightness_observation_v1"] = "trace_reduce_v1"
+    template: Literal[
+        "trace_reduce_v1",
+        "brightness_observation_v1",
+        "writer_quantity_units_v1",
+    ] = "trace_reduce_v1"
     project_id: str | None = None
     force_new: bool = False
     worker_backend: Literal["opencode-work", "direct", "opencode"] | None = None

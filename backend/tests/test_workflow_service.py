@@ -17,6 +17,7 @@ from mission_control.persistence.migrations import apply_migrations
 from mission_control.persistence.seed import seed_defaults
 from mission_control.workflows.sandbox import SandboxResult
 from mission_control.workflows.service import WorkerRequestError, WorkflowService
+from mission_control.workflows.templates import get_template
 
 CORRECT_CODE = '''def reduce_trace(events):
     if not events:
@@ -1082,3 +1083,17 @@ def test_worker_success_rejects_paths_outside_the_workspace(
             )
     finally:
         database.dispose()
+
+def test_writer_full_file_with_module_docstring_is_not_truncated() -> None:
+    spec = get_template("writer_quantity_units_v1")
+    assert spec.required_functions == (
+        "normalize_quantity_unit",
+        "quantity_unit_token",
+    )
+    content = '''"""Quantity units."""\n\nNON_UNIT_WORDS = frozenset({"has"})\n\ndef normalize_quantity_unit(unit):\n    return unit\n\ndef quantity_unit_token(value, unit):\n    normalized = normalize_quantity_unit(unit)\n    return None if normalized is None else f"{value} {normalized}"\n'''
+    service = WorkflowService.__new__(WorkflowService)
+    patch = service._parse_patch(content, spec)
+    parsed = patch["files"][0]["content"]
+    assert "NON_UNIT_WORDS" in parsed
+    assert "normalize_quantity_unit" in parsed
+    assert "quantity_unit_token" in parsed

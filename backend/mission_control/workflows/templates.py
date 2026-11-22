@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from typing import Any
 
 
 @dataclass(frozen=True, slots=True)
@@ -20,6 +21,9 @@ class TemplateSpec:
     success_key: str
     expected_result: str
     worker_algorithm: tuple[str, ...]
+    test_command: tuple[str, ...] | None = None
+    required_functions: tuple[str, ...] = ()
+    worker_parameters: dict[str, Any] = field(default_factory=dict)
     allow_read_only_open: bool = False
     baseline_tag: str = "mc11-baseline"
     stop_conditions: tuple[str, ...] = field(
@@ -95,6 +99,64 @@ TEMPLATES: dict[str, TemplateSpec] = {
         ),
         allow_read_only_open=True,
         baseline_tag="mc11-brightness-baseline",
+    ),
+    "writer_quantity_units_v1": TemplateSpec(
+        id="writer_quantity_units_v1",
+        version="1.0",
+        title="Writer semantic-loss quantity-unit normalization",
+        source_kind="local_repo",
+        source_contract="mission.local-repo.v1",
+        sandbox_relative="experiments/writer-semantic-loss",
+        scope=(
+            "packages/writer-runtime/writer_runtime/domains/artifact/"
+            "artifact_engine/revision/quantity_units.py",
+        ),
+        entrypoint="quantity_unit_token",
+        tests_path=(
+            "tests/runtime/artifact/test_semantic_loss_quantity_units.py"
+        ),
+        measure_command=(
+            "python",
+            "-c",
+            "import json,subprocess,sys;"
+            "cmd=[sys.executable,'-m','pytest','--noconftest',"
+            "'tests/runtime/artifact/test_semantic_loss_quantity_units.py',"
+            "'-q','-p','no:cacheprovider'];"
+            "r=subprocess.run(cmd,capture_output=True,text=True);"
+            "print(json.dumps({'meets_target': r.returncode==0,"
+            "'exit_code': r.returncode,"
+            "'tail': (r.stdout+r.stderr)[-4000:]}));"
+            "sys.exit(r.returncode)",
+        ),
+        test_command=(
+            "python",
+            "-m",
+            "pytest",
+            "--noconftest",
+            "tests/runtime/artifact/test_semantic_loss_quantity_units.py",
+            "-q",
+            "-p",
+            "no:cacheprovider",
+        ),
+        success_key="meets_target",
+        expected_result=(
+            "The quantity-unit regression tests pass: plural/hyphenated units "
+            "compare equal, prose words after numbers are not units, and real "
+            "unit changes remain distinct."
+        ),
+        worker_algorithm=(
+            "read the helper and the regression tests",
+            "lowercase units before comparison",
+            "singularize plain plural unit words such as bits, seconds, tokens, units and logits",
+            "leave known short abbreviations and symbols unchanged",
+            "return None for common prose words and verbs such as has, is, are, apart, and, in, matched",
+            "preserve genuinely different units such as bits versus tokens",
+            "do not add imports or change the public function signatures",
+            "return the complete file including the module docstring, NON_UNIT_WORDS, _SINGULAR_EXCEPTIONS, normalize_quantity_unit and quantity_unit_token; do not return only one function",
+        ),
+        required_functions=("normalize_quantity_unit", "quantity_unit_token"),
+        worker_parameters={"reasoning_effort": "low", "temperature": 0},
+        baseline_tag="mission01-writer-baseline",
     ),
 }
 

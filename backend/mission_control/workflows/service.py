@@ -215,6 +215,8 @@ class WorkflowService:
         }
         if policy:
             worker_contract["policy"] = policy
+        if spec.worker_parameters:
+            worker_contract.update(dict(spec.worker_parameters))
         if backend == OPENCODE_WORK_BACKEND:
             worker_contract.update(
                 {
@@ -488,6 +490,13 @@ class WorkflowService:
                 },
             }
             if backend == OPENCODE_WORK_BACKEND:
+                # Work objective identity is short; the full prompt is a model
+                # input, matching Writer's long-prompt bridge.
+                request["objective"] = str(
+                    proposal.get("objective")
+                    or f"Execute the bounded {spec.title} experiment."
+                )
+                request["inputs"] = {"model_prompt": prompt}
                 response_artifact = str(
                     worker.get("response_artifact_path")
                     or WORKER_RESPONSE_ARTIFACT
@@ -505,8 +514,13 @@ class WorkflowService:
                 request["parameters"] = {
                     "data_policy": str(worker.get("data_policy") or "private"),
                     "response_artifact_path": response_artifact,
-                    "temperature": 0,
+                    "ledger_dir": f".opencode/vfs/{workflow.id}",
+                    "temperature": float(worker.get("temperature") or 0),
                 }
+                if worker.get("reasoning_effort"):
+                    request["parameters"]["reasoning_effort"] = str(
+                        worker["reasoning_effort"]
+                    )
                 request["success"] = success
                 request["options"] = {"acceptance": "automatic"}
             else:
@@ -1350,6 +1364,41 @@ class WorkflowService:
                 },
                 "candidate": candidate,
             }
+        if spec.source_kind == "local_repo":
+            repository = self._sandbox_path(spec)
+            return {
+                "source_id": f"{spec.id}:{repository.name}",
+                "title": spec.title,
+                "record_id": None,
+                "project_id": None,
+                "source_kind": "local_repo",
+                "evidence": {
+                    "schema": spec.source_contract,
+                    "source_kind": "local_repo",
+                    "generated_at": now_iso(),
+                    "export_path": str(repository),
+                    "opportunity": {
+                        "id": f"{spec.id}:{repository.name}",
+                        "title": spec.title,
+                        "status": "LOCAL_REPO",
+                        "queue_type": "local_repo",
+                        "what_discovered": spec.expected_result,
+                        "simplest_experiment": spec.expected_result,
+                        "falsification": "The declared regression tests do not pass.",
+                        "evaluation_basis": "isolated local repository tests",
+                    },
+                },
+                "candidate": {
+                    "id": f"{spec.id}:{repository.name}",
+                    "title": spec.title,
+                    "status": "LOCAL_REPO",
+                    "queue_type": "local_repo",
+                    "what_discovered": spec.expected_result,
+                    "simplest_experiment": spec.expected_result,
+                    "falsification": "The declared regression tests do not pass.",
+                    "evaluation_basis": "isolated local repository tests",
+                },
+            }
         repository = self._sandbox_path(spec)
         evidence_path = repository / "evidence.json"
         if not evidence_path.is_file():
@@ -1441,7 +1490,7 @@ class WorkflowService:
     def _require_repository(self, repository: Path) -> None:
         if not repository.is_dir():
             raise ValidationProblem(f"Experiment repository not found: {repository}")
-        if not (repository / ".git").is_dir():
+        if not (repository / ".git").exists():
             raise ValidationProblem(f"Experiment repository is not a Git repository: {repository}")
         if self._git(repository, "status", "--porcelain").strip():
             raise Conflict("Experiment repository must be clean before creating a workflow")
@@ -1494,8 +1543,8 @@ class WorkflowService:
         tests = (repository / spec.tests_path).read_text(encoding="utf-8")
         try:
             baseline = {
-                "tests": self._run_tests(repository),
-                "measurement": self._run_measure(repository),
+                "tests": self._run_tests(repository, spec),
+                "measurement": self._run_measure(repository, spec),
                 "scope_sha256": baseline_hash,
             }
         except SandboxUnavailable as exc:
@@ -1547,7 +1596,7 @@ class WorkflowService:
         return f"""You are executing a bounded experiment from the {spec.title} template.
 Source evidence: {str(candidate.get('title') or spec.title)[:300]}
 
-Return ONLY the complete Python file content for {spec.scope[0]}. Do not use markdown fences. Do not add commentary.
+Return ONLY the complete Python file content for {spec.scope[0]}. The output must be the complete replacement file, not a fragment, diff, or single function. Do not use markdown fences. Do not add commentary.
 
 Rules:
 - Modify only {spec.scope[0]}.
@@ -1645,7 +1694,7 @@ Tests:
         repository = Path(workflow.repository_path)
         if not repository.is_dir():
             raise ValidationProblem(f"Experiment repository not found: {repository}")
-        if not (repository / ".git").is_dir():
+        if not (repository / ".git").exists():
             raise ValidationProblem(
                 f"Experiment repository is not a Git repository: {repository}"
             )
@@ -1910,9 +1959,6 @@ Tests:
             text = re.sub(r"\s*```$", "", text).strip()
         if not text:
             raise ValueError("Worker output was empty")
-        entrypoint = f"def {spec.entrypoint}"
-        if entrypoint in text and not text.lstrip().startswith(("def ", "{")):
-            text = text[text.find(entrypoint) :].strip()
         if text.startswith("{") and PATCH_SCHEMA in text:
             start, end = text.find("{"), text.rfind("}")
             if start < 0 or end <= start:
@@ -1933,6 +1979,17 @@ Tests:
             if not isinstance(item.get("content"), str) or not item["content"].strip():
                 raise ValueError("Patch content is empty")
             return payload
+        # A full Python file may begin with a module docstring or comments. Do
+        # not strip that prefix merely because it contains the entrypoint.
+        try:
+            ast.parse(text)
+            complete_file = True
+        except SyntaxError:
+            complete_file = False
+        if not complete_file:
+            entrypoint = f"def {spec.entrypoint}"
+            if entrypoint in text:
+                text = text[text.find(entrypoint) :].strip()
         # Worker's direct executor often returns a complete code file. The
         # approved scope already fixes the destination path, so no model-chosen
         # path is needed or trusted.
@@ -1967,12 +2024,16 @@ Tests:
                         raise ValueError(
                             f"Generated Python calls forbidden function: {node.func.id}"
                         )
-        if not any(
-            isinstance(node, ast.FunctionDef) and node.name == spec.entrypoint
+        required = {spec.entrypoint, *spec.required_functions}
+        defined = {
+            node.name
             for node in tree.body
-        ):
+            if isinstance(node, ast.FunctionDef)
+        }
+        missing = sorted(required - defined)
+        if missing:
             raise ValueError(
-                f"Generated Python must define {spec.entrypoint}"
+                "Generated Python must define " + ", ".join(missing)
             )
 
     def _apply_patch(
@@ -1993,14 +2054,18 @@ Tests:
                 f"Repository changed outside approved scope: {sorted(changed)}"
             )
 
-    def _run_tests(self, repository: Path) -> dict[str, Any]:
+    def _run_tests(self, repository: Path, spec: TemplateSpec) -> dict[str, Any]:
+        command = list(
+            spec.test_command
+            or ("python", "-m", "pytest", "-q", "-p", "no:cacheprovider")
+        )
         result = self.sandbox.run(
             repository,
-            ["python", "-m", "pytest", "-q", "-p", "no:cacheprovider"],
+            command,
             timeout_seconds=90,
         )
         return {
-            "command": "python -m pytest -q -p no:cacheprovider",
+            "command": " ".join(command),
             "exit_code": result.exit_code,
             "passed": result.exit_code == 0 and not result.timed_out,
             "output_tail": (result.stdout + result.stderr)[-4000:],
@@ -2008,11 +2073,12 @@ Tests:
             "duration_seconds": result.duration_seconds,
         }
 
-    def _run_measure(self, repository: Path) -> dict[str, Any]:
+    def _run_measure(self, repository: Path, spec: TemplateSpec) -> dict[str, Any]:
+        command = list(spec.measure_command)
         result = self.sandbox.run(
             repository,
-            ["python", "scripts/measure.py"],
-            timeout_seconds=60,
+            command,
+            timeout_seconds=90,
         )
         measurement: dict[str, Any] = {}
         for line in (result.stdout or "").splitlines():
@@ -2023,7 +2089,7 @@ Tests:
             except ValueError:
                 continue
         return {
-            "command": "python scripts/measure.py",
+            "command": " ".join(command),
             "exit_code": result.exit_code,
             "passed": result.exit_code == 0 and not result.timed_out,
             "metrics": measurement,
@@ -2040,8 +2106,8 @@ Tests:
         baseline: dict[str, Any],
         workflow: ExperimentWorkflow,
     ) -> dict[str, Any]:
-        tests = self._run_tests(repository)
-        after = self._run_measure(repository)
+        tests = self._run_tests(repository, spec)
+        after = self._run_measure(repository, spec)
         baseline_measurement = (baseline.get("measurement") or {}).get("metrics") or {}
         after_metrics = after.get("metrics") or {}
         passed = bool(
@@ -2056,6 +2122,11 @@ Tests:
                 "after_events": after_metrics.get("baseline_events"),
                 "after_reduced_events": after_metrics.get("reduced_events"),
                 "after_reduction_ratio": after_metrics.get("reduction_ratio"),
+            }
+        elif spec.id == "writer_quantity_units_v1":
+            comparison = {
+                "meets_target": after_metrics.get("meets_target"),
+                "exit_code": after_metrics.get("exit_code"),
             }
         else:
             comparison = {
@@ -2107,6 +2178,20 @@ Tests:
             ]
             uncertainty = [
                 "Proxy trace fixture only; this does not establish general agent performance.",
+            ]
+        elif spec.id == "writer_quantity_units_v1":
+            passed = bool(metrics.get("meets_target"))
+            properties = [
+                {
+                    "id": "quantity_unit_regression_tests",
+                    "expected": "pass",
+                    "observed": "pass" if passed else "fail",
+                    "difference": None,
+                    "within_constraint": passed,
+                }
+            ]
+            uncertainty = [
+                "Isolated quantity-unit regression only; full Writer integration is verified separately.",
             ]
         else:
             expected = metrics.get("expected_means") or []
