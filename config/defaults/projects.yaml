@@ -84,11 +84,3 @@ projects:
         evidence:
           - README.md describes the evidence-first mathematics framework.
           - artifacts/math01/report.json is a structured qualification report.
-      - path: 'C:\Projects\math-r1'
-        name: math-r1
-        classification: experiment
-        confidence: 0.82
-        role: supporting_experiment
-        evidence:
-          - Shares the MATH01 README and pyproject shape with the primary repository.
-          - Treated as a supporting experiment rather than a duplicate application.

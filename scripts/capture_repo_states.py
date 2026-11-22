@@ -19,7 +19,6 @@ TARGETS = [
     r"C:\Projects\language",
     r"C:\Projects\project-language",
     r"C:\books\math",
-    r"C:\Projects\math-r1",
     r"C:\books\inference",
     r"C:\Projects\mission",
 ]

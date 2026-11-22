@@ -129,6 +129,26 @@ def create_app(runtime: RuntimeSettings | None = None) -> FastAPI:
             seed_defaults(session, settings)
         try:
             with database.session() as session:
+                try:
+                    from mission_control.writer_registry import (
+                        resolve_registry_path,
+                        sync_writer_books,
+                    )
+
+                    _writer_snapshot_path = resolve_registry_path(settings)
+                    if _writer_snapshot_path.exists():
+                        _writer_summary = sync_writer_books(
+                            session, _writer_snapshot_path, create_missing=False
+                        )
+                        if _writer_summary.get("updated"):
+                            logger.info(
+                                "Writer registry repair: %s",
+                                ", ".join(_writer_summary["updated"][:10]),
+                            )
+                except Exception:
+                    logger.exception(
+                        "Writer registry sync failed; existing workspaces remain available"
+                    )
                 detected = sync_detected_books(session, [settings.book_root])
                 if detected:
                     logger.info("Detected %s book workspaces", len(detected))

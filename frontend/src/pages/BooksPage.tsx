@@ -28,6 +28,81 @@ import {
 import { formatDateTime, timeAgo } from "../lib/format";
 import type { Book } from "../types/api";
 
+interface WriterSource {
+  registry_source: string | null;
+  resolved_chapter_dir: string | null;
+  chapter_count: number | null;
+  writer_integration_status: string;
+  publication_status: string | null;
+  profile: string | null;
+  manuscript: string | null;
+  available: boolean;
+  writer_registered: boolean;
+  configuration_error: string | null;
+  manuscript_paths: string[];
+}
+
+function WriterSourcePanel({ book, onRefreshed }: { book: Book; onRefreshed: () => void }) {
+  const source = useApi<WriterSource>(`/api/books/${book.id}/source`);
+  const toast = useToast();
+  const [refreshing, setRefreshing] = useState(false);
+
+  async function refresh() {
+    setRefreshing(true);
+    try {
+      await api.post("/api/books/writer-sync", { create_missing: false });
+      toast.push("success", "Book source refreshed from Writer registry");
+      source.reload();
+      onRefreshed();
+    } catch (caught) {
+      toast.push("error", "Could not refresh book source", errorMessage(caught));
+    } finally {
+      setRefreshing(false);
+    }
+  }
+
+  const data = source.data;
+  return (
+    <section className="panel">
+      <span className="eyebrow">Writer source</span>
+      <h3>Registry diagnostics</h3>
+      {source.loading && !data ? (
+        <p className="muted small">Reading Writer registry…</p>
+      ) : data ? (
+        <dl className="kv-list">
+          <KeyValue label="Registry">{data.registry_source ?? "Not configured"}</KeyValue>
+          <KeyValue label="Chapter directory">
+            {data.resolved_chapter_dir ?? <span className="muted">Not registered</span>}
+          </KeyValue>
+          <KeyValue label="Chapters">
+            {data.chapter_count ?? "—"}
+            {data.available ? "" : " (unavailable)"}
+          </KeyValue>
+          <KeyValue label="Writer status">{data.writer_integration_status.replace(/_/g, " ")}</KeyValue>
+          <KeyValue label="Lifecycle">{data.publication_status ?? "—"}</KeyValue>
+          {data.configuration_error ? (
+            <KeyValue label="Configuration error">
+              <span className="resume-blocker">{data.configuration_error}</span>
+            </KeyValue>
+          ) : null}
+        </dl>
+      ) : (
+        <InlineError message={source.error?.message ?? "Source diagnostics unavailable"} />
+      )}
+      <div className="form-actions">
+        <button
+          className="button button-secondary button-small"
+          type="button"
+          disabled={refreshing}
+          onClick={() => void refresh()}
+        >
+          <RefreshCw size={14} /> {refreshing ? "Refreshing…" : "Refresh book"}
+        </button>
+      </div>
+    </section>
+  );
+}
+
 const bookStatuses = [
   "planned",
   "drafting",
@@ -235,6 +310,8 @@ function BookEditor({ book, onSaved }: { book: Book; onSaved: () => void }) {
               </KeyValue>
             </dl>
           </section>
+
+          <WriterSourcePanel book={book} onRefreshed={onSaved} />
 
           <section className="panel publishing-panel">
             <span className="eyebrow">Publishing</span>

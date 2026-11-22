@@ -65,6 +65,19 @@ def list_publication_assessments(
     return [_read(session, r) for r in session.scalars(stmt).all()]
 
 
+@router.get("/publishing")
+def get_publishing_summary(
+    project_id: str = Query(...),
+    request: Request = None,  # type: ignore[assignment]
+    session: Session = Depends(get_session),
+) -> dict:
+    """Read-only publishing evidence summary. Never validates, builds or publishes."""
+    from mission_control.publication import publishing as _publishing
+
+    settings = request.app.state.settings if request is not None else None
+    return _publishing.get_publishing_summary(session, settings, project_id)
+
+
 @router.get("/assessments/{assessment_id}", response_model=PublicationAssessmentRead)
 def get_publication_assessment(
     assessment_id: str, session: Session = Depends(get_session)

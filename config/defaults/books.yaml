@@ -40,7 +40,6 @@ books:
       - 'C:\books\math\artifacts\math01\report.json'
     implementation_paths:
       - 'C:\books\math\src\math_engine'
-      - 'C:\Projects\math-r1'
     published_url: null
     local_url: null
     quality_review_state: pending

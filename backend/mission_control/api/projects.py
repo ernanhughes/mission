@@ -279,6 +279,254 @@ def detect_fiction_book_workspaces(
     return BookDetectionRead(created=created, count=len(created))
 
 
+# ------------------------------------------- writer registry integration
+@router.get("/books/writer-registry")
+def writer_registry_status(
+    request: Request, session: Session = Depends(get_session)
+) -> dict:
+    """Read-only view of Writer's authoritative book registry."""
+    from mission_control.discovery.books import detect_books, detect_fiction_books
+    from mission_control.writer_registry import (
+        load_writer_registry,
+        resolve_registry_path,
+    )
+    from mission_control.writer_registry.sync import classify_discovery
+
+    settings = request.app.state.settings
+    snapshot = load_writer_registry(resolve_registry_path(settings))
+    books = []
+    for project_id in sorted(snapshot.books):
+        definition = snapshot.books[project_id]
+        books.append(
+            {
+                "project_id": definition.project_id,
+                "title": definition.title,
+                "chapter_dir": str(definition.chapter_dir),
+                "chapter_pattern": definition.chapter_pattern,
+                "manuscript": definition.manuscript,
+                "profile": definition.profile,
+                "publication_status": definition.publication_status,
+                "preview_route": definition.preview_route,
+                "available": definition.available,
+                "chapter_count": definition.chapter_count,
+                "error": definition.error,
+            }
+        )
+    try:
+        detected_technical = detect_books([settings.book_root])
+    except OSError:
+        detected_technical = []
+    try:
+        detected_fiction = detect_fiction_books([settings.fiction_book_root])
+    except OSError:
+        detected_fiction = []
+    try:
+        discovery = classify_discovery(
+            detected_technical=detected_technical,
+            detected_fiction=detected_fiction,
+            snapshot=snapshot,
+            session=session,
+        )
+    except Exception:
+        discovery = {
+            "registered_available": [],
+            "registered_unavailable": [],
+            "discovered_unregistered": [],
+            "ambiguous_or_conflicting": [],
+            "registry_errors": snapshot.errors,
+        }
+    return {
+        "registry": str(snapshot.source_path) if snapshot.source_path else None,
+        "mtime_ns": snapshot.mtime_ns,
+        "books": books,
+        "count": len(books),
+        "errors": snapshot.errors,
+        "skipped_non_book": snapshot.skipped_non_book,
+        "discovery": discovery,
+    }
+
+
+@router.post("/books/writer-sync")
+def writer_registry_sync(
+    request: Request,
+    session: Session = Depends(get_session),
+    payload: dict | None = None,
+) -> dict:
+    """Synchronise Mission books with Writer's registry (repairs chapter dirs).
+
+    Writer owns manuscript location; Mission planning state is preserved.
+    """
+    from mission_control.writer_registry import (
+        load_writer_registry,
+        resolve_registry_path,
+        sync_writer_books,
+    )
+
+    body = payload or {}
+    create_missing = bool(body.get("create_missing", True))
+    snapshot = load_writer_registry(resolve_registry_path(request.app.state.settings))
+    summary = sync_writer_books(session, snapshot, create_missing=create_missing)
+    return summary
+
+
+# ------------------------------------------------- canonical book identity
+@router.get("/books/identity-conflicts")
+def identity_conflicts(
+    request: Request, session: Session = Depends(get_session)
+) -> dict:
+    """Read-only identity reconciliation report: candidates, conflicts, unavailable."""
+    from mission_control.publication.identity import list_identity_conflicts
+    from mission_control.writer_registry import load_writer_registry, resolve_registry_path
+
+    snapshot = load_writer_registry(resolve_registry_path(request.app.state.settings))
+    writer_ids = set(snapshot.books)
+    writer_available = {pid: bool(defn.available) for pid, defn in snapshot.books.items()}
+    report = list_identity_conflicts(session, writer_ids, writer_available)
+    return {
+        "registry": str(snapshot.source_path) if snapshot.source_path else None,
+        "errors": snapshot.errors,
+        **report,
+    }
+
+
+@router.get("/books/{book_id}/identity")
+def book_identity_route(
+    book_id: str, request: Request, session: Session = Depends(get_session)
+) -> dict:
+    """Canonical identity, aliases and locations for one book. Read-only."""
+    from sqlalchemy import select as _select
+
+    from mission_control.models import Book as _Book
+    from mission_control.publication.identity import get_aliases, identity_status
+    from mission_control.writer_registry import (
+        book_source_diagnostic,
+        load_writer_registry,
+        resolve_registry_path,
+    )
+
+    row = session.get(_Book, book_id)
+    if row is None:
+        row = session.scalar(_select(_Book).where(_Book.project_id == book_id))
+    project_id = row.project_id if row is not None else book_id
+    snapshot = load_writer_registry(resolve_registry_path(request.app.state.settings))
+    writer_ids = set(snapshot.books)
+    writer_available = {pid: bool(defn.available) for pid, defn in snapshot.books.items()}
+    status = identity_status(session, project_id, writer_ids, writer_available)
+    diagnostic = book_source_diagnostic(session, project_id, snapshot)
+    aliases = [
+        entry for entry in get_aliases(session)
+        if entry.get("canonical_project_id") == project_id
+    ]
+    definition = snapshot.books.get(status.get("writer_id") or project_id)
+    locations: list[dict[str, str]] = []
+    if diagnostic.get("resolved_chapter_dir"):
+        locations.append({
+            "location_type": "manuscript_root",
+            "source_system": "writer" if diagnostic.get("writer_registered") else "mission",
+            "location": str(diagnostic["resolved_chapter_dir"]),
+            "availability": "available" if diagnostic.get("available") else "unavailable",
+        })
+    for extra in diagnostic.get("manuscript_paths", [])[1:]:
+        locations.append({
+            "location_type": "manuscript_root",
+            "source_system": "mission",
+            "location": str(extra),
+            "availability": "unknown",
+        })
+    return {
+        "project_id": project_id,
+        "book_id": row.id if row is not None else None,
+        "canonical_id": project_id,
+        "display_title": diagnostic.get("book_title"),
+        "identity_state": status.get("state"),
+        "identity_reason": status.get("reason"),
+        "writer_project_id": status.get("writer_id"),
+        "candidates": status.get("candidates", []),
+        "aliases": aliases,
+        "locations": locations,
+        "lifecycle": diagnostic.get("publication_status"),
+    }
+
+
+@router.post("/books/aliases", status_code=201)
+def create_book_alias(
+    request: Request, session: Session = Depends(get_session), payload: dict | None = None
+) -> dict:
+    """Persist an explicit identity alias. Requires explicit author confirmation.
+
+    Body: {canonical_project_id, system, external_id, source_reference?, confirm}.
+    Nothing is inferred; conflicts and fabricated Writer ids fail closed.
+    """
+    from mission_control.publication.identity import save_alias
+    from mission_control.writer_registry import load_writer_registry, resolve_registry_path
+
+    body = payload or {}
+    if body.get("confirm") is not True:
+        from fastapi import HTTPException
+
+        raise HTTPException(
+            status_code=422,
+            detail="Alias registration requires explicit confirmation (confirm: true).",
+        )
+    snapshot = load_writer_registry(resolve_registry_path(request.app.state.settings))
+    try:
+        entry = save_alias(
+            session,
+            canonical_project_id=str(body.get("canonical_project_id") or ""),
+            system=str(body.get("system") or ""),
+            external_id=str(body.get("external_id") or ""),
+            source_reference=str(body.get("source_reference") or ""),
+            known_writer_ids=set(snapshot.books),
+        )
+    except ValueError as exc:
+        from fastapi import HTTPException
+
+        raise HTTPException(status_code=422, detail=str(exc)) from None
+    session.flush()
+    return entry
+
+
+@router.delete("/books/aliases")
+def remove_book_alias(
+    request: Request, session: Session = Depends(get_session), payload: dict | None = None
+) -> dict:
+    """Remove an explicit identity alias (author action; history is untouched)."""
+    from mission_control.publication.identity import delete_alias
+
+    body = payload or {}
+    removed = delete_alias(
+        session, system=str(body.get("system") or ""), external_id=str(body.get("external_id") or "")
+    )
+    session.flush()
+    return {"removed": removed}
+
+
+@router.get("/books/{book_id}/source")
+def book_source_diagnostic_route(
+    book_id: str, request: Request, session: Session = Depends(get_session)
+) -> dict:
+    """Per-book source diagnostics for the Book workspace UI."""
+    from sqlalchemy import select as _select
+
+    from mission_control.models import Book as _Book
+    from mission_control.writer_registry import (
+        book_source_diagnostic,
+        load_writer_registry,
+        resolve_registry_path,
+    )
+
+    project_id = book_id
+    row = session.get(_Book, book_id)
+    if row is None:
+        row = session.scalar(_select(_Book).where(_Book.project_id == book_id))
+    else:
+        project_id = row.project_id
+    if row is not None:
+        project_id = row.project_id
+    snapshot = load_writer_registry(resolve_registry_path(request.app.state.settings))
+    return book_source_diagnostic(session, project_id, snapshot)
+
+
 @router.post("/fiction-books/reorder", response_model=OkResponse)
 def reorder_fiction_books_route(
     payload: ReorderRequest, session: Session = Depends(get_session)

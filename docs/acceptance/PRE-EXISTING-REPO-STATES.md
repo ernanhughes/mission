@@ -26,6 +26,6 @@ snapshot for comparison.
 | `C:\Projects\language` | main | `481ebf2` | 66 | no (pre-existing) |
 | `C:\Projects\project-language` | main | `b6b1f0f` | 104 | no (pre-existing) |
 | `C:\books\math` | codex/math01-r2 | `4ffde03` | 4 | no (pre-existing) |
-| `C:\Projects\math-r1` | codex/math01-r1 | `84be8cb` | 2 | no (pre-existing) |
+| `C:\books\math` | codex/math01-r1 | `84be8cb` | 2 | no (pre-existing) |
 | `C:\books\inference` | main | `c39d81e` | 112 | no (pre-existing) |
 | `C:\Projects\mission` | main | `4ee569d` | 5 | no (this implementation) |
