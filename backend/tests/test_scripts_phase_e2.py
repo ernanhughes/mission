@@ -194,7 +194,10 @@ def test_batch_rejects_concurrent_and_requires_consent(client: TestClient, tmp_p
     assert first.status_code == 201, first.text
     second = client.post("/api/scripts/batches", json={"scope": "all"})
     assert second.status_code == 409
-    # Consent disabled: stepping fails items without any model call.
+    # Consent disabled: stepping fails items without any model call. Pin the
+    # denied state explicitly — seed defaults ship AI-on.
+    revoked = client.patch("/api/settings", json={"ai": {"enabled": False, "consent": False}})
+    assert revoked.status_code == 200, revoked.text
     batch_id = first.json()["id"]
     stepped = client.post(f"/api/scripts/batches/{batch_id}/step", json={"limit": 5}).json()
     assert stepped["counts"]["failed"] == 2

@@ -6,9 +6,6 @@ from mission_control.research import pi_backend as pi
 
 
 def test_resolver_explicit_task_model_wins(monkeypatch):
-    class S:
-        pass
-    s = S()
     # stub read_config to avoid DB
     monkeypatch.setattr(inference, "read_config", lambda session: inference.LocalModelConfig(
         enabled=True, consent=True, base_url="http://127.0.0.1:11434", model="local-model",
@@ -43,8 +40,18 @@ def test_pi_error_kinds_no_silent_switch():
 
 
 def test_pi_command_uses_path_lookup_not_ps1_direct(monkeypatch):
+    import os
     import shutil
     monkeypatch.delenv("MISSION_PI", raising=False)
     monkeypatch.delenv("WORKBENCH_PI", raising=False)
-    monkeypatch.setattr(shutil, "which", lambda name: r"C:\Users\ernan\.pi\agent\bin\pi.cmd")
+    monkeypatch.setattr(shutil, "which", lambda name: r"C:\Program Files\nodejs\node.EXE" if name == "node" else r"C:\Users\ernan\.pi\agent\bin\pi.cmd")
+    # Direct node launcher avoids the cmd.exe/PowerShell re-quoting that
+    # mangles JSON prompts (WinError 206 / "system cannot find the file").
+    monkeypatch.setattr(os.path, "isfile", lambda path: True)
+    assert pi.resolve_pi_command() == [
+        r"C:\Program Files\nodejs\node.EXE",
+        r"C:\Users\ernan\.pi\agent\bin\pi-launcher.js",
+    ]
+    # Falls back to the wrapper when no launcher sits next to it.
+    monkeypatch.setattr(os.path, "isfile", lambda path: False)
     assert pi.resolve_pi_command() == [r"C:\Users\ernan\.pi\agent\bin\pi.cmd"]

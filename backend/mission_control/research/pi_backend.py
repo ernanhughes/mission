@@ -47,13 +47,45 @@ def classify_pi_error(text: str) -> str | None:
 
 
 def resolve_pi_command() -> list[str]:
+    """Prefer a direct node launcher call (no cmd/PowerShell re-quoting).
+
+    The Windows ``pi.cmd`` wrapper routes through ``cmd.exe`` (8191-char
+    limit) and ``powershell -File``; JSON prompts with quotes/backslashes
+    get mangled there (WinError 206 surfaces as FileNotFoundError, or Pi
+    reports "system cannot find the file specified"). Calling
+    ``pi-launcher.js`` via node directly avoids both shells and raises the
+    practical limit to CreateProcess bounds (~32k).
+    """
     explicit = os.environ.get("MISSION_PI") or os.environ.get("WORKBENCH_PI")
     if explicit:
         return [explicit]
     exe = shutil.which("pi")
-    if not exe:
-        raise FileNotFoundError("`pi` not found on PATH; set MISSION_PI to its path")
-    return [exe]
+    if exe:
+        lowered = exe.lower()
+        if lowered.endswith((".cmd", ".bat", ".ps1")):
+            candidate = os.path.join(os.path.dirname(exe), "pi-launcher.js")
+            # pi.cmd lives next to pi.ps1/pi-launcher.js in the managed install.
+            if not os.path.isfile(candidate):
+                sibling = os.path.join(os.path.dirname(os.path.dirname(exe)), "bin", "pi-launcher.js")
+                if os.path.isfile(sibling):
+                    candidate = sibling
+            node = shutil.which("node")
+            if node and os.path.isfile(candidate):
+                return [node, candidate]
+        else:
+            # Direct executable (POSIX shim): use as-is.
+            return [exe]
+        # Fall through to the wrapper when no direct launcher is available.
+        return [exe]
+    # Last resort: well-known managed install locations.
+    node = shutil.which("node")
+    for candidate in (
+        os.path.expandvars(r"%USERPROFILE%\.pi\agent\bin\pi-launcher.js"),
+        os.path.expanduser("~/.pi/agent/bin/pi-launcher.js"),
+    ):
+        if node and os.path.isfile(candidate):
+            return [node, candidate]
+    raise FileNotFoundError("`pi` not found on PATH; set MISSION_PI to its path")
 
 
 def _run_pi(args: list[str], timeout: float) -> subprocess.CompletedProcess[str]:
@@ -103,17 +135,29 @@ def complete_pi_chat(*, model: str, messages: list[dict[str, str]], timeout: flo
         raise ValueError("The selected model identifier is invalid.")
     if "/" not in selected:
         raise ValueError("The model must look like provider/model-id.")
+    system_parts: list[str] = []
     prompt_parts: list[str] = []
     for item in messages:
         if not isinstance(item, dict) or item.get("role") not in {"system", "user", "assistant"} or not isinstance(item.get("content"), str):
             raise ValueError("The chat request did not contain valid messages.")
-        prompt_parts.append(f"{item['role'].upper()}:\n{item['content']}")
+        if item["role"] == "system":
+            system_parts.append(item["content"])
+        else:
+            prompt_parts.append(f"{item['role'].upper()}:\n{item['content']}")
+    system_prompt = "\n\n".join(system_parts).strip()
     prompt = "\n\n".join(prompt_parts)[:PI_MAX_PROMPT_CHARS]
+    if not prompt:
+        # System-only call: Pi still needs a user turn; repeat the system text.
+        prompt = system_prompt[:PI_MAX_PROMPT_CHARS]
+    args: list[str] = ["--model", selected]
+    if system_prompt:
+        args += ["--system-prompt", system_prompt[:8000]]
+    args += ["--no-tools", "--no-extensions", "--no-skills",
+             "--no-prompt-templates", "--no-context-files", "--no-session", "-p", prompt]
     started = time.monotonic()
     try:
         proc = _run_pi(
-            ["--model", selected, "--no-tools", "--no-extensions", "--no-skills",
-             "--no-prompt-templates", "--no-context-files", "--no-session", "-p", prompt],
+            args,
             timeout=max(5.0, min(timeout, 300.0)),
         )
     except subprocess.TimeoutExpired as exc:

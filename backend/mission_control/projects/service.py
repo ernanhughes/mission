@@ -75,6 +75,7 @@ def _repo_read(repo: Repository, role: str | None = None) -> RepositoryRead:
         evidence=repo.evidence,
         role=role,
         source_root=repo.source_root,
+        repo_uid=repo.repo_uid or "",
         is_git=repo.is_git,
         branch=repo.branch,
         commit_hash=repo.commit_hash,
@@ -298,6 +299,7 @@ def project_read(session: Session, project: Project) -> ProjectRead:
         latest_checkpoint=_checkpoint_read(session, checkpoint) if checkpoint else None,
         open_task_count=open_tasks,
         pending_recommendation_count=pending_recs,
+        origin=project.origin or "curated",
     )
 
 

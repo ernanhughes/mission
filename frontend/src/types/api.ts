@@ -167,6 +167,236 @@ export type Project = {
   latest_checkpoint: Checkpoint | null;
   open_task_count: number;
   pending_recommendation_count: number;
+  origin?: string;
+};
+
+export type ProjectGitLink = {
+  repository_id: string;
+  path: string;
+  role: string;
+  classification: string;
+  accessible: boolean;
+  git_repo_id: string | null;
+  repo_uid: string;
+  branch: string | null;
+  head_sha: string | null;
+  total_commits: number;
+  backfill_complete: boolean;
+  has_agents: boolean;
+  has_description: boolean;
+  context_status: string;
+  latest_review_status: string | null;
+  latest_review_verdict: string | null;
+};
+
+export type SoftwareCharter = {
+  id: string;
+  project_id: string;
+  revision: number;
+  status: string;
+  purpose: string;
+  users: string;
+  capabilities: string[];
+  interfaces: string[];
+  acceptance: string[];
+  non_goals: string[];
+  constraints: string[];
+  lifecycle: string;
+  dependencies: string[];
+  verification_expectations: string;
+  evidence_refs: string[];
+  provenance: Record<string, unknown>;
+  supersedes: string | null;
+  created_by: string;
+  created_at: string;
+  updated_at: string;
+};
+
+export type SoftwareDimension = {
+  state: string;
+  max: number;
+  score: number | null;
+  confidence: number;
+  rationale: string;
+  positives: string[];
+  assumptions: string[];
+  unknowns: string[];
+  na_reason: string;
+  evidence_refs: string[];
+  findings: Array<Record<string, unknown>>;
+};
+
+export type SoftwareEvaluation = {
+  id: string;
+  project_id: string;
+  charter_id: string | null;
+  charter_revision: number | null;
+  repo_uid: string;
+  repo_path: string;
+  head_sha: string | null;
+  evidence_fingerprint: string;
+  rubric_id: string;
+  rubric_version: number;
+  prompt_version: string;
+  requested_model: string | null;
+  observed_model: string | null;
+  model_route: string;
+  status: string;
+  overall: number | null;
+  max_attainable: number;
+  coverage_percent: number | null;
+  dimensions: Record<string, SoftwareDimension>;
+  uncertainty: string;
+  limitations: string[];
+  execution: Record<string, unknown>;
+  error: string | null;
+  prompt_hash: string;
+  previous_evaluation_id: string | null;
+  created_at: string;
+  completed_at: string | null;
+  freshness: string;
+  freshness_reasons: string[];
+};
+
+export type SoftwareEvalReview = {
+  id: string;
+  evaluation_id: string;
+  reviewer_model: string;
+  model_route: string;
+  status: string;
+  verdict: string;
+  rationale: string;
+  finding_verdicts: Array<{ finding_id: string; verdict: string; rationale: string }>;
+  usage_info: Record<string, unknown>;
+  error: string | null;
+  created_at: string;
+  completed_at: string | null;
+};
+
+export type SoftwareFinding = {
+  id: string;
+  project_id: string;
+  fingerprint: string;
+  severity: string;
+  component: string;
+  title: string;
+  expected: string;
+  observed: string;
+  impact: string;
+  proposal: string;
+  verification_required: string;
+  evidence_refs: string[];
+  source_evaluations: string[];
+  status: string;
+  verified: boolean;
+  resolution_evidence: string[];
+  history: Array<Record<string, unknown>>;
+  reviews: Array<{ id: string; decision: string; reason: string; reviewer: string; source_digest: string; created_at: string }>;
+  created_at: string;
+  updated_at: string;
+};
+
+export type SoftwarePrompt = {
+  id: string;
+  project_id: string;
+  finding_ids: string[];
+  scope: string;
+  prompt: string;
+  provenance: Record<string, unknown>;
+  created_at: string;
+};
+
+export type SoftwareProject = {
+  id: string;
+  name: string;
+  description: string;
+  kind: string;
+  status: string;
+  pinned: boolean;
+  archived: boolean;
+  origin: string;
+  priority: number;
+  classification: string;
+  confidence: number;
+  path: string | null;
+  repository_count: number;
+  repo_uid: string;
+  branch: string | null;
+  commit_hash: string | null;
+  last_commit_at: string | null;
+  last_observed_at: string | null;
+  accessible: boolean;
+  missing: boolean;
+  stale: boolean;
+  applications: Array<{ id: string; name: string; category: string }>;
+  open_task_count: number;
+  pending_recommendation_count: number;
+  needs_attention: boolean;
+  quality_state: string;
+  inspect_project_id: string | null;
+  current_milestone: string;
+  next_action: string;
+  updated_at: string | null;
+};
+
+export type SoftwareInventory = {
+  total: number;
+  limit: number;
+  offset: number;
+  items: SoftwareProject[];
+};
+
+export type IdentityLink = { path: string; role: string };
+
+export type IdentityEligible = {
+  path: string;
+  name: string;
+  classification: string;
+  confidence: number;
+  evidence: string[];
+  repo_uid: string;
+  is_git: boolean;
+  kind: string;
+  project_id: string;
+  links: IdentityLink[];
+  application_id: string | null;
+};
+
+export type IdentityReview = {
+  path: string;
+  name: string;
+  classification: string;
+  confidence: number;
+  evidence: string[];
+  repo_uid: string;
+  is_git: boolean;
+  reason: string;
+};
+
+export type IdentitySkipped = {
+  path: string;
+  name: string;
+  classification: string;
+  confidence: number;
+  repo_uid: string;
+  is_git: boolean;
+  reason: string;
+};
+
+export type IdentityPolicy = {
+  auto_register: boolean;
+  approved_at: string | null;
+  approved_root: string | null;
+};
+
+export type IdentityPreview = {
+  root: string | null;
+  policy: IdentityPolicy;
+  counts: Record<string, number>;
+  eligible: IdentityEligible[];
+  needs_review: IdentityReview[];
+  skipped: IdentitySkipped[];
+  notes: string[];
 };
 
 export type Task = {
@@ -297,6 +527,7 @@ export type LogData = {
 
 export type ProjectDetail = Project & {
   repository_action: ActionState | null;
+  inspect_project_id?: string | null;
   checkpoints: Checkpoint[];
   tasks: Task[];
   decisions: Decision[];

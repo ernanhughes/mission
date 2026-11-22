@@ -37,6 +37,7 @@ from mission_control.api import (
     research as research_api,
     scripts as scripts_api,
     settings as settings_api,
+    software_quality as software_quality_api,
     technical as technical_api,
     website_posts as website_posts_api,
     websites as websites_api,
@@ -175,6 +176,11 @@ def create_app(runtime: RuntimeSettings | None = None) -> FastAPI:
         praxis_proposal_service = PraxisProposalService(database, integration_service)
         research_chat = ResearchChatService(database, settings)
         git_activity_service = GitActivityService(database)
+        from mission_control.quality_software.service import (
+            SoftwareQualityService as _SoftwareQualityService,
+        )
+
+        software_quality_service = _SoftwareQualityService(database)
         app.state.database = database
         app.state.settings = settings
         app.state.process_manager = process_manager
@@ -185,6 +191,7 @@ def create_app(runtime: RuntimeSettings | None = None) -> FastAPI:
         app.state.praxis_proposal_service = praxis_proposal_service
         app.state.research_chat = research_chat
         app.state.git_activity = git_activity_service
+        app.state.software_quality = software_quality_service
         from mission_control.websites.service import WebsitesState as _WebsitesState
 
         app.state.websites = _WebsitesState()
@@ -333,6 +340,7 @@ def create_app(runtime: RuntimeSettings | None = None) -> FastAPI:
     app.include_router(scripts_api.router)
     app.include_router(websites_api.router)
     app.include_router(website_posts_api.router)
+    app.include_router(software_quality_api.router)
 
     dist = settings.frontend_dist
     if dist.exists() and (dist / "index.html").exists():

@@ -209,6 +209,10 @@ def test_pi_critique_path_mocked_and_consent_gated(client: TestClient, tmp_path:
     _configure(client, root)
     _sync(client)
     candidate = _candidate(client)
+    # Pin the denied state explicitly: seed defaults ship AI-on, so the gate
+    # must be tested by disabling AI, not by ambient defaults.
+    revoked = client.patch("/api/settings", json={"ai": {"enabled": False, "consent": False}})
+    assert revoked.status_code == 200, revoked.text
     gated = client.post(f"/api/scripts/candidates/{candidate['id']}/critique").json()
     assert gated["pi"]["skipped"] is True
     assert gated["deterministic"]["origin"] == "deterministic"

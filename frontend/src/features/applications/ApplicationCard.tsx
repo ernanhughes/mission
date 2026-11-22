@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import {
   BookOpen,
   ExternalLink,
@@ -118,6 +119,14 @@ export function ApplicationCard({
       {app.repository_path ? (
         <div className="app-path">
           <PathText>{app.repository_path}</PathText>
+        </div>
+      ) : null}
+
+      {app.related_projects.length ? (
+        <div className="app-url">
+          <Link className="text-link" to={`/projects/${app.related_projects[0]}`}>
+            Open project workspace
+          </Link>
         </div>
       ) : null}
 

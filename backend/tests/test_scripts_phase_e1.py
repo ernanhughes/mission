@@ -73,6 +73,10 @@ def test_review_requires_consent(client: TestClient, tmp_path: Path, monkeypatch
     _make_tree(root)
     _configure(client, root)
     _sync(client)
+    # Pin the denied state explicitly: seed defaults ship AI-on, so the gate
+    # must be tested by disabling AI, not by ambient defaults.
+    revoked = client.patch("/api/settings", json={"ai": {"enabled": False, "consent": False}})
+    assert revoked.status_code == 200, revoked.text
     monkeypatch.setattr(intellect, "complete_chat", _fake_complete())
     item = next(i for i in _scripts(client) if i["current_relpath"] == "Script001.md")
     response = client.post(f"/api/scripts/{item['id']}/reviews", json={})

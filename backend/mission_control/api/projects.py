@@ -50,17 +50,28 @@ from mission_control.schemas import (
     CheckpointRead,
     DecisionCreate,
     DecisionRead,
+    IdentityApplyRead,
+    IdentityApplyRequest,
+    IdentityAutoRegisterRequest,
+    IdentityPolicyRead,
+    IdentityPreviewRead,
+    IdentityRollbackRead,
+    IdentityRollbackRequest,
     IntegrationRecordRead,
     OkResponse,
     OutcomeRead,
     ProjectCreate,
     ProjectDetail,
+    ProjectGitLinkRead,
     ProjectRead,
+    ProjectReconciliationRead,
     ProjectUpdate,
     RecommendationRead,
     ReorderRequest,
     ResumeRead,
     ReviewUpdate,
+    SoftwareInventoryRead,
+    SoftwareProjectRead,
     TaskCreate,
     TaskRead,
     TaskUpdate,
@@ -99,6 +110,183 @@ def add_project(payload: ProjectCreate, session: Session = Depends(get_session))
     return project_read(session, project)
 
 
+@router.get("/projects/reconciliation", response_model=ProjectReconciliationRead)
+def get_projects_reconciliation(
+    session: Session = Depends(get_session),
+    root: str | None = None,
+    live: bool = False,
+) -> ProjectReconciliationRead:
+    """Read-only software-project discovery reconciliation (no writes).
+
+    Compares the inventory under ``root`` (default ``C:\\Projects``) against
+    persisted projects, repositories, Git identities and applications.
+    Book-legacy projects are listed separately and preserved.
+    """
+    from mission_control.projects.reconciliation import build_reconciliation
+
+    return ProjectReconciliationRead(**build_reconciliation(session, software_root=root, live=live))
+
+
+# --------------------------------------- software identity cutover (MC-PROJECTS-QUALITY-01)
+
+
+@router.get("/projects/identity/preview", response_model=IdentityPreviewRead)
+def get_identity_preview(
+    session: Session = Depends(get_session),
+    root: str | None = None,
+) -> IdentityPreviewRead:
+    """Read-only cutover preview: eligible, needs-review and skipped. No writes."""
+    from mission_control.projects.registration import preview_registration
+
+    return IdentityPreviewRead(**preview_registration(session, root))
+
+
+@router.get("/projects/identity/policy", response_model=IdentityPolicyRead)
+def get_identity_policy(session: Session = Depends(get_session)) -> IdentityPolicyRead:
+    from mission_control.projects.registration import get_policy
+
+    return IdentityPolicyRead(**get_policy(session))
+
+
+@router.post("/projects/identity/apply", response_model=IdentityApplyRead)
+def apply_identity_cutover(
+    payload: IdentityApplyRequest,
+    request: Request,
+    session: Session = Depends(get_session),
+) -> IdentityApplyRead:
+    """Register software project workspaces. Requires explicit confirmation.
+
+    Backs up the SQLite database before writing. Idempotent: repeated calls
+    with the same selection skip already-registered repositories.
+    """
+    from mission_control.projects.registration import apply_registration, backup_database
+
+    settings = request.app.state.settings
+    backup = backup_database(settings.db_path, settings.data_dir / "backups")
+    result = apply_registration(
+        session,
+        paths=payload.paths,
+        select_all_eligible=payload.all_eligible,
+        confirm=payload.confirm,
+        approve_policy=payload.approve_policy,
+        root=payload.root,
+        backup_path=backup,
+    )
+    # Commit before returning: dependency cleanup runs after the response is
+    # sent, so a following request would otherwise not see these rows yet.
+    session.commit()
+    return IdentityApplyRead(**result)
+
+
+@router.post("/projects/identity/auto-register", response_model=IdentityApplyRead)
+def auto_register_projects(
+    payload: IdentityAutoRegisterRequest,
+    session: Session = Depends(get_session),
+) -> IdentityApplyRead:
+    """Register currently-eligible repositories under the approved policy.
+
+    Explicit endpoint only; scans never register implicitly. Requires the
+    approved policy and explicit confirmation.
+    """
+    from mission_control.projects.registration import auto_register
+
+    result = auto_register(session, confirm=payload.confirm, root=payload.root)
+    session.commit()
+    return IdentityApplyRead(**result)
+
+
+@router.post("/projects/identity/rollback", response_model=IdentityRollbackRead)
+def rollback_identity_cutover(
+    payload: IdentityRollbackRequest,
+    session: Session = Depends(get_session),
+) -> IdentityRollbackRead:
+    """Remove pristine auto-registered projects. User records are never deleted."""
+    from mission_control.projects.registration import rollback_cutover
+
+    result = rollback_cutover(session, confirm=payload.confirm)
+    session.commit()
+    return IdentityRollbackRead(**result)
+
+
+def _inspect_ids_by_path(request: Request, paths: list[str]) -> dict[str, str]:
+    """Reverse-map repository paths to Inspect project ids (read-only snapshot)."""
+    try:
+        from mission_control.inspect_snapshots import (
+            get_store,
+            normalize_repository_path,
+        )
+
+        store = get_store(request.app.state.settings.inspect_dir)
+        data, _ = store.view()
+    except Exception:
+        return {}
+    if data is None:
+        return {}
+    by_path: dict[str, str] = {}
+    for project in data.projects:
+        if not isinstance(project, dict):
+            continue
+        key = normalize_repository_path(project.get("path"))
+        if key and key not in by_path:
+            by_path[key] = str(project.get("id") or "")
+    from mission_control.inspect_snapshots import normalize_repository_path as _norm_path
+
+    result: dict[str, str] = {}
+    for path in paths:
+        key = _norm_path(path)
+        if key and key in by_path and by_path[key]:
+            result[path] = by_path[key]
+    return result
+
+
+@router.get("/projects/software", response_model=SoftwareInventoryRead)
+def get_software_inventory(
+    request: Request,
+    session: Session = Depends(get_session),
+    search: str | None = None,
+    classification: str | None = None,
+    attention_only: bool = False,
+    missing_only: bool = False,
+    limit: int = Query(default=50, ge=1, le=200),
+    offset: int = Query(default=0, ge=0),
+) -> SoftwareInventoryRead:
+    """Paginated software workspace inventory. Book-legacy projects are excluded."""
+    from mission_control.projects.registration import software_inventory
+
+    total, rows = software_inventory(
+        session,
+        search=search,
+        classification=classification,
+        attention_only=attention_only,
+        missing_only=missing_only,
+        limit=limit,
+        offset=offset,
+    )
+    inspect_ids = _inspect_ids_by_path(
+        request, [row["path"] for row in rows if row.get("path")]
+    )
+    return SoftwareInventoryRead(
+        total=total, limit=limit, offset=offset,
+        items=[
+            SoftwareProjectRead(
+                **row,
+                inspect_project_id=inspect_ids.get(row.get("path") or "") if row.get("path") else None,
+            )
+            for row in rows
+        ],
+    )
+
+
+@router.get("/projects/{project_id}/git-links", response_model=list[ProjectGitLinkRead])
+def get_project_git_links(
+    project_id: str, session: Session = Depends(get_session)
+) -> list[ProjectGitLinkRead]:
+    """Git-indexed repositories backing one project, matched by normalized path."""
+    from mission_control.projects.registration import project_git_links
+
+    return [ProjectGitLinkRead(**row) for row in project_git_links(session, project_id)]
+
+
 @router.get("/projects/{project_id}", response_model=ProjectDetail)
 def get_project(
     project_id: str,
@@ -107,11 +295,19 @@ def get_project(
 ) -> ProjectDetail:
     from mission_control.adapters.service import AdapterService
 
-    return project_detail(
+    detail = project_detail(
         session,
         project_id,
         AdapterService(request.app.state.database, request.app.state.settings),
     )
+    inspect_ids = _inspect_ids_by_path(
+        request, [repo.path for repo in detail.repositories]
+    )
+    for repo in detail.repositories:
+        if repo.path in inspect_ids:
+            detail.inspect_project_id = inspect_ids[repo.path]
+            break
+    return detail
 
 
 @router.patch("/projects/{project_id}", response_model=ProjectRead)
