@@ -27,6 +27,7 @@ from mission_control.models import (
 from mission_control.quality.service import workspace as quality_workspace
 from mission_control.quality.service import resolve_book_root
 from mission_control.technical import service as technical
+from mission_control.writer import evaluations as writer_evaluations
 
 
 def _clip(value: Any, limit: int = 600) -> str:
@@ -72,6 +73,113 @@ def _writer_chapter(book: dict | None, chapter_id: str | None) -> dict | None:
         if Path(relative or source).name == Path(wanted).name:
             return chapter
     return None
+
+
+def _writer_evaluations_measure(
+    session: Session, project_id: str, chapter_id: str | None, manuscript_root: str = ""
+) -> dict[str, Any]:
+    """W1 Writer evaluation envelopes as a sixth context measure.
+
+    Additive and backwards-compatible: existing readers ignore unknown
+    measures; the five original measures are untouched. Current envelopes
+    are included whole (dimensions, findings, spans, coverage, limitations,
+    provenance); history travels as compact refs. Nothing is averaged or
+    reinterpreted here — freshness and resolution semantics stay with the
+    consumer's prompt rules.
+    """
+    if not chapter_id:
+        return {
+            "id": "mission.writer.evaluations",
+            "kind": "writer_evaluations",
+            "scope": "book",
+            "status": "NOT_RUN",
+            "label": "Writer evaluations",
+            "detail": "No chapter selected; per-chapter evaluation history is chapter-scoped.",
+            "value": {"evaluations": [], "history": []},
+            "limitations": ["Select a chapter to read its Writer evaluation history."],
+        }
+    try:
+        # Writer envelope target_ids are extension-less chapter stems
+        # ("39-chapter") while reading-room chapter ids carry ".md".
+        # Normalize for lookup only; the compared bytes still decide freshness.
+        lookup_id = chapter_id
+        if lookup_id.endswith(".md"):
+            lookup_id = lookup_id[: -len(".md")]
+        source_hash: str | None = None
+        for candidate in (chapter_id, lookup_id, f"{lookup_id}.md"):
+            if manuscript_root:
+                hashed = writer_evaluations.chapter_file_sha(Path(manuscript_root) / candidate)
+                if hashed:
+                    source_hash = hashed
+                    break
+        chapter = writer_evaluations.chapter_evaluations_from_session(
+            session, project_id, lookup_id, source_hash=source_hash
+        )
+    except Exception as error:  # noqa: BLE001 - degraded, never fatal
+        return {
+            "id": "mission.writer.evaluations",
+            "kind": "writer_evaluations",
+            "scope": "chapter",
+            "status": "UNAVAILABLE",
+            "label": "Writer evaluations",
+            "detail": f"Writer evaluations could not be read: {type(error).__name__}.",
+            "value": {"evaluations": [], "history": []},
+            "limitations": ["Evaluation store unavailable; prose evidence below is unaffected."],
+        }
+    current = [item for item in chapter["evaluations"] if item["current"]]
+    history = [
+        {
+            "evaluation_id": item["evaluation_id"],
+            "provider": ((item["envelope"].get("producer", {}) or {}).get("runtime_name", "")),
+            "observed_at": item.get("observed_at", ""),
+            "status": (item["envelope"] or {}).get("status", ""),
+            "source_hash": (
+                ((item["envelope"] or {}).get("work_object", {}) or {}).get("source_hash", "")
+            ),
+            "finding_codes": sorted(
+                {
+                    str(finding.get("code", ""))
+                    for finding in ((item["envelope"] or {}).get("findings", []) or [])
+                    if isinstance(finding, dict) and finding.get("code")
+                }
+            ),
+        }
+        for item in chapter["evaluations"]
+        if not item["current"]
+    ]
+    if not chapter["evaluations"]:
+        overall = "NOT_RUN"
+    elif chapter["overall"] == "CURRENT":
+        overall = "CURRENT"
+    elif chapter["overall"] == "STALE":
+        overall = "STALE"
+    elif chapter["overall"] == "UNAVAILABLE":
+        overall = "UNAVAILABLE"
+    else:
+        overall = "NOT_RUN" if chapter["overall"] == "NOT_RUN" else "UNVERIFIED"
+    return {
+        "id": "mission.writer.evaluations",
+        "kind": "writer_evaluations",
+        "scope": "chapter",
+        "status": overall,
+        "label": "Writer evaluations",
+        "detail": (
+            f"{len(current)} current, {len(history)} historical Writer evaluation(s) "
+            f"for {chapter_id}."
+        ),
+        "value": {
+            "evaluations": [
+                {**item["envelope"], "_derived": item["derived"], "_current": True}
+                for item in current
+            ],
+            "history": history,
+        },
+        "limitations": [
+            "Writer evaluations use native provider scales; never average across providers.",
+            "Historical entries describe earlier source revisions; only CURRENT describes the compared bytes.",
+            "An absent finding is not a verified fix; resolution needs a comparable reassessment.",
+        ],
+    }
 
 
 def _prose_measure(chapter: dict[str, Any] | None) -> dict[str, Any]:
@@ -462,6 +570,7 @@ def build_quality_context(
         _technical_measure(session, project_id, chapter_id),
         _publication_measure(session, project_id),
         _artifact_measure(session, project_id, chapter_id),
+        _writer_evaluations_measure(session, project_id, chapter_id, manuscript_root),
     ]
     summary = _prose_summary(quality)
     coverage = {
@@ -485,6 +594,7 @@ def build_quality_context(
             "detail": measures[3].get("detail", ""),
         },
         "artifact_load": {"status": measures[4]["status"]},
+        "writer_evaluations": {"status": measures[5]["status"]},
     }
     context = {
         "schema": "book-quality-context.v1",

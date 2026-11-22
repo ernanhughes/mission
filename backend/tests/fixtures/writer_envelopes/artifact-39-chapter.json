@@ -1,0 +1,314 @@
+{
+  "schema_version": "writer.evaluation-envelope.v1",
+  "evaluation_id": "artifact-eval-4ae5da04dce6524f",
+  "observed_at": "2026-11-22T12:00:00Z",
+  "work_object": {
+    "kind": "chapter",
+    "target_id": "39-chapter",
+    "source_path": "C:/books/inference/content/books/inference/39-chapter.md",
+    "source_hash": "8d262ea3348780e341b50f635eacacc806540023bae0af44366f96a08c8eb741",
+    "byte_length": 48859
+  },
+  "producer": {
+    "runtime_name": "artifact",
+    "method": "analyze_text",
+    "method_version": "artifact-adapter.v1"
+  },
+  "rubric": {
+    "rubric_id": "artifact-detectors",
+    "profile": "fiction"
+  },
+  "status": "complete",
+  "dimensions": [
+    {
+      "dimension": "artifact_cleanliness",
+      "score": 75.58257345491388,
+      "verdict": null,
+      "confidence": null,
+      "scale": {
+        "scale_type": "continuous",
+        "minimum": 0.0,
+        "maximum": 100.0,
+        "higher_is_better": true,
+        "comparable_group": null,
+        "description": "artifact.artifact_score: 0-100, higher = cleaner"
+      },
+      "rationale": "27 detector issue(s) found",
+      "evidence_spans": []
+    },
+    {
+      "dimension": "ai_smell",
+      "score": 0.2441742654508612,
+      "verdict": null,
+      "confidence": null,
+      "scale": {
+        "scale_type": "probability",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "higher_is_better": false,
+        "comparable_group": null,
+        "description": "artifact.ai_smell_score: 0-1, higher = more AI-like"
+      },
+      "rationale": "Deterministic AI-smell detector composite",
+      "evidence_spans": []
+    }
+  ],
+  "findings": [
+    {
+      "family": "artifact",
+      "code": "NOT_PRESSURE",
+      "claim": "",
+      "severity": "MED",
+      "spans": [],
+      "detail": null
+    },
+    {
+      "family": "artifact",
+      "code": "ANAPHORA_RUN",
+      "claim": "",
+      "severity": "MED",
+      "spans": [],
+      "detail": null
+    },
+    {
+      "family": "artifact",
+      "code": "ANAPHORA_RUN",
+      "claim": "",
+      "severity": "MED",
+      "spans": [],
+      "detail": null
+    },
+    {
+      "family": "artifact",
+      "code": "LOCAL_PREFIX_TIC",
+      "claim": "",
+      "severity": "MED",
+      "spans": [],
+      "detail": null
+    },
+    {
+      "family": "artifact",
+      "code": "LOCAL_PREFIX_TIC",
+      "claim": "",
+      "severity": "MED",
+      "spans": [],
+      "detail": null
+    },
+    {
+      "family": "artifact",
+      "code": "LOCAL_PREFIX_TIC",
+      "claim": "",
+      "severity": "MED",
+      "spans": [],
+      "detail": null
+    },
+    {
+      "family": "artifact",
+      "code": "LOCAL_PREFIX_TIC",
+      "claim": "",
+      "severity": "MED",
+      "spans": [],
+      "detail": null
+    },
+    {
+      "family": "artifact",
+      "code": "LOCAL_PREFIX_TIC",
+      "claim": "",
+      "severity": "MED",
+      "spans": [],
+      "detail": null
+    },
+    {
+      "family": "artifact",
+      "code": "LOCAL_PREFIX_TIC",
+      "claim": "",
+      "severity": "MED",
+      "spans": [],
+      "detail": null
+    },
+    {
+      "family": "artifact",
+      "code": "LOCAL_PREFIX_TIC",
+      "claim": "",
+      "severity": "MED",
+      "spans": [],
+      "detail": null
+    },
+    {
+      "family": "artifact",
+      "code": "LOCAL_PREFIX_TIC",
+      "claim": "",
+      "severity": "MED",
+      "spans": [],
+      "detail": null
+    },
+    {
+      "family": "artifact",
+      "code": "LOCAL_PREFIX_TIC",
+      "claim": "",
+      "severity": "MED",
+      "spans": [],
+      "detail": null
+    },
+    {
+      "family": "artifact",
+      "code": "LOCAL_PREFIX_TIC",
+      "claim": "",
+      "severity": "MED",
+      "spans": [],
+      "detail": null
+    },
+    {
+      "family": "artifact",
+      "code": "LOCAL_PREFIX_TIC",
+      "claim": "",
+      "severity": "MED",
+      "spans": [],
+      "detail": null
+    },
+    {
+      "family": "artifact",
+      "code": "LOCAL_PREFIX_TIC",
+      "claim": "",
+      "severity": "MED",
+      "spans": [],
+      "detail": null
+    },
+    {
+      "family": "artifact",
+      "code": "LOCAL_PREFIX_TIC",
+      "claim": "",
+      "severity": "MED",
+      "spans": [],
+      "detail": null
+    },
+    {
+      "family": "artifact",
+      "code": "LOCAL_PREFIX_TIC",
+      "claim": "",
+      "severity": "MED",
+      "spans": [],
+      "detail": null
+    },
+    {
+      "family": "artifact",
+      "code": "LOCAL_PREFIX_TIC",
+      "claim": "",
+      "severity": "MED",
+      "spans": [],
+      "detail": null
+    },
+    {
+      "family": "artifact",
+      "code": "LOCAL_PREFIX_TIC",
+      "claim": "",
+      "severity": "MED",
+      "spans": [],
+      "detail": null
+    },
+    {
+      "family": "artifact",
+      "code": "LOCAL_PREFIX_TIC",
+      "claim": "",
+      "severity": "MED",
+      "spans": [],
+      "detail": null
+    },
+    {
+      "family": "artifact",
+      "code": "LOCAL_PREFIX_TIC",
+      "claim": "",
+      "severity": "MED",
+      "spans": [],
+      "detail": null
+    },
+    {
+      "family": "artifact",
+      "code": "LOCAL_PREFIX_TIC",
+      "claim": "",
+      "severity": "MED",
+      "spans": [],
+      "detail": null
+    },
+    {
+      "family": "artifact",
+      "code": "EM_DASH",
+      "claim": "",
+      "severity": "HIGH",
+      "spans": [],
+      "detail": null
+    },
+    {
+      "family": "artifact",
+      "code": "RULE_OF_THREE_OVERUSE",
+      "claim": "",
+      "severity": "HIGH",
+      "spans": [],
+      "detail": null
+    },
+    {
+      "family": "artifact",
+      "code": "ADJECTIVE_SIMILE_OVERLOAD",
+      "claim": "",
+      "severity": "HIGH",
+      "spans": [],
+      "detail": null
+    },
+    {
+      "family": "artifact",
+      "code": "ABSENCE_FRAMING_PRESSURE",
+      "claim": "",
+      "severity": "HIGH",
+      "spans": [],
+      "detail": null
+    },
+    {
+      "family": "artifact",
+      "code": "ABSENCE_FRAMING_PRESSURE",
+      "claim": "",
+      "severity": "HIGH",
+      "spans": [],
+      "detail": null
+    }
+  ],
+  "coverage": {
+    "unit": "characters",
+    "evaluated": 48813,
+    "total": 48813,
+    "note": "Single full-text detector pass over the supplied bytes."
+  },
+  "limitations": [
+    "Detector versions vary per detector; active detectors are listed in provenance.detectors. No single artifact method version exists."
+  ],
+  "provenance": {
+    "detectors": [
+      "absence_framing_pressure",
+      "adjective_simile_overload",
+      "anaphora_run",
+      "book_duplicate_sentence",
+      "book_phrase_reuse",
+      "book_term_frequency",
+      "em_dash",
+      "emoji",
+      "emotional_flatlining",
+      "llm_phrase_smells",
+      "llm_rhetorical_pattern",
+      "local_prefix_tic",
+      "mantra_caps",
+      "manuscript_debris",
+      "missing_setting_details",
+      "negation_run",
+      "nonsensical_metaphor",
+      "not_pressure",
+      "prefix_tic",
+      "repeat_sentence",
+      "rule_of_three_overuse",
+      "sentence_variance",
+      "separator_spam",
+      "short_sentence_run",
+      "single_sentence_paragraph_run"
+    ],
+    "operation_id": "w2-pilot-artifact-39-chapter"
+  },
+  "supersedes": null
+}

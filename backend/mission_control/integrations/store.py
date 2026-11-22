@@ -71,8 +71,14 @@ def _search_text(resource: ResourceSeed) -> str:
 
 def upsert_resources(session: Session, application_id: str, resources: list[ResourceSeed]) -> int:
     # Mark the previous refresh as historical but retain it for review/search.
+    # Scoped to the refreshed resource types only: append-only records owned
+    # by other flows (e.g. writer_evaluation envelopes with their own
+    # supersession rules) must never be demoted by an unrelated refresh.
+    refreshed_types = {resource.resource_type for resource in resources}
     for existing in session.scalars(
-        select(IntegrationRecord).where(IntegrationRecord.application_id == application_id)
+        select(IntegrationRecord)
+        .where(IntegrationRecord.application_id == application_id)
+        .where(IntegrationRecord.resource_type.in_(refreshed_types))
     ).all():
         existing.current = False
     count = 0
@@ -288,9 +294,7 @@ def record_decision(
         session,
         event_type="recommendation_reviewed",
         title=f"{application.name if application else record.application_id}: {decision_value}",
-        detail=(
-            f"{record.title[:500]}. Stored locally; the source application was not modified."
-        ),
+        detail=(f"{record.title[:500]}. Stored locally; the source application was not modified."),
         project_id=record.project_id,
         application_id=record.application_id,
         source="mission-control",
@@ -310,7 +314,9 @@ def record_decision(
 def decision_history(
     session: Session, application_id: str | None = None
 ) -> list[IntegrationDecisionRead]:
-    statement = select(IntegrationDecision).order_by(desc(IntegrationDecision.decided_at)).limit(300)
+    statement = (
+        select(IntegrationDecision).order_by(desc(IntegrationDecision.decided_at)).limit(300)
+    )
     if application_id:
         statement = statement.where(IntegrationDecision.application_id == application_id)
     return [decision_read(row) for row in session.scalars(statement).all()]
@@ -345,10 +351,7 @@ def inbox_items(
     project_id: str | None = None,
     limit: int = 100,
 ) -> list[InboxItemRead]:
-    applications = {
-        app.id: app
-        for app in session.scalars(select(Application)).all()
-    }
+    applications = {app.id: app for app in session.scalars(select(Application)).all()}
     projects = {project.id: project for project in session.scalars(select(Project)).all()}
     decisions = _decision_map(session)
     items: list[InboxItemRead] = []
@@ -520,9 +523,7 @@ def search_all(session: Session, query: str, limit: int = 50) -> list[SearchResu
                 observed_at=repository.last_observed_at,
             )
         )
-    for task in session.scalars(
-        select(Task).where(Task.title.ilike(needle)).limit(10)
-    ).all():
+    for task in session.scalars(select(Task).where(Task.title.ilike(needle)).limit(10)).all():
         results.append(
             SearchResultRead(
                 id=task.id,
@@ -561,7 +562,9 @@ def search_all(session: Session, query: str, limit: int = 50) -> list[SearchResu
                 title=decision.title,
                 subtitle=decision.rationale[:300],
                 project_id=decision.project_id,
-                target_path=f"/projects/{decision.project_id}" if decision.project_id else "/activity",
+                target_path=f"/projects/{decision.project_id}"
+                if decision.project_id
+                else "/activity",
                 observed_at=decision.decided_at,
             )
         )

@@ -71,6 +71,7 @@ import type {
   TechnicalObjective,
   TechnicalRequirement,
   WriterDecisionQueueItem,
+  WriterEvaluationItem,
   WriterWorkspace,
 } from "../types/api";
 
@@ -791,6 +792,128 @@ type LoadRow = {
   assessment: string;
   workbench_link: string | null;
 };
+
+type WriterEvalRow = {
+  chapter_id: string;
+  title: string | null;
+  current: WriterEvaluationItem[];
+  historical: WriterEvaluationItem[];
+};
+
+function formatScale(scale: WriterEvaluationItem["envelope"]["dimensions"][number]["scale"]): string {
+  const parts: string[] = [scale.scale_type];
+  if (scale.minimum !== null && scale.minimum !== undefined
+    && scale.maximum !== null && scale.maximum !== undefined) {
+    parts.push(`${scale.minimum}–${scale.maximum}`);
+  }
+  return parts.join(" ");
+}
+
+function WriterEvaluationsMap({ rows }: { rows: WriterEvalRow[] }) {
+  const [expanded, setExpanded] = useState<string | null>(null);
+  return (
+    <div className="table-wrap">
+      <table className="data-table">
+        <thead>
+          <tr>
+            <th>Chapter</th>
+            <th>Provider</th>
+            <th>Dimensions</th>
+            <th>Findings</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row) => (
+            <tr key={row.chapter_id}>
+              <td title={row.title ?? row.chapter_id}>
+                {row.chapter_id.replace("-chapter.md", "").replace("-chapter", "")}
+                {row.historical.length ? (
+                  <span className="muted small"> · earlier ({row.historical.length})</span>
+                ) : null}
+              </td>
+              <td className="muted small">
+                {row.current.length ? (
+                  row.current.map((item) => (
+                    <div key={item.evaluation_id}>
+                      {item.envelope.producer.runtime_name}
+                      <span className="muted"> · {item.envelope.producer.method_version ?? "unversioned"}</span>
+                    </div>
+                  ))
+                ) : ("—")}
+              </td>
+              <td className="muted small">
+                {row.current.length ? (
+                  row.current.map((item) => (
+                    <div key={item.evaluation_id}>
+                      {item.envelope.dimensions.length ? (
+                        item.envelope.dimensions.map((dim) => (
+                          <div key={dim.dimension}>
+                            {dim.dimension}: {dim.score ?? dim.verdict ?? "—"}
+                            <span className="muted"> ({formatScale(dim.scale)})</span>
+                          </div>
+                        ))
+                      ) : (
+                        <span>Categorical findings only, no per-dimension scores</span>
+                      )}
+                    </div>
+                  ))
+                ) : ("—")}
+              </td>
+              <td>
+                {row.current.map((item) => (
+                  <div key={item.evaluation_id}>
+                    <button
+                      className="text-link"
+                      onClick={() => setExpanded(expanded === item.evaluation_id ? null : item.evaluation_id)}
+                      aria-expanded={expanded === item.evaluation_id}
+                    >
+                      {item.envelope.findings.length} finding{item.envelope.findings.length === 1 ? "" : "s"}
+                    </button>
+                    {expanded === item.evaluation_id ? (
+                      <ul className="muted small">
+                        {item.envelope.findings.map((finding, index) => (
+                          <li key={`${finding.code}-${index}`}>
+                            <strong>{finding.code}</strong>
+                            {finding.severity ? ` · ${finding.severity}` : null}
+                            {finding.claim ? ` — ${finding.claim}` : null}
+                            {finding.spans.map((span, spanIndex) => (
+                              <blockquote key={spanIndex}>{span.snippet}</blockquote>
+                            ))}
+                            {finding.detail ? <div>{finding.detail}</div> : null}
+                          </li>
+                        ))}
+                        {item.envelope.limitations.map((note) => (
+                          <li key={note}>Limitation: {note}</li>
+                        ))}
+                      </ul>
+                    ) : null}
+                    <div className="muted small" title={item.evaluation_id}>
+                      id {item.evaluation_id.slice(0, 18)}… · {item.envelope.observed_at.slice(0, 10)}
+                    </div>
+                  </div>
+                ))}
+              </td>
+              <td>
+                {row.current.map((item) => (
+                  <div key={item.evaluation_id}>
+                    <Tag tone={item.envelope.status === "complete" ? "accent" : "default"}>
+                      {titleCase(item.envelope.status)}
+                    </Tag>
+                  </div>
+                ))}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <p className="muted small">
+        Independent Writer measures with native scales; never averaged with prose scores.
+        Quotations are evidence locators, not independent verification.
+      </p>
+    </div>
+  );
+}
 
 function assessmentLabel(state: string): string {
   switch (state) {
@@ -2230,6 +2353,7 @@ function QualityPanel({ projectId }: { projectId: string }) {
   const writer = useApi<WriterWorkspace>("/api/writer/books", { pollMs: 60000 });
   const campaigns = useApi<QualityCampaign[]>(`/api/quality/campaigns?project_id=${projectId}`, { pollMs: 15000 });
   const artifactLoad = useApi<ArtifactLoadWorkspace>(`/api/artifact-load/workspace?project_id=${projectId}`, { pollMs: 60000 });
+  const writerEvals = useApi<WriterEvaluationItem[]>(`/api/writer/evaluations?project_id=${projectId}&current_only=false`, { pollMs: 60000 });
   const [campaignBusy, setCampaignBusy] = useState(false);
   const [campaignMode, setCampaignMode] = useState("missing");
   const [campaignModel, setCampaignModel] = useState("opencode-go/deepseek-v4.1-flash");
@@ -2466,6 +2590,37 @@ function QualityPanel({ projectId }: { projectId: string }) {
         {artifactLoad.data?.limitations?.map((note: string) => (
           <p key={note} className="muted small">{note}</p>
         ))}
+      </Section>
+
+      <Section
+        title="Writer evaluations"
+        description="Independent Writer specialist observations (QC verdicts, artifact findings) with native scales and provenance. Shown alongside — never merged into — prose, technical, artifact-load, and publication measures."
+      >
+        {writerEvals.loading ? <LoadingBlock label="Loading Writer evaluations" compact /> : null}
+        {writerEvals.error ? <InlineError message={writerEvals.error.message} /> : null}
+        {!writerEvals.loading && !writerEvals.error && (writerEvals.data ?? []).length === 0 ? (
+          <EmptyState
+            title="No Writer evaluations yet"
+            description="Ingest a Writer evaluation envelope for a chapter; it appears here with its native evidence and history."
+            icon={<Crosshair size={19} />}
+          />
+        ) : null}
+        {(writerEvals.data ?? []).length ? (
+          <WriterEvaluationsMap
+            rows={(discovery.data ?? []).map((d) => {
+              const target = d.chapter_id.replace(/\.md$/, "");
+              const items = (writerEvals.data ?? []).filter(
+                (item) => item.envelope.work_object.target_id.replace(/\.md$/, "") === target,
+              );
+              return {
+                chapter_id: d.chapter_id,
+                title: d.title,
+                current: items.filter((item) => item.current),
+                historical: items.filter((item) => !item.current),
+              };
+            }).filter((row) => row.current.length > 0 || row.historical.length > 0)}
+          />
+        ) : null}
       </Section>
 
       <Section

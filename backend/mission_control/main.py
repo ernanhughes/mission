@@ -43,6 +43,7 @@ from mission_control.api import (
     websites as websites_api,
     workflows as workflows_api,
     writer as writer_api,
+    writer_evaluations as writer_evaluations_api,
 )
 from mission_control.config import RuntimeSettings
 from mission_control.core.errors import MissionControlError
@@ -331,6 +332,7 @@ def create_app(runtime: RuntimeSettings | None = None) -> FastAPI:
     app.include_router(research_api.router)
     app.include_router(workflows_api.router)
     app.include_router(writer_api.router)
+    app.include_router(writer_evaluations_api.router)
     app.include_router(quality_api.router)
     app.include_router(technical_api.router)
     app.include_router(publication_api.router)
