@@ -221,6 +221,10 @@ def test_stop_then_resume_skips_completed(client: TestClient, runtime) -> None:
 
 
 def test_run_endpoint_without_evaluator_blocks_transparently(client: TestClient, runtime) -> None:
+    # Hermetic precondition: the ambient environment may configure an evaluator
+    # interpreter (or model route); force the unconfigured path this test covers.
+    client.app.state.settings.writer_quality_runner = ""
+    client.app.state.settings.quality_eval_python = None
     _make_book(client, runtime)
     created = client.post("/api/quality/campaigns", json={"project_id": "math", "mode": "selected", "chapters": ["01-chapter.md"], "model": "m"}).json()
     assert created["status"] == "pending"

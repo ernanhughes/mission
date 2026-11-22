@@ -1477,6 +1477,36 @@ export type GitDailyPrompt = {
   end_ts: number;
 };
 
+export type Website = {
+  id: string;
+  name: string;
+  path: string;
+  is_hugo: boolean;
+  site_type: string;
+  evidence: string[];
+  hugo_config: string | null;
+  content_section: string | null;
+  title: string | null;
+  available: boolean;
+  launch_supported: boolean;
+  hugo_available: boolean;
+  running: boolean;
+  preview_url: string | null;
+  port: number | null;
+  process_id: string | null;
+};
+
+export type WebsiteLaunch = {
+  id: string;
+  name: string;
+  path: string;
+  url: string;
+  port: number;
+  process_id: string | null;
+  reused: boolean;
+  detail: string | null;
+};
+
 export type CultivationStageDef = {
   id: string;
   label: string;

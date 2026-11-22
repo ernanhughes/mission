@@ -97,6 +97,8 @@ describe("WorkbenchSidebarAction", () => {
       }
       if (path === "/api/applications/workbench/ensure-open" && method === "POST") {
         return new Promise<Response>((resolve) => {
+          // Long enough to survive loaded CI workers: the click must settle
+          // into the Starting state before this resolves.
           window.setTimeout(
             () =>
               resolve(
@@ -109,7 +111,7 @@ describe("WorkbenchSidebarAction", () => {
                   detail: "ready",
                 }),
               ),
-            50,
+            500,
           );
         });
       }

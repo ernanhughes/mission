@@ -279,6 +279,24 @@ def dublin_week_range(now: datetime | None = None) -> tuple[datetime, datetime]:
     return monday, sunday
 
 
+#: Weekly publishing reward ladder (MC-WEBSITES-CULTIVATION-01). Gold means
+#: three or more qualifying posts this week, never an editorial quality score.
+#: The lifetime milestone stays separate and never resets.
+WEEKLY_AWARD_LEVELS = ("none", "green", "silver", "gold")
+
+
+def weekly_blog_award(this_week: int) -> dict[str, str]:
+    """Reward ladder: 0 none, 1 green, 2 silver, 3+ gold. Pure, deterministic."""
+    count = max(0, int(this_week))
+    if count >= 3:
+        return {"level": "gold", "label": "Gold", "colour": "gold"}
+    if count == 2:
+        return {"level": "silver", "label": "Silver", "colour": "silver"}
+    if count == 1:
+        return {"level": "green", "label": "Green", "colour": "green"}
+    return {"level": "none", "label": "Not yet achieved", "colour": "neutral"}
+
+
 def _classify(path: Path, relpath: str, now: datetime) -> BlogPost | None:
     """Classify one file. Returns None for excluded (non-post) files."""
     name = path.name
@@ -635,6 +653,7 @@ def blog_observation(scan: BlogScan, *, now: datetime | None = None) -> dict[str
         "timezone": "Europe/Dublin",
         "this_week": this_week,
         "last_week": last_week,
+        "weekly_award": {**weekly_blog_award(this_week), "this_week": this_week},
         "recent_posts": recent,
         "qualifying_this_week": [
             {"identity": p.identity, "title": p.title, "relpath": p.relpath,

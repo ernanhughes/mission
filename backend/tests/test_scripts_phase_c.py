@@ -122,20 +122,23 @@ def test_repeated_completion_does_not_duplicate_weekly(client: TestClient, tmp_p
 
 
 def test_weekly_monday_and_sunday_same_week(client: TestClient, tmp_path: Path) -> None:
+    from mission_control.scripts.service import dublin_week_bounds
+
     root = tmp_path / "script"
     _make_tree(root)
     _configure(client, root)
     _sync_scripts(client)
     items = sorted(_scripts(client), key=lambda row: row["current_relpath"])
-    # Monday 2026-11-09 and Sunday 2026-11-15 are the same Dublin week.
-    _complete(client, items[0]["id"], completed_at="2026-11-09T09:00:00+00:00")
-    _complete(client, items[1]["id"], completed_at="2026-11-15T23:00:00+00:00")
+    # Monday 00:00 and Sunday 23:59 of the current Dublin week always belong
+    # to the same week, whenever the test runs.
+    bounds = dublin_week_bounds()
+    _complete(client, items[0]["id"], completed_at=bounds["week_start"])
+    _complete(client, items[1]["id"], completed_at=bounds["week_end"])
     weekly = _goal(client, "weekly_script")
-    # Both fall in the week containing today only if today is that week; check
-    # the window directly instead: two completions in one Mon-Sun span count 2.
+    # Both fall in the current week by construction; two completions count 2.
     measurements = client.get("/api/cultivation/goals/weekly_script/measurements").json()
     assert len(measurements) == 2
-    assert weekly["progress"]["current"] >= 0  # window-dependent; measurements prove filtering
+    assert weekly["progress"]["current"] == 2.0
 
 
 def test_weekly_rollover_and_dst(client: TestClient, tmp_path: Path) -> None:

@@ -339,27 +339,11 @@ def seed_cultivation(session, fiction_root: str | None = None) -> None:
         stale.updated_at = now_iso()
         logger.info("Archived superseded cultivation skill %s", stale_id)
 
-    # Seeded live sources: blog (path-gated) and the Activity project index.
-    # Neither is ever synced automatically.
-    blog_path = r"C:\Projects\programmer.ie\content\post"
-    existing_blog = session.scalars(
-        select(CultivationSource).where(CultivationSource.kind == "hugo_blog",
-                                        CultivationSource.goal_id == "blog_posts")).first()
-    if existing_blog is None and Path(blog_path).is_dir():
-        create_source(session, {"id": "src-blog-posts", "name": "programmer.ie posts",
-                                "kind": "hugo_blog", "skill_id": "blog-posts",
-                                "goal_id": "blog_posts", "path": blog_path,
-                                "config": {"period_goal_id": "weekly_blog"}})
-        logger.info("Seeded cultivation blog source (not yet synced)")
-    elif existing_blog is not None:
-        # Backfill the weekly-rhythm link on existing databases without
-        # touching user customization: only add the key when missing.
-        config = dict(existing_blog.config or {})
-        if "period_goal_id" not in config and session.get(CultivationGoal, "weekly_blog") is not None:
-            config["period_goal_id"] = "weekly_blog"
-            existing_blog.config = config
-            existing_blog.updated_at = now_iso()
-            logger.info("Linked blog source to weekly_blog goal")
+    # Seeded live sources: blog (repaired to the real Hugo content directory)
+    # and the Activity project index. Neither is ever synced automatically.
+    from mission_control.cultivation.service import repair_blog_source
+
+    repair_blog_source(session)
     if session.get(CultivationSource, "src-activity-projects") is None:
         create_source(session, {"id": "src-activity-projects", "name": "Activity projects",
                                 "kind": "activity_projects", "skill_id": "software-development",

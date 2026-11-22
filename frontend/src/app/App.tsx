@@ -7,6 +7,7 @@ import { ProjectPage } from "../pages/ProjectPage";
 import { ApplicationsPage } from "../pages/ApplicationsPage";
 import { BooksPage } from "../pages/BooksPage";
 import { FictionBooksPage } from "../pages/FictionBooksPage";
+import { WebsitesPage } from "../pages/WebsitesPage";
 import { ActivityPage } from "../pages/ActivityPage";
 import { CultivationPage } from "../pages/CultivationPage";
 import { ScriptsPage } from "../pages/ScriptsPage";
@@ -41,6 +42,7 @@ export function App() {
         <Route path="applications" element={<ApplicationsPage />} />
         <Route path="books" element={<BooksPage />} />
         <Route path="fiction-books" element={<FictionBooksPage />} />
+        <Route path="websites" element={<WebsitesPage />} />
         <Route path="activity" element={<ActivityPage />} />
         <Route path="cultivation" element={<CultivationPage />} />
         <Route path="scripts" element={<ScriptsPage />} />

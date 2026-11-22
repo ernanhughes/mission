@@ -8,6 +8,7 @@ import {
   Crosshair,
   FileSearch,
   GitBranch,
+  Globe,
   Inbox,
   LayoutDashboard,
   Menu,
@@ -32,6 +33,11 @@ import { CommandPalette } from "./CommandPalette";
 import { useToast } from "./Toast";
 import type { Health } from "../types/api";
 
+// MC-WEBSITES-CULTIVATION-01: the floating Cultivation HUD is disabled by
+// default because it obstructs other content. The Cultivation page and its
+// sidebar entry are unaffected. Set to true to re-enable the floating widget.
+const CULTIVATION_HUD_ENABLED = false;
+
 const navigation = [
   {
     caption: "Workspace",
@@ -42,6 +48,7 @@ const navigation = [
       { to: "/books", label: "Books", icon: BookOpen },
       { to: "/fiction-books", label: "Fiction Books", icon: BookOpen },
       { to: "/projects", label: "Projects", icon: Crosshair },
+      { to: "/websites", label: "Websites", icon: Globe },
       { to: "/activity", label: "Activity", icon: Activity },
       { to: "/cultivation", label: "Cultivation", icon: Sprout },
       { to: "/scripts", label: "Scripts", icon: Moon },
@@ -232,7 +239,7 @@ export function Layout() {
       </div>
 
       <main className="main-content" id="main-content">
-        <CultivationHud />
+        {CULTIVATION_HUD_ENABLED ? <CultivationHud /> : null}
         <Outlet />
       </main>
       <CommandPalette open={paletteOpen} onClose={() => setPaletteOpen(false)} />
