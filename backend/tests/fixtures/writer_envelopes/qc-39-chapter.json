@@ -1,0 +1,287 @@
+{
+  "schema_version": "writer.evaluation-envelope.v1",
+  "evaluation_id": "qc-doc-qcr_9ba12d6a74dd4c4d416beacf",
+  "observed_at": "2026-11-22T18:41:06.196911Z",
+  "work_object": {
+    "kind": "chapter",
+    "target_id": "39-chapter",
+    "document_artifact_id": "docart_1d72881305e770afa69d1806",
+    "project_id": "inference",
+    "book_id": "inference",
+    "source_hash": "8d262ea3348780e341b50f635eacacc806540023bae0af44366f96a08c8eb741"
+  },
+  "producer": {
+    "runtime_name": "qc",
+    "method": "evaluate_document",
+    "method_version": "document_qc.phase1",
+    "qc_run_id": "qcrun_9ba12d6a74dd4c4d416beacf"
+  },
+  "rubric": {
+    "rubric_id": "qc-document",
+    "qc_version": "document_qc.phase1"
+  },
+  "status": "complete",
+  "dimensions": [],
+  "findings": [
+    {
+      "family": "qc",
+      "code": "PUNCTUATION_BREAK",
+      "claim": "Detected unbalanced parentheses.",
+      "severity": "MEDIUM",
+      "spans": [
+        {
+          "source_id": "docart_1d72881305e770afa69d1806",
+          "start": 22589,
+          "end": 22657,
+          "snippet": "Half precision flipped the top token at 2 positions out of 2,304 (0.",
+          "tag": "PUNCTUATION_BREAK"
+        }
+      ],
+      "detail": "Review punctuation around this sentence."
+    },
+    {
+      "family": "qc",
+      "code": "PUNCTUATION_BREAK",
+      "claim": "Detected unbalanced parentheses.",
+      "severity": "MEDIUM",
+      "spans": [
+        {
+          "source_id": "docart_1d72881305e770afa69d1806",
+          "start": 22657,
+          "end": 22684,
+          "snippet": "09%) and 1 in a batch of 8.",
+          "tag": "PUNCTUATION_BREAK"
+        }
+      ],
+      "detail": "Review punctuation around this sentence."
+    },
+    {
+      "family": "qc",
+      "code": "PUNCTUATION_BREAK",
+      "claim": "Detected unbalanced parentheses.",
+      "severity": "MEDIUM",
+      "spans": [
+        {
+          "source_id": "docart_1d72881305e770afa69d1806",
+          "start": 22809,
+          "end": 22817,
+          "snippet": "0125 (0.",
+          "tag": "PUNCTUATION_BREAK"
+        }
+      ],
+      "detail": "Review punctuation around this sentence."
+    },
+    {
+      "family": "qc",
+      "code": "PUNCTUATION_BREAK",
+      "claim": "Detected unbalanced parentheses.",
+      "severity": "MEDIUM",
+      "spans": [
+        {
+          "source_id": "docart_1d72881305e770afa69d1806",
+          "start": 22817,
+          "end": 22870,
+          "snippet": "0141 for batch 8), versus a median margin of about 6.",
+          "tag": "PUNCTUATION_BREAK"
+        }
+      ],
+      "detail": "Review punctuation around this sentence."
+    },
+    {
+      "family": "qc",
+      "code": "PUNCTUATION_BREAK",
+      "claim": "Detected unbalanced parentheses.",
+      "severity": "MEDIUM",
+      "spans": [
+        {
+          "source_id": "docart_1d72881305e770afa69d1806",
+          "start": 26072,
+          "end": 26145,
+          "snippet": "A rough illustration would treat the 2/2,304 first-step disagreements (0.",
+          "tag": "PUNCTUATION_BREAK"
+        }
+      ],
+      "detail": "Review punctuation around this sentence."
+    },
+    {
+      "family": "qc",
+      "code": "PUNCTUATION_BREAK",
+      "claim": "Detected unbalanced parentheses.",
+      "severity": "MEDIUM",
+      "spans": [
+        {
+          "source_id": "docart_1d72881305e770afa69d1806",
+          "start": 26145,
+          "end": 26260,
+          "snippet": "09%) as an independent, stationary per-token hazard, giving about 4% divergence over 48 positions and 20% over 256.",
+          "tag": "PUNCTUATION_BREAK"
+        }
+      ],
+      "detail": "Review punctuation around this sentence."
+    },
+    {
+      "family": "qc",
+      "code": "PACING_BREAK",
+      "claim": "Sentence is an extreme length outlier.",
+      "severity": "LOW",
+      "spans": [
+        {
+          "source_id": "docart_1d72881305e770afa69d1806",
+          "start": 33681,
+          "end": 34345,
+          "snippet": "The rule this adds: **record and validate a complete manifest, distinguish numerical value equality from byte identity, and compare only what the recorded conditions allow; separate repeating a run from not depending on the batch; choose a ",
+          "tag": "PACING_BREAK"
+        }
+      ],
+      "detail": "Review for pacing, clarity, or accidental merge."
+    },
+    {
+      "family": "qc",
+      "code": "PUNCTUATION_BREAK",
+      "claim": "Detected unbalanced parentheses.",
+      "severity": "MEDIUM",
+      "spans": [
+        {
+          "source_id": "docart_1d72881305e770afa69d1806",
+          "start": 34879,
+          "end": 35001,
+          "snippet": "The limited fp32 CPU-versus-GPU comparison gave different numerical logits at all 2,304 teacher-forced positions (up to 5.",
+          "tag": "PUNCTUATION_BREAK"
+        }
+      ],
+      "detail": "Review punctuation around this sentence."
+    },
+    {
+      "family": "qc",
+      "code": "PUNCTUATION_BREAK",
+      "claim": "Detected unbalanced parentheses.",
+      "severity": "MEDIUM",
+      "spans": [
+        {
+          "source_id": "docart_1d72881305e770afa69d1806",
+          "start": 35001,
+          "end": 35089,
+          "snippet": "2e-4 in the worst per-position maximum) while retaining the top token at every position.",
+          "tag": "PUNCTUATION_BREAK"
+        }
+      ],
+      "detail": "Review punctuation around this sentence."
+    },
+    {
+      "family": "qc",
+      "code": "QUOTE_IMBALANCE",
+      "claim": "Detected unbalanced quotation marks.",
+      "severity": "MEDIUM",
+      "spans": [
+        {
+          "source_id": "docart_1d72881305e770afa69d1806",
+          "start": 40655,
+          "end": 40849,
+          "snippet": "Put a numerical-tolerance test for half precision on a decision other than the top token (for example, whether a constrained decode of [Structured Outputs and Constrained Decoding]({{< relref \".",
+          "tag": "QUOTE_IMBALANCE"
+        }
+      ],
+      "detail": "Review dialogue punctuation around this sentence."
+    },
+    {
+      "family": "qc",
+      "code": "PUNCTUATION_BREAK",
+      "claim": "Detected unbalanced parentheses.",
+      "severity": "MEDIUM",
+      "spans": [
+        {
+          "source_id": "docart_1d72881305e770afa69d1806",
+          "start": 40655,
+          "end": 40849,
+          "snippet": "Put a numerical-tolerance test for half precision on a decision other than the top token (for example, whether a constrained decode of [Structured Outputs and Constrained Decoding]({{< relref \".",
+          "tag": "PUNCTUATION_BREAK"
+        }
+      ],
+      "detail": "Review punctuation around this sentence."
+    },
+    {
+      "family": "qc",
+      "code": "QUOTE_IMBALANCE",
+      "claim": "Detected unbalanced quotation marks.",
+      "severity": "MEDIUM",
+      "spans": [
+        {
+          "source_id": "docart_1d72881305e770afa69d1806",
+          "start": 40849,
+          "end": 40926,
+          "snippet": "/35-chapter\" >}}) produces the same record) and say which tolerance it needs.",
+          "tag": "QUOTE_IMBALANCE"
+        }
+      ],
+      "detail": "Review dialogue punctuation around this sentence."
+    },
+    {
+      "family": "qc",
+      "code": "PUNCTUATION_BREAK",
+      "claim": "Detected unbalanced parentheses.",
+      "severity": "MEDIUM",
+      "spans": [
+        {
+          "source_id": "docart_1d72881305e770afa69d1806",
+          "start": 40849,
+          "end": 40926,
+          "snippet": "/35-chapter\" >}}) produces the same record) and say which tolerance it needs.",
+          "tag": "PUNCTUATION_BREAK"
+        }
+      ],
+      "detail": "Review punctuation around this sentence."
+    },
+    {
+      "family": "qc",
+      "code": "PUNCTUATION_BREAK",
+      "claim": "Detected unbalanced parentheses.",
+      "severity": "MEDIUM",
+      "spans": [
+        {
+          "source_id": "docart_1d72881305e770afa69d1806",
+          "start": 41627,
+          "end": 41754,
+          "snippet": "[PyTorch, Reproducibility](https://docs.pytorch.org/docs/2.14/notes/randomness.html) \u2014 official framework documentation (the 2.",
+          "tag": "PUNCTUATION_BREAK"
+        }
+      ],
+      "detail": "Review punctuation around this sentence."
+    },
+    {
+      "family": "qc",
+      "code": "PUNCTUATION_BREAK",
+      "claim": "Detected unbalanced parentheses.",
+      "severity": "MEDIUM",
+      "spans": [
+        {
+          "source_id": "docart_1d72881305e770afa69d1806",
+          "start": 41825,
+          "end": 41882,
+          "snippet": "0); read on 23 October 2026 through a page-fetch summary.",
+          "tag": "PUNCTUATION_BREAK"
+        }
+      ],
+      "detail": "Review punctuation around this sentence."
+    }
+  ],
+  "coverage": {
+    "unit": "sentences",
+    "evaluated": 318,
+    "total": null,
+    "note": "Evaluated sentence-result rows retained by the native report; denominator not stated by the native result."
+  },
+  "limitations": [
+    "Document QC yields categorical findings, not per-dimension scores; delta scores exist only in candidate-comparison results."
+  ],
+  "provenance": {
+    "qc_report_id": "qcr_9ba12d6a74dd4c4d416beacf",
+    "overall_status": "WARN",
+    "counts": {
+      "hard_fail": 0,
+      "warning": 15,
+      "info": 0
+    },
+    "operation_id": "qcrun_9ba12d6a74dd4c4d416beacf"
+  },
+  "supersedes": null
+}

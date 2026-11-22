@@ -1202,6 +1202,85 @@ export type ArtifactLoadWorkspace = {
   limitations: string[];
 };
 
+export type WriterEvaluationSpan = {
+  source_id: string;
+  start?: number | null;
+  end?: number | null;
+  snippet: string;
+  tag?: string | null;
+};
+
+export type WriterEvaluationDimension = {
+  dimension: string;
+  score: number | null;
+  verdict?: string | null;
+  confidence?: number | null;
+  scale: {
+    scale_type: string;
+    minimum?: number | null;
+    maximum?: number | null;
+    higher_is_better?: boolean | null;
+    comparable_group?: string | null;
+    description: string;
+  };
+  rationale: string;
+  evidence_spans: WriterEvaluationSpan[];
+};
+
+export type WriterEvaluationFinding = {
+  family: string;
+  code: string;
+  claim: string;
+  severity?: string | null;
+  spans: WriterEvaluationSpan[];
+  detail?: string | null;
+};
+
+export type WriterEvaluationEnvelope = {
+  schema_version: string;
+  evaluation_id: string;
+  observed_at: string;
+  work_object: {
+    kind: string;
+    target_id: string;
+    source_path?: string | null;
+    source_hash: string;
+    byte_length?: number | null;
+  };
+  producer: {
+    runtime_name: string;
+    method: string;
+    method_version?: string;
+    qc_run_id?: string;
+  };
+  rubric: {
+    rubric_id?: string;
+    qc_version?: string;
+    profile?: string;
+  };
+  status: "complete" | "partial" | "empty" | "unavailable";
+  dimensions: WriterEvaluationDimension[];
+  findings: WriterEvaluationFinding[];
+  coverage: {
+    unit: string;
+    evaluated?: number | null;
+    total?: number | null;
+    note: string;
+  } | null;
+  limitations: string[];
+  provenance: Record<string, any>;
+  supersedes?: string | null;
+};
+
+export type WriterEvaluationItem = {
+  record_id: string;
+  evaluation_id: string;
+  project_id: string | null;
+  current: boolean;
+  observed_at: string;
+  envelope: WriterEvaluationEnvelope;
+};
+
 export type LanguageObservation = {
   id: string;
   workflow_id: string;
