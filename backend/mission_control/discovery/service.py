@@ -19,6 +19,7 @@ from mission_control.discovery.scanner import ScanResult, scan_roots
 from mission_control.models import (
     Application,
     DiscoveryRoot,
+    GitRepository,
     ProjectRepository,
     Repository,
     Setting,
@@ -228,6 +229,11 @@ class DiscoveryService:
                 repo.last_commit_at = git.get("last_commit_at")
                 repo.dirty = git.get("dirty")
                 repo.last_observed_at = now_iso()
+                git_row = session.scalar(
+                    select(GitRepository).where(GitRepository.path == candidate.path)
+                )
+                if git_row is not None and git_row.repo_uid:
+                    repo.repo_uid = git_row.repo_uid
                 if candidate.error:
                     repo.notes = candidate.error[:500]
                 if existing is None:

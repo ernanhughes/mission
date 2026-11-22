@@ -1,0 +1,1 @@
+"""Evidence-backed software quality evaluation (MC-PROJECTS-QUALITY-02)."""

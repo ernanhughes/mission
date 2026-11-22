@@ -93,8 +93,12 @@ DEFAULT_SETTINGS: dict[str, Any] = {
         "log_days": 30,
     },
     "ai": {
-        "enabled": False,
-        "consent": False,
+        # Owner-directed default: AI is on unless explicitly disabled.
+        # Fresh databases start enabled with consent recorded; the Pi-first
+        # route needs no endpoint credentials. Existing rows are never
+        # overwritten (get-or-create), so this only sets the default.
+        "enabled": True,
+        "consent": True,
         "provider": "openai-compatible",
         "base_url": "",
         "model": "",
@@ -568,6 +572,7 @@ def seed_defaults(session: Session, settings: RuntimeSettings) -> None:
                 current_milestone=item.get("current_milestone", ""),
                 next_action=item.get("next_action", ""),
                 notes=item.get("notes", ""),
+                origin="seeded",
                 created_at=now_iso(),
                 updated_at=now_iso(),
             )

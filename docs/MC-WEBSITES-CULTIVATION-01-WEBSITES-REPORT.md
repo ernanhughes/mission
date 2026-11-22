@@ -120,9 +120,6 @@ them), served HTTP, and stopped cleanly. Hugo found on PATH.
    until reload.
 8. `open-path` endpoint has **no backend test**; launch tests use a fake Popen
    (no real-Hugo test in CI).
-9. `math-r1` was folded into `C:\books\math` (the project moved there);
-   earlier seed/docs referenced `C:\Projects\math-r1`, which no longer exists.
-   References now point at `C:\books\math`; nothing further to decide.
 
 ## 5. Suggested review focus
 

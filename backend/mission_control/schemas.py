@@ -324,6 +324,7 @@ class RepositoryRead(BaseModel):
     evidence: list[str]
     role: str | None = None
     source_root: str
+    repo_uid: str = ""
     is_git: bool
     branch: str | None
     commit_hash: str | None
@@ -1339,10 +1340,12 @@ class ProjectRead(BaseModel):
     latest_checkpoint: CheckpointRead | None = None
     open_task_count: int = 0
     pending_recommendation_count: int = 0
+    origin: str = "curated"
 
 
 class ProjectDetail(ProjectRead):
     repository_action: ActionState | None = None
+    inspect_project_id: str | None = None
     checkpoints: list[CheckpointRead] = Field(default_factory=list)
     tasks: list[TaskRead] = Field(default_factory=list)
     decisions: list[DecisionRead] = Field(default_factory=list)
@@ -3144,3 +3147,467 @@ class InspectCoverageRead(InspectSnapshotState):
 class InspectCompositionListRead(InspectSnapshotState):
     total: int = 0
     compositions: list[dict[str, Any]] = Field(default_factory=list)
+
+
+# --------------------------------- software-project reconciliation (MC-PROJECTS-QUALITY-01 Phase 1)
+# Read-only report comparing the software inventory under a discovery root
+# against persisted Project/Repository/Git/Application state. No writes.
+
+
+class ReconciliationProjectEntry(BaseModel):
+    id: str
+    name: str
+    kind: str
+    status: str
+    archived: bool = False
+    has_book: bool = False
+    repository_paths: list[str] = Field(default_factory=list)
+    missing_paths: list[str] = Field(default_factory=list)
+
+
+class ReconciliationCandidateEntry(BaseModel):
+    path: str
+    name: str
+    classification: str = "unknown"
+    confidence: float = 0.0
+    source: str = "indexed"
+    repo_uid: str = ""
+    git_indexed: bool = False
+    application_linked: bool = False
+
+
+class ReconciliationMissingPath(BaseModel):
+    path: str
+    reason: str = ""
+
+
+class ReconciliationCollision(BaseModel):
+    basename: str = ""
+    repo_uid: str = ""
+    paths: list[str] = Field(default_factory=list)
+
+
+class ReconciliationAppEntry(BaseModel):
+    id: str
+    name: str
+    repository_path: str | None = None
+    enabled: bool = True
+    related_projects: list[str] = Field(default_factory=list)
+
+
+class ReconciliationCounts(BaseModel):
+    projects_total: int = 0
+    software_projects: int = 0
+    book_legacy_projects: int = 0
+    repositories_total: int = 0
+    repositories_under_root: int = 0
+    git_repositories_total: int = 0
+    applications_total: int = 0
+    unlinked_candidates: int = 0
+    missing_paths: int = 0
+    basename_collisions: int = 0
+    shared_repo_uids: int = 0
+    git_backfill_pending: int = 0
+    repositories_never_observed: int = 0
+
+
+class ProjectReconciliationRead(BaseModel):
+    software_root: str | None = None
+    root_exists: bool = False
+    root_enabled: bool | None = None
+    discovery_roots: list[dict[str, Any]] = Field(default_factory=list)
+    counts: ReconciliationCounts = Field(default_factory=ReconciliationCounts)
+    software_projects: list[ReconciliationProjectEntry] = Field(default_factory=list)
+    book_legacy_projects: list[ReconciliationProjectEntry] = Field(default_factory=list)
+    unlinked_candidates: list[ReconciliationCandidateEntry] = Field(default_factory=list)
+    missing_paths: list[ReconciliationMissingPath] = Field(default_factory=list)
+    basename_collisions: list[ReconciliationCollision] = Field(default_factory=list)
+    shared_repo_uids: list[ReconciliationCollision] = Field(default_factory=list)
+    applications: list[ReconciliationAppEntry] = Field(default_factory=list)
+    live_scan: dict[str, Any] | None = None
+    notes: list[str] = Field(default_factory=list)
+
+
+# ----------------- software-project identity cutover (MC-PROJECTS-QUALITY-01)
+
+
+class IdentityLinkRead(BaseModel):
+    path: str
+    role: str = "primary"
+
+
+class IdentityEligibleRead(BaseModel):
+    path: str
+    name: str
+    classification: str = "unknown"
+    confidence: float = 0.0
+    evidence: list[str] = Field(default_factory=list)
+    repo_uid: str = ""
+    is_git: bool = False
+    kind: str = "project"
+    project_id: str = ""
+    links: list[IdentityLinkRead] = Field(default_factory=list)
+    application_id: str | None = None
+
+
+class IdentityReviewRead(BaseModel):
+    path: str
+    name: str
+    classification: str = "unknown"
+    confidence: float = 0.0
+    evidence: list[str] = Field(default_factory=list)
+    repo_uid: str = ""
+    is_git: bool = False
+    reason: str = ""
+
+
+class IdentitySkippedRead(BaseModel):
+    path: str
+    name: str
+    classification: str = "unknown"
+    confidence: float = 0.0
+    repo_uid: str = ""
+    is_git: bool = False
+    reason: str = ""
+
+
+class IdentityPolicyRead(BaseModel):
+    auto_register: bool = False
+    approved_at: str | None = None
+    approved_root: str | None = None
+
+
+class IdentityPreviewRead(BaseModel):
+    root: str | None = None
+    policy: IdentityPolicyRead = Field(default_factory=IdentityPolicyRead)
+    counts: dict[str, int] = Field(default_factory=dict)
+    eligible: list[IdentityEligibleRead] = Field(default_factory=list)
+    needs_review: list[IdentityReviewRead] = Field(default_factory=list)
+    skipped: list[IdentitySkippedRead] = Field(default_factory=list)
+    notes: list[str] = Field(default_factory=list)
+
+
+class IdentityApplyRequest(RawModel):
+    paths: list[str] = Field(default_factory=list)
+    all_eligible: bool = False
+    confirm: bool = False
+    approve_policy: bool = False
+    root: str | None = None
+
+
+class IdentityApplyRead(BaseModel):
+    root: str | None = None
+    created: list[dict[str, Any]] = Field(default_factory=list)
+    skipped: list[dict[str, Any]] = Field(default_factory=list)
+    counts: dict[str, int] = Field(default_factory=dict)
+    policy: IdentityPolicyRead = Field(default_factory=IdentityPolicyRead)
+    backup: str | None = None
+
+
+class IdentityAutoRegisterRequest(RawModel):
+    confirm: bool = False
+    root: str | None = None
+
+
+class IdentityRollbackRequest(RawModel):
+    confirm: bool = False
+
+
+class IdentityRollbackRead(BaseModel):
+    removed: list[dict[str, Any]] = Field(default_factory=list)
+    retained: list[dict[str, Any]] = Field(default_factory=list)
+    counts: dict[str, int] = Field(default_factory=dict)
+
+
+class SoftwareProjectRead(BaseModel):
+    id: str
+    name: str
+    description: str = ""
+    kind: str = "project"
+    status: str = "active"
+    pinned: bool = False
+    archived: bool = False
+    origin: str = "curated"
+    priority: int = 100
+    classification: str = "unknown"
+    confidence: float = 0.0
+    path: str | None = None
+    repository_count: int = 0
+    repo_uid: str = ""
+    branch: str | None = None
+    commit_hash: str | None = None
+    last_commit_at: str | None = None
+    last_observed_at: str | None = None
+    accessible: bool = False
+    missing: bool = False
+    stale: bool = False
+    applications: list[dict[str, str]] = Field(default_factory=list)
+    open_task_count: int = 0
+    pending_recommendation_count: int = 0
+    needs_attention: bool = False
+    quality_state: str = "unassessed"
+    inspect_project_id: str | None = None
+    current_milestone: str = ""
+    next_action: str = ""
+    updated_at: str | None = None
+
+
+class SoftwareInventoryRead(BaseModel):
+    total: int = 0
+    limit: int = 50
+    offset: int = 0
+    items: list[SoftwareProjectRead] = Field(default_factory=list)
+
+
+class ProjectGitLinkRead(BaseModel):
+    repository_id: str
+    path: str
+    role: str = "primary"
+    classification: str = "unknown"
+    accessible: bool = False
+    git_repo_id: str | None = None
+    repo_uid: str = ""
+    branch: str | None = None
+    head_sha: str | None = None
+    total_commits: int = 0
+    backfill_complete: bool = True
+    has_agents: bool = False
+    has_description: bool = False
+    context_status: str = "missing"
+    latest_review_status: str | None = None
+    latest_review_verdict: str | None = None
+
+
+# ---------------- software quality evaluation (MC-PROJECTS-QUALITY-02)
+
+
+class SoftwareCharterCreate(RawModel):
+    project_id: str = Field(min_length=1, max_length=120)
+    purpose: str = ""
+    users: str = ""
+    capabilities: list[str] = Field(default_factory=list)
+    interfaces: list[str] = Field(default_factory=list)
+    acceptance: list[str] = Field(default_factory=list)
+    non_goals: list[str] = Field(default_factory=list)
+    constraints: list[str] = Field(default_factory=list)
+    lifecycle: str = ""
+    dependencies: list[str] = Field(default_factory=list)
+    verification_expectations: str = ""
+    evidence_refs: list[str] = Field(default_factory=list)
+    provenance: dict[str, Any] = Field(default_factory=dict)
+
+
+class SoftwareCharterRead(BaseModel):
+    id: str
+    project_id: str
+    revision: int
+    status: str
+    purpose: str
+    users: str
+    capabilities: list[str] = Field(default_factory=list)
+    interfaces: list[str] = Field(default_factory=list)
+    acceptance: list[str] = Field(default_factory=list)
+    non_goals: list[str] = Field(default_factory=list)
+    constraints: list[str] = Field(default_factory=list)
+    lifecycle: str = ""
+    dependencies: list[str] = Field(default_factory=list)
+    verification_expectations: str = ""
+    evidence_refs: list[str] = Field(default_factory=list)
+    provenance: dict[str, Any] = Field(default_factory=dict)
+    supersedes: str | None = None
+    created_by: str = ""
+    created_at: str
+    updated_at: str
+
+
+class SoftwareCharterDraftValue(BaseModel):
+    value: str = ""
+    source: str = ""
+
+
+class SoftwareCharterDraftRead(BaseModel):
+    project_id: str
+    status: str = "draft"
+    purpose: SoftwareCharterDraftValue = Field(default_factory=SoftwareCharterDraftValue)
+    users: SoftwareCharterDraftValue = Field(default_factory=SoftwareCharterDraftValue)
+    capabilities: list[SoftwareCharterDraftValue] = Field(default_factory=list)
+    interfaces: list[SoftwareCharterDraftValue] = Field(default_factory=list)
+    acceptance: list[SoftwareCharterDraftValue] = Field(default_factory=list)
+    non_goals: list[SoftwareCharterDraftValue] = Field(default_factory=list)
+    constraints: list[SoftwareCharterDraftValue] = Field(default_factory=list)
+    lifecycle: SoftwareCharterDraftValue = Field(default_factory=SoftwareCharterDraftValue)
+    dependencies: list[SoftwareCharterDraftValue] = Field(default_factory=list)
+    verification_expectations: SoftwareCharterDraftValue = Field(default_factory=SoftwareCharterDraftValue)
+    note: str = ""
+
+
+class SoftwareEvaluationCreate(RawModel):
+    project_id: str = Field(min_length=1, max_length=120)
+    model: str = Field(default="", max_length=200)
+    charter_id: str | None = None
+    force: bool = False
+
+
+class SoftwareEvaluationPreviewRead(BaseModel):
+    prompt: str
+    prompt_hash: str = ""
+    prompt_chars: int = 0
+    model: str = ""
+    route: str = ""
+    evidence_id_count: int = 0
+    evidence_fingerprint: str = ""
+    charter: dict[str, Any] | None = None
+    rubric: dict[str, Any] = Field(default_factory=dict)
+    calls_planned: int = 0
+    calls: list[dict[str, Any]] = Field(default_factory=list)
+
+
+class SoftwareDimensionRead(BaseModel):
+    state: str = "abstained"
+    max: int = 0
+    score: int | None = None
+    confidence: float = 0.0
+    rationale: str = ""
+    positives: list[str] = Field(default_factory=list)
+    assumptions: list[str] = Field(default_factory=list)
+    unknowns: list[str] = Field(default_factory=list)
+    na_reason: str = ""
+    evidence_refs: list[str] = Field(default_factory=list)
+    findings: list[dict[str, Any]] = Field(default_factory=list)
+
+
+class SoftwareEvaluationRead(BaseModel):
+    id: str
+    project_id: str
+    charter_id: str | None = None
+    charter_revision: int | None = None
+    repo_uid: str = ""
+    repo_path: str = ""
+    head_sha: str | None = None
+    evidence_fingerprint: str = ""
+    rubric_id: str = "software-quality-v1"
+    rubric_version: int = 1
+    prompt_version: str = "1"
+    requested_model: str | None = None
+    observed_model: str | None = None
+    model_route: str = ""
+    status: str = "queued"
+    overall: float | None = None
+    max_attainable: float = 1000
+    coverage_percent: float | None = None
+    dimensions: dict[str, SoftwareDimensionRead] = Field(default_factory=dict)
+    uncertainty: str = ""
+    limitations: list[str] = Field(default_factory=list)
+    execution: dict[str, Any] = Field(default_factory=dict)
+    error: str | None = None
+    prompt_hash: str = ""
+    previous_evaluation_id: str | None = None
+    created_at: str
+    completed_at: str | None = None
+    freshness: str = "unknown"
+    freshness_reasons: list[str] = Field(default_factory=list)
+
+
+class SoftwareEvalReviewCreate(RawModel):
+    model: str = Field(default="", max_length=200)
+
+
+class SoftwareEvalReviewRead(BaseModel):
+    id: str
+    evaluation_id: str
+    reviewer_model: str = ""
+    model_route: str = ""
+    status: str = "queued"
+    verdict: str = ""
+    rationale: str = ""
+    finding_verdicts: list[dict[str, Any]] = Field(default_factory=list)
+    usage_info: dict[str, Any] = Field(default_factory=dict)
+    error: str | None = None
+    created_at: str
+    completed_at: str | None = None
+
+
+class SoftwareEvaluationDetailRead(BaseModel):
+    evaluation: SoftwareEvaluationRead
+    reviews: list[SoftwareEvalReviewRead] = Field(default_factory=list)
+    findings: list["SoftwareFindingRead"] = Field(default_factory=list)
+
+
+class SoftwareCompareRead(BaseModel):
+    compatible: bool = False
+    reason: str = ""
+    warnings: list[str] = Field(default_factory=list)
+    delta: float | None = None
+    first: SoftwareEvaluationRead
+    second: SoftwareEvaluationRead
+
+
+class SoftwareFindingRead(BaseModel):
+    id: str
+    project_id: str
+    fingerprint: str = ""
+    severity: str = "medium"
+    component: str = ""
+    title: str = ""
+    expected: str = ""
+    observed: str = ""
+    impact: str = ""
+    proposal: str = ""
+    verification_required: str = ""
+    evidence_refs: list[str] = Field(default_factory=list)
+    source_evaluations: list[str] = Field(default_factory=list)
+    status: str = "proposed"
+    verified: bool = False
+    resolution_evidence: list[str] = Field(default_factory=list)
+    history: list[dict[str, Any]] = Field(default_factory=list)
+    reviews: list[dict[str, Any]] = Field(default_factory=list)
+    created_at: str
+    updated_at: str
+
+
+class SoftwareFindingReviewCreate(RawModel):
+    decision: str = Field(min_length=1, max_length=20)
+    reason: str = Field(default="", max_length=2000)
+    reviewer: str = Field(default="owner", max_length=120)
+
+
+class SoftwareFindingResolve(RawModel):
+    resolution_evidence: list[str] = Field(min_length=1, max_length=20)
+
+
+class SoftwareFindingReopen(RawModel):
+    reason: str = Field(default="", max_length=2000)
+
+
+class SoftwarePromptCreate(RawModel):
+    project_id: str = Field(min_length=1, max_length=120)
+    finding_ids: list[str] = Field(min_length=1, max_length=15)
+    scope: str = Field(default="", max_length=500)
+
+
+class SoftwarePromptRead(BaseModel):
+    id: str
+    project_id: str
+    finding_ids: list[str] = Field(default_factory=list)
+    scope: str = ""
+    prompt: str = ""
+    provenance: dict[str, Any] = Field(default_factory=dict)
+    created_at: str
+
+
+class SoftwareCultivationReportCreate(RawModel):
+    project_id: str = Field(min_length=1, max_length=120)
+    goal_id: str = Field(min_length=1, max_length=120)
+    item_id: str | None = None
+    note: str = Field(default="", max_length=2000)
+    finding_id: str | None = None
+    evaluation_id: str | None = None
+
+
+class SoftwareCultivationReportRead(BaseModel):
+    evidence_id: str
+    verified: bool
+    reference: str
+
+
+SoftwareEvaluationDetailRead.model_rebuild()

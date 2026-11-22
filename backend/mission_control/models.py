@@ -126,6 +126,7 @@ class Project(Base):
     priority: Mapped[int] = mapped_column(Integer, default=100, nullable=False)
     pinned: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     archived: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    origin: Mapped[str] = mapped_column(String, default="curated", nullable=False)
     display_order: Mapped[int] = mapped_column(Integer, default=100, nullable=False)
     current_milestone: Mapped[str] = mapped_column(Text, default="", nullable=False)
     next_action: Mapped[str] = mapped_column(Text, default="", nullable=False)
@@ -181,6 +182,7 @@ class Repository(Base):
     confidence: Mapped[float] = mapped_column(Float, default=0.0, nullable=False)
     evidence: Mapped[list[str]] = mapped_column(JSON, default=list, nullable=False)
     source_root: Mapped[str] = mapped_column(String, default="", nullable=False)
+    repo_uid: Mapped[str] = mapped_column(Text, default="", nullable=False)
     is_git: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     branch: Mapped[str | None] = mapped_column(String)
     commit_hash: Mapped[str | None] = mapped_column(String)
@@ -1793,6 +1795,29 @@ class PublicationCalibrationReview(Base):
     created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
 
 
+class ProjectIdentityDecision(Base):
+    """Audit trail for software-project identity cutover (MC-PROJECTS-QUALITY-01).
+
+    One row per repository path decision: automatic registration, explicit owner
+    approval/rejection, or held-for-review. Append-mostly: rollback marks rows
+    ``rolled_back`` instead of deleting them. ``path_norm`` is the normalized
+    absolute path and carries a uniqueness constraint so repeated scans and
+    repeated approvals are idempotent. ``repo_uid`` is the Git technical
+    identity where available, never a display name or bare directory name.
+    """
+
+    __tablename__ = "project_identity_decisions"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    repo_uid: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    path: Mapped[str] = mapped_column(Text, nullable=False)
+    path_norm: Mapped[str] = mapped_column(Text, nullable=False)
+    project_id: Mapped[str | None] = mapped_column(Text)
+    decision: Mapped[str] = mapped_column(String, default="auto_registered", nullable=False)
+    reason: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
 class WebsitePostEvaluation(Base):
     """One blog-post editorial evaluation observation (MC-WEBSITES-POSTS-01).
 
@@ -1887,3 +1912,166 @@ class PublicationFollowup(Base):
     updated_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
 
 
+class SoftwareCharter(Base):
+    """Owner-editable project purpose contract (MC-PROJECTS-QUALITY-02 Phase 1).
+
+    Persisted in Mission Control; no repository files required. ``draft`` rows
+    are unconfirmed inference; only ``confirmed`` rows express owner intent.
+    Revisions are append-only (``supersedes``); evaluations pin the revision
+    they used so charter edits make prior assessments stale, never wrong.
+    """
+
+    __tablename__ = "software_charters"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    project_id: Mapped[str] = mapped_column(String, nullable=False)
+    revision: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
+    status: Mapped[str] = mapped_column(String, default="draft", nullable=False)
+    purpose: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    users: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    capabilities: Mapped[list[str]] = mapped_column(JSON, default=list, nullable=False)
+    interfaces: Mapped[list[str]] = mapped_column(JSON, default=list, nullable=False)
+    acceptance: Mapped[list[str]] = mapped_column(JSON, default=list, nullable=False)
+    non_goals: Mapped[list[str]] = mapped_column(JSON, default=list, nullable=False)
+    constraints: Mapped[list[str]] = mapped_column(JSON, default=list, nullable=False)
+    lifecycle: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    dependencies: Mapped[list[str]] = mapped_column(JSON, default=list, nullable=False)
+    verification_expectations: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    evidence_refs: Mapped[list[str]] = mapped_column(JSON, default=list, nullable=False)
+    provenance: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict, nullable=False)
+    supersedes: Mapped[str | None] = mapped_column(String)
+    created_by: Mapped[str] = mapped_column(String, default="", nullable=False)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+    updated_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class SoftwareEvaluation(Base):
+    """One evidence-backed software quality assessment (MC-PROJECTS-QUALITY-02).
+
+    Append-only observation. Scores live in ``dimensions``; ``overall`` is NULL
+    unless the aggregation policy is satisfied. Freshness is derived at read
+    time (head/charter/rubric drift), never by overwriting.
+    """
+
+    __tablename__ = "software_evaluations"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    project_id: Mapped[str] = mapped_column(String, nullable=False)
+    charter_id: Mapped[str | None] = mapped_column(String)
+    charter_revision: Mapped[int | None] = mapped_column(Integer)
+    repo_uid: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    repo_path: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    head_sha: Mapped[str | None] = mapped_column(String)
+    evidence_fingerprint: Mapped[str] = mapped_column(String, default="", nullable=False)
+    evidence_manifest: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict, nullable=False)
+    rubric_id: Mapped[str] = mapped_column(String, default="software-quality-v1", nullable=False)
+    rubric_version: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
+    prompt_version: Mapped[str] = mapped_column(String, default="1", nullable=False)
+    requested_model: Mapped[str | None] = mapped_column(String)
+    observed_model: Mapped[str | None] = mapped_column(String)
+    model_route: Mapped[str] = mapped_column(String, default="", nullable=False)
+    status: Mapped[str] = mapped_column(String, default="queued", nullable=False)
+    overall: Mapped[float | None] = mapped_column(Float, nullable=True)
+    max_attainable: Mapped[float] = mapped_column(Float, default=1000, nullable=False)
+    coverage_percent: Mapped[float | None] = mapped_column(Float, nullable=True)
+    dimensions: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict, nullable=False)
+    uncertainty: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    limitations: Mapped[list[str]] = mapped_column(JSON, default=list, nullable=False)
+    execution: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict, nullable=False)
+    error: Mapped[str | None] = mapped_column(Text)
+    prompt_hash: Mapped[str] = mapped_column(String, default="", nullable=False)
+    previous_evaluation_id: Mapped[str | None] = mapped_column(
+        String, ForeignKey("software_evaluations.id", ondelete="SET NULL")
+    )
+    supersedes: Mapped[str | None] = mapped_column(String)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+    completed_at: Mapped[str | None] = mapped_column(String)
+
+
+class SoftwareEvalReview(Base):
+    """Independent second review of one evaluation (MC-PROJECTS-QUALITY-02).
+
+    Judges the original evidence, not the first model's conclusions.
+    Disagreements are recorded here, never by editing the evaluation.
+    """
+
+    __tablename__ = "software_eval_reviews"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    evaluation_id: Mapped[str] = mapped_column(
+        String, ForeignKey("software_evaluations.id", ondelete="CASCADE"), nullable=False
+    )
+    reviewer_model: Mapped[str] = mapped_column(String, default="", nullable=False)
+    model_route: Mapped[str] = mapped_column(String, default="", nullable=False)
+    status: Mapped[str] = mapped_column(String, default="queued", nullable=False)
+    verdict: Mapped[str] = mapped_column(String, default="", nullable=False)
+    rationale: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    finding_verdicts: Mapped[list[Any]] = mapped_column(JSON, default=list, nullable=False)
+    usage_info: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict, nullable=False)
+    error: Mapped[str | None] = mapped_column(Text)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+    completed_at: Mapped[str | None] = mapped_column(String)
+
+
+class SoftwareFinding(Base):
+    """Persistent, deduplicated quality finding (MC-PROJECTS-QUALITY-02).
+
+    Identity is ``project_id + fingerprint`` (stable across evaluations).
+    Owner decisions live in ``software_finding_reviews``; verification state
+    advances only on evidence, never on implementation claims.
+    """
+
+    __tablename__ = "software_findings"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    project_id: Mapped[str] = mapped_column(String, nullable=False)
+    fingerprint: Mapped[str] = mapped_column(String, default="", nullable=False)
+    severity: Mapped[str] = mapped_column(String, default="medium", nullable=False)
+    component: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    title: Mapped[str] = mapped_column(String, nullable=False)
+    expected: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    observed: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    impact: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    proposal: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    verification_required: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    evidence_refs: Mapped[list[str]] = mapped_column(JSON, default=list, nullable=False)
+    source_evaluations: Mapped[list[str]] = mapped_column(JSON, default=list, nullable=False)
+    status: Mapped[str] = mapped_column(String, default="proposed", nullable=False)
+    resolution_evidence: Mapped[list[str]] = mapped_column(JSON, default=list, nullable=False)
+    history: Mapped[list[Any]] = mapped_column(JSON, default=list, nullable=False)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+    updated_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class SoftwareFindingReview(Base):
+    """Owner decision on one finding (ACCEPT/REJECT/DEFER/INVESTIGATE)."""
+
+    __tablename__ = "software_finding_reviews"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    finding_id: Mapped[str] = mapped_column(
+        String, ForeignKey("software_findings.id", ondelete="CASCADE"), nullable=False
+    )
+    decision: Mapped[str] = mapped_column(String, nullable=False)
+    reason: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    reviewer: Mapped[str] = mapped_column(String, default="", nullable=False)
+    source_digest: Mapped[str] = mapped_column(String, default="", nullable=False)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class SoftwarePrompt(Base):
+    """Saved implementation prompt with provenance (MC-PROJECTS-QUALITY-02).
+
+    Generating a prompt never modifies a repository or launches an agent;
+    execution stays an explicit, separately authorized action.
+    """
+
+    __tablename__ = "software_prompts"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    project_id: Mapped[str] = mapped_column(String, nullable=False)
+    finding_ids: Mapped[list[str]] = mapped_column(JSON, default=list, nullable=False)
+    scope: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    prompt: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    provenance: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict, nullable=False)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)

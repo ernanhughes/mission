@@ -59,6 +59,7 @@ class Classification:
     classification: str
     confidence: float
     evidence: list[str]
+    reason: str = ""
 
 
 def top_level_markers(path: Path) -> set[str]:
@@ -81,6 +82,57 @@ def _read_text(path: Path, limit: int = 16_000) -> str:
         return path.read_text(encoding="utf-8", errors="replace")[:limit]
     except OSError:
         return ""
+
+
+def _has_source_layout(path: Path) -> list[str]:
+    """Structural source-layout markers: the repository builds or runs software."""
+    found = []
+    for dirname in ("src", "backend", "frontend", "cli", "api", "lib", "bin", "server", "cmd", "pkg", "app"):
+        if (path / dirname).is_dir():
+            found.append(dirname + "/")
+    for filename in ("Dockerfile", "docker-compose.yml", "docker-compose.yaml", "Makefile", "justfile"):
+        if (path / filename).is_file():
+            found.append(filename)
+    for filename in ("main.py", "cli.py", "server.py", "index.js", "index.ts", "main.go"):
+        if (path / "src" / filename).is_file() or (path / filename).is_file():
+            found.append(filename)
+    return found
+
+
+def _manuscript_deliverable(path: Path) -> tuple[bool, list[str]]:
+    """True when a book manuscript tree is the deliverable, not just a topic.
+
+    README keywords alone never qualify: documentation can discuss any subject,
+    including books, while the repository itself builds or runs software.
+    """
+    if (path / "content" / "books").is_dir():
+        return True, ["content/books manuscript tree present"]
+    if (path / "bookbuilder.toml").is_file():
+        return True, ["bookbuilder.toml present: manuscript build is the deliverable"]
+    book_dir = path / "book"
+    if book_dir.is_dir() and (book_dir / "planning").is_dir():
+        return True, ["book/planning manuscript tree present"]
+    chapters = path / "chapters"
+    if chapters.is_dir():
+        try:
+            md_count = sum(1 for entry in chapters.iterdir() if entry.suffix == ".md")
+        except OSError:
+            md_count = 0
+        if md_count >= 3:
+            return True, [f"chapters/ holds {md_count} manuscript files"]
+    return False, []
+
+
+def _software_deliverable(
+    path: Path, scripts: list[str], commands: list[str], layout: list[str]
+) -> tuple[bool, list[str]]:
+    """True when the repository builds or runs software of its own."""
+    signals = []
+    if scripts or commands:
+        signals.append("declared runnable entry points")
+    if layout:
+        signals.append("source layout: " + ", ".join(sorted(set(layout))[:8]))
+    return bool(signals), signals
 
 
 def _pyproject_scripts(path: Path) -> list[str]:
@@ -124,7 +176,12 @@ def classify(path: Path) -> Classification:
         return Classification("generated_artifact", 0.9, evidence)
 
     if not markers and not (path / ".git").exists():
-        return Classification("unknown", 0.2, ["No repository, source or documentation markers found"])
+        return Classification(
+            "unknown",
+            0.2,
+            ["No repository, source or documentation markers found"],
+            reason="No repository, source or documentation markers found; owner review required.",
+        )
 
     readme = ""
     for readme_name in ("README.md", "readme.md"):
@@ -163,43 +220,108 @@ def classify(path: Path) -> Classification:
     if (path / "docker-compose.yml").exists() or (path / "docker-compose.yaml").exists():
         evidence.append("Docker Compose configuration present")
 
-    book_signal = (
-        "content/books" in str(path).replace("\\", "/").lower()
-        or (path / "content" / "books").exists()
-        or "book" in readme[:2000]
-        or (path / "book" / "planning").exists()
-        or ("chapters" in readme and "manuscript" in readme)
-        or "chapter" in readme[:2000] and "book" in readme[:4000]
-    )
+    layout = _has_source_layout(path)
+    if layout:
+        evidence.append("Source layout present: " + ", ".join(sorted(set(layout))[:8]))
+    manuscript, manuscript_evidence = _manuscript_deliverable(path)
+    evidence.extend(manuscript_evidence)
+    deliverable, _ = _software_deliverable(path, scripts, commands, layout)
     research_signal = (
         (path / "artifacts").exists()
         or (path / "experiments").exists()
         or "research" in readme[:3000]
         or "investigation" in readme[:3000]
     )
-    if book_signal:
+
+    discusses_books = (
+        "book" in readme[:2000]
+        or ("chapters" in readme and "manuscript" in readme)
+        or ("chapter" in readme[:2000] and "book" in readme[:4000])
+    )
+    if discusses_books and not manuscript:
+        # Subject matter is not the deliverable. Software that supports book
+        # production (authoring CLIs, workbenches, orchestration) must not be
+        # classified as a book because its documentation discusses books.
+        evidence.append("README discusses books; treated as subject matter, not the deliverable")
+
+    if manuscript and not deliverable:
         confidence = 0.94 if (path / "content" / "books").exists() or (path / "book").exists() else 0.8
-        return Classification("book", confidence, evidence)
+        return Classification(
+            "book",
+            confidence,
+            evidence,
+            reason="A manuscript tree is the deliverable and no runnable software entry points were found.",
+        )
     if (path / "hugo.toml").exists() and (path / "content").exists():
-        return Classification("publishing_site", 0.92, evidence)
+        return Classification(
+            "publishing_site",
+            0.92,
+            evidence,
+            reason="Hugo site with content tree: the deliverable is a published site.",
+        )
     if (path / "docker-compose.yml").exists() or (path / "docker-compose.yaml").exists():
         if scripts or commands or "service" in readme[:3000] or "server" in readme[:3000]:
-            return Classification("background_service", 0.82, evidence)
+            return Classification(
+                "background_service",
+                0.82,
+                evidence,
+                reason="Compose configuration plus service evidence: the deliverable is a running service.",
+            )
     if scripts:
-        return Classification("executable_application", 0.85, evidence)
+        return Classification(
+            "executable_application",
+            0.85,
+            evidence,
+            reason="Declared runnable entry points are the deliverable.",
+        )
     if commands:
-        return Classification("executable_application", 0.72, evidence)
+        return Classification(
+            "executable_application",
+            0.72,
+            evidence,
+            reason="Package commands are the deliverable.",
+        )
     if lower_name.endswith(("-r1", "-r2", "-experiment")) or re.search(r"-v\d+$", lower_name):
-        return Classification("experiment", 0.72, evidence)
+        return Classification(
+            "experiment",
+            0.72,
+            evidence,
+            reason="Name and layout match a bounded experiment, not a maintained system.",
+        )
     if research_signal:
-        return Classification("research_project", 0.78, evidence)
+        return Classification(
+            "research_project",
+            0.78,
+            evidence,
+            reason="Research artifacts or investigation language with no runnable deliverable found.",
+        )
     if pyproject.exists() or package_json.exists():
-        return Classification("library", 0.7, evidence)
+        return Classification(
+            "library",
+            0.7,
+            evidence,
+            reason="Dependency manifest with no runnable entry points: consumed as a library.",
+        )
     if readme and (path / ".git").exists():
-        return Classification("supporting_repository", 0.55, evidence)
+        return Classification(
+            "supporting_repository",
+            0.55,
+            evidence,
+            reason="Versioned repository with documentation but no identified deliverable.",
+        )
     if (path / ".git").exists():
-        return Classification("unknown", 0.45, evidence)
-    return Classification("unknown", 0.3, evidence)
+        return Classification(
+            "unknown",
+            0.45,
+            evidence,
+            reason="Git history exists but no deliverable evidence was found; owner review required.",
+        )
+    return Classification(
+        "unknown",
+        0.3,
+        evidence,
+        reason="No repository, source or documentation markers found; owner review required.",
+    )
 
 
 def marker_summary(path: Path) -> dict[str, Any]:

@@ -23,6 +23,8 @@ import {
   SimpleStatusBadge,
   Tag,
 } from "../components/ui";
+import { ReconcilePanel } from "../features/software/ReconcilePanel";
+import { SoftwareInventory } from "../features/software/SoftwareInventory";
 import { projectLabel, timeAgo } from "../lib/format";
 import type { Project } from "../types/api";
 
@@ -141,6 +143,57 @@ function AddProjectForm({ onClose, onSaved }: { onClose: () => void; onSaved: ()
 }
 
 export function ProjectsPage() {
+  const [scope, setScope] = useState<"software" | "all">("software");
+  const [reconcileOpen, setReconcileOpen] = useState(false);
+  const [inventoryKey, setInventoryKey] = useState(0);
+
+  if (scope === "software") {
+    return (
+      <div className="page">
+        <div className="button-row" role="tablist" aria-label="Project scope">
+          <button
+            role="tab"
+            aria-selected
+            className="button button-secondary button-small"
+            onClick={() => setScope("software")}
+          >
+            Software
+          </button>
+          <button
+            role="tab"
+            aria-selected={false}
+            className="button button-ghost button-small"
+            onClick={() => setScope("all")}
+          >
+            All incl. book legacy
+          </button>
+        </div>
+        <SoftwareInventory
+          key={inventoryKey}
+          onReconcile={() => setReconcileOpen(true)}
+        />
+        {reconcileOpen ? (
+          <ReconcilePanel
+            onClose={() => setReconcileOpen(false)}
+            onApplied={() => setInventoryKey((value) => value + 1)}
+          />
+        ) : null}
+      </div>
+    );
+  }
+
+  return (
+    <LegacyProjectsList scope={scope} onScopeChange={setScope} />
+  );
+}
+
+function LegacyProjectsList({
+  scope,
+  onScopeChange,
+}: {
+  scope: "software" | "all";
+  onScopeChange: (scope: "software" | "all") => void;
+}) {
   const projects = useApi<Project[]>("/api/projects");
   const toast = useToast();
   const [search, setSearch] = useState("");
@@ -212,6 +265,24 @@ export function ProjectsPage() {
 
   return (
     <div className="page">
+      <div className="button-row" role="tablist" aria-label="Project scope">
+        <button
+          role="tab"
+          aria-selected={scope === "software"}
+          className="button button-ghost button-small"
+          onClick={() => onScopeChange("software")}
+        >
+          Software
+        </button>
+        <button
+          role="tab"
+          aria-selected={scope === "all"}
+          className="button button-secondary button-small"
+          onClick={() => onScopeChange("all")}
+        >
+          All incl. book legacy
+        </button>
+      </div>
       <PageHeader
         eyebrow="Workspace"
         title="Projects"

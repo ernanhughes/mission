@@ -22,6 +22,7 @@ import { api, errorMessage } from "../api/client";
 import { useApi } from "../api/useApi";
 import { LivingBookCard } from "../features/living-book/LivingBookCard";
 import { InspectPanel } from "../features/inspect/InspectPanels";
+import { SoftwareWorkspace } from "../features/software/SoftwareWorkspace";
 import { useToast } from "../components/Toast";
 import {
   ActionButton,
@@ -73,7 +74,7 @@ import type {
   WriterWorkspace,
 } from "../types/api";
 
-function CheckpointForm({ projectId, onSaved }: { projectId: string; onSaved: () => void }) {
+export function CheckpointForm({ projectId, onSaved }: { projectId: string; onSaved: () => void }) {
   const toast = useToast();
   const [summary, setSummary] = useState("");
   const [lastCompleted, setLastCompleted] = useState("");
@@ -167,7 +168,7 @@ function CheckpointForm({ projectId, onSaved }: { projectId: string; onSaved: ()
   );
 }
 
-function TaskRow({
+export function TaskRow({
   task,
   onChanged,
 }: {
@@ -272,7 +273,7 @@ function TaskRow({
   );
 }
 
-function RecommendationRow({
+export function RecommendationRow({
   recommendation,
   onChanged,
 }: {
@@ -351,7 +352,7 @@ function RecommendationRow({
   );
 }
 
-function AdapterCard({ adapter, projectId, onChanged }: { adapter: Adapter; projectId: string; onChanged: () => void }) {
+export function AdapterCard({ adapter, projectId, onChanged }: { adapter: Adapter; projectId: string; onChanged: () => void }) {
   const toast = useToast();
   const [busy, setBusy] = useState(false);
   async function refresh() {
@@ -2764,6 +2765,48 @@ export function ProjectPage() {
   const openTasks = data.tasks.filter((task) => task.status !== "done" && task.status !== "cancelled");
   const doneTasks = data.tasks.filter((task) => task.status === "done");
   const pendingRecs = data.recommendations.filter((rec) => rec.review_state === "pending");
+
+  const isSoftware = data.kind !== "book" && !data.book;
+  if (isSoftware) {
+    return (
+      <div className="page project-workspace">
+        <Link className="back-link" to="/projects">
+          <ArrowLeft size={14} /> All projects
+        </Link>
+        <PageHeader
+          eyebrow="Software workspace"
+          title={data.name}
+          description={data.description}
+          actions={
+            <>
+              <button className="button button-secondary" onClick={() => void togglePin()} disabled={busy}>
+                {data.pinned ? <PinOff size={15} /> : <Pin size={15} />}
+                {data.pinned ? "Unpin" : "Pin"}
+              </button>
+              <button className="button button-secondary" onClick={() => void setFocus()} disabled={busy}>
+                <Crosshair size={15} /> Set focus
+              </button>
+              <ActionButton
+                action={data.repository_action ?? undefined}
+                onClick={() => void openRepository()}
+                variant="primary"
+                icon={<FolderOpen size={15} />}
+              >
+                Repository
+              </ActionButton>
+            </>
+          }
+        />
+        <SoftwareWorkspace
+          projectId={projectId}
+          data={data}
+          applications={applications.data}
+          onLaunchApp={(app) => void launchApplication(app)}
+          onChanged={() => void refreshProject()}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="page project-workspace">

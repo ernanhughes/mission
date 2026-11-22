@@ -37,11 +37,12 @@ def health(request: Request) -> HealthRead:
         with database.session() as session:
             setting = session.get(Setting, "ai")
             if setting and isinstance(setting.value, dict):
+                # Pi-first readiness: enabled + consent is sufficient. A
+                # loopback endpoint/model is an optional override, not the
+                # definition of "AI on" — Pi-only setups report true.
                 ai_enabled = bool(
                     setting.value.get("enabled")
                     and setting.value.get("consent")
-                    and setting.value.get("base_url")
-                    and setting.value.get("model")
                 )
     except Exception:
         pass
