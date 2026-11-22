@@ -2249,3 +2249,108 @@ export type InspectCompositionList = InspectSnapshotEnvelope & {
   total: number;
   compositions: InspectComposition[];
 };
+
+// ------------------------------------------- publishing workbench (MC-PUBLISH-03)
+// Read-only evidence aggregation. Mirrors backend EvidenceItem: result is one
+// of passed|failed|pending|unavailable|unknown, freshness is
+// current|stale|unknown and never rewrites the result.
+
+export type PublishingEvidence = {
+  book_id: string;
+  evidence_type: string;
+  source_system: string;
+  source_reference: string;
+  source_revision: string;
+  observed_at: string;
+  executed_at: string;
+  result: string;
+  freshness: string;
+  diagnostics: string;
+  available_actions: string[];
+  detail: Record<string, unknown>;
+};
+
+export type PublishingGate = {
+  gate_id: string;
+  label: string;
+  gate_group: string;
+  status: string;
+  stale: boolean;
+  evidence: Array<{
+    evidence_type: string;
+    result: string;
+    freshness: string;
+    source_system: string;
+    source_reference: string;
+  }>;
+};
+
+export type PublishingSummary = {
+  project_id: string;
+  project_name: string | null;
+  book_id: string | null;
+  book_title: string | null;
+  manuscript_root: string | null;
+  chapter_count: number | null;
+  lifecycle: string | null;
+  lifecycle_note: string;
+  publication_gate: string;
+  policy_version: string | null;
+  identity: Record<string, unknown>;
+  source_fingerprint: Record<string, unknown>;
+  git_revision: Record<string, unknown>;
+  fingerprint_match: boolean | null;
+  observed_at: string;
+  evidence: PublishingEvidence[];
+  gates: PublishingGate[];
+  blockers: {
+    failed: string[];
+    stale: string[];
+    missing: string[];
+    identity_conflicts: unknown[];
+  };
+  refresh_note: string;
+};
+
+export type PublishingOverviewRow = {
+  project_id: string;
+  project_name: string | null;
+  book_id: string | null;
+  book_title: string | null;
+  lifecycle: string | null;
+  publication_gate: string;
+  chapter_count: number | null;
+  fingerprint_match: boolean | null;
+  identity_state: string | null;
+  failed: string[];
+  stale: string[];
+  missing: string[];
+  identity_conflicts: unknown[];
+  error: string | null;
+};
+
+export type PublishingOverview = {
+  books: PublishingOverviewRow[];
+  count: number;
+  needs_attention: number;
+  observed_at: string;
+  refresh_note: string;
+};
+
+export type PublishingFollowup = {
+  id: string;
+  project_id: string;
+  book_id: string;
+  evidence_type: string;
+  source_reference: string;
+  fingerprint: string;
+  observed_at: string;
+  target_type: string;
+  target_id: string | null;
+  title: string;
+  rationale: string;
+  status: string;
+  reviewer: string;
+  created_at: string;
+  updated_at: string;
+};

@@ -560,6 +560,13 @@ def get_publishing_summary(
                 repo_roots.append(path)
     run_item, _ = _writer_run_evidence(book_id, repo_roots)
     evidence.append(run_item)
+    manuscript_dir = Path(chapter_dir) if chapter_dir else None
+
+    # 3b. Stored Writer finalization events (read-only, digest-compared).
+    evidence.append(_writer_finalization_evidence(book_id, repo_roots, manuscript_dir))
+
+    # 3c. Writer readthrough acceptances (read-only database observation).
+    evidence.append(_writer_readthrough_evidence(book_id, project_id, manuscript_dir))
 
     # 4. Proof evidence (math only has an integration).
     evidence.append(
@@ -568,11 +575,19 @@ def get_publishing_summary(
         )
     )
 
-    # 5. Builder artifacts (existence only).
-    evidence.append(_bookbuilder_evidence(book_id, project_id, settings))
+    # 5. Builder artifacts (existence + config + freshness vs manuscript).
+    evidence.append(_bookbuilder_evidence(
+        book_id, project_id, settings,
+        manuscript_root=manuscript_dir,
+        book_title=(book.title if book else None) or (definition.title if definition else None)))
 
     # 6. Website/publication copies (observed only).
     evidence.append(_hugo_evidence(book_id, project_id, chapter_dir, settings))
+
+    # 6b. ALIVE connection state (read-only observation).
+    evidence.append(_alive_evidence(
+        session, settings, project_id,
+        manuscript_root=str(manuscript_dir) if manuscript_dir else None))
 
     # 7. Mission assessment + approval (stored only, never created here).
     assessment_read: dict[str, Any] | None = None
@@ -678,6 +693,11 @@ def get_publishing_summary(
         for i in items
         if i["result"] in ("unknown", "unavailable", "pending")
     ]
+    # Gate join: policy gates annotated with observed evidence (display-only;
+    # readiness derivation stays in the assessment flow, never invented here).
+    from mission_control.publication import policy as _policy
+
+    gates = gate_evidence_join(list(_policy.GATES), items)
     lifecycle = definition.publication_status if definition else None
 
     # Manuscript provenance: reproducible fingerprint + git revision (kept separate).
@@ -760,6 +780,7 @@ def get_publishing_summary(
         "fingerprint_match": fingerprint_match,
         "observed_at": _now_iso(),
         "evidence": items,
+        "gates": gates,
         "blockers": {
             "failed": failed,
             "stale": stale,
@@ -772,6 +793,629 @@ def get_publishing_summary(
         },
         "refresh_note": "Refresh rereads stored evidence only; it never validates, builds or publishes.",
     }
+
+
+GATE_EVIDENCE_MAP: dict[str, list[str]] = {
+    "manuscript_identity": ["manuscript_discovery"],
+    "chapter_structure": ["manuscript_discovery", "writer_validation_run"],
+    "publication_build": ["builder_config", "builder_artifacts"],
+    "assets_references": ["builder_artifacts"],
+    "prose_review": ["writer_validation_run", "writer_finalization"],
+    "technical_verification": ["proof_claims"],
+    "evidence_completeness": ["mission_assessment"],
+    "author_approval": ["human_approval", "writer_finalization"],
+}
+
+
+def gate_evidence_join(policy_gates: list[dict[str, Any]],
+                       items: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Join policy gates to observed evidence without inventing verdicts.
+
+    Status roll-up: any failed evidence fails the gate; otherwise any pending
+    evidence pends it; all-passed passes; unavailable evidence on its own
+    reports unavailable; anything else stays unknown. Staleness is reported
+    alongside, never merged into the result.
+    """
+    joined = []
+    for gate in policy_gates:
+        gate_id = str(gate.get("gate_id", ""))
+        matched = [item for item in items
+                   if item.get("evidence_type") in GATE_EVIDENCE_MAP.get(gate_id, [])]
+        stale = any(item.get("freshness") == "stale" for item in matched)
+        if any(item.get("result") == "failed" for item in matched):
+            status = "failed"
+        elif any(item.get("result") == "pending" for item in matched):
+            status = "pending"
+        elif matched and all(item.get("result") == "passed" for item in matched):
+            status = "passed"
+        elif any(item.get("result") == "unavailable" for item in matched):
+            status = "unavailable"
+        else:
+            status = "unknown"
+        joined.append({
+            "gate_id": gate_id,
+            "label": str(gate.get("description", gate_id))[:200],
+            "gate_group": str(gate.get("gate_group", "")),
+            "status": status,
+            "stale": stale,
+            "evidence": [
+                {"evidence_type": item.get("evidence_type"),
+                 "result": item.get("result"),
+                 "freshness": item.get("freshness"),
+                 "source_system": item.get("source_system"),
+                 "source_reference": item.get("source_reference")}
+                for item in matched
+            ],
+        })
+    return joined
+
+
+def _sha256_file(path: Path) -> str | None:
+    try:
+        digest = __import__("hashlib").sha256()
+        with open(path, "rb") as handle:
+            for chunk in iter(lambda: handle.read(65536), b""):
+                digest.update(chunk)
+        return digest.hexdigest()
+    except OSError:
+        return None
+
+
+def _manuscript_chapter_files(manuscript_root: Path | None) -> list[Path]:
+    if manuscript_root is None:
+        return []
+    try:
+        if not manuscript_root.is_dir():
+            return []
+        return sorted(path for path in manuscript_root.iterdir()
+                      if path.is_file() and path.suffix.lower() == ".md")
+    except OSError:
+        return []
+
+
+def _writer_finalization_evidence(
+    book_id: str, repo_roots: list[Path], manuscript_root: Path | None
+) -> EvidenceItem:
+    """Read stored Writer finalization events; compare digests to live files."""
+    checked: list[str] = []
+    events: list[dict[str, Any]] = []
+    for repo in repo_roots:
+        final_dir = repo / ".writer" / "validation" / "finalization"
+        checked.append(str(final_dir))
+        try:
+            if not final_dir.is_dir():
+                continue
+            files = sorted(p for p in final_dir.iterdir()
+                           if p.is_file() and p.suffix == ".json")
+        except OSError:
+            continue
+        for path in files[:200]:
+            try:
+                data = json.loads(path.read_text(encoding="utf-8"))
+            except (OSError, ValueError):
+                continue
+            entries = data if isinstance(data, list) else [data]
+            for entry in entries:
+                if isinstance(entry, dict):
+                    events.append({"file": str(path), **entry})
+    if not events:
+        return unknown_evidence(
+            book_id, "writer_finalization", "writer",
+            diagnostics=("No stored Writer finalization events observed at "
+                         + ("; ".join(checked) if checked else "(no repository roots resolved)")
+                         + ". Only an explicit, digest-bound author approval counts."),
+            available_actions=["Finalize chapters in Writer (`writer finalize ... --approved-by ...`)."],
+        )
+    live_by_stem = {path.stem: path for path in _manuscript_chapter_files(manuscript_root)}
+    current = stale = unknown = 0
+    approvers: set[str] = set()
+    for event in events:
+        digest = str(event.get("source_digest") or event.get("content_sha256") or "")
+        chapter = str(event.get("chapter_path") or event.get("chapter") or "")
+        stem = Path(chapter).stem if chapter else Path(str(event.get("file", ""))).stem
+        live = live_by_stem.get(stem)
+        live_digest = _sha256_file(live) if live is not None else None
+        if event.get("approved_by"):
+            approvers.add(str(event["approved_by"]))
+        if not digest or live_digest is None:
+            unknown += 1
+        elif digest == live_digest:
+            current += 1
+        else:
+            stale += 1
+    if stale:
+        result, freshness = "pending", "stale"
+    elif unknown and not current:
+        result, freshness = "pending", "unknown"
+    elif current:
+        result, freshness = "passed", "current"
+    else:
+        result, freshness = "pending", "unknown"
+    return EvidenceItem(
+        book_id=book_id,
+        evidence_type="writer_finalization",
+        source_system="writer",
+        source_reference="; ".join(sorted({str(event.get("file", "")) for event in events})[:5]),
+        result=result,  # type: ignore[arg-type]
+        freshness=freshness,  # type: ignore[arg-type]
+        diagnostics=(
+            f"{len(events)} finalization event(s): {current} current, {stale} stale, "
+            f"{unknown} unverifiable against live chapters. "
+            f"Approved by: {', '.join(sorted(approvers)) or 'none recorded'}. "
+            "Only digest-bound approvals for the current revision count."
+        ),
+        available_actions=["Finalize chapters in Writer (`writer finalize ... --approved-by ...`)."],
+        detail={"current": current, "stale": stale, "unknown": unknown},
+    )
+
+
+def _writer_readthrough_evidence(
+    book_id: str, project_id: str, manuscript_root: Path | None
+) -> EvidenceItem:
+    """Read chapter acceptances from Writer's Postgres (read-only).
+
+    Never invents acceptances: no DSN, unreachable DB, or any error reports
+    unknown. An empty acceptance set for a required gate reports pending,
+    never passed.
+    """
+    import os as _os
+
+    dsn = (_os.environ.get("MISSION_CONTROL_WRITER_DSN") or "").strip()
+    if not dsn:
+        return unknown_evidence(
+            book_id, "writer_readthrough", "writer",
+            diagnostics=("Readthrough acceptances are not observable: set "
+                         "MISSION_CONTROL_WRITER_DSN to a read-only Writer database URL. "
+                         "Human chapter acceptance remains required where configured."),
+            available_actions=["Accept chapters in Writer readthrough, or configure read access."],
+        )
+    try:
+        import psycopg
+        from psycopg.rows import dict_row
+    except ImportError:
+        return unknown_evidence(
+            book_id, "writer_readthrough", "writer",
+            diagnostics="psycopg is unavailable, so readthrough acceptances cannot be observed.",
+            available_actions=["Accept chapters in Writer readthrough."],
+        )
+    live_by_name = {path.name: path for path in _manuscript_chapter_files(manuscript_root)}
+    if manuscript_root is not None and not live_by_name:
+        return unknown_evidence(
+            book_id, "writer_readthrough", "writer",
+            diagnostics="No live manuscript chapters resolved; acceptance cannot be compared.",
+            available_actions=["Confirm the manuscript location."],
+        )
+    try:
+        with psycopg.connect(
+            dsn, options="-c default_transaction_read_only=on -c statement_timeout=5000",
+            connect_timeout=5,
+        ) as connection:
+            with connection.cursor(row_factory=dict_row) as cursor:
+                cursor.execute(
+                    "SELECT chapter_path, accepted_source_digest, accepted_by, created_at "
+                    "FROM readthrough_chapter_acceptances WHERE project_id = %s "
+                    "ORDER BY chapter_path ASC, created_at DESC",
+                    (project_id,),
+                )
+                rows = list(cursor.fetchall())
+    except Exception as exc:
+        return unknown_evidence(
+            book_id, "writer_readthrough", "writer",
+            diagnostics=f"Readthrough store unreachable ({type(exc).__name__}); nothing invented.",
+            available_actions=["Accept chapters in Writer readthrough."],
+        )
+    latest: dict[str, dict[str, Any]] = {}
+    for row in rows:
+        key = str(row.get("chapter_path") or "")
+        if key and key not in latest:
+            latest[key] = row
+    current = stale = missing = 0
+    approvers: set[str] = set()
+    for name, live in live_by_name.items():
+        digest = _sha256_file(live)
+        match = latest.get(name) or latest.get(str(live)) or latest.get(live.stem)
+        if match is None:
+            missing += 1
+            continue
+        if match.get("accepted_by"):
+            approvers.add(str(match["accepted_by"]))
+        if digest is not None and match.get("accepted_source_digest") == digest:
+            current += 1
+        else:
+            stale += 1
+    total = len(live_by_name)
+    if total and missing == 0 and stale == 0:
+        result, freshness = "passed", "current"
+    elif stale:
+        result, freshness = "pending", "stale"
+    elif missing == total:
+        result, freshness = "pending", "unknown"
+    else:
+        result, freshness = "pending", "unknown"
+    return EvidenceItem(
+        book_id=book_id,
+        evidence_type="writer_readthrough",
+        source_system="writer",
+        source_reference="readthrough_chapter_acceptances",
+        result=result,  # type: ignore[arg-type]
+        freshness=freshness,  # type: ignore[arg-type]
+        diagnostics=(
+            f"{current}/{total} chapters accepted on the current digest; "
+            f"{stale} stale, {missing} never accepted. "
+            f"Accepted by: {', '.join(sorted(approvers)) or 'nobody recorded'}. "
+            "Acceptance is digest-bound; edited chapters need re-acceptance."
+        ),
+        available_actions=["Accept chapters in Writer readthrough."],
+        detail={"current": current, "stale": stale, "missing": missing, "total": total},
+    )
+
+
+def _bookbuilder_config_for(
+    project_id: str, book_title: str | None, settings: Any | None
+) -> tuple[Path | None, dict[str, Any]]:
+    """Locate the Bookbuilder config that builds this book, if any."""
+    root = _bookbuilder_root(settings)
+    try:
+        candidates = sorted(root.glob("*.toml"))
+    except OSError:
+        return None, {"root": str(root), "error": "Bookbuilder root unreadable."}
+    slug = project_id.strip().lower()
+    wanted = {slug, (book_title or "").strip().lower()}
+    for path in candidates:
+        try:
+            import tomllib as _tomllib
+
+            data = _tomllib.loads(path.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        book = data.get("book") if isinstance(data, dict) else None
+        if not isinstance(book, dict):
+            continue
+        identifier = str(book.get("identifier", "")).strip().lower()
+        title = str(book.get("title", "")).strip().lower()
+        if identifier in wanted or (title and title in wanted) or path.stem.lower() in wanted:
+            return path, {"root": str(root), "identifier": identifier or path.stem}
+    return None, {"root": str(root), "checked": len(candidates),
+                  "detail": "No bookbuilder config names this book."}
+
+
+def _bookbuilder_evidence(
+    book_id: str, project_id: str, settings: Any | None,
+    manuscript_root: Path | None = None, book_title: str | None = None,
+) -> EvidenceItem:
+    dist = _bookbuilder_root(settings) / "dist"
+    found: list[dict[str, Any]] = []
+    for suffix in (".epub", ".pdf", ".md"):
+        candidate = dist / f"{project_id}{suffix}"
+        try:
+            if candidate.is_file():
+                found.append(_file_meta(candidate))
+        except OSError:
+            continue
+    config_path, config_detail = _bookbuilder_config_for(project_id, book_title, settings)
+    config_note = (f"Config: {config_path}." if config_path
+                   else f"No bookbuilder config found ({config_detail.get('checked', 0)} checked).")
+    if not found:
+        return EvidenceItem(
+            book_id=book_id,
+            evidence_type="builder_artifacts",
+            source_system="bookbuilder",
+            source_reference=str(dist / f"{project_id}.epub"),
+            result="unavailable",
+            freshness="unknown",
+            diagnostics=(f"No Bookbuilder outputs observed in {dist} for {project_id!r}. {config_note}"),
+            available_actions=["Build with Bookbuilder (`bookbuilder build --config <book>.toml`)."],
+            detail={"artifacts": found, "config": str(config_path) if config_path else None},
+        )
+    newest_artifact = max(int(item.get("mtime_ns", 0)) for item in found)
+    chapters = _manuscript_chapter_files(manuscript_root)
+    newest_chapter = 0
+    for path in chapters:
+        try:
+            newest_chapter = max(newest_chapter, int(path.stat().st_mtime_ns))
+        except OSError:
+            continue
+    if chapters and newest_artifact and newest_chapter and newest_artifact < newest_chapter:
+        freshness: str = "stale"
+        freshness_note = "An artifact predates the newest chapter edit; rebuild to refresh."
+    elif chapters:
+        freshness = "current"
+        freshness_note = "Artifacts are newer than every observed chapter file."
+    else:
+        freshness = "unknown"
+        freshness_note = "No live chapters resolved for comparison."
+    return EvidenceItem(
+        book_id=book_id,
+        evidence_type="builder_artifacts",
+        source_system="bookbuilder",
+        source_reference=str(dist),
+        result="unknown",
+        freshness=freshness,  # type: ignore[arg-type]
+        diagnostics=(
+            f"{len(found)} artifact(s) observed; a file's existence proves neither "
+            f"validity nor freshness against the current manuscript. {freshness_note} {config_note}"
+        ),
+        available_actions=["Rebuild with Bookbuilder to refresh artifacts."],
+        detail={"artifacts": found, "config": str(config_path) if config_path else None},
+    )
+
+
+def _math_proof_evidence(repo_path: Path, report: Path, data: dict[str, Any]) -> EvidenceItem:
+    detail: dict[str, Any] = {
+        "claim_ids": [str(item.get("claim_id")) for item in data.get("assessments", [])
+                      if isinstance(item, dict) and item.get("claim_id")],
+        "statuses": {},
+    }
+    statuses = detail["statuses"]
+    open_obligations = 0
+    for item in data.get("assessments", []):
+        if not isinstance(item, dict):
+            continue
+        status = str(item.get("overall_status") or "unknown")
+        statuses[status] = statuses.get(status, 0) + 1
+        obligations = item.get("unresolved_obligations") or []
+        open_obligations += len(obligations) if isinstance(obligations, list) else 0
+    artifacts = repo_path / "artifacts" / "math01"
+    capabilities: dict[str, Any] = {}
+    try:
+        capabilities_path = artifacts / "capabilities.json"
+        if capabilities_path.is_file():
+            capabilities_data = json.loads(capabilities_path.read_text(encoding="utf-8"))
+            if isinstance(capabilities_data, list):
+                capabilities = {str(entry.get("system")): bool(entry.get("available"))
+                                for entry in capabilities_data if isinstance(entry, dict)}
+    except (OSError, ValueError):
+        capabilities = {}
+    formal_path = artifacts / "formal-dependencies.json"
+    formal_status: str | None = None
+    try:
+        if formal_path.is_file():
+            formal_data = json.loads(formal_path.read_text(encoding="utf-8"))
+            if isinstance(formal_data, dict):
+                formal_status = str(formal_data.get("status") or "unknown")
+    except (OSError, ValueError):
+        formal_status = None
+    r3 = (repo_path / "artifacts" / "math01-r3" / "interface-baseline.json").is_file()
+    r4 = (repo_path / "artifacts" / "math01-r4" / "statement-alignment.json").is_file()
+    inv02e = (repo_path / "docs" / "research" / "math-inv-02" / "02e" / "MATH-INV-02E-ADJUDICATION.md").is_file()
+    approvals_path = repo_path / "experiments" / "investigations" / "n1-fermat" / "approvals.json"
+    approvals_note = ("N1-Fermat correspondence approval recorded (not a MATH01 approval)."
+                      if approvals_path.is_file() else "No human approval record observed.")
+    detail.update({
+        "systems": capabilities,
+        "formal_dependencies": formal_status,
+        "r3_interface_baseline": r3,
+        "r4_statement_alignment": r4,
+        "inv02e_adjudication": ("present; agent-authored, not independent human review."
+                                if inv02e else "absent"),
+        "human_approval": approvals_note,
+    })
+    return EvidenceItem(
+        book_id="",  # filled by the caller
+        evidence_type="proof_claims",
+        source_system="proof_tooling",
+        source_reference=str(report),
+        executed_at=str(data.get("generated_at") or ""),
+        result="unknown",
+        freshness="unknown",
+        diagnostics=(
+            f"{len(detail['claim_ids'])} claim assessments: {statuses}. "
+            f"Open obligations: {open_obligations}. Systems: "
+            + (", ".join(f"{name}={'ok' if ok else 'missing'}" for name, ok in capabilities.items()) or "unknown")
+            + f". Formal dependencies: {formal_status or 'unknown'}. "
+            "No merged adjudication verdict exists; statuses are source-native, not a readiness score. "
+            + approvals_note
+        ),
+        available_actions=[
+            "Inspect artifacts/math01/report.json and open obligations.",
+            "Adjudicate claims in the math repository (independent human review still pending).",
+        ],
+        detail=detail,
+    )
+
+
+PROOF_ADAPTERS = {"math"}
+
+
+def _proof_evidence(
+    book_id: str, project_id: str, repo_path: Path | None
+) -> EvidenceItem:
+    if project_id not in PROOF_ADAPTERS or repo_path is None:
+        return unknown_evidence(
+            book_id,
+            "proof_claims",
+            "proof_tooling",
+            diagnostics=("No proof integration registered for this book; "
+                         "only 'math' has a proof tooling adapter."),
+        )
+    report = repo_path / "artifacts" / "math01" / "report.json"
+    try:
+        if not report.is_file():
+            return EvidenceItem(
+                book_id=book_id,
+                evidence_type="proof_claims",
+                source_system="proof_tooling",
+                source_reference=str(report),
+                result="unavailable",
+                freshness="unknown",
+                diagnostics=f"Expected proof report is absent: {report}.",
+                available_actions=["Run the MATH01 investigation in the math repository."],
+            )
+    except OSError:
+        return EvidenceItem(
+            book_id=book_id,
+            evidence_type="proof_claims",
+            source_system="proof_tooling",
+            source_reference=str(report),
+            result="unknown",
+            freshness="unknown",
+            diagnostics=f"Proof report could not be read: {report}.",
+        )
+    try:
+        data = json.loads(report.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        return EvidenceItem(
+            book_id=book_id,
+            evidence_type="proof_claims",
+            source_system="proof_tooling",
+            source_reference=str(report),
+            result="unknown",
+            freshness="unknown",
+            diagnostics=f"Proof report is not valid JSON: {exc}.",
+        )
+    if not isinstance(data, dict):
+        return EvidenceItem(
+            book_id=book_id,
+            evidence_type="proof_claims",
+            source_system="proof_tooling",
+            source_reference=str(report),
+            result="unknown",
+            freshness="unknown",
+            diagnostics="Proof report is not a JSON object.",
+        )
+    item = _math_proof_evidence(repo_path, report, data)
+    item.book_id = book_id
+    return item
+
+
+def _alive_evidence(session: Session, settings: Any | None, project_id: str,
+                    manuscript_root: str | None = None) -> EvidenceItem:
+    """ALIVE connection state as first-class evidence (read-only).
+
+    Synchronous read-only HTTP against the loopback ALIVE API (the living-book
+    service is async; publishing stays synchronous). Never breaks the summary:
+    any failure to observe reports unknown.
+    """
+    from mission_control.living_book.client import validate_base_url
+
+    base_url = ""
+    try:
+        candidate = getattr(settings, "alive_url", "") if settings else ""
+        base_url = validate_base_url(str(candidate or "http://127.0.0.1:8000"))
+    except Exception as exc:
+        return unknown_evidence(
+            book_id="",
+            evidence_type="alive_connection",
+            source_system="alive",
+            diagnostics=f"ALIVE endpoint is not configured ({type(exc).__name__}).",
+        )
+    try:
+        import httpx as _httpx
+        from urllib.parse import quote as _quote
+
+        with _httpx.Client(timeout=5.0, trust_env=False) as http:
+            listing = http.get(
+                f"{base_url}/api/v1/living-books"
+                f"?manuscript_root={_quote(manuscript_root or '', safe='')}")
+            if listing.status_code != 200:
+                return unknown_evidence(
+                    book_id="",
+                    evidence_type="alive_connection",
+                    source_system="alive",
+                    diagnostics=f"ALIVE returned HTTP {listing.status_code}; not interpreted.",
+                )
+            books = (listing.json().get("books") or []) if isinstance(listing.json(), dict) else []
+            match = next(
+                (book for book in books
+                 if isinstance(book, dict)
+                 and str(book.get("manuscript_root") or "") == (manuscript_root or "")),
+                None,
+            ) if manuscript_root else (books[0] if books else None)
+            if match is None:
+                return EvidenceItem(
+                    book_id="",
+                    evidence_type="alive_connection",
+                    source_system="alive",
+                    result="pending",
+                    freshness="unknown",
+                    diagnostics="Book is not connected to ALIVE; no reading session exists.",
+                    available_actions=["Connect the manuscript in the Living Book workspace."],
+                )
+            detail = http.get(
+                f"{base_url}/api/v1/living-books/{_quote(str(match.get('id')), safe='')}",
+                timeout=10.0).json()
+    except Exception as exc:
+        return unknown_evidence(
+            book_id="",
+            evidence_type="alive_connection",
+            source_system="alive",
+            diagnostics=f"ALIVE state could not be observed ({type(exc).__name__}).",
+        )
+    if not isinstance(detail, dict):
+        return unknown_evidence(
+            book_id="",
+            evidence_type="alive_connection",
+            source_system="alive",
+            diagnostics="ALIVE returned an unreadable response.",
+        )
+    if detail.get("ready") is True:
+        chapters = detail.get("chapters") or []
+        return EvidenceItem(
+            book_id="",
+            evidence_type="alive_connection",
+            source_system="alive",
+            source_reference=str(detail.get("id", "")),
+            result="passed",
+            freshness="current",
+            diagnostics=(f"Reading room ready ({len(chapters)} chapters); "
+                         f"model: {(detail.get('model') or {}).get('name', 'unknown')}."),
+            available_actions=["Open the Reading Room.", "Ask or improve from the living book."],
+            detail={"book_id": detail.get("id")},
+        )
+    return unknown_evidence(
+        book_id="",
+        evidence_type="alive_connection",
+        source_system="alive",
+        diagnostics=f"ALIVE book state is '{detail.get('ready')}'; not interpreted as readiness.",
+    )
+
+
+def get_publishing_overview(session: Session, settings: Any | None) -> dict[str, Any]:
+    """All books, one compact row each. Read-only; never validates or builds.
+
+    Each row reuses the per-book summary, so the workbench shows the same
+    evidence the book page shows — no second computation path.
+    """
+    from mission_control.persistence.db import now_iso as _now_iso2
+
+    from mission_control.models import Book as _Book
+    from mission_control.models import Project as _Project
+
+    rows = session.execute(
+        select(_Book, _Project).join(_Project, _Project.id == _Book.project_id).order_by(
+            _Book.title
+        )
+    ).all()
+    books = []
+    for book, project in rows:
+        try:
+            summary = get_publishing_summary(session, settings, project.id)
+        except Exception as exc:
+            summary = {"project_id": project.id, "error": f"{type(exc).__name__}: {exc}",
+                       "evidence": [], "blockers": {"failed": [], "stale": [], "missing": []}}
+        blockers = summary.get("blockers", {}) if isinstance(summary, dict) else {}
+        identity = summary.get("identity", {}) if isinstance(summary, dict) else {}
+        books.append({
+            "project_id": project.id,
+            "project_name": project.name,
+            "book_id": book.id,
+            "book_title": book.title,
+            "lifecycle": summary.get("lifecycle") if isinstance(summary, dict) else None,
+            "publication_gate": summary.get("publication_gate") if isinstance(summary, dict) else "Unknown",
+            "chapter_count": summary.get("chapter_count") if isinstance(summary, dict) else None,
+            "fingerprint_match": summary.get("fingerprint_match") if isinstance(summary, dict) else None,
+            "identity_state": identity.get("identity_state"),
+            "failed": list(blockers.get("failed", [])),
+            "stale": list(blockers.get("stale", [])),
+            "missing": list(blockers.get("missing", [])),
+            "identity_conflicts": list(blockers.get("identity_conflicts", [])),
+            "error": summary.get("error") if isinstance(summary, dict) else None,
+        })
+    attention = [row for row in books
+                 if row["failed"] or row["stale"] or row["missing"] or row["identity_conflicts"] or row["error"]]
+    return {"books": books, "count": len(books), "needs_attention": len(attention),
+            "observed_at": _now_iso2(),
+            "refresh_note": "Refresh rereads stored evidence only; it never validates, builds or publishes."}
 
 
 def _norm(value: str | None) -> str:

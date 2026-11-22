@@ -33,6 +33,7 @@ EVENT_TYPES = {
     "integration_action",
     "discovery_scan",
     "briefing_generated",
+    "publishing_followup",
     "system",
 }
 

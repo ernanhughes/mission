@@ -17,6 +17,8 @@ function renderProject() {
 
 describe("ProjectPage", () => {
   it("saves a checkpoint and completes a task through the API", async () => {
+    // Generous timeout: user.type sequences can exceed the default 5s under
+    // parallel workers.
     const detail = makeProjectDetail({
       id: "math",
       name: "Math",
@@ -110,7 +112,7 @@ describe("ProjectPage", () => {
       );
       expect(patches.some((call) => (call.body as { status?: string }).status === "done")).toBe(true);
     });
-  });
+  }, 15000);
 
   it("renders manuscript quality with real scorecards, history and workbench handoff", async () => {
     const detail = makeProjectDetail({ id: "math", name: "Math" });

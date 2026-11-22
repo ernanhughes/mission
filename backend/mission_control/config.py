@@ -54,6 +54,11 @@ class RuntimeSettings:
             "MISSION_CONTROL_WEBSITES_ROOT", Path(r"C:\websites")
         )
     )
+    bookbuilder_root: Path = field(
+        default_factory=lambda: _env_path(
+            "MISSION_CONTROL_BOOKBUILDER_ROOT", Path(r"C:\Projects\bookbuilder")
+        )
+    )
     host: str = field(default_factory=lambda: os.environ.get("MISSION_CONTROL_HOST", "127.0.0.1"))
     port: int = field(default_factory=lambda: int(os.environ.get("MISSION_CONTROL_PORT", "8790")))
     log_level: str = field(
