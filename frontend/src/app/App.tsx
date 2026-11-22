@@ -16,6 +16,7 @@ import { InboxPage } from "../pages/InboxPage";
 import { SearchPage } from "../pages/SearchPage";
 import { IntegrationsPage } from "../pages/IntegrationsPage";
 import { IntegrationWorkspacePage } from "../pages/IntegrationWorkspacePage";
+import { InspectPage } from "../pages/InspectPage";
 import { WorkflowsPage } from "../pages/WorkflowsPage";
 import { WorkflowDetailPage } from "../pages/WorkflowDetailPage";
 import { WriterPage } from "../pages/WriterPage";
@@ -34,6 +35,7 @@ export function App() {
         <Route path="workflows/:workflowId" element={<WorkflowDetailPage />} />
         <Route path="writer" element={<WriterPage />} />
         <Route path="integrations" element={<IntegrationsPage />} />
+        <Route path="inspect" element={<InspectPage />} />
         <Route path="projects" element={<ProjectsPage />} />
         <Route path="projects/:projectId" element={<ProjectPage />} />
         <Route path="projects/:projectId/read" element={<LivingBookPage />} />
