@@ -35,11 +35,11 @@ books:
     current_milestone: MATH01-R1 recorded; physical-claim composition remains open.
     next_action: Review the unresolved physical-claim composition and cross-prover equivalence obligations.
     manuscript_paths:
-      - 'C:\Projects\math\book'
-      - 'C:\Projects\math\docs\research\MATH01-status.md'
-      - 'C:\Projects\math\artifacts\math01\report.json'
+      - 'C:\books\math\content\books\math'
+      - 'C:\books\math\docs\research\MATH01-status.md'
+      - 'C:\books\math\artifacts\math01\report.json'
     implementation_paths:
-      - 'C:\Projects\math\src\math_engine'
+      - 'C:\books\math\src\math_engine'
       - 'C:\Projects\math-r1'
     published_url: null
     local_url: null
