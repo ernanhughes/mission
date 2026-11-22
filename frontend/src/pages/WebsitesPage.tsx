@@ -3,6 +3,7 @@ import { ExternalLink, FolderOpen, Globe, Play, Square } from "lucide-react";
 import { api, errorMessage } from "../api/client";
 import { useApi } from "../api/useApi";
 import { useToast } from "../components/Toast";
+import { PostsTab } from "../features/websites/PostsTab";
 import {
   EmptyState,
   ErrorState,
@@ -113,6 +114,7 @@ function DiagnosticsSection() {
 function WebsiteWorkspace({ site, onChanged }: { site: Website; onChanged: () => void }) {
   const toast = useToast();
   const [busy, setBusy] = useState<"launch" | "stop" | "open" | null>(null);
+  const [tab, setTab] = useState<"overview" | "posts" | "preview">("overview");
 
   async function launch() {
     setBusy("launch");
@@ -179,58 +181,78 @@ function WebsiteWorkspace({ site, onChanged }: { site: Website; onChanged: () =>
         </div>
       </header>
 
-      <section className="panel">
-        <span className="eyebrow">Site</span>
-        <h3>Details</h3>
-        <dl className="kv-list">
-          <KeyValue label="Path">
-            <PathText>{site.path}</PathText>
-          </KeyValue>
-          <KeyValue label="Evidence">{site.evidence.join("; ") || "—"}</KeyValue>
-          {site.hugo_config ? (
-            <KeyValue label="Hugo config">
-              <code>{site.hugo_config}</code>
-            </KeyValue>
-          ) : null}
-          {site.content_section ? (
-            <KeyValue label="Content section">
-              <code>content/{site.content_section}</code>
-            </KeyValue>
-          ) : null}
-          {site.preview_url ? (
-            <KeyValue label="Preview">
-              <a className="text-link" href={site.preview_url} target="_blank" rel="noreferrer">
-                {site.preview_url} <ExternalLink size={13} />
-              </a>
-            </KeyValue>
-          ) : null}
-        </dl>
-      </section>
-
-      <section className="panel">
-        <span className="eyebrow">Hugo preview</span>
-        <h3>Local server</h3>
-        {!site.is_hugo ? (
-          <p className="muted">This site is not a Hugo project, so no Hugo launch is offered.</p>
-        ) : !site.hugo_available ? (
-          <p className="muted">The Hugo executable was not found on PATH, so launching is unavailable.</p>
-        ) : (
-          <div className="button-row">
-            <button className="button button-primary button-small" type="button" onClick={() => void launch()} disabled={busy !== null || !site.available}>
-              <Play size={14} /> {busy === "launch" ? "Starting…" : site.running ? "Rejoin preview" : "Launch Hugo"}
+      <div className="toolbar" role="tablist" aria-label="Website workspace views">
+        {(
+          ["overview", ...(site.content_section ? ["posts" as const] : []), "preview"] as const
+        ).map((name) => (
+            <button
+              key={name}
+              role="tab"
+              aria-selected={tab === name}
+              className={`button button-small ${tab === name ? "button-primary" : "button-ghost"}`}
+              onClick={() => setTab(name)}
+            >
+              {name === "overview" ? "Overview" : name === "posts" ? "Posts" : "Preview"}
             </button>
-            {site.running ? (
-              <button className="button button-secondary button-small" type="button" onClick={() => void stop()} disabled={busy !== null}>
-                <Square size={14} /> {busy === "stop" ? "Stopping…" : "Stop"}
-              </button>
+          ))}
+      </div>
+
+      {tab === "posts" && site.content_section ? <PostsTab site={site} /> : null}
+      {tab === "overview" ? (
+        <section className="panel">
+          <span className="eyebrow">Site</span>
+          <h3>Details</h3>
+          <dl className="kv-list">
+            <KeyValue label="Path">
+              <PathText>{site.path}</PathText>
+            </KeyValue>
+            <KeyValue label="Evidence">{site.evidence.join("; ") || "—"}</KeyValue>
+            {site.hugo_config ? (
+              <KeyValue label="Hugo config">
+                <code>{site.hugo_config}</code>
+              </KeyValue>
             ) : null}
-          </div>
-        )}
-        <p className="muted small">
-          Binds to 127.0.0.1 on a distinct port. Drafts are not rendered. Related cultivation
-          goals stay separate; this page never scores or publishes sites.
-        </p>
-      </section>
+            {site.content_section ? (
+              <KeyValue label="Content section">
+                <code>content/{site.content_section}</code>
+              </KeyValue>
+            ) : null}
+            {site.preview_url ? (
+              <KeyValue label="Preview">
+                <a className="text-link" href={site.preview_url} target="_blank" rel="noreferrer">
+                  {site.preview_url} <ExternalLink size={13} />
+                </a>
+              </KeyValue>
+            ) : null}
+          </dl>
+        </section>
+      ) : null}
+      {tab === "preview" ? (
+        <section className="panel">
+          <span className="eyebrow">Hugo preview</span>
+          <h3>Local server</h3>
+          {!site.is_hugo ? (
+            <p className="muted">This site is not a Hugo project, so no Hugo launch is offered.</p>
+          ) : !site.hugo_available ? (
+            <p className="muted">The Hugo executable was not found on PATH, so launching is unavailable.</p>
+          ) : (
+            <div className="button-row">
+              <button className="button button-primary button-small" type="button" onClick={() => void launch()} disabled={busy !== null || !site.available}>
+                <Play size={14} /> {busy === "launch" ? "Starting…" : site.running ? "Rejoin preview" : "Launch Hugo"}
+              </button>
+              {site.running ? (
+                <button className="button button-secondary button-small" type="button" onClick={() => void stop()} disabled={busy !== null}>
+                  <Square size={14} /> {busy === "stop" ? "Stopping…" : "Stop"}
+                </button>
+              ) : null}
+            </div>
+          )}
+          <p className="muted small">
+            Binds to 127.0.0.1 on a distinct port. Drafts are not rendered. Use the Posts
+            tab for read-only editorial evaluation; nothing here rewrites articles.
+          </p>
+        </section>
+      ) : null}
     </div>
   );
 }

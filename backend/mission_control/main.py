@@ -37,6 +37,7 @@ from mission_control.api import (
     scripts as scripts_api,
     settings as settings_api,
     technical as technical_api,
+    website_posts as website_posts_api,
     websites as websites_api,
     workflows as workflows_api,
     writer as writer_api,
@@ -309,6 +310,7 @@ def create_app(runtime: RuntimeSettings | None = None) -> FastAPI:
     app.include_router(settings_api.router)
     app.include_router(scripts_api.router)
     app.include_router(websites_api.router)
+    app.include_router(website_posts_api.router)
 
     dist = settings.frontend_dist
     if dist.exists() and (dist / "index.html").exists():

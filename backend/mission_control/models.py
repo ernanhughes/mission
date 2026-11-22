@@ -1791,3 +1791,67 @@ class PublicationCalibrationReview(Base):
     correction: Mapped[str] = mapped_column(Text, default="", nullable=False)
     reviewer: Mapped[str] = mapped_column(String, default="", nullable=False)
     created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class WebsitePostEvaluation(Base):
+    """One blog-post editorial evaluation observation (MC-WEBSITES-POSTS-01).
+
+    Website-scoped and chapter-independent: blog articles are not forced into
+    book-specific records and no fictitious Project entries are introduced.
+    Append-only history; staleness is derived at read time by comparing
+    content_sha256 against the live file hash, never by mutation. Blocked,
+    error and partial outcomes carry no scores (overall NULL).
+    """
+
+    __tablename__ = "website_post_evaluations"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    website_id: Mapped[str] = mapped_column(String, nullable=False)
+    article_identity: Mapped[str] = mapped_column(String, nullable=False)
+    relpath: Mapped[str] = mapped_column(String, nullable=False)
+    content_sha256: Mapped[str] = mapped_column(String, nullable=False)
+    rubric_id: Mapped[str] = mapped_column(String, default="blog-editorial-v1", nullable=False)
+    rubric_version: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
+    prompt_version: Mapped[str] = mapped_column(String, default="1", nullable=False)
+    requested_model: Mapped[str | None] = mapped_column(String)
+    actual_model: Mapped[str | None] = mapped_column(String)
+    status: Mapped[str] = mapped_column(String, default="CURRENT", nullable=False)
+    overall: Mapped[float | None] = mapped_column(Float, nullable=True)
+    aggregation_method: Mapped[str] = mapped_column(
+        String, default="sum_dimensions_v1", nullable=False
+    )
+    dimensions: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict, nullable=False)
+    assessment: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    strengths: Mapped[list[str]] = mapped_column(JSON, default=list, nullable=False)
+    weaknesses: Mapped[list[str]] = mapped_column(JSON, default=list, nullable=False)
+    improvements: Mapped[list[Any]] = mapped_column(JSON, default=list, nullable=False)
+    findings: Mapped[list[Any]] = mapped_column(JSON, default=list, nullable=False)
+    uncertainty: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    limitations: Mapped[list[str]] = mapped_column(JSON, default=list, nullable=False)
+    execution: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict, nullable=False)
+    previous_evaluation_id: Mapped[str | None] = mapped_column(
+        String, ForeignKey("website_post_evaluations.id", ondelete="SET NULL")
+    )
+    supersedes: Mapped[str | None] = mapped_column(String)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class WebsitePostReview(Base):
+    """Author decision on one evaluation finding (MC-WEBSITES-POSTS-01).
+
+    Append-only and separate from AI judgments: ACCEPT / REJECT / DEFER /
+    INVESTIGATE mirror the quality-review conventions.
+    """
+
+    __tablename__ = "website_post_reviews"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    evaluation_id: Mapped[str | None] = mapped_column(
+        String, ForeignKey("website_post_evaluations.id", ondelete="CASCADE")
+    )
+    finding_id: Mapped[str] = mapped_column(String, nullable=False)
+    decision: Mapped[str] = mapped_column(String, nullable=False)
+    reason: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    reviewer: Mapped[str] = mapped_column(String, default="", nullable=False)
+    source_digest: Mapped[str] = mapped_column(String, default="", nullable=False)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)

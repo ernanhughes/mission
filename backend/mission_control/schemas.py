@@ -390,6 +390,145 @@ class WebsiteLaunchRead(BaseModel):
     detail: str | None = None
 
 
+class WebsitePostEvaluationSummary(BaseModel):
+    evaluation_id: str | None = None
+    overall: float | None = None
+    status: str | None = None
+    freshness: str = "never"
+    evaluated_at: str | None = None
+    stale: bool = False
+    rubric_id: str | None = None
+    rubric_version: int | None = None
+
+
+class WebsitePostRead(BaseModel):
+    website_id: str
+    identity: str
+    title: str
+    relpath: str
+    date: str | None = None
+    post_status: str = "unknown"
+    word_count: int = 0
+    evaluation: WebsitePostEvaluationSummary = WebsitePostEvaluationSummary()
+
+
+class WebsitePostListRead(BaseModel):
+    items: list[WebsitePostRead] = []
+    total: int = 0
+    limit: int = 50
+    offset: int = 0
+    published: int = 0
+    drafts: int = 0
+    scheduled: int = 0
+    unknown: int = 0
+
+
+class WebsitePostDimensionRead(BaseModel):
+    id: str
+    label: str
+    score: int | None = None
+    max_points: int = 0
+    explanation: str = ""
+
+
+class WebsitePostImprovementRead(BaseModel):
+    finding_id: str = ""
+    rank: int = 0
+    title: str = ""
+    problem: str = ""
+    why_it_matters: str = ""
+    suggestion: str = ""
+    source_heading: str | None = None
+    source_quote: str | None = None
+    quote_anchored: bool = False
+
+
+class WebsitePostFindingRead(BaseModel):
+    finding_id: str = ""
+    kind: str = "observation"
+    title: str = ""
+    detail: str = ""
+    source_heading: str | None = None
+    source_quote: str | None = None
+    quote_anchored: bool = False
+
+
+class WebsitePostEvaluationRead(BaseModel):
+    id: str
+    website_id: str
+    article_identity: str
+    relpath: str
+    content_sha256: str
+    rubric_id: str
+    rubric_version: int
+    prompt_version: str
+    requested_model: str | None = None
+    actual_model: str | None = None
+    status: str
+    overall: float | None = None
+    aggregation_method: str
+    dimensions: list[WebsitePostDimensionRead] = []
+    assessment: str = ""
+    strengths: list[str] = []
+    weaknesses: list[str] = []
+    improvements: list[WebsitePostImprovementRead] = []
+    findings: list[WebsitePostFindingRead] = []
+    uncertainty: str = ""
+    limitations: list[str] = []
+    execution: dict[str, Any] = {}
+    previous_evaluation_id: str | None = None
+    freshness: str = "current"
+    stale: bool = False
+    created_at: str
+
+
+class WebsitePostDetailRead(BaseModel):
+    post: WebsitePostRead
+    content: str = ""
+    content_truncated: bool = False
+    content_sha256: str = ""
+    evaluations: list[WebsitePostEvaluationRead] = []
+    current: WebsitePostEvaluationRead | None = None
+
+
+class WebsitePostReviewCreate(RawModel):
+    evaluation_id: str | None = None
+    finding_id: str = Field(min_length=1, max_length=200)
+    decision: str = "ACCEPT"
+    reason: str = ""
+    reviewer: str = ""
+
+
+class WebsitePostEvaluateRequest(RawModel):
+    model: str | None = None
+    force: bool = False
+
+
+class WebsitePostReviewRead(BaseModel):
+    id: str
+    evaluation_id: str | None = None
+    finding_id: str
+    decision: str
+    reason: str = ""
+    reviewer: str = ""
+    source_digest: str = ""
+    created_at: str
+
+
+class WebsitePostsSummaryRead(BaseModel):
+    website_id: str
+    discovered: int = 0
+    published: int = 0
+    evaluated_current: int = 0
+    evaluated_stale: int = 0
+    unevaluated: int = 0
+    average_score: float | None = None
+    average_denominator: int = 0
+    rubric_id: str = "blog-editorial-v1"
+    rubric_version: int = 1
+    coverage_percent: float | None = None
+
+
 class BookUpdate(RawModel):
     title: str | None = Field(default=None, min_length=1, max_length=200)
     status: BookStatus | None = None
