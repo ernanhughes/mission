@@ -21,6 +21,7 @@ import {
 import { api, errorMessage } from "../api/client";
 import { useApi } from "../api/useApi";
 import { LivingBookCard } from "../features/living-book/LivingBookCard";
+import { InspectPanel } from "../features/inspect/InspectPanels";
 import { useToast } from "../components/Toast";
 import {
   ActionButton,
@@ -2874,6 +2875,7 @@ export function ProjectPage() {
           <CompletenessPanel projectId={projectId} />
           <ReadinessPanel projectId={projectId} />
           <CalibrationPanel projectId={projectId} />
+          <InspectPanel applicationIds={(data.applications ?? []).map((app) => app.id)} />
 
           <Section title="Tasks" description="Explicit user actions. Evidence adapters do not create tasks automatically.">
             <form className="inline-form" onSubmit={(event) => void addTask(event)}>

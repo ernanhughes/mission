@@ -2009,3 +2009,87 @@ export type EnsureOpenResponse = {
 };
 
 export type EnsureOpenResult = EnsureOpenResponse;
+
+// ------------------------------------------------- inspect snapshots (MC-INSPECT-01)
+// Read-only passthrough of the Inspect consumer snapshot. Records are
+// untrusted snapshot data and are carried as plain dicts; envelopes add
+// availability and staleness so an empty/missing snapshot is a 200 empty
+// state, never a 500. Mirrors backend schemas Inspect*Read.
+
+export type InspectSnapshotEnvelope = {
+  available: boolean;
+  stale_refresh: boolean;
+  snapshot_dir: string | null;
+};
+
+export type InspectSource = {
+  repository: string;
+  head_sha: string;
+  inspection_status: string;
+  stale: boolean;
+  stale_reason: string;
+  [key: string]: unknown;
+};
+
+export type InspectManifest = InspectSnapshotEnvelope & {
+  contract_version: string | null;
+  generated_at: string | null;
+  inspect_version: Record<string, unknown>;
+  sources: InspectSource[];
+  counts: Record<string, number>;
+  validation: Record<string, unknown>;
+};
+
+export type InspectProjectRecord = Record<string, any>;
+
+export type InspectProject = {
+  id: string;
+  mission_application_id: string;
+  mapped: boolean;
+  record: InspectProjectRecord;
+};
+
+export type InspectProjectList = InspectSnapshotEnvelope & {
+  total: number;
+  projects: InspectProject[];
+};
+
+export type InspectCapability = Record<string, any>;
+
+export type InspectCapabilityList = InspectSnapshotEnvelope & {
+  total: number;
+  capabilities: InspectCapability[];
+};
+
+export type InspectCapabilityDetail = InspectSnapshotEnvelope & {
+  capability: InspectCapability;
+};
+
+export type InspectUsage = Record<string, any>;
+
+export type InspectUsageList = InspectSnapshotEnvelope & {
+  capability_id: string;
+  total: number;
+  usages: InspectUsage[];
+};
+
+export type InspectOpportunity = Record<string, any>;
+
+export type InspectOpportunityList = InspectSnapshotEnvelope & {
+  total: number;
+  opportunities: InspectOpportunity[];
+};
+
+export type InspectCoverage = InspectSnapshotEnvelope & {
+  project_id: string;
+  mission_application_id: string | null;
+  mapped: boolean;
+  record: Record<string, any>;
+};
+
+export type InspectComposition = Record<string, any>;
+
+export type InspectCompositionList = InspectSnapshotEnvelope & {
+  total: number;
+  compositions: InspectComposition[];
+};
