@@ -339,6 +339,10 @@ export function WorkflowDetailPage() {
               <dl className="kv-list">
                 <KeyValue label="Worker status">{data.worker_status || "not run"}</KeyValue>
                 <KeyValue label="Worker request"><code>{data.worker_request_id || "—"}</code></KeyValue>
+                <KeyValue label="Work"><code>{data.worker_work_id || "—"}</code></KeyValue>
+                <KeyValue label="Work run"><code>{data.worker_run_id || "—"}</code></KeyValue>
+                <KeyValue label="Work acceptance"><code>{data.worker_acceptance_id || "—"}</code></KeyValue>
+                <KeyValue label="Acceptance outcome">{data.worker_acceptance_outcome || "—"}</KeyValue>
                 <KeyValue label="Patch">{String(data.patch.summary || "—")}</KeyValue>
                 <KeyValue label="Result commit"><code>{data.result_commit || "—"}</code></KeyValue>
               </dl>

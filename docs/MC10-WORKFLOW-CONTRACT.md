@@ -114,6 +114,55 @@ A Worker request ID, status, execution identity, output hash and excerpt are
 stored. A missing Worker, non-200 response, blocked/failed status or timeout
 produces a failed workflow with a diagnostic.
 
+### Worker backend selection (PRAXIS-INTEGRATION-01)
+
+The existing workflow type can now select Worker's `opencode-work` backend
+explicitly when the proposal is created:
+
+```json
+{
+  "record_id": "<Next record>",
+  "template": "trace_reduce_v1",
+  "worker_backend": "opencode-work",
+  "worker_model": "default_deepseek_go",
+  "worker_policy": "default",
+  "worker_timeout_seconds": 300
+}
+```
+
+`worker_backend` is optional for compatibility; existing workflows retain the
+lower-semantics `direct` default. There is no fallback from `opencode-work` to
+`direct`. The approval hash includes the Worker backend, model, policy, timeout
+and success checks, so changing any of them after approval makes the approval
+stale.
+
+For `opencode-work`, MC sends a Worker-owned response-artifact contract:
+
+- `response_artifact_path` is `.opencode/mc-worker-response.txt`;
+- the default Work success check requires that artifact to exist;
+- a caller may supply up to eight `worker_success` checks using only the two
+  Worker-supported types (`file_exists`, `file_content_equals`) when a domain
+  template needs a stronger declared obligation;
+- the response is parsed as a patch only after Work returns an authoritative
+  `ACCEPTED` acceptance record;
+- Work/run/acceptance IDs, acceptance, Evidence/Verify/Proof artifacts and VFS
+  provenance are stored in the existing `worker_result` JSON field; no schema
+  migration is added;
+- `worker_work_id`, `worker_run_id`, `worker_acceptance_id` and
+  `worker_acceptance_outcome` are derived read fields on the workflow API.
+
+MC approval and Work acceptance remain distinct. MC approval authorizes the
+experiment; Work acceptance says whether the completed Work satisfied its
+declared checks. `opencode-work` auto-accepts after a successful run, so MC
+records that outcome but does not treat it as human approval. The deterministic
+sandbox tests and CoCoder review remain independent gates.
+
+A Worker transport failure is recorded as an explicit `UNAVAILABLE`,
+`TIMEOUT`, `REQUEST_FAILED` or protocol/HTTP classification. No acceptance
+verdict is invented, and no ID is manufactured when no authoritative result was
+received. Worker result lookup remains process-local; MC preserves the result it
+actually received and records the recovery limitation.
+
 ## Patch and scope enforcement
 
 The model output is accepted as either:
@@ -230,8 +279,10 @@ representation that can later be connected to Language experimentation.
 
 ## Honest limitations
 
-- Worker's `direct` executor is lower-parity and does not produce Work
-  Evidence/Acceptance.
+- Worker's `direct` executor remains the compatibility default and is
+  lower-parity; it does not produce Work Evidence/Acceptance. An explicit
+  `opencode-work` workflow now does produce them, but its Work acceptance is
+  limited to the declared response-artifact checks, not domain correctness.
 - The experiment is a proxy spike, not the full TraceLite mechanism.
 - Local model output is probabilistic; a failed attempt is preserved rather than
   hidden.

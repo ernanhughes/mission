@@ -40,6 +40,11 @@ def create_workflow(
         payload.template,
         payload.project_id,
         force_new=payload.force_new,
+        worker_backend=payload.worker_backend,
+        worker_model=payload.worker_model,
+        worker_policy=payload.worker_policy,
+        worker_timeout_seconds=payload.worker_timeout_seconds,
+        worker_success=payload.worker_success,
     )
 
 

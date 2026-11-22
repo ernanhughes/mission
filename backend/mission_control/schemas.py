@@ -2758,6 +2758,10 @@ class ExperimentWorkflowRead(BaseModel):
     worker_request_id: str | None
     worker_status: str | None
     worker_result: dict[str, Any]
+    worker_work_id: str | None = None
+    worker_run_id: str | None = None
+    worker_acceptance_id: str | None = None
+    worker_acceptance_outcome: str | None = None
     patch: dict[str, Any]
     result_commit: str | None
     measurement: dict[str, Any]
@@ -2842,6 +2846,13 @@ class WorkflowCreate(RawModel):
     template: Literal["trace_reduce_v1", "brightness_observation_v1"] = "trace_reduce_v1"
     project_id: str | None = None
     force_new: bool = False
+    worker_backend: Literal["opencode-work", "direct", "opencode"] | None = None
+    worker_model: str | None = Field(default=None, max_length=128)
+    worker_policy: str | None = Field(default=None, max_length=128)
+    worker_timeout_seconds: float | None = Field(default=None, ge=30, le=900)
+    worker_success: list[dict[str, Any]] | None = Field(
+        default=None, max_length=8
+    )
 
 
 class WorkflowApprove(RawModel):

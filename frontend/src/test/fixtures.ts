@@ -619,6 +619,10 @@ export function makeWorkflow(overrides: Partial<ExperimentWorkflow> = {}): Exper
     worker_request_id: "wrq_fixture",
     worker_status: "AWAITING_ACCEPTANCE",
     worker_result: { output_excerpt: "def reduce_trace(events): ..." },
+    worker_work_id: "wk_fixture",
+    worker_run_id: "wr_fixture",
+    worker_acceptance_id: "ac_fixture",
+    worker_acceptance_outcome: "ACCEPTED",
     patch: { summary: "Implemented duplicate compaction." },
     result_commit: "e153dd5",
     measurement: {

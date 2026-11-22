@@ -55,6 +55,26 @@ PATCH_SCHEMA = "mc10.patch.v1"
 DEFAULT_WORKER_URL = "http://127.0.0.1:7317"
 DEFAULT_WORKER_MODEL = "qwen2.5-coder:latest"
 DEFAULT_WORKER_BACKEND = "direct"
+OPENCODE_WORK_BACKEND = "opencode-work"
+OPENCODE_WORK_MODEL = "default_deepseek_go"
+OPENCODE_WORK_POLICY = "default"
+OPENCODE_WORK_TIMEOUT_SECONDS = 300.0
+WORKER_RESPONSE_ARTIFACT = ".opencode/mc-worker-response.txt"
+SUPPORTED_WORKER_BACKENDS = {"direct", "opencode", "opencode-work"}
+
+
+class WorkerRequestError(RuntimeError):
+    """A classified Worker transport/protocol failure.
+
+    The code is independent of HTTP status: callers persist it verbatim and
+    never convert it into an acceptance verdict.
+    """
+
+    def __init__(self, code: str, message: str) -> None:
+        super().__init__(message)
+        self.code = code
+
+
 FORBIDDEN_CALLS = {
     "__import__",
     "breakpoint",
@@ -84,17 +104,46 @@ class HttpWorkerClient:
         self.base_url = base_url.rstrip("/")
 
     async def run(self, request: dict[str, Any], timeout_seconds: float) -> dict[str, Any]:
-        async with httpx.AsyncClient(
-            timeout=timeout_seconds, trust_env=False
-        ) as client:
-            response = await client.post(f"{self.base_url}/v1/work", json=request)
+        try:
+            async with httpx.AsyncClient(
+                timeout=timeout_seconds, trust_env=False
+            ) as client:
+                response = await client.post(
+                    f"{self.base_url}/v1/work", json=request
+                )
+        except httpx.TimeoutException as exc:
+            raise WorkerRequestError(
+                "WORKER_TIMEOUT",
+                f"Worker did not respond within {timeout_seconds:g}s; outcome is unknown",
+            ) from exc
+        except httpx.ConnectError as exc:
+            raise WorkerRequestError(
+                "WORKER_UNAVAILABLE",
+                f"Worker is not reachable at {self.base_url}",
+            ) from exc
+        except httpx.HTTPError as exc:
+            raise WorkerRequestError(
+                "WORKER_TRANSPORT_ERROR",
+                f"Worker transport failed: {type(exc).__name__}: {str(exc)[:500]}",
+            ) from exc
         if response.status_code != 200:
-            raise ValueError(
-                f"Worker returned HTTP {response.status_code}: {response.text[:1000]}"
+            raise WorkerRequestError(
+                "WORKER_HTTP_ERROR",
+                f"Worker returned HTTP {response.status_code}: "
+                f"{response.text[:1000]}",
             )
-        payload = response.json()
+        try:
+            payload = response.json()
+        except ValueError as exc:
+            raise WorkerRequestError(
+                "WORKER_PROTOCOL_ERROR",
+                "Worker response was not valid JSON",
+            ) from exc
         if not isinstance(payload, dict):
-            raise ValueError("Worker response was not a JSON object")
+            raise WorkerRequestError(
+                "WORKER_PROTOCOL_ERROR",
+                "Worker response was not a JSON object",
+            )
         return payload
 
 
@@ -123,11 +172,69 @@ class WorkflowService:
         project_id: str | None = None,
         *,
         force_new: bool = False,
+        worker_backend: str | None = None,
+        worker_model: str | None = None,
+        worker_policy: str | None = None,
+        worker_timeout_seconds: float | None = None,
+        worker_success: list[dict[str, Any]] | None = None,
     ) -> ExperimentWorkflowRead:
         try:
             spec = get_template(template)
         except ValueError as exc:
             raise ValidationProblem(str(exc)) from exc
+        backend = str(worker_backend or DEFAULT_WORKER_BACKEND)
+        if backend not in SUPPORTED_WORKER_BACKENDS:
+            raise ValidationProblem(
+                f"Unsupported Worker backend: {backend!r}. "
+                f"Choose one of {sorted(SUPPORTED_WORKER_BACKENDS)}."
+            )
+        if worker_success is not None and backend != OPENCODE_WORK_BACKEND:
+            raise ValidationProblem(
+                "worker_success is only supported for the opencode-work backend"
+            )
+        worker_success = self._validate_worker_success(worker_success)
+        if backend == OPENCODE_WORK_BACKEND:
+            model = str(worker_model or OPENCODE_WORK_MODEL)
+            policy = str(worker_policy or OPENCODE_WORK_POLICY)
+            timeout_seconds = float(
+                worker_timeout_seconds or OPENCODE_WORK_TIMEOUT_SECONDS
+            )
+        else:
+            model = str(
+                worker_model
+                or os.environ.get("MC10_WORKER_MODEL", DEFAULT_WORKER_MODEL)
+            )
+            policy = str(worker_policy) if worker_policy else None
+            timeout_seconds = float(worker_timeout_seconds or 180)
+        worker_contract: dict[str, Any] = {
+            "backend": backend,
+            "model": model,
+            "base_url": self._worker_base_url(),
+            "max_model_calls": 1,
+            "timeout_seconds": timeout_seconds,
+        }
+        if policy:
+            worker_contract["policy"] = policy
+        if backend == OPENCODE_WORK_BACKEND:
+            worker_contract.update(
+                {
+                    "data_policy": "private",
+                    "response_artifact_path": WORKER_RESPONSE_ARTIFACT,
+                    "acceptance": "automatic",
+                    "success": [
+                        {
+                            "id": "worker-response-artifact",
+                            "description": "Worker response artifact exists",
+                            "check": {
+                                "type": "file_exists",
+                                "path": WORKER_RESPONSE_ARTIFACT,
+                            },
+                        }
+                    ],
+                }
+            )
+            if worker_success:
+                worker_contract["success"] = worker_success
         with self.database.session() as session:
             source = self._source_for_create(session, spec, record_id)
             repository = self._sandbox_path(spec)
@@ -143,6 +250,7 @@ class WorkflowService:
                 baseline_commit=baseline_commit,
                 baseline_hash=baseline_hash,
                 project_id=project_id,
+                worker=worker_contract,
             )
             idempotency_key = self._idempotency_key(source["source_id"], template)
             if force_new:
@@ -351,7 +459,17 @@ class WorkflowService:
             model = str(worker.get("model") or DEFAULT_WORKER_MODEL)
             backend = str(worker.get("backend") or DEFAULT_WORKER_BACKEND)
             timeout_seconds = float(worker.get("timeout_seconds") or 180)
-            request = {
+            if backend not in SUPPORTED_WORKER_BACKENDS:
+                return self._fail_workflow(
+                    session,
+                    workflow,
+                    code="WORKER_BACKEND_UNSUPPORTED",
+                    message=f"Unsupported Worker backend: {backend!r}",
+                )
+            execution: dict[str, Any] = {"backend": backend, "model": model}
+            if worker.get("policy"):
+                execution["policy"] = str(worker["policy"])
+            request: dict[str, Any] = {
                 "schema": "worker.work-request.v1",
                 "app": "mission-control",
                 "objective": prompt,
@@ -359,35 +477,117 @@ class WorkflowService:
                     "root": str(repository),
                     "project_id": workflow.id,
                 },
-                "execution": {"backend": backend, "model": model},
+                "execution": execution,
                 "metadata": {
                     "workflow_id": workflow.id,
+                    "correlation_id": workflow.id,
                     "operation_id": workflow.id,
                     "stage_id": "EXPERIMENT",
+                    "template": workflow.template,
                     "next_external_id": workflow.next_external_id,
                 },
-                "options": {"acceptance": "human"},
             }
+            if backend == OPENCODE_WORK_BACKEND:
+                response_artifact = str(
+                    worker.get("response_artifact_path")
+                    or WORKER_RESPONSE_ARTIFACT
+                )
+                success = worker.get("success") or [
+                    {
+                        "id": "worker-response-artifact",
+                        "description": "Worker response artifact exists",
+                        "check": {
+                            "type": "file_exists",
+                            "path": response_artifact,
+                        },
+                    }
+                ]
+                request["parameters"] = {
+                    "data_policy": str(worker.get("data_policy") or "private"),
+                    "response_artifact_path": response_artifact,
+                    "temperature": 0,
+                }
+                request["success"] = success
+                request["options"] = {"acceptance": "automatic"}
+            else:
+                request["options"] = {"acceptance": "human"}
             try:
                 result = await self._worker_client(base_url).run(
                     request, timeout_seconds
                 )
-            except Exception as exc:
+            except WorkerRequestError as exc:
                 workflow.status = "failed"
-                workflow.failure = f"Worker request failed: {exc.__class__.__name__}: {str(exc)[:1500]}"
+                workflow.worker_status = exc.code
+                workflow.worker_result = self._worker_failure_result(
+                    code=exc.code,
+                    message=str(exc),
+                    backend=backend,
+                    model=model,
+                    timeout_seconds=timeout_seconds,
+                )
+                workflow.failure = f"{exc.code}: {str(exc)[:1500]}"
                 workflow.updated_at = now_iso()
                 self._event(
                     session,
                     workflow,
-                    "execution_failed",
+                    "worker_unavailable",
                     "worker",
-                    "Worker request failed before a patch was applied.",
-                    {"error": workflow.failure},
+                    "No authoritative Worker result was received.",
+                    {
+                        "code": exc.code,
+                        "error": str(exc)[:2000],
+                        "timeout_seconds": timeout_seconds,
+                        "recovery": "Worker lookup is process-local; no later lookup was assumed.",
+                    },
                 )
                 return self._read(session, workflow)
-            workflow.worker_request_id = str(result.get("request_id") or "")
-            workflow.worker_status = str(result.get("status") or "unknown")
-            workflow.worker_result = self._bounded_worker_result(result)
+            except Exception as exc:
+                workflow.status = "failed"
+                workflow.worker_status = "REQUEST_FAILED"
+                workflow.worker_result = self._worker_failure_result(
+                    code="WORKER_REQUEST_FAILED",
+                    message=f"{exc.__class__.__name__}: {str(exc)}",
+                    backend=backend,
+                    model=model,
+                    timeout_seconds=timeout_seconds,
+                )
+                workflow.failure = (
+                    f"WORKER_REQUEST_FAILED: {exc.__class__.__name__}: "
+                    f"{str(exc)[:1500]}"
+                )
+                workflow.updated_at = now_iso()
+                self._event(
+                    session,
+                    workflow,
+                    "worker_unavailable",
+                    "worker",
+                    "Worker request failed before an authoritative result was received.",
+                    {
+                        "code": "WORKER_REQUEST_FAILED",
+                        "error": str(exc)[:2000],
+                        "timeout_seconds": timeout_seconds,
+                    },
+                )
+                return self._read(session, workflow)
+            request_id = result.get("request_id")
+            workflow.worker_request_id = (
+                str(request_id) if isinstance(request_id, str) and request_id else None
+            )
+            status_value = result.get("status")
+            workflow.worker_status = (
+                str(status_value)
+                if isinstance(status_value, str) and status_value
+                else "UNKNOWN"
+            )
+            workflow.worker_result = self._authoritative_worker_result(
+                result,
+                backend=backend,
+                model=model,
+                timeout_seconds=timeout_seconds,
+            )
+            work = workflow.worker_result.get("work") or {}
+            acceptance = work.get("acceptance") if isinstance(work, dict) else None
+            acceptance = acceptance if isinstance(acceptance, dict) else {}
             workflow.updated_at = now_iso()
             self._event(
                 session,
@@ -399,7 +599,12 @@ class WorkflowService:
                     "request_id": workflow.worker_request_id,
                     "status": workflow.worker_status,
                     "execution": result.get("execution"),
+                    "work_id": work.get("work_id"),
+                    "run_id": work.get("run_id"),
+                    "acceptance_id": work.get("acceptance_id"),
+                    "acceptance_outcome": acceptance.get("outcome"),
                     "provenance": result.get("provenance"),
+                    "artifacts": result.get("artifacts"),
                 },
             )
             session.commit()
@@ -408,23 +613,116 @@ class WorkflowService:
                 return self._mark_cancelled(
                     session, workflow, "Cancelled after Worker response; patch was not applied"
                 )
-            if workflow.worker_status in {"BLOCKED", "FAILED"}:
-                workflow.status = "failed"
-                workflow.failure = (
-                    f"Worker returned {workflow.worker_status}: "
-                    f"{str(result.get('message') or result.get('unresolved') or '')[:1500]}"
+            failure_statuses = {
+                "BLOCKED",
+                "FAILED",
+                "UNAVAILABLE",
+                "TIMEOUT",
+                "REQUEST_FAILED",
+                "TRANSPORT_ERROR",
+                "PROTOCOL_ERROR",
+                "HTTP_ERROR",
+            }
+            if workflow.worker_status in failure_statuses:
+                return self._fail_workflow(
+                    session,
+                    workflow,
+                    code=f"WORKER_{workflow.worker_status}",
+                    message=str(
+                        result.get("message")
+                        or result.get("unresolved")
+                        or "Worker did not produce an applicable result"
+                    )[:1500],
                 )
+            if workflow.worker_status == "REJECTED":
+                return self._fail_workflow(
+                    session,
+                    workflow,
+                    code="WORK_ACCEPTANCE_REJECTED",
+                    message=str(
+                        acceptance.get("reason")
+                        or "Work acceptance rejected the completed execution"
+                    )[:1500],
+                )
+            if backend == OPENCODE_WORK_BACKEND:
+                if (
+                    workflow.worker_status != "ACCEPTED"
+                    or acceptance.get("outcome") != "ACCEPTED"
+                    or not work.get("acceptance_id")
+                ):
+                    return self._fail_workflow(
+                        session,
+                        workflow,
+                        code="WORK_ACCEPTANCE_MISSING",
+                        message=(
+                            "Worker did not return an authoritative ACCEPTED Work "
+                            "acceptance record"
+                        ),
+                    )
                 self._event(
                     session,
                     workflow,
-                    "execution_failed",
+                    "work_acceptance_recorded",
                     "worker",
-                    "Worker did not produce an applicable experiment result.",
-                    {"status": workflow.worker_status, "failure": workflow.failure},
+                    f"Work {work.get('work_id')} accepted with "
+                    f"acceptance {work.get('acceptance_id')}.",
+                    {
+                        "work_id": work.get("work_id"),
+                        "run_id": work.get("run_id"),
+                        "acceptance_id": work.get("acceptance_id"),
+                        "acceptance": acceptance,
+                    },
                 )
-                return self._read(session, workflow)
+            elif workflow.worker_status == "UNKNOWN":
+                return self._fail_workflow(
+                    session,
+                    workflow,
+                    code="WORKER_RESULT_UNKNOWN",
+                    message="Worker returned no authoritative status",
+                )
             try:
-                patch = self._parse_patch(str(result.get("output") or ""), spec)
+                if backend == OPENCODE_WORK_BACKEND:
+                    response_artifact = str(
+                        worker.get("response_artifact_path")
+                        or WORKER_RESPONSE_ARTIFACT
+                    )
+                    response_file = repository / response_artifact
+                    try:
+                        output = response_file.read_text(encoding="utf-8")
+                    except OSError as exc:
+                        return self._fail_workflow(
+                            session,
+                            workflow,
+                            code="WORK_RESPONSE_MISSING",
+                            message=(
+                                "Work was accepted but its response artifact "
+                                f"could not be read: {exc}"
+                            )[:1500],
+                        )
+                    finally:
+                        try:
+                            response_file.unlink()
+                        except OSError:
+                            pass
+                        try:
+                            response_file.parent.rmdir()
+                        except OSError:
+                            pass
+                else:
+                    output_value = result.get("output")
+                    output = (
+                        output_value
+                        if isinstance(output_value, str)
+                        else json.dumps(output_value, default=str)
+                    )
+                if not output.strip():
+                    return self._fail_workflow(
+                        session,
+                        workflow,
+                        code="WORK_RESPONSE_EMPTY",
+                        message="Worker produced an empty response artifact",
+                    )
+                patch = self._parse_patch(output, spec)
                 self._validate_patch(patch, spec)
                 self._apply_patch(repository, patch, spec)
                 workflow.patch = {
@@ -872,6 +1170,17 @@ class WorkflowService:
             .where(LanguageObservation.workflow_id == workflow.id)
             .order_by(LanguageObservation.created_at)
         ).all()
+        worker_result = (
+            workflow.worker_result
+            if isinstance(workflow.worker_result, dict)
+            else {}
+        )
+        worker_work = worker_result.get("work")
+        worker_work = worker_work if isinstance(worker_work, dict) else {}
+        worker_acceptance = worker_work.get("acceptance")
+        worker_acceptance = (
+            worker_acceptance if isinstance(worker_acceptance, dict) else {}
+        )
         return ExperimentWorkflowRead(
             id=workflow.id,
             title=workflow.title,
@@ -894,6 +1203,10 @@ class WorkflowService:
             worker_request_id=workflow.worker_request_id,
             worker_status=workflow.worker_status,
             worker_result=workflow.worker_result,
+            worker_work_id=worker_work.get("work_id"),
+            worker_run_id=worker_work.get("run_id"),
+            worker_acceptance_id=worker_work.get("acceptance_id"),
+            worker_acceptance_outcome=worker_acceptance.get("outcome"),
             patch=workflow.patch,
             result_commit=workflow.result_commit,
             measurement=workflow.measurement,
@@ -1174,6 +1487,7 @@ class WorkflowService:
         baseline_commit: str,
         baseline_hash: str,
         project_id: str | None,
+        worker: dict[str, Any],
     ) -> dict[str, Any]:
         candidate = source["candidate"]
         current_file = (repository / spec.scope[0]).read_text(encoding="utf-8")
@@ -1203,13 +1517,7 @@ class WorkflowService:
             "expected_result": spec.expected_result,
             "stop_conditions": list(spec.stop_conditions),
             "evaluation_criteria": list(spec.evaluation_criteria),
-            "worker": {
-                "backend": DEFAULT_WORKER_BACKEND,
-                "model": os.environ.get("MC10_WORKER_MODEL", DEFAULT_WORKER_MODEL),
-                "base_url": self._worker_base_url(),
-                "max_model_calls": 1,
-                "timeout_seconds": 180,
-            },
+            "worker": worker,
             "sandbox": self.sandbox.describe(),
             "prompt": prompt,
             "baseline": baseline,
@@ -1375,19 +1683,221 @@ Tests:
             return self.worker_client
         return HttpWorkerClient(base_url)
 
-    def _bounded_worker_result(self, result: dict[str, Any]) -> dict[str, Any]:
+    def _validate_worker_success(
+        self, checks: list[dict[str, Any]] | None
+    ) -> list[dict[str, Any]] | None:
+        if checks is None:
+            return None
+        if not isinstance(checks, list) or not 1 <= len(checks) <= 8:
+            raise ValidationProblem(
+                "worker_success must contain between 1 and 8 checks"
+            )
+        cleaned: list[dict[str, Any]] = []
+        for index, item in enumerate(checks):
+            if not isinstance(item, dict):
+                raise ValidationProblem(
+                    f"worker_success[{index}] must be an object"
+                )
+            description = item.get("description")
+            check = item.get("check")
+            if not isinstance(description, str) or not description.strip():
+                raise ValidationProblem(
+                    f"worker_success[{index}].description is required"
+                )
+            if not isinstance(check, dict):
+                raise ValidationProblem(
+                    f"worker_success[{index}].check must be an object"
+                )
+            check_type = check.get("type")
+            if check_type not in {"file_exists", "file_content_equals"}:
+                raise ValidationProblem(
+                    f"worker_success[{index}].check.type must be "
+                    "file_exists or file_content_equals"
+                )
+            path = check.get("path")
+            if not isinstance(path, str) or not path.strip():
+                raise ValidationProblem(
+                    f"worker_success[{index}].check.path is required"
+                )
+            relative = Path(path)
+            if relative.is_absolute() or ".." in relative.parts:
+                raise ValidationProblem(
+                    f"worker_success[{index}].check.path must stay inside the workspace"
+                )
+            if check_type == "file_content_equals" and not isinstance(
+                check.get("value"), str
+            ):
+                raise ValidationProblem(
+                    f"worker_success[{index}].check.value must be a string"
+                )
+            cleaned.append(
+                {
+                    "id": str(item.get("id") or f"worker-check-{index + 1}"),
+                    "description": description.strip()[:500],
+                    "check": check,
+                }
+            )
+        return cleaned
+
+    def _fail_workflow(
+        self,
+        session: Session,
+        workflow: ExperimentWorkflow,
+        *,
+        code: str,
+        message: str,
+        source: str = "worker",
+        summary: str = "Worker did not produce an applicable experiment result.",
+    ) -> ExperimentWorkflowRead:
+        workflow.status = "failed"
+        workflow.failure = f"{code}: {message}"[:4000]
+        workflow.updated_at = now_iso()
+        self._event(
+            session,
+            workflow,
+            "execution_failed",
+            source,
+            summary,
+            {"code": code, "error": message[:2000]},
+        )
+        return self._read(session, workflow)
+
+    def _worker_failure_result(
+        self,
+        *,
+        code: str,
+        message: str,
+        backend: str,
+        model: str,
+        timeout_seconds: float,
+    ) -> dict[str, Any]:
+        """Persist an explicit no-result observation without inventing IDs."""
+        return {
+            "schema": "mission-control.worker-failure.v1",
+            "status": code,
+            "request_id": None,
+            "execution": {"backend": backend, "model": model},
+            "work": None,
+            "artifacts": [],
+            "provenance": None,
+            "message": message[:2000],
+            "unresolved": [],
+            "output_excerpt": "",
+            "output_sha256": None,
+            "availability": {
+                "worker_result_available": False,
+                "code": code,
+                "timeout_seconds": timeout_seconds,
+                "recovery_limitation": (
+                    "Worker result lookup is process-local; no request ID or "
+                    "later lookup was assumed."
+                ),
+            },
+            "observed_at": now_iso(),
+        }
+
+    def _authoritative_worker_result(
+        self,
+        result: dict[str, Any],
+        *,
+        backend: str,
+        model: str,
+        timeout_seconds: float,
+    ) -> dict[str, Any]:
+        """Preserve the authoritative Worker result and its real IDs.
+
+        Missing IDs remain None. This method never derives an acceptance
+        verdict from a status string.
+        """
         output = result.get("output")
-        text = output if isinstance(output, str) else json.dumps(output, default=str)
+        output_map = output if isinstance(output, dict) else {}
+        work_obj = (
+            output_map.get("work")
+            if isinstance(output_map.get("work"), dict)
+            else {}
+        )
+        run_obj = (
+            output_map.get("run")
+            if isinstance(output_map.get("run"), dict)
+            else {}
+        )
+        acceptance_obj = (
+            output_map.get("acceptance")
+            if isinstance(output_map.get("acceptance"), dict)
+            else {}
+        )
+        work_id = (
+            work_obj.get("work_id")
+            or output_map.get("work_id")
+            or result.get("work_id")
+        )
+        run_id = (
+            run_obj.get("run_id")
+            or output_map.get("run_id")
+            or result.get("run_id")
+        )
+        acceptance_id = (
+            acceptance_obj.get("acceptance_id")
+            or output_map.get("acceptance_id")
+            or result.get("acceptance_id")
+        )
+        work = {
+            "work_id": work_id if isinstance(work_id, str) and work_id else None,
+            "run_id": run_id if isinstance(run_id, str) and run_id else None,
+            "acceptance_id": (
+                acceptance_id
+                if isinstance(acceptance_id, str) and acceptance_id
+                else None
+            ),
+            "work_schema": work_obj.get("schema"),
+            "work_version": work_obj.get("work_version"),
+            "run_state": run_obj.get("state"),
+            "acceptance": acceptance_obj or None,
+        }
+        model_execution = output_map.get("model_execution")
+        compact_model: dict[str, Any] | None = None
+        if isinstance(model_execution, dict):
+            compact_model = {
+                key: model_execution.get(key)
+                for key in (
+                    "status",
+                    "execution_id",
+                    "requested",
+                    "observed",
+                    "provider",
+                    "model",
+                    "latency_ms",
+                    "usage",
+                    "cost",
+                    "fallback_path",
+                    "execution_state",
+                )
+                if model_execution.get(key) is not None
+            }
+        text = (
+            output
+            if isinstance(output, str)
+            else json.dumps(output, default=str, sort_keys=True)
+        )
         return {
             "schema": result.get("schema"),
             "request_id": result.get("request_id"),
             "status": result.get("status"),
-            "execution": result.get("execution"),
+            "execution": result.get("execution")
+            or {"backend": backend, "model": model},
             "provenance": result.get("provenance"),
             "message": result.get("message"),
-            "unresolved": result.get("unresolved"),
+            "unresolved": result.get("unresolved") or [],
             "output_excerpt": text[:4000],
             "output_sha256": hashlib.sha256(text.encode("utf-8")).hexdigest(),
+            "work": work,
+            "artifacts": result.get("artifacts") or [],
+            "model_execution": compact_model,
+            "availability": {
+                "worker_result_available": True,
+                "timeout_seconds": timeout_seconds,
+            },
+            "observed_at": now_iso(),
         }
 
     def _parse_patch(self, raw: str, spec: TemplateSpec) -> dict[str, Any]:

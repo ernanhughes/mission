@@ -1478,6 +1478,10 @@ export type ExperimentWorkflow = {
   worker_request_id: string | null;
   worker_status: string | null;
   worker_result: Record<string, any>;
+  worker_work_id: string | null;
+  worker_run_id: string | null;
+  worker_acceptance_id: string | null;
+  worker_acceptance_outcome: string | null;
   patch: Record<string, any>;
   result_commit: string | null;
   measurement: Record<string, any>;

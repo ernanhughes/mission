@@ -108,6 +108,13 @@ tests are the gate. This is a parity gap, not a hidden success.
 
 Evidence: `docs/acceptance/mc11/worker-executor-evaluation.json`.
 
+> **Post-MC11 update (2026-11-22):** PRAXIS-INTEGRATION-01 added explicit
+> `opencode-work` selection to an existing workflow type. `direct` remains the
+> compatibility default, but an authorized workflow can now produce real Work
+> Evidence/Verify/Proof/Acceptance/VFS records and preserve their IDs. See
+> `docs/reviews/PRAXIS-INTEGRATION-01-REPORT.md` in the Praxis repository.
+> This does not change the historical MC11 decision for the default path.
+
 ### Generalisation
 
 MC10 had one hard-coded template. MC11 adds a versioned template registry and a
