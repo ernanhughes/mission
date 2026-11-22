@@ -65,6 +65,15 @@ class RuntimeSettings:
     start_monitor: bool = field(
         default_factory=lambda: os.environ.get("MISSION_CONTROL_MONITOR", "1") != "0"
     )
+    # Inspect consumer snapshot (MC-INSPECT-01): read-only JSON snapshot root.
+    # Mission Control never writes here, never launches Pi, and never executes
+    # anything from the snapshot data.
+    inspect_dir: Path = field(
+        default_factory=lambda: _env_path(
+            "MISSION_CONTROL_INSPECT_DIR",
+            Path(r"C:\Projects\inspect\output\consumers\mission"),
+        )
+    )
     # Workbench owns editorial decisions and the selected book. Mission Control
     # reads those files read-only; it never writes them.
     workbench_decisions_path: Path = field(

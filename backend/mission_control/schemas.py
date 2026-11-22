@@ -3053,3 +3053,64 @@ class PublicationCalibrationRead(BaseModel):
     correction: str
     reviewer: str
     created_at: str
+
+
+# ------------------------------------------------- inspect snapshots (MC-INSPECT-01)
+# Read-only passthrough of the Inspect consumer snapshot. Records are treated
+# as untrusted data and carried as plain dicts; envelopes add availability and
+# staleness so an empty/missing snapshot is a 200 empty state, never a 500.
+
+
+class InspectSnapshotState(BaseModel):
+    available: bool
+    stale_refresh: bool = False
+    snapshot_dir: str | None = None
+
+
+class InspectManifestRead(InspectSnapshotState):
+    contract_version: str | None = None
+    generated_at: str | None = None
+    inspect_version: dict[str, Any] = Field(default_factory=dict)
+    sources: list[dict[str, Any]] = Field(default_factory=list)
+    counts: dict[str, Any] = Field(default_factory=dict)
+    validation: dict[str, Any] = Field(default_factory=dict)
+
+
+class InspectProjectRead(BaseModel):
+    id: str
+    mission_application_id: str
+    mapped: bool = False
+    record: dict[str, Any] = Field(default_factory=dict)
+
+
+class InspectProjectListRead(InspectSnapshotState):
+    total: int = 0
+    projects: list[InspectProjectRead] = Field(default_factory=list)
+
+
+class InspectCapabilityListRead(InspectSnapshotState):
+    total: int = 0
+    capabilities: list[dict[str, Any]] = Field(default_factory=list)
+
+
+class InspectUsageRead(InspectSnapshotState):
+    capability_id: str = ""
+    total: int = 0
+    usages: list[dict[str, Any]] = Field(default_factory=list)
+
+
+class InspectOpportunityListRead(InspectSnapshotState):
+    total: int = 0
+    opportunities: list[dict[str, Any]] = Field(default_factory=list)
+
+
+class InspectCoverageRead(InspectSnapshotState):
+    project_id: str = ""
+    mission_application_id: str | None = None
+    mapped: bool = False
+    record: dict[str, Any] = Field(default_factory=dict)
+
+
+class InspectCompositionListRead(InspectSnapshotState):
+    total: int = 0
+    compositions: list[dict[str, Any]] = Field(default_factory=list)
