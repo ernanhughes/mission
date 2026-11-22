@@ -125,6 +125,7 @@ describe("WebsitesPage", () => {
       </ToastProvider>,
       "/websites",
     );
+    await user.click(await screen.findByRole("tab", { name: "Preview" }));
     await user.click(await screen.findByRole("button", { name: "Launch Hugo" }));
     await waitFor(() => {
       expect(calls.some((call) => call.method === "POST" && call.path.endsWith("/launch"))).toBe(true);

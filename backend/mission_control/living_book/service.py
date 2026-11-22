@@ -115,8 +115,26 @@ def _project_context(session: Session, project_id: str) -> dict[str, Any]:
         if path and os.path.isdir(path) and _chapter_dir(path)
     ]
     if not manuscript_roots:
+        attempted = list(book.manuscript_paths or [])
+        detail = (
+            "No manuscript folder with numbered chapter files is configured for this book."
+        )
+        if attempted:
+            detail = (
+                f"{detail} Checked {len(attempted)} configured "
+                f"path(s): {attempted[0]}"
+                + (f" (+{len(attempted) - 1} more)" if len(attempted) > 1 else "")
+                + ". Refresh the Writer registry (POST /api/books/writer-sync) "
+                "to repair the chapter directory."
+            )
+        else:
+            detail = (
+                f"{detail} No manuscript paths are stored for project "
+                f"{project_id!r}. Refresh the Writer registry "
+                "(POST /api/books/writer-sync) to repair the chapter directory."
+            )
         raise LivingBookProblem(
-            "No manuscript folder with numbered chapter files is configured for this book.",
+            detail,
             state="no_manuscript",
             status=409,
         )

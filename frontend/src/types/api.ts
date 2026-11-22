@@ -1507,6 +1507,132 @@ export type WebsiteLaunch = {
   detail: string | null;
 };
 
+export type WebsitePostEvaluationSummary = {
+  evaluation_id: string | null;
+  overall: number | null;
+  status: string | null;
+  freshness: string;
+  evaluated_at: string | null;
+  stale: boolean;
+  rubric_id: string | null;
+  rubric_version: number | null;
+};
+
+export type WebsitePost = {
+  website_id: string;
+  identity: string;
+  title: string;
+  relpath: string;
+  date: string | null;
+  post_status: string;
+  word_count: number;
+  evaluation: WebsitePostEvaluationSummary;
+};
+
+export type WebsitePostList = {
+  items: WebsitePost[];
+  total: number;
+  limit: number;
+  offset: number;
+  published: number;
+  drafts: number;
+  scheduled: number;
+  unknown: number;
+};
+
+export type WebsitePostDimension = {
+  id: string;
+  label: string;
+  score: number | null;
+  max_points: number;
+  explanation: string;
+};
+
+export type WebsitePostImprovement = {
+  finding_id: string;
+  rank: number;
+  title: string;
+  problem: string;
+  why_it_matters: string;
+  suggestion: string;
+  source_heading: string | null;
+  source_quote: string | null;
+  quote_anchored: boolean;
+};
+
+export type WebsitePostFinding = {
+  finding_id: string;
+  kind: string;
+  title: string;
+  detail: string;
+  source_heading: string | null;
+  source_quote: string | null;
+  quote_anchored: boolean;
+};
+
+export type WebsitePostEvaluation = {
+  id: string;
+  website_id: string;
+  article_identity: string;
+  relpath: string;
+  content_sha256: string;
+  rubric_id: string;
+  rubric_version: number;
+  prompt_version: string;
+  requested_model: string | null;
+  actual_model: string | null;
+  status: string;
+  overall: number | null;
+  aggregation_method: string;
+  dimensions: WebsitePostDimension[];
+  assessment: string;
+  strengths: string[];
+  weaknesses: string[];
+  improvements: WebsitePostImprovement[];
+  findings: WebsitePostFinding[];
+  uncertainty: string;
+  limitations: string[];
+  execution: Record<string, unknown>;
+  previous_evaluation_id: string | null;
+  freshness: string;
+  stale: boolean;
+  created_at: string;
+};
+
+export type WebsitePostDetail = {
+  post: WebsitePost;
+  content: string;
+  content_truncated: boolean;
+  content_sha256: string;
+  evaluations: WebsitePostEvaluation[];
+  current: WebsitePostEvaluation | null;
+};
+
+export type WebsitePostReview = {
+  id: string;
+  evaluation_id: string | null;
+  finding_id: string;
+  decision: string;
+  reason: string;
+  reviewer: string;
+  source_digest: string;
+  created_at: string;
+};
+
+export type WebsitePostsSummary = {
+  website_id: string;
+  discovered: number;
+  published: number;
+  evaluated_current: number;
+  evaluated_stale: number;
+  unevaluated: number;
+  average_score: number | null;
+  average_denominator: number;
+  rubric_id: string;
+  rubric_version: number;
+  coverage_percent: number | null;
+};
+
 export type CultivationStageDef = {
   id: string;
   label: string;

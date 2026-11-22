@@ -37,6 +37,7 @@ from mission_control.api import (
     scripts as scripts_api,
     settings as settings_api,
     technical as technical_api,
+    website_posts as website_posts_api,
     websites as websites_api,
     workflows as workflows_api,
     writer as writer_api,
@@ -128,6 +129,26 @@ def create_app(runtime: RuntimeSettings | None = None) -> FastAPI:
             seed_defaults(session, settings)
         try:
             with database.session() as session:
+                try:
+                    from mission_control.writer_registry import (
+                        resolve_registry_path,
+                        sync_writer_books,
+                    )
+
+                    _writer_snapshot_path = resolve_registry_path(settings)
+                    if _writer_snapshot_path.exists():
+                        _writer_summary = sync_writer_books(
+                            session, _writer_snapshot_path, create_missing=False
+                        )
+                        if _writer_summary.get("updated"):
+                            logger.info(
+                                "Writer registry repair: %s",
+                                ", ".join(_writer_summary["updated"][:10]),
+                            )
+                except Exception:
+                    logger.exception(
+                        "Writer registry sync failed; existing workspaces remain available"
+                    )
                 detected = sync_detected_books(session, [settings.book_root])
                 if detected:
                     logger.info("Detected %s book workspaces", len(detected))
@@ -309,6 +330,7 @@ def create_app(runtime: RuntimeSettings | None = None) -> FastAPI:
     app.include_router(settings_api.router)
     app.include_router(scripts_api.router)
     app.include_router(websites_api.router)
+    app.include_router(website_posts_api.router)
 
     dist = settings.frontend_dist
     if dist.exists() and (dist / "index.html").exists():

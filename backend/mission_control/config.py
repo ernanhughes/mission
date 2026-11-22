@@ -43,6 +43,12 @@ class RuntimeSettings:
             "MISSION_CONTROL_FICTION_BOOKS_ROOT", Path(r"C:\fiction-books")
         )
     )
+    writer_registry_path: Path = field(
+        default_factory=lambda: _env_path(
+            "MISSION_CONTROL_WRITER_REGISTRY",
+            Path(r"C:\Projects\writer\config\web\projects.yaml"),
+        )
+    )
     websites_root: Path = field(
         default_factory=lambda: _env_path(
             "MISSION_CONTROL_WEBSITES_ROOT", Path(r"C:\websites")

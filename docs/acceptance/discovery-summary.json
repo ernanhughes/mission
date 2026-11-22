@@ -120,17 +120,10 @@
       "candidate": false
     },
     {
-      "name": "math-r1",
-      "classification": "book",
-      "confidence": 0.94,
-      "path": "C:\\Projects\\math-r1",
-      "candidate": false
-    },
-    {
       "name": "math",
       "classification": "book",
       "confidence": 0.94,
-      "path": "C:\\Projects\\math",
+      "path": "C:\\books\\math",
       "candidate": false
     },
     {

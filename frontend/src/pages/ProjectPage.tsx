@@ -1859,8 +1859,152 @@ function ReadinessPanel({ projectId }: { projectId: string }) {
   );
 }
 
+interface PublishingEvidence {
+  evidence_type: string;
+  source_system: string;
+  source_reference: string;
+  result: string;
+  freshness: string;
+  diagnostics: string;
+  available_actions: string[];
+}
+
+interface PublishingSummary {
+  project_id: string;
+  book_title: string | null;
+  manuscript_root: string | null;
+  chapter_count: number | null;
+  lifecycle: string | null;
+  publication_gate: string;
+  observed_at: string | null;
+  policy_version: string | null;
+  evidence: PublishingEvidence[];
+  identity: {
+    canonical_id: string;
+    identity_state: string;
+    identity_reason: string | null;
+    writer_project_id: string | null;
+    candidates: string[];
+    aliases: { system: string; external_id: string; verification_method: string }[];
+  } | null;
+  source_fingerprint: {
+    ok: boolean;
+    fingerprint?: string;
+    file_count?: number;
+    scope_version?: string;
+    diagnostics?: string;
+  } | null;
+  blockers: { failed: string[]; stale: string[]; missing: string[]; identity_conflicts: string[] };
+  refresh_note: string;
+}
+
+function evidenceTone(result: string): string {
+  if (result === "passed") return "success";
+  if (result === "failed") return "danger";
+  if (result === "pending") return "warning";
+  return "default";
+}
+
+function PublishingPanel({ projectId }: { projectId: string }) {
+  const summary = useApi<PublishingSummary>(
+    `/api/publication/publishing?project_id=${encodeURIComponent(projectId)}`,
+    { pollMs: 30000 },
+  );
+  if (summary.loading && !summary.data) return <LoadingBlock label="Reading publishing evidence" />;
+  if (summary.error || !summary.data) {
+    return (
+      <Section
+        title="Publishing"
+        description="Evidence-driven publication readiness. Refresh rereads stored evidence only."
+      >
+        <InlineError message={summary.error?.message ?? "Publishing evidence unavailable"} />
+      </Section>
+    );
+  }
+  const data = summary.data;
+  return (
+    <Section
+      title="Publishing"
+      description="What remains between this manuscript and publication, and which system can act next. Unknown is not a failure."
+    >
+      <div className="inline-meta">
+        <Tag tone="default">{data.chapter_count ?? "—"} chapters</Tag>
+        <Tag tone="default">lifecycle {data.lifecycle ?? "—"}</Tag>
+        <Tag tone={data.publication_gate === "Unknown" ? "default" : "warning"}>
+          gate {data.publication_gate}
+        </Tag>
+      </div>
+      {data.manuscript_root ? <PathText>{data.manuscript_root}</PathText> : null}
+      {data.identity ? (
+        <div className="inline-meta">
+          <Tag tone={data.identity.identity_state === "resolved" ? "success" : "warning"}>
+            identity {data.identity.identity_state}
+          </Tag>
+          <span className="muted small">
+            canonical {data.identity.canonical_id}
+            {data.identity.writer_project_id ? ` · writer ${data.identity.writer_project_id}` : " · no Writer id"}
+          </span>
+        </div>
+      ) : null}
+      {data.identity && data.identity.identity_reason ? (
+        <p className="muted small">{data.identity.identity_reason}</p>
+      ) : null}
+      {data.identity && data.identity.candidates.length ? (
+        <p className="muted small">
+          Suggested mapping (requires approval, never auto-merged):{" "}
+          {data.identity.candidates.join(", ")}
+        </p>
+      ) : null}
+      {data.source_fingerprint && data.source_fingerprint.ok ? (
+        <p className="muted small">
+          fingerprint {data.source_fingerprint.scope_version} · {data.source_fingerprint.file_count} files ·{" "}
+          <code>{(data.source_fingerprint.fingerprint ?? "").slice(0, 12)}</code>
+        </p>
+      ) : (
+        <p className="muted small">{data.source_fingerprint?.diagnostics ?? "No fingerprint."}</p>
+      )}
+      <div className="stack">
+        {(data.evidence ?? []).map((item) => (
+          <article className="mini-block" key={item.evidence_type}>
+            <div className="inline-meta">
+              <Tag tone={evidenceTone(item.result)}>{item.result}</Tag>
+              {item.freshness === "stale" ? <Tag tone="warning">stale</Tag> : null}
+              <strong>{item.evidence_type.replace(/_/g, " ")}</strong>
+              <span className="muted small">{item.source_system}</span>
+            </div>
+            <p className="muted small">{item.diagnostics || "No detail supplied."}</p>
+            {item.available_actions.length ? (
+              <p className="muted small">Next: {item.available_actions.join(" · ")}</p>
+            ) : null}
+          </article>
+        ))}
+      </div>
+      {data.blockers.failed.length || data.blockers.stale.length ? (
+        <p className="muted small">
+          Blockers: {[...data.blockers.failed, ...data.blockers.stale].join(", ")}
+        </p>
+      ) : null}
+      {data.blockers.identity_conflicts.length ? (
+        <p className="muted small">
+          Identity conflicts (visible, not failures): {data.blockers.identity_conflicts.join(", ")}
+        </p>
+      ) : null}
+      <p className="muted small">{data.refresh_note}</p>
+      <p className="muted small">Observed {data.observed_at ?? "—"}</p>
+      <div className="form-actions">
+        <button
+          className="button button-secondary button-small"
+          type="button"
+          onClick={() => void summary.reload()}
+        >
+          <RefreshCw size={14} /> Refresh evidence
+        </button>
+      </div>
+    </Section>
+  );
+}
+
 function provenanceOf(reviewer: string): string {
-  if (reviewer === "deterministic") return "DETERMINISTIC";
   if (reviewer === "ai_assisted" || reviewer === "ai_assisted:secondary" || reviewer === "ai_assisted:adjudicator") return "AI-ASSISTED";
   if (reviewer.startsWith("human:")) return "HUMAN";
   return "AWAITING";
@@ -2873,6 +3017,7 @@ export function ProjectPage() {
           <TechnicalPanel projectId={projectId} />
           <CompletenessPanel projectId={projectId} />
           <ReadinessPanel projectId={projectId} />
+          <PublishingPanel projectId={projectId} />
           <CalibrationPanel projectId={projectId} />
 
           <Section title="Tasks" description="Explicit user actions. Evidence adapters do not create tasks automatically.">
