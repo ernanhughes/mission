@@ -322,8 +322,7 @@ describe("InspectPage", () => {
     expect(screen.getByText(/no render capability inspected/)).toBeInTheDocument();
   });
 
-  it("shows honest empty states when no snapshot is published", async () => {
-    const empty = { available: false, stale_refresh: false, snapshot_dir: null };
+  it("shows honest empty states when no snapshot is published", async () => {    const empty = { available: false, stale_refresh: false, snapshot_dir: null };
     mockFetch(({ path, method }) => {
       if (method !== "GET") return apiError(404, `Unhandled ${method} ${path}`);
       if (path === "/api/inspect/manifest") return json(empty);
@@ -340,6 +339,66 @@ describe("InspectPage", () => {
     expect(await screen.findByText("No capabilities published")).toBeInTheDocument();
     expect(screen.getByText("No opportunities published")).toBeInTheDocument();
     expect(screen.getByText("No compositions published")).toBeInTheDocument();
+  });
+
+  it("renders real export composition steps as text, never [object Object]", async () => {
+    // Regression test: the live export carries object steps
+    // ({order, capability_id, description, inputs, outputs}). String(step)
+    // rendered them as "[object Object]". This fixture mirrors the real
+    // comp-book-quality-assessment record shape from output/consumers/mission.
+    const realShape = {
+      available: true,
+      stale_refresh: false,
+      snapshot_dir: "C:/Projects/inspect/output/consumers/mission",
+      total: 1,
+      compositions: [
+        {
+          composition_id: "comp-book-quality-assessment-a0f406",
+          desired_outcome:
+            "Evaluate an entire book across quality dimensions and produce an evidence-backed overall assessment.",
+          description: "Candidate book-evaluation workflow.",
+          steps: [
+            {
+              order: 1,
+              capability_id: "chapter-quality-evaluation",
+              description: "Run a bounded deterministic chapter loop over the frozen inventory.",
+              inputs: ["--book-root <dir>", "--strategy deterministic"],
+              outputs: ["per-chapter JSON envelope"],
+            },
+            {
+              order: 2,
+              capability_id: "editorial-diagnosis",
+              description: "Diagnose the whole book dir for ranked findings.",
+              inputs: ["<book-dir>"],
+              outputs: ["EditorialReportDTO"],
+            },
+          ],
+          required_capabilities: ["chapter-quality-evaluation", "editorial-diagnosis"],
+          gaps: ["No single `evaluate-book` command exists."],
+          status: "source-supported",
+          repository: "writer",
+        },
+      ],
+    };
+    mockFetch(({ path, method }) => {
+      if (method !== "GET") return apiError(404, `Unhandled ${method} ${path}`);
+      if (path === "/api/inspect/manifest") return json(manifest);
+      if (path === "/api/inspect/projects") return json(projects);
+      if (path === "/api/inspect/capabilities") return json(capabilities);
+      if (path.startsWith("/api/inspect/usage/"))
+        return json({ ...usage, capability_id: path.split("/").pop(), total: 0, usages: [] });
+      if (path === "/api/inspect/opportunities") return json(opportunities);
+      if (path.startsWith("/api/inspect/coverage/")) return apiError(404, "not found", "not_found");
+      if (path === "/api/inspect/compositions") return json(realShape);
+      return apiError(404, `Unhandled ${method} ${path}`);
+    });
+    renderInspect();
+
+    expect(await screen.findByText(/Evaluate an entire book/)).toBeInTheDocument();
+    expect(screen.getAllByText(/chapter-quality-evaluation/).length).toBeGreaterThanOrEqual(2);
+    expect(screen.getByText(/bounded deterministic chapter loop/)).toBeInTheDocument();
+    expect(screen.getByText(/Diagnose the whole book dir for ranked findings/)).toBeInTheDocument();
+    expect(screen.queryByText(/\[object Object\]/)).not.toBeInTheDocument();
   });
 });
 
