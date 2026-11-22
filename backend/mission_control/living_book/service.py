@@ -358,35 +358,55 @@ async def connect(
             status=422,
         )
     client = _client(session, settings)
-    preview = await client.preview_source(candidate["path"])
-    confirmed_root = str(preview.get("root") or candidate["path"])
-    registered = await client.register_source(
-        (label or context["project"].name)[:120],
-        candidate["path"],
-        confirmed_root,
-    )
-    capture = registered.get("capture") or {}
-    if not capture.get("id") or not capture.get("content_sha256"):
-        raise LivingBookProblem(
-            "ALIVE did not return a complete source capture.",
-            state="register_failed",
-            status=502,
+    try:
+        preview = await client.preview_source(candidate["path"])
+        confirmed_root = str(preview.get("root") or candidate["path"])
+        registered = await client.register_source(
+            (label or context["project"].name)[:120],
+            candidate["path"],
+            confirmed_root,
         )
-    approval = await client.approve_source(
-        str(capture["id"]),
-        content_sha256=str(capture["content_sha256"]),
-        request_id=f"mission-living-book-{project_id}-{capture['id']}"[:100],
-        ttl_seconds=PROJECT_REVIEW_TTL,
-    )
-    book = await client.register_book(
-        {
-            "approval_ref": approval["id"],
-            "source_root": confirmed_root,
-            "manuscript_root": context["manuscript_root"],
-            "title": context["book"].title[:200],
-            "label": (label or context["project"].name)[:120],
-        }
-    )
+        capture = registered.get("capture") or {}
+        if not capture.get("id") or not capture.get("content_sha256"):
+            raise LivingBookProblem(
+                "ALIVE did not return a complete source capture.",
+                state="register_failed",
+                status=502,
+            )
+        approval = await client.approve_source(
+            str(capture["id"]),
+            content_sha256=str(capture["content_sha256"]),
+            request_id=f"mission-living-book-{project_id}-{capture['id']}"[:100],
+            ttl_seconds=PROJECT_REVIEW_TTL,
+        )
+        book = await client.register_book(
+            {
+                "approval_ref": approval["id"],
+                "source_root": confirmed_root,
+                "manuscript_root": context["manuscript_root"],
+                "title": context["book"].title[:200],
+                "label": (label or context["project"].name)[:120],
+            }
+        )
+    except LivingBookUnavailable as error:
+        raise LivingBookProblem(
+            str(error), state="alive_unavailable", status=503
+        ) from None
+    except LivingBookError as error:
+        if (error.status or 0) >= 500:
+            raise LivingBookProblem(
+                f"ALIVE failed internally (HTTP {error.status}) during connect: {error}. "
+                + (
+                    f"ALIVE reference {error.correlation_id}. "
+                    if error.correlation_id
+                    else ""
+                )
+                + "Inspect the ALIVE backend log under Mission Control data/logs "
+                "(proc-*.log), or restart ALIVE from Applications and try again.",
+                state="alive_error",
+                status=502,
+            ) from None
+        raise
     return {
         "book": book,
         "capture": capture,
