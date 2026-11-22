@@ -20,6 +20,8 @@ import { InspectPage } from "../pages/InspectPage";
 import { WorkflowsPage } from "../pages/WorkflowsPage";
 import { WorkflowDetailPage } from "../pages/WorkflowDetailPage";
 import { WriterPage } from "../pages/WriterPage";
+import { PublishingWorkbenchPage } from "../pages/PublishingWorkbenchPage";
+import { BookPublishingPage } from "../pages/BookPublishingPage";
 
 export function App() {
   return (
@@ -39,6 +41,8 @@ export function App() {
         <Route path="projects" element={<ProjectsPage />} />
         <Route path="projects/:projectId" element={<ProjectPage />} />
         <Route path="projects/:projectId/read" element={<LivingBookPage />} />
+        <Route path="projects/:projectId/publishing" element={<BookPublishingPage />} />
+        <Route path="publishing" element={<PublishingWorkbenchPage />} />
         <Route path="applications" element={<ApplicationsPage />} />
         <Route path="books" element={<BooksPage />} />
         <Route path="fiction-books" element={<FictionBooksPage />} />

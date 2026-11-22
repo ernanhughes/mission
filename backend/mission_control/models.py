@@ -1855,3 +1855,35 @@ class WebsitePostReview(Base):
     reviewer: Mapped[str] = mapped_column(String, default="", nullable=False)
     source_digest: Mapped[str] = mapped_column(String, default="", nullable=False)
     created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class PublicationFollowup(Base):
+    """Governed follow-up promoting a publishing blocker to explicit work
+    (MC-PUBLISH-03).
+
+    Carries provenance (evidence type, source reference, fingerprint,
+    observed_at) so the follow-up can be re-checked against fresh evidence:
+    open -> re-evidenced -> closed. History is append-only; closing never
+    deletes the record. The actual work item lives in the linked task or
+    decision; this row is the traceable bridge between evidence and action.
+    """
+
+    __tablename__ = "publication_followups"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    project_id: Mapped[str | None] = mapped_column(String, nullable=False)
+    book_id: Mapped[str] = mapped_column(String, default="", nullable=False)
+    evidence_type: Mapped[str] = mapped_column(String, nullable=False)
+    source_reference: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    fingerprint: Mapped[str] = mapped_column(String, default="", nullable=False)
+    observed_at: Mapped[str] = mapped_column(String, default="", nullable=False)
+    target_type: Mapped[str] = mapped_column(String, default="task", nullable=False)
+    target_id: Mapped[str | None] = mapped_column(String)
+    title: Mapped[str] = mapped_column(String, default="", nullable=False)
+    rationale: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    status: Mapped[str] = mapped_column(String, default="open", nullable=False)
+    reviewer: Mapped[str] = mapped_column(String, default="", nullable=False)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+    updated_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+

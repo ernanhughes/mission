@@ -24,7 +24,8 @@ from mission_control.schemas import (
     PublicationAssessmentRead,
     PublicationCalibrationCreate,
     PublicationCalibrationRead,
-    PublicationGateRead,
+    PublicationFollowupCreate,
+    PublicationFollowupRead,
     PublicationIssueRead,
 )
 
@@ -76,6 +77,102 @@ def get_publishing_summary(
 
     settings = request.app.state.settings if request is not None else None
     return _publishing.get_publishing_summary(session, settings, project_id)
+
+
+@router.get("/publishing/overview")
+def get_publishing_overview(
+    request: Request = None,  # type: ignore[assignment]
+    session: Session = Depends(get_session),
+) -> dict:
+    """Global workbench rows: one compact summary per book. Read-only."""
+    from mission_control.publication import publishing as _publishing
+
+    settings = request.app.state.settings if request is not None else None
+    return _publishing.get_publishing_overview(session, settings)
+
+
+@router.post("/publishing/refresh")
+def refresh_publishing_evidence(
+    project_id: str = Query(...),
+    request: Request = None,  # type: ignore[assignment]
+    session: Session = Depends(get_session),
+) -> dict:
+    """Reread stored evidence for one book. Never validates, builds or publishes."""
+    from mission_control.publication import publishing as _publishing
+
+    settings = request.app.state.settings if request is not None else None
+    return _publishing.get_publishing_summary(session, settings, project_id)
+
+
+@router.post("/followups", response_model=PublicationFollowupRead, status_code=201)
+def create_followup(
+    payload: PublicationFollowupCreate,
+    request: Request = None,  # type: ignore[assignment]
+    session: Session = Depends(get_session),
+) -> dict:
+    """Promote a blocker to a governed task/decision with provenance."""
+    from mission_control.publication import followups as _followups
+
+    result = _followups.create_followup(
+        session,
+        project_id=str(payload.project_id or ""),
+        book_id="",
+        evidence_type=str(payload.evidence_type or ""),
+        source_reference=str(payload.source_reference or ""),
+        fingerprint=str(payload.fingerprint or ""),
+        observed_at=str(payload.observed_at or ""),
+        target_type=str(payload.target_type or "task"),
+        title=str(payload.title or ""),
+        rationale=str(payload.rationale or ""),
+        reviewer=str(payload.reviewer or ""),
+    )
+    session.flush()
+    return result
+
+
+@router.get("/followups", response_model=list[PublicationFollowupRead])
+def list_followups(
+    project_id: str | None = None,
+    status: str | None = None,
+    session: Session = Depends(get_session),
+) -> list[dict]:
+    """Follow-ups with provenance; append-only history preserved."""
+    from mission_control.publication import followups as _followups
+
+    return _followups.list_followups(session, project_id=project_id, status=status)
+
+
+@router.post("/followups/{followup_id}/recheck")
+def recheck_followup(
+    followup_id: str,
+    request: Request = None,  # type: ignore[assignment]
+    session: Session = Depends(get_session),
+) -> dict:
+    """Re-read fresh evidence and compare fingerprints. Never auto-closes."""
+    from mission_control.publication import followups as _followups
+
+    settings = request.app.state.settings if request is not None else None
+    result = _followups.recheck_followup(session, settings, followup_id)
+    session.flush()
+    return result
+
+
+@router.post("/followups/{followup_id}/close", response_model=PublicationFollowupRead)
+def close_followup(
+    followup_id: str,
+    payload: dict | None = None,
+    session: Session = Depends(get_session),
+) -> dict:
+    """Close a follow-up explicitly. History is preserved."""
+    from mission_control.publication import followups as _followups
+
+    body = payload or {}
+    result = _followups.close_followup(
+        session, followup_id,
+        rationale=str(body.get("rationale", "") or ""),
+        reviewer=str(body.get("reviewer", "") or ""))
+    session.flush()
+    return result
 
 
 @router.get("/assessments/{assessment_id}", response_model=PublicationAssessmentRead)

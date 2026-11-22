@@ -224,7 +224,11 @@ describe("CultivationPage", () => {
     });
     const user = userEvent.setup();
     renderRoute(<CultivationPage />, "/cultivation?goal=published_books");
-    await user.click(await screen.findByRole("button", { name: "→ Published / completed" }));
+    // Generous lookup timeout: under parallel workers the detail panel can
+    // take longer than the default 1s to settle.
+    await user.click(
+      await screen.findByRole("button", { name: "→ Published / completed" }, { timeout: 10000 }),
+    );
     await waitFor(() => {
       expect(calls.some((call) => call.method === "PATCH" && call.path.endsWith("/stage"))).toBe(true);
     });

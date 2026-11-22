@@ -2780,6 +2780,36 @@ class ProjectEvidenceTimeline(BaseModel):
     observations: list[LanguageObservationRead]
 
 
+class PublicationFollowupCreate(RawModel):
+    project_id: str = Field(min_length=1, max_length=80)
+    evidence_type: str = Field(min_length=1, max_length=120)
+    source_reference: str = ""
+    fingerprint: str = ""
+    observed_at: str = ""
+    target_type: str = "task"
+    title: str = ""
+    rationale: str = ""
+    reviewer: str = ""
+
+
+class PublicationFollowupRead(BaseModel):
+    id: str
+    project_id: str | None
+    book_id: str
+    evidence_type: str
+    source_reference: str
+    fingerprint: str
+    observed_at: str
+    target_type: str
+    target_id: str | None
+    title: str
+    rationale: str
+    status: str
+    reviewer: str
+    created_at: str
+    updated_at: str
+
+
 class WriterWorkspaceRead(BaseModel):
     available: bool
     detail: str
