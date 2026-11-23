@@ -79,6 +79,16 @@ class RuntimeSettings:
             Path(r"C:\Projects\inspect\output\consumers\mission"),
         )
     )
+    # OpenCode usage database (MC-COST-01): read-only local SQLite copy of
+    # OpenCode's own records. Mission Control never writes, migrates,
+    # checkpoints or vacuums this file; it opens `mode=ro` per query.
+    # Configured locally via MISSION_CONTROL_OPENCODE_DB, never from browser.
+    opencode_db_path: Path = field(
+        default_factory=lambda: _env_path(
+            "MISSION_CONTROL_OPENCODE_DB",
+            Path(r"C:\Users\ernan\.local\share\opencode\opencode.db"),
+        )
+    )
     # Workbench owns editorial decisions and the selected book. Mission Control
     # reads those files read-only; it never writes them.
     workbench_decisions_path: Path = field(

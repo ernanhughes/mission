@@ -9,6 +9,7 @@ import { BooksPage } from "../pages/BooksPage";
 import { FictionBooksPage } from "../pages/FictionBooksPage";
 import { WebsitesPage } from "../pages/WebsitesPage";
 import { ActivityPage } from "../pages/ActivityPage";
+import { CostPage } from "../pages/CostPage";
 import { CultivationPage } from "../pages/CultivationPage";
 import { ScriptsPage } from "../pages/ScriptsPage";
 import { SettingsPage } from "../pages/SettingsPage";
@@ -48,6 +49,7 @@ export function App() {
         <Route path="fiction-books" element={<FictionBooksPage />} />
         <Route path="websites" element={<WebsitesPage />} />
         <Route path="activity" element={<ActivityPage />} />
+        <Route path="cost" element={<CostPage />} />
         <Route path="cultivation" element={<CultivationPage />} />
         <Route path="scripts" element={<ScriptsPage />} />
         <Route path="settings" element={<SettingsPage />} />

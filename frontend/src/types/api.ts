@@ -2785,3 +2785,169 @@ export type PipelineStageDetail = {
   cells: PipelineEvidenceCell[];
   diagnostics?: string;
 };
+
+// Mirrors backend schemas Cost*Read verbatim (MC-COST-01).
+export type CostStatus = {
+  available: boolean;
+  source_path: string;
+  reason: string;
+  error: string | null;
+  sessions: number;
+  messages: number;
+};
+
+export type CostTotals = {
+  requests: number;
+  recorded_cost: number;
+  input: number;
+  output: number;
+  reasoning: number;
+  cache_read: number;
+  cache_write: number;
+};
+
+export type CostModel = {
+  model: string;
+  provider: string;
+  variant: string;
+  requests: number;
+  recorded_cost: number;
+  input: number;
+  output: number;
+  reasoning: number;
+  cache_read: number;
+  cache_write: number;
+};
+
+export type CostMinute = { minute: string; requests: number; recorded_cost: number };
+
+export type CostProject = {
+  project_id: string;
+  worktree: string;
+  name: string | null;
+  sessions: number;
+  requests: number;
+  recorded_cost: number;
+  input: number;
+  output: number;
+  cache_read: number;
+};
+
+export type CostSession = {
+  session_id: string;
+  project_id: string;
+  project_worktree: string;
+  project_name: string | null;
+  parent_id: string | null;
+  title: string | null;
+  directory: string;
+  model: string;
+  agent: string | null;
+  requests: number;
+  recorded_cost: number;
+  input: number;
+  output: number;
+  reasoning: number;
+  cache_read: number;
+  cache_write: number;
+  rollup_cost: number;
+  time_created: number;
+  time_updated: number;
+};
+
+export type CostSummary = {
+  available: boolean;
+  source_path: string;
+  reason: string;
+  error: string | null;
+  date_label: string;
+  timezone: string;
+  start_ms: number;
+  end_ms: number;
+  totals: CostTotals;
+  by_model: CostModel[];
+  by_project: CostProject[];
+  timeline: CostMinute[];
+  failures: Record<string, number>;
+  scanned: number;
+  truncated: boolean;
+  provenance: string;
+};
+
+export type CostSessionList = {
+  available: boolean;
+  source_path: string;
+  reason: string;
+  error: string | null;
+  total: number;
+  limit: number;
+  offset: number;
+  items: CostSession[];
+};
+
+export type CostCall = {
+  seq: number;
+  time_created: number;
+  model: string;
+  provider: string;
+  variant: string;
+  cost: number;
+  input: number;
+  output: number;
+  reasoning: number;
+  cache_read: number;
+  cache_write: number;
+};
+
+export type CostFailure = { seq: number; time_created: number; kind: string; excerpt: string };
+
+export type CostSessionDetail = {
+  available: boolean;
+  source_path: string;
+  reason: string;
+  error: string | null;
+  session_id: string;
+  project_id: string;
+  project_worktree: string;
+  project_name: string | null;
+  parent_id: string | null;
+  children: string[];
+  title: string | null;
+  directory: string;
+  model: string;
+  agent: string | null;
+  rollup_cost: number;
+  rollup_input: number;
+  rollup_output: number;
+  rollup_reasoning: number;
+  rollup_cache_read: number;
+  rollup_cache_write: number;
+  time_created: number;
+  time_updated: number;
+  calls: CostCall[];
+  by_model: CostModel[];
+  failures: CostFailure[];
+  message_counts: Record<string, number>;
+  provenance: string;
+};
+
+export type CostFinding = {
+  id: string;
+  title: string;
+  detail: string;
+  severity: string;
+  session_ids: string[];
+  minutes: string[];
+};
+
+export type CostSpikes = {
+  available: boolean;
+  source_path: string;
+  reason: string;
+  error: string | null;
+  date_label: string;
+  timezone: string;
+  start_ms: number;
+  end_ms: number;
+  findings: CostFinding[];
+};

@@ -3625,4 +3625,188 @@ class SoftwareCultivationReportRead(BaseModel):
     reference: str
 
 
+# ------------------------------------------------------------------ cost
+# Mirrors backend/mission_control/opencode_cost. Frontend types in
+# frontend/src/types/api.ts carry the same names with a mirror comment.
+class CostStatusRead(BaseModel):
+    available: bool
+    source_path: str = ""
+    reason: str = ""
+    error: str | None = None
+    sessions: int = 0
+    messages: int = 0
+
+
+class CostTotalsRead(BaseModel):
+    requests: int = 0
+    recorded_cost: float = 0.0
+    input: int = 0
+    output: int = 0
+    reasoning: int = 0
+    cache_read: int = 0
+    cache_write: int = 0
+
+
+class CostModelRead(BaseModel):
+    model: str = ""
+    provider: str = ""
+    variant: str = ""
+    requests: int = 0
+    recorded_cost: float = 0.0
+    input: int = 0
+    output: int = 0
+    reasoning: int = 0
+    cache_read: int = 0
+    cache_write: int = 0
+
+
+class CostMinuteRead(BaseModel):
+    minute: str
+    requests: int = 0
+    recorded_cost: float = 0.0
+
+
+class CostProjectRead(BaseModel):
+    project_id: str = ""
+    worktree: str = ""
+    name: str | None = None
+    sessions: int = 0
+    requests: int = 0
+    recorded_cost: float = 0.0
+    input: int = 0
+    output: int = 0
+    cache_read: int = 0
+
+
+class CostSessionRead(BaseModel):
+    session_id: str
+    project_id: str = ""
+    project_worktree: str = ""
+    project_name: str | None = None
+    parent_id: str | None = None
+    title: str | None = None
+    directory: str = ""
+    model: str = ""
+    agent: str | None = None
+    requests: int = 0
+    recorded_cost: float = 0.0
+    input: int = 0
+    output: int = 0
+    reasoning: int = 0
+    cache_read: int = 0
+    cache_write: int = 0
+    rollup_cost: float = 0.0
+    time_created: int = 0
+    time_updated: int = 0
+
+
+class CostSummaryRead(BaseModel):
+    available: bool
+    source_path: str = ""
+    reason: str = ""
+    error: str | None = None
+    date_label: str = ""
+    timezone: str = "Europe/Dublin"
+    start_ms: int = 0
+    end_ms: int = 0
+    totals: CostTotalsRead = Field(default_factory=CostTotalsRead)
+    by_model: list[CostModelRead] = Field(default_factory=list)
+    by_project: list[CostProjectRead] = Field(default_factory=list)
+    timeline: list[CostMinuteRead] = Field(default_factory=list)
+    failures: dict[str, int] = Field(default_factory=dict)
+    scanned: int = 0
+    truncated: bool = False
+    provenance: str = (
+        "Local OpenCode records only: `cost` is the balance charge "
+        "(zero for Go usage within allowance and for free models). "
+        "Go allowance consumption (`opencode.allowance`) is not retained locally."
+    )
+
+
+class CostSessionListRead(BaseModel):
+    available: bool
+    source_path: str = ""
+    reason: str = ""
+    error: str | None = None
+    total: int = 0
+    limit: int = 100
+    offset: int = 0
+    items: list[CostSessionRead] = Field(default_factory=list)
+
+
+class CostCallRead(BaseModel):
+    seq: int = 0
+    time_created: int = 0
+    model: str = ""
+    provider: str = ""
+    variant: str = ""
+    cost: float = 0.0
+    input: int = 0
+    output: int = 0
+    reasoning: int = 0
+    cache_read: int = 0
+    cache_write: int = 0
+
+
+class CostFailureRead(BaseModel):
+    seq: int = 0
+    time_created: int = 0
+    kind: str = ""
+    excerpt: str = ""
+
+
+class CostSessionDetailRead(BaseModel):
+    available: bool
+    source_path: str = ""
+    reason: str = ""
+    error: str | None = None
+    session_id: str = ""
+    project_id: str = ""
+    project_worktree: str = ""
+    project_name: str | None = None
+    parent_id: str | None = None
+    children: list[str] = Field(default_factory=list)
+    title: str | None = None
+    directory: str = ""
+    model: str = ""
+    agent: str | None = None
+    rollup_cost: float = 0.0
+    rollup_input: int = 0
+    rollup_output: int = 0
+    rollup_reasoning: int = 0
+    rollup_cache_read: int = 0
+    rollup_cache_write: int = 0
+    time_created: int = 0
+    time_updated: int = 0
+    calls: list[CostCallRead] = Field(default_factory=list)
+    by_model: list[CostModelRead] = Field(default_factory=list)
+    failures: list[CostFailureRead] = Field(default_factory=list)
+    message_counts: dict[str, int] = Field(default_factory=dict)
+    provenance: str = (
+        "Per-message `cost` summed from local records; session rollup shown separately. "
+        "Zero cost does not mean zero allowance use."
+    )
+
+
+class CostFindingRead(BaseModel):
+    id: str
+    title: str
+    detail: str = ""
+    severity: str = "info"
+    session_ids: list[str] = Field(default_factory=list)
+    minutes: list[str] = Field(default_factory=list)
+
+
+class CostSpikesRead(BaseModel):
+    available: bool
+    source_path: str = ""
+    reason: str = ""
+    error: str | None = None
+    date_label: str = ""
+    timezone: str = "Europe/Dublin"
+    start_ms: int = 0
+    end_ms: int = 0
+    findings: list[CostFindingRead] = Field(default_factory=list)
+
+
 SoftwareEvaluationDetailRead.model_rebuild()

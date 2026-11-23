@@ -21,6 +21,7 @@ from mission_control.api import (
     applications,
     artifact_load as artifact_load_api,
     briefing,
+    cost as cost_api,
     cultivation,
     dashboard,
     discovery,
@@ -185,6 +186,9 @@ def create_app(runtime: RuntimeSettings | None = None) -> FastAPI:
         )
 
         software_quality_service = _SoftwareQualityService(database)
+        from mission_control.opencode_cost import OpencodeCostStore as _OpencodeCostStore
+
+        opencode_cost = _OpencodeCostStore(settings.opencode_db_path)
         app.state.database = database
         app.state.settings = settings
         app.state.process_manager = process_manager
@@ -196,6 +200,7 @@ def create_app(runtime: RuntimeSettings | None = None) -> FastAPI:
         app.state.research_chat = research_chat
         app.state.git_activity = git_activity_service
         app.state.software_quality = software_quality_service
+        app.state.opencode_cost = opencode_cost
         from mission_control.websites.service import WebsitesState as _WebsitesState
 
         app.state.websites = _WebsitesState()
@@ -328,6 +333,7 @@ def create_app(runtime: RuntimeSettings | None = None) -> FastAPI:
     app.include_router(discovery.router)
     app.include_router(cultivation.router)
     app.include_router(git_activity.router)
+    app.include_router(cost_api.router)
     app.include_router(adapters.router)
     app.include_router(integrations_api.router)
     app.include_router(inspect_api.router)

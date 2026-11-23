@@ -23,6 +23,7 @@ import {
   Sprout,
   Sun,
   Telescope,
+  Wallet,
   X,
 } from "lucide-react";
 import { api, errorMessage } from "../api/client";
@@ -72,6 +73,7 @@ const navigation = [
     items: [
       { to: "/applications", label: "Applications", icon: AppWindow },
       { to: "/integrations", label: "Integrations", icon: PlugZap },
+      { to: "/cost", label: "Cost", icon: Wallet },
       { to: "/settings", label: "Settings", icon: Settings },
     ],
   },
