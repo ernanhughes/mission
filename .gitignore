@@ -1,3 +1,5 @@
+.writer/
+
 # Local runtime data and secrets
 data/
 .cocoder/
