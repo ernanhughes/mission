@@ -20,6 +20,68 @@ DUBLIN_TZ = "Europe/Dublin"
 _PRESET_CHOICES = {"today", "yesterday", "7d", "30d", "custom"}
 _MAX_SCAN_MESSAGES = 100_000
 
+# MC-COST-02 thresholds (deterministic, advisory only — never enforcement).
+_HIGH_REQUESTS_MODEL = 50
+_HIGH_CALL_SESSION = 100
+_LARGE_SESSION_INPUT = 200_000
+
+
+def throughput_of(entry: dict[str, Any]) -> int:
+    """Provider-aligned token throughput.
+
+    Follows provider accounting where ``output`` includes ``reasoning``:
+    throughput = uncached input + output + cache reads + cache writes.
+    ``reasoning`` is shown separately for diagnostics and is NOT added,
+    to avoid double-counting. Local records carry output and reasoning as
+    separate counters, so this is documented as an approximation.
+    """
+    def _num(value: Any) -> int:
+        try:
+            num = int(value or 0)
+        except (TypeError, ValueError):
+            return 0
+        return num if num >= 0 else 0
+
+    return (
+        _num(entry.get("input"))
+        + _num(entry.get("output"))
+        + _num(entry.get("cache_read"))
+        + _num(entry.get("cache_write"))
+    )
+
+
+def classify_billing(provider: str, model_id: str) -> dict[str, str]:
+    """Heuristic billing route — never authoritative.
+
+    The authoritative ``opencode.billing_source`` (free/balance/go/go-plus/byok)
+    is a provider-response field and is NOT retained in the local database.
+    This classification is inferred from provider/model identifiers only, and
+    every consumer must surface the accompanying reason. Never infer billing
+    from a zero-dollar cost alone.
+    """
+    raw_provider = (provider or "").strip()
+    raw_model = (model_id or "").strip()
+    lowered_model = raw_model.lower()
+    if raw_model and raw_model != "unknown" and "free" in lowered_model:
+        return {
+            "category": "free-candidate",
+            "reason": "model id suggests a free tier; authoritative billing_source is not retained locally",
+        }
+    if raw_provider == "opencode-go":
+        return {
+            "category": "go-candidate",
+            "reason": "provider is opencode-go (Go allowance route); authoritative billing_source is not retained locally",
+        }
+    if not raw_provider or raw_provider == "unknown":
+        return {
+            "category": "unknown",
+            "reason": "no provider recorded; billing route cannot be determined",
+        }
+    return {
+        "category": "direct-candidate",
+        "reason": f"provider '{raw_provider}' is not the Go route; likely separately billed or BYOK — verify against provider records",
+    }
+
 
 def _validate_timezone(tz_name: str | None) -> str:
     name = (tz_name or DUBLIN_TZ).strip() or DUBLIN_TZ
@@ -309,6 +371,7 @@ class OpencodeCostStore:
                     "reasoning": 0,
                     "cache_read": 0,
                     "cache_write": 0,
+                    "throughput": 0,
                 }
                 per_minute: dict[str, dict[str, Any]] = {}
                 per_model: dict[str, dict[str, Any]] = {}
@@ -330,6 +393,10 @@ class OpencodeCostStore:
                     totals["reasoning"] += parsed["reasoning"]
                     totals["cache_read"] += parsed["cache_read"]
                     totals["cache_write"] += parsed["cache_write"]
+                    totals["throughput"] += (
+                        parsed["input"] + parsed["output"]
+                        + parsed["cache_read"] + parsed["cache_write"]
+                    )
                     # Use UTC minute label for stability; frontend formats Dublin separately.
                     utc_min = datetime.fromtimestamp(int(row["time_created"]) / 1000, tz=__import__("datetime").timezone.utc).strftime("%Y-%m-%dT%H:%M")
                     bucket = per_minute.setdefault(
@@ -338,12 +405,15 @@ class OpencodeCostStore:
                     bucket["requests"] += 1
                     bucket["recorded_cost"] += parsed["cost"]
                     model_key = f"{parsed['provider']}/{parsed['model_id']}"
+                    billing = classify_billing(parsed["provider"], parsed["model_id"])
                     entry = per_model.setdefault(
                         model_key,
                         {
                             "model": parsed["model_id"],
                             "provider": parsed["provider"],
                             "variant": parsed["variant"],
+                            "billing_category": billing["category"],
+                            "billing_reason": billing["reason"],
                             "requests": 0,
                             "recorded_cost": 0.0,
                             "input": 0,
@@ -351,6 +421,7 @@ class OpencodeCostStore:
                             "reasoning": 0,
                             "cache_read": 0,
                             "cache_write": 0,
+                            "throughput": 0,
                         },
                     )
                     entry["requests"] += 1
@@ -360,6 +431,10 @@ class OpencodeCostStore:
                     entry["reasoning"] += parsed["reasoning"]
                     entry["cache_read"] += parsed["cache_read"]
                     entry["cache_write"] += parsed["cache_write"]
+                    entry["throughput"] += (
+                        parsed["input"] + parsed["output"]
+                        + parsed["cache_read"] + parsed["cache_write"]
+                    )
                     if parsed["variant"] and not entry["variant"]:
                         entry["variant"] = parsed["variant"]
                     sid = str(row["session_id"])
@@ -374,6 +449,9 @@ class OpencodeCostStore:
                             "reasoning": 0,
                             "cache_read": 0,
                             "cache_write": 0,
+                            "throughput": 0,
+                            "max_input": 0,
+                            "models": {},
                         },
                     )
                     sentry["requests"] += 1
@@ -383,6 +461,44 @@ class OpencodeCostStore:
                     sentry["reasoning"] += parsed["reasoning"]
                     sentry["cache_read"] += parsed["cache_read"]
                     sentry["cache_write"] += parsed["cache_write"]
+                    sentry["throughput"] += (
+                        parsed["input"] + parsed["output"]
+                        + parsed["cache_read"] + parsed["cache_write"]
+                    )
+                    if parsed["input"] > int(sentry["max_input"] or 0):
+                        sentry["max_input"] = parsed["input"]
+                    sentry["models"][model_key] = int(sentry["models"].get(model_key, 0)) + 1
+
+                # Dominant billing route per session (heuristic, never authoritative)
+                # plus a plain model list for drill-down. Children are separate
+                # sessions, so parent totals never include child messages.
+                for sentry in per_session.values():
+                    model_counts: dict[str, int] = dict(sentry.get("models") or {})
+                    model_keys = sorted(model_counts.keys())
+                    sentry["models"] = model_keys
+                    if len(model_keys) == 1:
+                        dominant = model_keys[0]
+                        provider, _, model_id = dominant.partition("/")
+                        billing = classify_billing(provider, model_id)
+                        sentry["billing_category"] = billing["category"]
+                        sentry["billing_reason"] = billing["reason"]
+                        sentry["billing_mixed"] = False
+                    elif model_keys:
+                        dominant = max(model_keys, key=lambda k: (model_counts.get(k, 0), k))
+                        provider, _, model_id = dominant.partition("/")
+                        billing = classify_billing(provider, model_id)
+                        sentry["billing_category"] = billing["category"]
+                        sentry["billing_reason"] = (
+                            "dominant of "
+                            + str(len(model_keys))
+                            + " routes in session; "
+                            + billing["reason"]
+                        )
+                        sentry["billing_mixed"] = True
+                    else:
+                        sentry["billing_category"] = "unknown"
+                        sentry["billing_reason"] = "no model recorded for this session"
+                        sentry["billing_mixed"] = False
 
                 # Session metadata for sessions seen in window (bounded).
                 session_meta: dict[str, dict[str, Any]] = {}
@@ -469,6 +585,160 @@ class OpencodeCostStore:
                 "source_path": self._db_path.as_posix(),
             }
 
+    def build_efficiency(self, scan: dict[str, Any]) -> list[dict[str, Any]]:
+        """Deterministic, advisory-only efficiency recommendations.
+
+        Every recommendation links to recorded session IDs, states the
+        evidence, and requires human verification of quality/latency before
+        any model change. The action is always informational: Mission Control
+        observes here; Worker would decide elsewhere. No model is ever
+        switched, no paid call is ever made.
+        """
+        if not scan.get("available"):
+            return []
+        recs: list[dict[str, Any]] = []
+        per_model: list[dict[str, Any]] = list(scan.get("per_model") or [])
+        per_session: dict[str, dict[str, Any]] = dict(scan.get("per_session") or {})
+        meta: dict[str, dict[str, Any]] = dict(scan.get("session_meta", {}) or {})
+
+        def _sessions_for_model(model_key: str, limit: int = 5) -> list[str]:
+            matched = [
+                sid for sid, entry in per_session.items()
+                if model_key in (entry.get("models") or [])
+            ]
+            matched.sort(key=lambda sid: -int(per_session[sid].get("requests", 0)))
+            return matched[:limit]
+
+        for item in sorted(per_model, key=lambda m: -int(m.get("requests") or 0)):
+            requests = int(item.get("requests") or 0)
+            if requests < _HIGH_REQUESTS_MODEL:
+                continue
+            model_key = f"{item.get('provider')}/{item.get('model')}"
+            category = str(item.get("billing_category") or "unknown")
+            evidence = _sessions_for_model(model_key)
+            if category == "go-candidate":
+                recs.append({
+                    "id": f"verify-free-{model_key}".replace("/", "-").replace(" ", "_"),
+                    "title": f"High Go-route usage: {model_key} ({requests} calls)",
+                    "detail": (
+                        f"{requests} calls consumed uncached input {int(item.get('input') or 0):,} "
+                        f"plus {int(item.get('cache_read') or 0):,} cached reads. "
+                        "A free-candidate model may cover routine calls in these sessions. "
+                        "Verify quality and latency on a sample before moving anything; "
+                        "do not switch models automatically."
+                    ),
+                    "severity": "info",
+                    "model": model_key,
+                    "billing_category": category,
+                    "session_ids": evidence,
+                    "action": "none (advisory only)",
+                })
+            elif category == "direct-candidate":
+                recs.append({
+                    "id": f"verify-route-{model_key}".replace("/", "-").replace(" ", "_"),
+                    "title": f"Separately-billed route in use: {model_key} ({requests} calls)",
+                    "detail": (
+                        f"{requests} calls recorded {float(item.get('recorded_cost') or 0):.4f} "
+                        "in balance charges. Verify whether a Go or free route meets "
+                        "this workload's quality and latency bar before changing anything."
+                    ),
+                    "severity": "info",
+                    "model": model_key,
+                    "billing_category": category,
+                    "session_ids": evidence,
+                    "action": "none (advisory only)",
+                })
+            elif category == "free-candidate":
+                recs.append({
+                    "id": f"confirm-free-{model_key}".replace("/", "-").replace(" ", "_"),
+                    "title": f"Volume already on free-candidate route: {model_key} ({requests} calls)",
+                    "detail": (
+                        "No switch is suggested. Confirm output quality is acceptable; "
+                        "route classification is heuristic and billing_source is not retained locally."
+                    ),
+                    "severity": "info",
+                    "model": model_key,
+                    "billing_category": category,
+                    "session_ids": evidence,
+                    "action": "none (advisory only)",
+                })
+
+        for sid, entry in sorted(per_session.items(), key=lambda kv: -int(kv[1].get("input", 0))):
+            if int(entry.get("input") or 0) < _LARGE_SESSION_INPUT:
+                break
+            if int(entry.get("cache_read") or 0) >= int(entry.get("input") or 0) // 2:
+                continue
+            title = (meta.get(sid, {}).get("title") or sid[:12])
+            recs.append({
+                "id": f"cache-reuse-{sid[:12]}",
+                "title": f"Low cache reuse in session '{title}'",
+                "detail": (
+                    f"Uncached input {int(entry.get('input') or 0):,} with cache reads "
+                    f"{int(entry.get('cache_read') or 0):,}. Prefer a stable session identity, "
+                    "smaller serialized context, and bounded parallelism; re-measure before and after."
+                ),
+                "severity": "info",
+                "model": "",
+                "billing_category": str(entry.get("billing_category") or "unknown"),
+                "session_ids": [sid],
+                "action": "none (advisory only)",
+            })
+            if len([r for r in recs if r["id"].startswith("cache-reuse-")]) >= 5:
+                break
+
+        for sid, entry in sorted(per_session.items(), key=lambda kv: -int(kv[1].get("requests", 0))):
+            if int(entry.get("requests") or 0) < _HIGH_CALL_SESSION:
+                break
+            title = (meta.get(sid, {}).get("title") or sid[:12])
+            recs.append({
+                "id": f"call-volume-{sid[:12]}",
+                "title": f"High call volume in session '{title}' ({int(entry.get('requests') or 0)} calls)",
+                "detail": (
+                    "Possible repeated operations or agent fan-out. Inspect the session's "
+                    "call timeline and child agents for loops or duplicated prompts before deciding."
+                ),
+                "severity": "info",
+                "model": "",
+                "billing_category": str(entry.get("billing_category") or "unknown"),
+                "session_ids": [sid],
+                "action": "none (advisory only)",
+            })
+            if len([r for r in recs if r["id"].startswith("call-volume-")]) >= 5:
+                break
+
+        return recs[:20]
+
+    def caller_identity_audit(self) -> dict[str, Any]:
+        """Which caller-identity fields exist locally, and what is missing.
+
+        Read-only: inspects the live schema shape plus one bounded probe.
+        """
+        retained = [
+            "session_v2.id — stable OpenCode session identity",
+            "session_v2.project_id → project.worktree — owning checkout",
+            "session_v2.parent_id — parent/child agent tree",
+            "session_v2.directory — working directory the session ran in",
+            "session_v2.agent — agent name recorded per session",
+            "session_message.model — actual provider/model/variant per request",
+        ]
+        missing = [
+            "OS process id / command line that launched the call",
+            "application name (Mission Control, Worker, Pi, ALIVE, Translator)",
+            "x-opencode-session header value sent to the provider",
+            "provider billing_source / allowance / list_cost per request",
+        ]
+        instrumentation = [
+            "Mission Control: tag Pi invocations with a stable per-task session id instead of --no-session where continuity is intended",
+            "Worker: propagate parent workflow/run ids into the session title or metadata it controls",
+            "Pi: forward x-opencode-session on every adapter so Go can route and cache",
+            "ALIVE/Translator: include an application caller header on direct inference calls, or route them through a tagged session",
+        ]
+        return {
+            "retained": retained,
+            "missing": missing,
+            "instrumentation": instrumentation,
+        }
+
     def session_detail(self, session_id: str) -> dict[str, Any]:
         """Full verifiable detail for one session (message-level, no bodies)."""
         state = self.status()
@@ -529,27 +799,43 @@ class OpencodeCostStore:
                                 "reasoning": parsed["reasoning"],
                                 "cache_read": parsed["cache_read"],
                                 "cache_write": parsed["cache_write"],
+                                "throughput": (
+                                    parsed["input"] + parsed["output"]
+                                    + parsed["cache_read"] + parsed["cache_write"]
+                                ),
                             }
                         )
                         key = f"{parsed['provider']}/{parsed['model_id']}"
+                        billing = classify_billing(parsed["provider"], parsed["model_id"])
                         entry = by_model.setdefault(
                             key,
                             {
                                 "model": parsed["model_id"],
                                 "provider": parsed["provider"],
                                 "variant": parsed["variant"],
+                                "billing_category": billing["category"],
+                                "billing_reason": billing["reason"],
                                 "requests": 0,
                                 "recorded_cost": 0.0,
                                 "input": 0,
                                 "output": 0,
+                                "reasoning": 0,
                                 "cache_read": 0,
+                                "cache_write": 0,
+                                "throughput": 0,
                             },
                         )
                         entry["requests"] += 1
                         entry["recorded_cost"] += parsed["cost"]
                         entry["input"] += parsed["input"]
                         entry["output"] += parsed["output"]
+                        entry["reasoning"] += parsed["reasoning"]
                         entry["cache_read"] += parsed["cache_read"]
+                        entry["cache_write"] += parsed["cache_write"]
+                        entry["throughput"] += (
+                            parsed["input"] + parsed["output"]
+                            + parsed["cache_read"] + parsed["cache_write"]
+                        )
                     elif mtype == "idle":
                         text = str(mrow["data"])
                         failed = '"outcome"' in text and '"failed"' in text

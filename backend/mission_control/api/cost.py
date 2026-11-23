@@ -7,11 +7,16 @@ zeros.
 
 from __future__ import annotations
 
+from typing import Any
+
 from fastapi import APIRouter, Query, Request
 
 from mission_control.core.errors import NotFound
 from mission_control.opencode_cost import OpencodeCostStore, resolve_bounds
 from mission_control.schemas import (
+    CostAttributionRead,
+    CostCatalogueRead,
+    CostEfficiencyRead,
     CostMinuteRead,
     CostModelRead,
     CostProjectRead,
@@ -55,7 +60,10 @@ def _build_project_rows(scan: dict) -> list[dict]:
                 "recorded_cost": 0.0,
                 "input": 0,
                 "output": 0,
+                "reasoning": 0,
                 "cache_read": 0,
+                "cache_write": 0,
+                "throughput": 0,
             },
         )
         bucket["sessions"] += 1
@@ -63,7 +71,10 @@ def _build_project_rows(scan: dict) -> list[dict]:
         bucket["recorded_cost"] += float(entry.get("recorded_cost") or 0)
         bucket["input"] += int(entry.get("input") or 0)
         bucket["output"] += int(entry.get("output") or 0)
+        bucket["reasoning"] += int(entry.get("reasoning") or 0)
         bucket["cache_read"] += int(entry.get("cache_read") or 0)
+        bucket["cache_write"] += int(entry.get("cache_write") or 0)
+        bucket["throughput"] += int(entry.get("throughput") or 0)
         if not bucket["worktree"] and meta.get("directory"):
             bucket["worktree"] = str(meta.get("directory"))
         if bucket["name"] is None and table.get("name") is not None:
@@ -128,12 +139,15 @@ def cost_summary(
             "reasoning": int(totals.get("reasoning") or 0),
             "cache_read": int(totals.get("cache_read") or 0),
             "cache_write": int(totals.get("cache_write") or 0),
+            "throughput": int(totals.get("throughput") or 0),
         },
         by_model=[
             CostModelRead(
                 model=str(item.get("model") or ""),
                 provider=str(item.get("provider") or ""),
                 variant=str(item.get("variant") or ""),
+                billing_category=str(item.get("billing_category") or "unknown"),
+                billing_reason=str(item.get("billing_reason") or ""),
                 requests=int(item.get("requests") or 0),
                 recorded_cost=float(item.get("recorded_cost") or 0),
                 input=int(item.get("input") or 0),
@@ -141,6 +155,7 @@ def cost_summary(
                 reasoning=int(item.get("reasoning") or 0),
                 cache_read=int(item.get("cache_read") or 0),
                 cache_write=int(item.get("cache_write") or 0),
+                throughput=int(item.get("throughput") or 0),
             )
             for item in (scan.get("per_model") or [])
         ],
@@ -154,7 +169,10 @@ def cost_summary(
                 recorded_cost=float(item.get("recorded_cost") or 0),
                 input=int(item.get("input") or 0),
                 output=int(item.get("output") or 0),
+                reasoning=int(item.get("reasoning") or 0),
                 cache_read=int(item.get("cache_read") or 0),
+                cache_write=int(item.get("cache_write") or 0),
+                throughput=int(item.get("throughput") or 0),
             )
             for item in rows[:50]
         ],
@@ -182,6 +200,7 @@ def cost_sessions(
     timezone: str = Query(default="Europe/Dublin"),
     project_id: str | None = Query(default=None),
     search: str | None = Query(default=None),
+    sort: str = Query(default="cost"),
     limit: int = Query(default=100, ge=1, le=200),
     offset: int = Query(default=0, ge=0),
 ) -> CostSessionListRead:
@@ -190,6 +209,11 @@ def cost_sessions(
     )
     void = (label, tz_name)
     _ = void
+    normalized_sort = (sort or "cost").strip().lower()
+    if normalized_sort not in {"cost", "requests", "throughput", "input", "cache_read", "output", "updated"}:
+        from mission_control.core.errors import ValidationProblem as _VP
+
+        raise _VP("Unknown sort key")
     scan = _store(request).scan_window(start_ms, end_ms)
     if not scan.get("available"):
         return CostSessionListRead(
@@ -231,6 +255,10 @@ def cost_sessions(
                 directory=directory,
                 model=str(m.get("model") or ""),
                 agent=m.get("agent"),
+                billing_category=str(entry.get("billing_category") or "unknown"),
+                billing_reason=str(entry.get("billing_reason") or ""),
+                billing_mixed=bool(entry.get("billing_mixed")),
+                models=list(entry.get("models") or []),
                 requests=int(entry.get("requests") or 0),
                 recorded_cost=float(entry.get("recorded_cost") or 0),
                 input=int(entry.get("input") or 0),
@@ -238,12 +266,23 @@ def cost_sessions(
                 reasoning=int(entry.get("reasoning") or 0),
                 cache_read=int(entry.get("cache_read") or 0),
                 cache_write=int(entry.get("cache_write") or 0),
+                throughput=int(entry.get("throughput") or 0),
+                max_input=int(entry.get("max_input") or 0),
                 rollup_cost=float(m.get("rollup_cost") or 0),
                 time_created=int(m.get("time_created") or 0),
                 time_updated=int(m.get("time_updated") or 0),
             )
         )
-    items.sort(key=lambda item: (-item.recorded_cost, -item.requests, item.session_id))
+    sort_keys = {
+        "cost": lambda item: (-item.recorded_cost, -item.requests, item.session_id),
+        "requests": lambda item: (-item.requests, -item.throughput, item.session_id),
+        "throughput": lambda item: (-item.throughput, -item.requests, item.session_id),
+        "input": lambda item: (-item.input, -item.requests, item.session_id),
+        "cache_read": lambda item: (-item.cache_read, -item.requests, item.session_id),
+        "output": lambda item: (-item.output, -item.requests, item.session_id),
+        "updated": lambda item: (-item.time_updated, item.session_id),
+    }
+    items.sort(key=sort_keys[normalized_sort])
     total = len(items)
     page = items[offset : offset + limit]
     return CostSessionListRead(
@@ -416,6 +455,45 @@ def cost_spikes(
                 "minutes": [],
             }
         )
+    # Large single-call contexts: max uncached input per session.
+    per_session: dict = scan.get("per_session", {})
+    large_context = sorted(
+        ((sid, int(entry.get("max_input") or 0)) for sid, entry in per_session.items()),
+        key=lambda pair: -pair[1],
+    )
+    if large_context and large_context[0][1] >= 200_000:
+        top = [(sid, mx) for sid, mx in large_context[:5] if mx >= 200_000]
+        findings.append(
+            {
+                "id": "large-context",
+                "title": f"Large single-call contexts ({len(top)} session(s) ≥ 200k uncached input)",
+                "detail": "Largest uncached input per session: "
+                + ", ".join(f"{sid[:12]}… ({mx:,} tokens)" for sid, mx in top)
+                + ". Large prompts raise per-call tokens even at low call counts; check serialized context before repeating.",
+                "severity": "info",
+                "session_ids": [sid for sid, _ in top],
+                "minutes": [],
+            }
+        )
+    # Repeated operations: unusually high call counts per session.
+    repeated = sorted(
+        ((sid, int(entry.get("requests") or 0)) for sid, entry in per_session.items()),
+        key=lambda pair: -pair[1],
+    )
+    if repeated and repeated[0][1] >= 100:
+        top = [(sid, n) for sid, n in repeated[:5] if n >= 100]
+        findings.append(
+            {
+                "id": "repeated-operations",
+                "title": f"Repeated operations ({len(top)} session(s) ≥ 100 calls)",
+                "detail": "Highest call counts: "
+                + ", ".join(f"{sid[:12]}… ({n} calls)" for sid, n in top)
+                + ". Inspect timelines for loops, retries or duplicated prompts.",
+                "severity": "info",
+                "session_ids": [sid for sid, _ in top],
+                "minutes": [],
+            }
+        )
     if not findings:
         findings.append(
             {
@@ -436,4 +514,206 @@ def cost_spikes(
         start_ms=start_ms,
         end_ms=end_ms,
         findings=findings,  # type: ignore[arg-type]
+    )
+
+
+@router.get("/efficiency", response_model=CostEfficiencyRead)
+def cost_efficiency(
+    request: Request,
+    preset: str = Query(default="today"),
+    date: str | None = Query(default=None),
+    date_from: str | None = Query(default=None),
+    date_to: str | None = Query(default=None),
+    timezone: str = Query(default="Europe/Dublin"),
+) -> CostEfficiencyRead:
+    """Advisory model-efficiency recommendations. Observes only.
+
+    Never switches models, never starts a paid call, never touches Worker
+    configuration. Every recommendation links to recorded sessions and
+    requires human verification of quality/latency first.
+    """
+    label, tz_name, start_ms, end_ms = resolve_bounds(
+        preset=preset, date=date, date_from=date_from, date_to=date_to, timezone=timezone
+    )
+    store = _store(request)
+    scan = store.scan_window(start_ms, end_ms)
+    if not scan.get("available"):
+        return CostEfficiencyRead(
+            available=False,
+            source_path=str(scan.get("source_path") or ""),
+            reason=str(scan.get("reason") or "unavailable"),
+            error=scan.get("error"),
+            date_label=label,
+            timezone=tz_name,
+            start_ms=start_ms,
+            end_ms=end_ms,
+            recommendations=[],
+        )
+    return CostEfficiencyRead(
+        available=True,
+        source_path=str(scan.get("source_path") or ""),
+        reason="ok",
+        date_label=label,
+        timezone=tz_name,
+        start_ms=start_ms,
+        end_ms=end_ms,
+        recommendations=store.build_efficiency(scan),  # type: ignore[arg-type]
+    )
+
+
+@router.get("/attribution", response_model=CostAttributionRead)
+def cost_attribution(
+    request: Request,
+    preset: str = Query(default="today"),
+    date: str | None = Query(default=None),
+    date_from: str | None = Query(default=None),
+    date_to: str | None = Query(default=None),
+    timezone: str = Query(default="Europe/Dublin"),
+) -> CostAttributionRead:
+    """Which caller-identity fields are retained, and what is missing.
+
+    Counts sessions/requests in the window that cannot be attributed to a
+    known project (Unknown bucket). Missing fields document the
+    instrumentation Mission Control, Worker, Pi and ALIVE still need.
+    """
+    label, tz_name, start_ms, end_ms = resolve_bounds(
+        preset=preset, date=date, date_from=date_from, date_to=date_to, timezone=timezone
+    )
+    void = (label, tz_name)
+    _ = void
+    store = _store(request)
+    audit = store.caller_identity_audit()
+    scan = store.scan_window(start_ms, end_ms)
+    if not scan.get("available"):
+        return CostAttributionRead(
+            available=False,
+            source_path=str(scan.get("source_path") or ""),
+            reason=str(scan.get("reason") or "unavailable"),
+            error=scan.get("error"),
+            retained=list(audit.get("retained") or []),
+            missing=list(audit.get("missing") or []),
+            instrumentation=list(audit.get("instrumentation") or []),
+        )
+    per_session: dict = scan.get("per_session", {})
+    meta: dict = scan.get("session_meta", {})
+    projects_table: dict = scan.get("projects", {})
+    unknown_sessions = 0
+    unknown_requests = 0
+    for sid, entry in per_session.items():
+        pid = str((meta.get(sid, {}) or {}).get("project_id") or "")
+        if not pid or pid not in projects_table:
+            unknown_sessions += 1
+            unknown_requests += int(entry.get("requests") or 0)
+    return CostAttributionRead(
+        available=True,
+        source_path=str(scan.get("source_path") or ""),
+        reason="ok",
+        retained=list(audit.get("retained") or []),
+        missing=list(audit.get("missing") or []),
+        instrumentation=list(audit.get("instrumentation") or []),
+        unknown_sessions=unknown_sessions,
+        unknown_requests=unknown_requests,
+    )
+
+
+_GO_MODELS_CACHE: dict[str, Any] = {"at": 0.0, "payload": None}
+_GO_MODELS_TTL_SECONDS = 600.0
+
+
+async def _fetch_go_models() -> dict[str, Any]:
+    """Best-effort fetch of the public Go model list. Never raises.
+
+    Keyless, read-only, short timeout, cached for 10 minutes. Any failure
+    degrades to unavailable so models stay classified as unknown.
+    """
+    import time as _time
+
+    now = _time.monotonic()
+    cached = _GO_MODELS_CACHE.get("payload")
+    if cached is not None and (now - float(_GO_MODELS_CACHE.get("at") or 0)) < _GO_MODELS_TTL_SECONDS:
+        return cached
+    result: dict[str, Any] = {"available": False, "models": [], "detail": "unavailable"}
+    try:
+        import httpx as _httpx
+
+        async with _httpx.AsyncClient(timeout=4.0, trust_env=False) as client:
+            response = await client.get("https://opencode.ai/inference/go/v1/models")
+        if response.status_code != 200:
+            result["detail"] = f"Go model list returned HTTP {response.status_code}"
+        else:
+            payload = response.json()
+            items: list[Any] = []
+            if isinstance(payload, list):
+                items = payload
+            elif isinstance(payload, dict):
+                for key in ("data", "models", "items"):
+                    if isinstance(payload.get(key), list):
+                        items = payload[key]
+                        break
+            models: list[dict[str, Any]] = []
+            for entry in items:
+                if not isinstance(entry, dict):
+                    continue
+                model_id = str(entry.get("id") or entry.get("model") or entry.get("name") or "")
+                if not model_id:
+                    continue
+                provider = str(entry.get("provider") or entry.get("providerID") or "opencode-go")
+                price = entry.get("pricing") or entry.get("price") or entry.get("cost") or ""
+                models.append({"id": model_id, "provider": provider, "price": price})
+            result = {"available": True, "models": models, "detail": f"Go lists {len(models)} model(s)."}
+    except Exception as exc:  # noqa: BLE001 - best-effort catalogue, never fails the page
+        result = {"available": False, "models": [], "detail": f"Go model list unreachable ({exc.__class__.__name__})."}
+    _GO_MODELS_CACHE["at"] = now
+    _GO_MODELS_CACHE["payload"] = result
+    return result
+
+
+@router.get("/catalogue", response_model=CostCatalogueRead)
+async def cost_catalogue(request: Request) -> CostCatalogueRead:
+    """Model availability/pricing catalogue. Read-only, never a model call.
+
+    Pi catalogue comes from `pi --list-models` (starts no session). The Go
+    list is a keyless public fetch with a short timeout and a 10-minute
+    cache. Anything unreachable stays unknown — never assumed free or paid.
+    """
+    import asyncio as _asyncio
+
+    store = _store(request)
+    try:
+        from mission_control.research import pi_backend as _pi
+
+        pi = await _asyncio.to_thread(_pi.discover_pi_models, 5.0)
+    except Exception as exc:  # noqa: BLE001 - catalogue must never fail the page
+        pi = {"available": False, "models": [], "detail": f"Pi catalogue failed ({exc.__class__.__name__})."}
+    go = await _fetch_go_models()
+    pi_models = [
+        {
+            "id": str(item.get("id") or ""),
+            "provider": str((str(item.get("id") or "").split("/")[0]) or ""),
+            "available": True,
+            "list_price_note": "",
+        }
+        for item in (pi.get("models") or [])
+        if isinstance(item, dict) and item.get("id")
+    ]
+    go_models = [
+        {
+            "id": str(item.get("id") or ""),
+            "provider": str(item.get("provider") or "opencode-go"),
+            "available": True,
+            "list_price_note": str(item.get("price") or ""),
+        }
+        for item in (go.get("models") or [])
+        if isinstance(item, dict) and item.get("id")
+    ]
+    return CostCatalogueRead(
+        available=True,
+        source_path=store.source_path,
+        reason="ok",
+        pi_available=bool(pi.get("available")),
+        pi_models=pi_models,  # type: ignore[arg-type]
+        pi_detail=str(pi.get("detail") or ""),
+        go_available=bool(go.get("available")),
+        go_models=go_models,  # type: ignore[arg-type]
+        go_detail=str(go.get("detail") or ""),
     )

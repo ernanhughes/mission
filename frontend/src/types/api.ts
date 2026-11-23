@@ -2786,7 +2786,7 @@ export type PipelineStageDetail = {
   diagnostics?: string;
 };
 
-// Mirrors backend schemas Cost*Read verbatim (MC-COST-01).
+// Mirrors backend schemas Cost*Read verbatim (MC-COST-01, extended MC-COST-02).
 export type CostStatus = {
   available: boolean;
   source_path: string;
@@ -2804,12 +2804,15 @@ export type CostTotals = {
   reasoning: number;
   cache_read: number;
   cache_write: number;
+  throughput: number;
 };
 
 export type CostModel = {
   model: string;
   provider: string;
   variant: string;
+  billing_category: string;
+  billing_reason: string;
   requests: number;
   recorded_cost: number;
   input: number;
@@ -2817,6 +2820,7 @@ export type CostModel = {
   reasoning: number;
   cache_read: number;
   cache_write: number;
+  throughput: number;
 };
 
 export type CostMinute = { minute: string; requests: number; recorded_cost: number };
@@ -2830,7 +2834,10 @@ export type CostProject = {
   recorded_cost: number;
   input: number;
   output: number;
+  reasoning: number;
   cache_read: number;
+  cache_write: number;
+  throughput: number;
 };
 
 export type CostSession = {
@@ -2843,6 +2850,10 @@ export type CostSession = {
   directory: string;
   model: string;
   agent: string | null;
+  billing_category: string;
+  billing_reason: string;
+  billing_mixed: boolean;
+  models: string[];
   requests: number;
   recorded_cost: number;
   input: number;
@@ -2850,6 +2861,8 @@ export type CostSession = {
   reasoning: number;
   cache_read: number;
   cache_write: number;
+  throughput: number;
+  max_input: number;
   rollup_cost: number;
   time_created: number;
   time_updated: number;
@@ -2897,6 +2910,7 @@ export type CostCall = {
   reasoning: number;
   cache_read: number;
   cache_write: number;
+  throughput: number;
 };
 
 export type CostFailure = { seq: number; time_created: number; kind: string; excerpt: string };
@@ -2950,4 +2964,62 @@ export type CostSpikes = {
   start_ms: number;
   end_ms: number;
   findings: CostFinding[];
+};
+
+export type CostEfficiencyRecommendation = {
+  id: string;
+  title: string;
+  detail: string;
+  severity: string;
+  model: string;
+  billing_category: string;
+  session_ids: string[];
+  action: string;
+};
+
+export type CostEfficiency = {
+  available: boolean;
+  source_path: string;
+  reason: string;
+  error: string | null;
+  date_label: string;
+  timezone: string;
+  start_ms: number;
+  end_ms: number;
+  recommendations: CostEfficiencyRecommendation[];
+  provenance: string;
+};
+
+export type CostCatalogueModel = {
+  id: string;
+  provider: string;
+  available: boolean;
+  list_price_note: string;
+};
+
+export type CostCatalogue = {
+  available: boolean;
+  source_path: string;
+  reason: string;
+  error: string | null;
+  pi_available: boolean;
+  pi_models: CostCatalogueModel[];
+  pi_detail: string;
+  go_available: boolean;
+  go_models: CostCatalogueModel[];
+  go_detail: string;
+  provenance: string;
+};
+
+export type CostAttribution = {
+  available: boolean;
+  source_path: string;
+  reason: string;
+  error: string | null;
+  retained: string[];
+  missing: string[];
+  instrumentation: string[];
+  unknown_sessions: number;
+  unknown_requests: number;
+  provenance: string;
 };

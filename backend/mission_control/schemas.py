@@ -3645,12 +3645,15 @@ class CostTotalsRead(BaseModel):
     reasoning: int = 0
     cache_read: int = 0
     cache_write: int = 0
+    throughput: int = 0
 
 
 class CostModelRead(BaseModel):
     model: str = ""
     provider: str = ""
     variant: str = ""
+    billing_category: str = "unknown"
+    billing_reason: str = ""
     requests: int = 0
     recorded_cost: float = 0.0
     input: int = 0
@@ -3658,6 +3661,7 @@ class CostModelRead(BaseModel):
     reasoning: int = 0
     cache_read: int = 0
     cache_write: int = 0
+    throughput: int = 0
 
 
 class CostMinuteRead(BaseModel):
@@ -3675,7 +3679,10 @@ class CostProjectRead(BaseModel):
     recorded_cost: float = 0.0
     input: int = 0
     output: int = 0
+    reasoning: int = 0
     cache_read: int = 0
+    cache_write: int = 0
+    throughput: int = 0
 
 
 class CostSessionRead(BaseModel):
@@ -3688,6 +3695,10 @@ class CostSessionRead(BaseModel):
     directory: str = ""
     model: str = ""
     agent: str | None = None
+    billing_category: str = "unknown"
+    billing_reason: str = ""
+    billing_mixed: bool = False
+    models: list[str] = Field(default_factory=list)
     requests: int = 0
     recorded_cost: float = 0.0
     input: int = 0
@@ -3695,6 +3706,8 @@ class CostSessionRead(BaseModel):
     reasoning: int = 0
     cache_read: int = 0
     cache_write: int = 0
+    throughput: int = 0
+    max_input: int = 0
     rollup_cost: float = 0.0
     time_created: int = 0
     time_updated: int = 0
@@ -3746,6 +3759,7 @@ class CostCallRead(BaseModel):
     reasoning: int = 0
     cache_read: int = 0
     cache_write: int = 0
+    throughput: int = 0
 
 
 class CostFailureRead(BaseModel):
@@ -3795,6 +3809,73 @@ class CostFindingRead(BaseModel):
     severity: str = "info"
     session_ids: list[str] = Field(default_factory=list)
     minutes: list[str] = Field(default_factory=list)
+
+
+class CostEfficiencyRecommendationRead(BaseModel):
+    id: str
+    title: str
+    detail: str = ""
+    severity: str = "info"
+    model: str = ""
+    billing_category: str = "unknown"
+    session_ids: list[str] = Field(default_factory=list)
+    action: str = "none (advisory only)"
+
+
+class CostEfficiencyRead(BaseModel):
+    available: bool
+    source_path: str = ""
+    reason: str = ""
+    error: str | None = None
+    date_label: str = ""
+    timezone: str = "Europe/Dublin"
+    start_ms: int = 0
+    end_ms: int = 0
+    recommendations: list[CostEfficiencyRecommendationRead] = Field(default_factory=list)
+    provenance: str = (
+        "Advisory only. No model is switched, no paid call is made, no Worker "
+        "configuration is changed. Verify quality and latency before any change."
+    )
+
+
+class CostCatalogueModelRead(BaseModel):
+    id: str = ""
+    provider: str = ""
+    available: bool = False
+    list_price_note: str = ""
+
+
+class CostCatalogueRead(BaseModel):
+    available: bool
+    source_path: str = ""
+    reason: str = ""
+    error: str | None = None
+    pi_available: bool = False
+    pi_models: list[CostCatalogueModelRead] = Field(default_factory=list)
+    pi_detail: str = ""
+    go_available: bool = False
+    go_models: list[CostCatalogueModelRead] = Field(default_factory=list)
+    go_detail: str = ""
+    provenance: str = (
+        "Catalogue lookups are read-only and never start a model call. "
+        "Unknown means unverified, never assumed free or paid."
+    )
+
+
+class CostAttributionRead(BaseModel):
+    available: bool
+    source_path: str = ""
+    reason: str = ""
+    error: str | None = None
+    retained: list[str] = Field(default_factory=list)
+    missing: list[str] = Field(default_factory=list)
+    instrumentation: list[str] = Field(default_factory=list)
+    unknown_sessions: int = 0
+    unknown_requests: int = 0
+    provenance: str = (
+        "Unknown means unattributed, never guessed. Direct application calls "
+        "that bypass OpenCode sessions leave no local rows."
+    )
 
 
 class CostSpikesRead(BaseModel):
