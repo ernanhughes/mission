@@ -13,6 +13,7 @@ import {
   Tag,
 } from "../../components/ui";
 import { InspectPanel, InspectProjectBlock } from "../../features/inspect/InspectPanels";
+import { WorkerRuntimePanel } from "../worker/WorkerRuntimePanel";
 import { copyText } from "../../lib/clipboard";
 import { formatDateTime, timeAgo } from "../../lib/format";
 import type {
@@ -305,6 +306,8 @@ function SoftwareOverview({
         )}
         <CheckpointForm projectId={projectId} onSaved={onChanged} />
       </Section>
+
+      <WorkerRuntimePanel />
     </div>
   );
 }

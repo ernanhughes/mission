@@ -7612,3 +7612,68 @@ button.nav-link {
 @media (min-width: 1180px) {
   .living-improve-compare-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
 }
+
+/* ------------------------------------------------ production pipeline (MC-BOOK-PIPELINE-01 M2) */
+.book-view-tabs { display: flex; gap: 4px; margin: 0 0 4px; }
+.book-view-tab {
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--muted);
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.book-view-tab.active { background: var(--panel-2); color: var(--text); border-color: var(--muted); }
+.pipe-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; }
+.pipe-scroll:focus-visible { outline: 2px solid var(--warn); outline-offset: 2px; }
+.pipe-table { border: 0; }
+.pipe-table th.pipe-sticky,
+.pipe-table td.pipe-sticky { position: sticky; left: 0; background: var(--panel); z-index: 1; min-width: 170px; }
+.pipe-table thead th.pipe-sticky { background: var(--panel-2); }
+.pipe-table tbody th { font-family: inherit; text-transform: none; letter-spacing: normal; font-weight: 400; }
+.pipe-table tbody th strong { font-size: 0.8rem; font-weight: 600; color: var(--text); }
+.pipe-table tbody th .table-note { text-transform: none; }
+.pipe-chapter-cell strong { display: block; font-size: 0.78rem; }
+.pipe-book-cell { vertical-align: top; }
+.pipe-book-button {
+  background: none; border: 0; padding: 0; text-align: left; cursor: pointer;
+  color: var(--text); font-size: 0.82rem;
+}
+.pipe-book-button strong { display: block; font-weight: 600; }
+.pipe-book-button:hover strong { text-decoration: underline; text-underline-offset: 3px; }
+.pipe-warn { color: var(--warn); }
+.pipe-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 2px 9px; border-radius: 999px;
+  background: color-mix(in srgb, currentColor 9%, transparent);
+  font-size: 0.7rem; font-weight: 600; white-space: nowrap;
+}
+.pipe-dot { width: 7px; height: 7px; flex: 0 0 auto; border-radius: 50%; background: currentColor; }
+.pipe-tone-current { color: var(--good); }
+.pipe-tone-stale { color: var(--warn); }
+.pipe-tone-missing { color: var(--muted); }
+.pipe-tone-unknown { color: var(--muted); }
+.pipe-tone-failed { color: var(--bad); }
+.pipe-tone-planned { color: var(--faint); }
+.pipe-tone-na { color: var(--faint); }
+button.pipe-cell {
+  display: inline-flex; align-items: center; gap: 6px;
+  border: 1px solid transparent; background: transparent; border-radius: 999px;
+  padding: 3px 10px; font-size: 0.72rem; font-weight: 600; cursor: pointer;
+  color: inherit; white-space: nowrap;
+}
+button.pipe-cell:hover { border-color: var(--line); background: var(--panel-2); }
+button.pipe-cell:focus-visible { outline: 2px solid var(--warn); outline-offset: 2px; }
+.pipe-filters { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; font-size: 0.76rem; }
+.pipe-filters-label { color: var(--muted); font-weight: 600; }
+.pipe-check { display: inline-flex; align-items: center; gap: 6px; color: var(--text-soft); cursor: pointer; }
+.pipe-cols { position: relative; }
+.pipe-cols summary { cursor: pointer; color: var(--text-soft); font-weight: 600; }
+.pipe-cols-list {
+  position: absolute; z-index: 5; margin-top: 6px; padding: 10px 12px;
+  display: grid; gap: 6px; background: var(--panel); border: 1px solid var(--line);
+  border-radius: 8px; box-shadow: 0 8px 24px rgb(0 0 0 / 12%); min-width: 200px;
+}
+.pipe-legend { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0 4px; }

@@ -12,6 +12,7 @@ import {
 import { api, errorMessage } from "../api/client";
 import { useApi } from "../api/useApi";
 import { useToast } from "../components/Toast";
+import { BooksProduction } from "../features/pipeline/BooksProduction";
 import {
   ActionButton,
   EmptyState,
@@ -333,9 +334,11 @@ export function BooksCollectionPage(props: {
   title: string;
   description: string;
   emptyHint: string;
+  showProduction?: boolean;
 }) {
   const books = useApi<Book[]>(props.apiBase);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [view, setView] = useState<"workspace" | "production">("workspace");
   const toast = useToast();
   const [reordering, setReordering] = useState(false);
   const [detecting, setDetecting] = useState(false);
@@ -405,6 +408,33 @@ export function BooksCollectionPage(props: {
         }
       />
 
+      {props.showProduction ? (
+        <div className="book-view-tabs" role="tablist" aria-label="Book views">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={view === "workspace"}
+            className={`book-view-tab ${view === "workspace" ? "active" : ""}`}
+            onClick={() => setView("workspace")}
+          >
+            Workspace
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={view === "production"}
+            className={`book-view-tab ${view === "production" ? "active" : ""}`}
+            onClick={() => setView("production")}
+          >
+            Production
+          </button>
+        </div>
+      ) : null}
+
+      {view === "production" && props.showProduction ? (
+        <BooksProduction />
+      ) : (
+      <>
       {books.loading && !books.data ? <LoadingBlock label="Loading books" /> : null}
       {books.error ? <ErrorState message={books.error.message} onRetry={books.reload} /> : null}
       {books.data && books.data.length === 0 ? (
@@ -468,6 +498,8 @@ export function BooksCollectionPage(props: {
           </div>
         </div>
       ) : null}
+      </>
+      )}
 
       <Section title="How book status works" className="note-section">
         <p className="muted">
@@ -491,6 +523,7 @@ export function BooksPage() {
         "Create a book project, or add a manuscript at " +
         "C:\\books\\<project>\\content\\books\\<book>."
       }
+      showProduction
     />
   );
 }

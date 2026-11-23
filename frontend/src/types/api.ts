@@ -2668,3 +2668,120 @@ export type PublishingFollowup = {
   created_at: string;
   updated_at: string;
 };
+
+// --------------------------------- production pipeline (MC-BOOK-PIPELINE-01 M2)
+// Read-only projection of stored Writer evidence. Mirrors the backend
+// registry and cell contracts verbatim; the frontend holds no registry copy.
+
+export type PipelineStage = {
+  stage_id: string;
+  name: string;
+  description: string;
+  owner: string;
+  scope: string;
+  applicability: string;
+  freshness_method: string;
+  prerequisites: string;
+  presentation_order: number;
+  availability: string;
+  availability_reason: string;
+  ui_actions: string[];
+};
+
+export type PipelineSummary = {
+  applicable: number;
+  with_evidence: number;
+  current: number;
+  stale: number;
+  missing: number;
+  unknown: number;
+  passed: number;
+  failed: number;
+  pending: number;
+  coverage: string;
+  coverage_fraction: number | null;
+  fully_current: boolean;
+  availability?: string;
+  availability_reason?: string;
+};
+
+export type PipelineOverviewBook = {
+  project_id: string;
+  book_title: string;
+  known: boolean;
+  profile: string;
+  applicable_chapters: number;
+  discovery_error: string | null;
+  chapter_dir: string;
+  validation_enabled: boolean;
+  human_approval_required: boolean;
+  elapsed_ms: number;
+  summaries: Record<string, PipelineSummary>;
+};
+
+export type PipelineOverview = {
+  registry_version: string;
+  registry_source: string | null;
+  book_count: number;
+  elapsed_ms: number;
+  stages: PipelineStage[];
+  books: PipelineOverviewBook[];
+  refresh_note: string;
+};
+
+export type PipelineMatrixCell = {
+  chapter_id: string;
+  result: string;
+  freshness: string;
+  has_evidence: boolean;
+  applicable: boolean;
+  artifact_ref: string;
+};
+
+export type PipelineBookMatrix = {
+  project_id: string;
+  known: boolean;
+  book_title: string;
+  registry_version: string;
+  chapter_dir: string;
+  chapter_pattern: string;
+  profile: string;
+  discovery: Record<string, unknown>;
+  chapters: Array<{ chapter_id: string; filename: string; path: string }>;
+  stages: PipelineStage[];
+  summaries: Record<string, PipelineSummary>;
+  matrix: Record<string, PipelineMatrixCell[]>;
+  refresh_note: string;
+};
+
+export type PipelineEvidenceCell = {
+  stage_id: string;
+  project_id: string;
+  chapter_id: string;
+  chapter_path: string;
+  applicable: boolean;
+  not_applicable_reason: string | null;
+  result: string;
+  freshness: string;
+  has_evidence: boolean;
+  artifact_ref: string;
+  stored_digest: string | null;
+  live_digest: string | null;
+  digest_match: boolean | null;
+  digest_algorithm: string | null;
+  observed_at: string;
+  executed_at: string;
+  provider: string;
+  stage_version: string | null;
+  diagnostics: string;
+  detail: Record<string, unknown>;
+};
+
+export type PipelineStageDetail = {
+  project_id: string;
+  stage: PipelineStage;
+  registry_version: string;
+  summary?: PipelineSummary;
+  cells: PipelineEvidenceCell[];
+  diagnostics?: string;
+};

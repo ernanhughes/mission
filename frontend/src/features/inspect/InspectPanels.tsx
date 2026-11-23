@@ -18,6 +18,7 @@ import {
 import { copyText } from "../../lib/clipboard";
 import { timeAgo, titleCase } from "../../lib/format";
 import type { ApiError } from "../../api/client";
+import { OpportunityProposalBridge } from "../praxis/ProposalBridge";
 import {
   facetValues,
   isSideEffectful,
@@ -656,6 +657,16 @@ export function OpportunityList({
               ) : (
                 <p className="muted small">No evidence references — proposed, not verified.</p>
               )}
+              {item.opportunity_id ? (
+                <details>
+                  <summary className="muted small">Propose governed improvement</summary>
+                  <OpportunityProposalBridge opportunityId={String(item.opportunity_id)} />
+                  <p className="muted small">
+                    Import only. Approval is human and explicit on the Praxis route; execution never
+                    follows automatically. Advisory when no compatible action exists.
+                  </p>
+                </details>
+              ) : null}
             </article>
           ))}
         </div>

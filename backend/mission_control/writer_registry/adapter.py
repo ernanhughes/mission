@@ -49,6 +49,7 @@ class WriterBookDefinition:
     validation_checks: list[dict[str, Any]] = field(default_factory=list)
     human_approval_required: bool = False
     validation_enabled: bool = False
+    exclude_prefixes: tuple[str, ...] = ()
 
 
 @dataclass(slots=True)
@@ -306,6 +307,12 @@ def load_writer_registry(path: Path | str | None = None) -> WriterRegistrySnapsh
                     finalization.get("human_approval_required", False)
                 )
         count = _count_chapters(chapter_dir, pattern)
+        raw_excludes = entry.get("exclude_prefixes") or []
+        exclude_prefixes = tuple(
+            str(prefix)
+            for prefix in (raw_excludes if isinstance(raw_excludes, list) else [])
+            if str(prefix).strip()
+        )
         available = count is not None and count > 0
         error: str | None = None
         if count is None:
@@ -340,6 +347,7 @@ def load_writer_registry(path: Path | str | None = None) -> WriterRegistrySnapsh
             validation_checks=validation_checks,
             human_approval_required=human_approval_required,
             validation_enabled=validation_enabled,
+            exclude_prefixes=exclude_prefixes,
         )
     return WriterRegistrySnapshot(
         source_path=source,

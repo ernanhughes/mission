@@ -28,7 +28,9 @@ from mission_control.api import (
     health,
     integrations as integrations_api,
     inspect as inspect_api,
+    inspect_proposals as inspect_proposals_api,
     living_book as living_book_api,
+    pipeline as pipeline_api,
     processes,
     projects,
     praxis_proposals as praxis_proposals_api,
@@ -41,6 +43,7 @@ from mission_control.api import (
     technical as technical_api,
     website_posts as website_posts_api,
     websites as websites_api,
+    worker_runtime as worker_runtime_api,
     workflows as workflows_api,
     writer as writer_api,
     writer_evaluations as writer_evaluations_api,
@@ -328,7 +331,9 @@ def create_app(runtime: RuntimeSettings | None = None) -> FastAPI:
     app.include_router(adapters.router)
     app.include_router(integrations_api.router)
     app.include_router(inspect_api.router)
+    app.include_router(inspect_proposals_api.router)
     app.include_router(praxis_proposals_api.router)
+    app.include_router(worker_runtime_api.router)
     app.include_router(research_api.router)
     app.include_router(workflows_api.router)
     app.include_router(writer_api.router)
@@ -336,6 +341,7 @@ def create_app(runtime: RuntimeSettings | None = None) -> FastAPI:
     app.include_router(quality_api.router)
     app.include_router(technical_api.router)
     app.include_router(publication_api.router)
+    app.include_router(pipeline_api.router)
     app.include_router(artifact_load_api.router)
     app.include_router(briefing.router)
     app.include_router(settings_api.router)
