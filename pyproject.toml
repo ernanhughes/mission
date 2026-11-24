@@ -43,6 +43,7 @@ addopts = "-ra"
 timeout = 60
 markers = [
   "integration: exercises real local process execution",
+  "long: wall-clock >2s; keep out of routine agent verification",
 ]
 
 [tool.ruff]
