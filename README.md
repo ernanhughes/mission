@@ -249,12 +249,14 @@ Tested on Windows 11 with:
   OpenAI-compatible model endpoint (Ollama was used for acceptance), and Docker
   Desktop for the generated-code sandbox
 
-The Mission Control core does not require Docker, Kubernetes, a hosted database
-or a cloud service. Generated-code experiment execution does require a local
-Docker daemon. Mission Control itself stores state in SQLite. A PostgreSQL connection is optional and
-used only for a read-only Next integration when `NEXT_DSN` is configured; the
-SQLite snapshot remains the fallback. Hosted paid inference is not required for
-MC10 experiments.
+The Mission Control core does not require Docker, Kubernetes or a cloud
+service. Generated-code experiment execution does require a local
+Docker daemon. Mission Control stores its operational state in **PostgreSQL**
+(configured via the `MC_DSN` environment variable, e.g.
+`postgresql://mc:mc@localhost:5432/mc`); the backend refuses to start without
+it. Hosted paid inference is not required for MC10 experiments. A separate
+PostgreSQL connection remains optional and used only for a read-only Next
+integration when `NEXT_DSN` is configured.
 
 ## Install
 
@@ -380,7 +382,9 @@ Default local data:
 
 ```text
 data/
-  mission_control.db      SQLite database (registry, continuity, workflows)
+  mission_control.db      Legacy SQLite snapshot (migration source + recovery
+                          asset; no longer written by Mission Control)
+  backups/                SQLite snapshots + PostgreSQL dumps (git-ignored)
   integrations/
     next/
       next-research-export-v1.json  Versioned Next research evidence
@@ -398,17 +402,27 @@ data/
     proc-*.log            Managed process output, redacted on read
 ```
 
+PostgreSQL (`MC_DSN`, database `mc`) is the authoritative operational store:
+registry, continuity, workflows, books, evaluations, health observations and
+governance history. SQLite is retained only as the migration source, an
+explicit legacy-recovery asset, and for isolated unit tests.
+
 The directory is git-ignored. Override it with `MISSION_CONTROL_DATA_DIR`.
 
-**Backup:** stop the backend, then copy the entire `data` directory. Process reattachment is not guaranteed if you move the database to another machine.
+**Backup:** PostgreSQL: `pg_dump -h localhost -U mc -d mc -f <dest>` (password
+via `PGPASSWORD`/pgpass, never on the command line); validate by restoring
+into a scratch database. SQLite legacy file: stop the backend, then copy the
+`data` directory. Process reattachment is not guaranteed if you move the
+database to another machine. Full procedure:
+`docs/migration/MC-POSTGRES-01/08-recovery-runbook.md`.
 
-**Reset user configuration and history:** stop the backend, stop managed applications, rename or delete `data`, then start Mission Control again. Shipped defaults under `config/defaults` are re-seeded. No other repository is touched.
+**Reset user configuration and history:** stop the backend, stop managed applications, reset the PostgreSQL `mc` database (drop/recreate schema, then start — migrations rebuild from the ORM baseline and re-seed shipped defaults), or point at a fresh database via `MC_DSN`. Shipped defaults under `config/defaults` are re-seeded. No other repository is touched.
 
 ## Configuration precedence
 
 1. **Shipped YAML defaults** in `config/defaults/` are inserted only when an ID does not exist.
 2. **Discovery metadata** updates repository observation fields and candidate classification.
-3. **User edits in the registry and settings are stored in SQLite and always win.** Re-running discovery or restarting never overwrites priority, pinning, names, launch definitions or notes.
+3. **User edits in the registry and settings are stored in PostgreSQL and always win.** Re-running discovery or restarting never overwrites priority, pinning, names, launch definitions or notes.
 
 The YAML files are defaults, not a live configuration source. To change a seeded application, use the UI or API. This prevents a future release's default file from silently undoing user work.
 
@@ -473,7 +487,7 @@ Priority is always human-controlled.
 - Use the up/down controls on **Today** or **Books** to reorder books.
 - Use **Projects** up/down controls to reorder all projects.
 - Pin or unpin a project in its workspace or in the projects list.
-- Ordering and pin state are persisted in SQLite and survive restarts.
+- Ordering and pin state are persisted in PostgreSQL and survive restarts.
 - Discovery never promotes a repository because it was recently modified.
 
 ## Checkpoints and resume
@@ -541,7 +555,7 @@ AI is disabled by default and requires:
 3. an OpenAI-compatible base URL and model;
 4. the API key, if needed, in the named environment variable (for example `OPENAI_API_KEY`).
 
-API keys are never stored in SQLite, returned by the API or logged. The key name — not the value — is configuration.
+API keys are never stored in the database, returned by the API or logged. The key name — not the value — is configuration.
 
 The deterministic briefing always works. If the provider is offline or fails, the deterministic briefing is retained and the failure is reported. AI can only summarise, compare and recommend. It cannot launch tools, modify repositories, publish, submit applications or spend money. AI suggestions retain evidence references and never overwrite human priorities.
 

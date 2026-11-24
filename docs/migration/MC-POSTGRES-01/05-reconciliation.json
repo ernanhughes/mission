@@ -1,0 +1,720 @@
+{
+  "tables": [
+    {
+      "table": "activity_events",
+      "source_rows": 1108,
+      "target_rows": 1108,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "adapter_statuses",
+      "source_rows": 9,
+      "target_rows": 9,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "applications",
+      "source_rows": 11,
+      "target_rows": 11,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "artifact_load_observations",
+      "source_rows": 3,
+      "target_rows": 3,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "books",
+      "source_rows": 41,
+      "target_rows": 41,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "briefings",
+      "source_rows": 1,
+      "target_rows": 1,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "cultivation_app_repos",
+      "source_rows": 0,
+      "target_rows": 0,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "cultivation_applications",
+      "source_rows": 0,
+      "target_rows": 0,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "cultivation_cycle_goals",
+      "source_rows": 8,
+      "target_rows": 8,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "cultivation_cycles",
+      "source_rows": 2,
+      "target_rows": 2,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "cultivation_events",
+      "source_rows": 623,
+      "target_rows": 623,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "cultivation_evidence",
+      "source_rows": 0,
+      "target_rows": 0,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "cultivation_github_repos",
+      "source_rows": 306,
+      "target_rows": 306,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "cultivation_goals",
+      "source_rows": 15,
+      "target_rows": 15,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "cultivation_items",
+      "source_rows": 471,
+      "target_rows": 471,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "cultivation_measurements",
+      "source_rows": 149,
+      "target_rows": 149,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "cultivation_memberships",
+      "source_rows": 165,
+      "target_rows": 165,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "cultivation_repo_states",
+      "source_rows": 306,
+      "target_rows": 306,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "cultivation_skills",
+      "source_rows": 15,
+      "target_rows": 15,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "cultivation_sources",
+      "source_rows": 5,
+      "target_rows": 5,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "decisions",
+      "source_rows": 19,
+      "target_rows": 19,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "discovery_roots",
+      "source_rows": 4,
+      "target_rows": 4,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "experiment_workflows",
+      "source_rows": 18,
+      "target_rows": 18,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "git_commits",
+      "source_rows": 12779,
+      "target_rows": 12779,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "git_repositories",
+      "source_rows": 110,
+      "target_rows": 110,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "git_review_feedback",
+      "source_rows": 0,
+      "target_rows": 0,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "git_reviews",
+      "source_rows": 0,
+      "target_rows": 0,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "health_observations",
+      "source_rows": 125273,
+      "target_rows": 125273,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "integration_decisions",
+      "source_rows": 12,
+      "target_rows": 12,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "integration_executions",
+      "source_rows": 36,
+      "target_rows": 36,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "integration_records",
+      "source_rows": 950,
+      "target_rows": 950,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "language_observations",
+      "source_rows": 5,
+      "target_rows": 5,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "launch_definitions",
+      "source_rows": 11,
+      "target_rows": 11,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "library_syntheses",
+      "source_rows": 1,
+      "target_rows": 1,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "outcomes",
+      "source_rows": 4,
+      "target_rows": 4,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "praxis_proposals",
+      "source_rows": 16,
+      "target_rows": 16,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "process_instances",
+      "source_rows": 109,
+      "target_rows": 109,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "project_identity_decisions",
+      "source_rows": 39,
+      "target_rows": 39,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "project_relationships",
+      "source_rows": 4,
+      "target_rows": 4,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "project_repositories",
+      "source_rows": 90,
+      "target_rows": 90,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "projects",
+      "source_rows": 81,
+      "target_rows": 81,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "publication_approvals",
+      "source_rows": 0,
+      "target_rows": 0,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "publication_assessments",
+      "source_rows": 2,
+      "target_rows": 2,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "publication_calibration_reviews",
+      "source_rows": 202,
+      "target_rows": 202,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "publication_followups",
+      "source_rows": 0,
+      "target_rows": 0,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "publication_gate_results",
+      "source_rows": 16,
+      "target_rows": 16,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "publication_issues",
+      "source_rows": 3,
+      "target_rows": 3,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "publication_preflights",
+      "source_rows": 2,
+      "target_rows": 2,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "quality_campaigns",
+      "source_rows": 10,
+      "target_rows": 10,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "quality_evaluations",
+      "source_rows": 103,
+      "target_rows": 103,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "quality_reviews",
+      "source_rows": 2,
+      "target_rows": 2,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "recommendations",
+      "source_rows": 4,
+      "target_rows": 4,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "repositories",
+      "source_rows": 166,
+      "target_rows": 166,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "research_chat_messages",
+      "source_rows": 0,
+      "target_rows": 0,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "research_chat_sessions",
+      "source_rows": 0,
+      "target_rows": 0,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "script_batch_items",
+      "source_rows": 0,
+      "target_rows": 0,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "script_batches",
+      "source_rows": 0,
+      "target_rows": 0,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "script_candidates",
+      "source_rows": 2,
+      "target_rows": 2,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "script_events",
+      "source_rows": 131,
+      "target_rows": 131,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "script_links",
+      "source_rows": 12,
+      "target_rows": 12,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "script_migrations",
+      "source_rows": 1,
+      "target_rows": 1,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "script_records",
+      "source_rows": 67,
+      "target_rows": 67,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "script_reviews",
+      "source_rows": 0,
+      "target_rows": 0,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "script_tags",
+      "source_rows": 0,
+      "target_rows": 0,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "settings",
+      "source_rows": 17,
+      "target_rows": 17,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "software_charters",
+      "source_rows": 0,
+      "target_rows": 0,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "software_eval_reviews",
+      "source_rows": 0,
+      "target_rows": 0,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "software_evaluations",
+      "source_rows": 0,
+      "target_rows": 0,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "software_finding_reviews",
+      "source_rows": 0,
+      "target_rows": 0,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "software_findings",
+      "source_rows": 0,
+      "target_rows": 0,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "software_prompts",
+      "source_rows": 0,
+      "target_rows": 0,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "tasks",
+      "source_rows": 0,
+      "target_rows": 0,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "technical_claim_links",
+      "source_rows": 0,
+      "target_rows": 0,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "technical_claims",
+      "source_rows": 1251,
+      "target_rows": 1251,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "technical_evidence",
+      "source_rows": 33,
+      "target_rows": 33,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "technical_evidence_requirements",
+      "source_rows": 475,
+      "target_rows": 475,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "technical_extraction_coverage",
+      "source_rows": 197,
+      "target_rows": 197,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "technical_extraction_runs",
+      "source_rows": 74,
+      "target_rows": 74,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "technical_gaps",
+      "source_rows": 471,
+      "target_rows": 471,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "technical_objective_claims",
+      "source_rows": 9,
+      "target_rows": 9,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "technical_objectives",
+      "source_rows": 3,
+      "target_rows": 3,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "technical_regions",
+      "source_rows": 86,
+      "target_rows": 86,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "technical_requirement_links",
+      "source_rows": 43,
+      "target_rows": 43,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "technical_verifications",
+      "source_rows": 61,
+      "target_rows": 61,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "website_post_evaluations",
+      "source_rows": 2,
+      "target_rows": 2,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "website_post_reviews",
+      "source_rows": 0,
+      "target_rows": 0,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "website_post_writer_observations",
+      "source_rows": 0,
+      "target_rows": 0,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "work_checkpoints",
+      "source_rows": 1,
+      "target_rows": 1,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    },
+    {
+      "table": "workflow_events",
+      "source_rows": 181,
+      "target_rows": 181,
+      "pk_match": true,
+      "content_match": true,
+      "status": "OK"
+    }
+  ],
+  "ok": true,
+  "source_total": 146426,
+  "target_total": 146426,
+  "backup": "data/backups/mission_control-pre-pg-migration-FINAL-20261124T090600Z.db"
+}

@@ -31,6 +31,7 @@ def health(request: Request) -> HealthRead:
         db_state = "ok"
     except Exception:
         db_state = "error"
+        logger.exception("Database health check failed")
     settings = request.app.state.settings
     ai_enabled = False
     try:
@@ -50,6 +51,34 @@ def health(request: Request) -> HealthRead:
         version = get_schema_version(database)
     except Exception:
         version = 0
+    backend = getattr(database, "backend", "unknown")
+    try:
+        pool = database.engine.pool
+        pool_status = {
+            "size": pool.size() if hasattr(pool, "size") else None,
+            "checked_out": pool.checkedout() if hasattr(pool, "checkedout") else None,
+            "overflow": pool.overflow() if hasattr(pool, "overflow") else None,
+        }
+    except Exception:
+        pool_status = {}
+    try:
+        with database.engine.connect() as connection:
+            if backend == "postgresql":
+                pg_version = connection.execute(text("SHOW server_version")).scalar()
+            else:
+                pg_version = connection.execute(text("select sqlite_version()")).scalar()
+    except Exception:
+        pg_version = None
+    extra: dict[str, object] = {
+        "database_backend": backend,
+        "database_url_redacted": settings.redacted_database_url,
+        "pool": pool_status,
+    }
+    if pg_version:
+        extra["server_version"] = str(pg_version)
+    logger.debug(
+        "Health check backend=%s schema=%s db=%s", backend, version, db_state
+    )
     return HealthRead(
         status="ok" if db_state == "ok" else "degraded",
         version=__version__,
@@ -58,6 +87,57 @@ def health(request: Request) -> HealthRead:
         ai_enabled=ai_enabled,
         monitor_enabled=settings.start_monitor,
     )
+
+
+@router.get("/diagnostics/database")
+def database_diagnostics(request: Request) -> dict[str, object]:
+    """Narrowly scoped database diagnostics (no credentials, no records)."""
+    database = request.app.state.database
+    settings = request.app.state.settings
+    backend = getattr(database, "backend", "unknown")
+    try:
+        with database.session() as session:
+            session.execute(text("SELECT 1"))
+        connectivity: object = "ok"
+        last_error: object = None
+    except Exception as exc:
+        connectivity = "error"
+        last_error = f"{exc.__class__.__name__}"
+    try:
+        version = get_schema_version(database)
+    except Exception:
+        version = -1
+    try:
+        pool = database.engine.pool
+        pool_status: dict[str, object] = {
+            "size": pool.size() if hasattr(pool, "size") else None,
+            "checked_out": pool.checkedout() if hasattr(pool, "checkedout") else None,
+            "overflow": pool.overflow() if hasattr(pool, "overflow") else None,
+        }
+    except Exception:
+        pool_status = {}
+    server_version: object = None
+    db_name: object = None
+    try:
+        with database.engine.connect() as connection:
+            if backend == "postgresql":
+                server_version = connection.execute(text("SHOW server_version")).scalar()
+                db_name = connection.execute(text("SELECT current_database()")).scalar()
+            else:
+                server_version = connection.execute(text("select sqlite_version()")).scalar()
+                db_name = "sqlite"
+    except Exception as exc:
+        last_error = f"{exc.__class__.__name__}"
+    return {
+        "backend": backend,
+        "connectivity": connectivity,
+        "database": db_name,
+        "server_version": server_version,
+        "schema_version": version,
+        "pool": pool_status,
+        "url_redacted": settings.redacted_database_url,
+        "last_error_category": last_error,
+    }
 
 
 @router.post("/restart", status_code=202, response_model=dict[str, Any])

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import os
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException, Request
@@ -49,7 +50,7 @@ from mission_control.api import (
     writer as writer_api,
     writer_evaluations as writer_evaluations_api,
 )
-from mission_control.config import RuntimeSettings
+from mission_control.config import RuntimeSettings, is_postgres_url
 from mission_control.core.errors import MissionControlError
 from mission_control.core.logging import configure_logging
 from mission_control.core.paths import is_within
@@ -131,7 +132,44 @@ def create_app(runtime: RuntimeSettings | None = None) -> FastAPI:
     @asynccontextmanager
     async def lifespan(app: FastAPI):
         database = Database(settings)
-        apply_migrations(database)
+        try:
+            database.health_check()
+        except Exception as exc:
+            logger.error(
+                "Operational database unreachable (backend=%s url=%s): %s",
+                database.backend,
+                settings.redacted_database_url,
+                exc,
+            )
+            raise RuntimeError(
+                "Mission Control could not connect to the operational database. "
+                "Verify MC_DSN points at the live PostgreSQL instance."
+            ) from exc
+        if not is_postgres_url(database.database_url) and os.environ.get("PYTEST_CURRENT_TEST") is None:
+            # Production guard: never silently run the live service against a
+            # local SQLite file once PostgreSQL is authoritative. Tests run
+            # with tmp data_dirs under pytest and bypass this guard; the
+            # migration utility opens SQLite explicitly as a read-only source.
+            allow_sqlite = os.environ.get("MISSION_CONTROL_ALLOW_SQLITE") == "1"
+            if not allow_sqlite:
+                raise RuntimeError(
+                    "MC_DSN is required for Mission Control operation. "
+                    "Set MC_DSN to the PostgreSQL connection string; "
+                    "SQLite is retained only for migration source and isolated tests."
+                )
+        try:
+            schema_applied = apply_migrations(database)
+        except Exception:
+            logger.exception(
+                "Database migration failed (backend=%s)", database.backend
+            )
+            raise
+        logger.info(
+            "Database ready backend=%s schema_applied=%s url=%s",
+            database.backend,
+            schema_applied,
+            settings.redacted_database_url,
+        )
         with database.session() as session:
             seed_defaults(session, settings)
         try:

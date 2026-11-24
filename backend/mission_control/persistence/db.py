@@ -1,4 +1,11 @@
-"""Database engine and session construction."""
+"""Database engine and session construction.
+
+Operational database is PostgreSQL, configured exclusively through ``MC_DSN``
+(see :mod:`mission_control.config`). SQLite remains available only for
+explicitly isolated unit tests (temporary directories) and for the one-shot
+legacy migration utility, which opens the old file read-only. There is no
+silent SQLite fallback in normal operation.
+"""
 
 from __future__ import annotations
 
@@ -6,11 +13,15 @@ from collections.abc import Iterator
 from contextlib import contextmanager
 from datetime import datetime, timezone
 
-from sqlalchemy import create_engine, event
+from sqlalchemy import create_engine, event, text
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session, sessionmaker
 
-from mission_control.config import RuntimeSettings
+from mission_control.config import (
+    RuntimeSettings,
+    is_postgres_url,
+    normalize_database_url,
+)
 
 
 def utcnow() -> datetime:
@@ -32,20 +43,41 @@ class Database:
         self.settings = settings
         self.busy_timeout_ms = max(0, int(busy_timeout_ms))
         settings.ensure_directories()
-        if settings.database_url.startswith("sqlite"):
-            connect_args = {"check_same_thread": False, "timeout": 30.0}
+        url = normalize_database_url(settings.database_url)
+        self.database_url = url
+        self.backend = "postgresql" if is_postgres_url(url) else "sqlite"
+        if self.backend == "postgresql":
+            # Modest pool for a local application: health monitor, API
+            # workers and background jobs share a handful of connections.
+            # pool_pre_ping drops stale connections after PG restarts.
+            self.engine: Engine = create_engine(
+                url,
+                future=True,
+                pool_pre_ping=True,
+                pool_size=5,
+                max_overflow=5,
+                pool_timeout=30,
+            )
         else:
-            connect_args = {}
-        self.engine: Engine = create_engine(
-            settings.database_url,
-            connect_args=connect_args,
-            future=True,
-            pool_pre_ping=True,
-        )
-        if settings.database_url.startswith("sqlite"):
+            connect_args = {"check_same_thread": False, "timeout": 30.0}
+            self.engine: Engine = create_engine(
+                url,
+                connect_args=connect_args,
+                future=True,
+                pool_pre_ping=True,
+            )
             timeout_ms = self.busy_timeout_ms
             event.listen(self.engine, "connect", lambda c, r: _enable_sqlite_pragmas(c, r, timeout_ms))
         self.session_factory = sessionmaker(self.engine, expire_on_commit=False, future=True)
+
+    @property
+    def is_postgres(self) -> bool:
+        return self.backend == "postgresql"
+
+    def health_check(self) -> None:
+        """Raise if the database is unreachable. Used by startup and diagnostics."""
+        with self.engine.connect() as connection:
+            connection.execute(text("SELECT 1"))
 
     @contextmanager
     def session(self) -> Iterator[Session]:

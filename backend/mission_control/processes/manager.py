@@ -881,6 +881,32 @@ class ProcessManager:
         text = f"{exc.__class__.__name__}: {exc}".casefold()
         return "database is locked" in text or "database table is locked" in text
 
+    @staticmethod
+    def _is_transient_pg_error(exc: BaseException) -> bool:
+        """True for bounded PG concurrency failures safe to report as busy.
+
+        Deadlocks (40P01), serialization failures (40001) and connection
+        drops during a health-observation write describe Mission Control's own
+        database, never the monitored endpoint. The caller converts these to
+        a Conflict so the monitor loop logs and continues; no automatic retry
+        is performed here.
+        """
+        text = f"{exc.__class__.__name__}: {exc}".casefold()
+        markers = (
+            "deadlock",
+            "serialization",
+            "40001",
+            "40p01",
+            "connection refused",
+            "connection reset",
+            "connection timed out",
+            "server closed the connection",
+            "terminating connection",
+            "too many clients",
+            "remaining connection slots",
+        )
+        return any(marker in text for marker in markers)
+
     def _health_snapshot(
         self, application_id: str, definition: LaunchDefinition | None
     ) -> tuple[str, SimpleNamespace | None]:
@@ -970,7 +996,7 @@ class ProcessManager:
                 self._persist_health_observation, application_id, app_name, snapshot, result
             )
         except OperationalError as exc:
-            if self._is_database_locked_error(exc):
+            if self._is_database_locked_error(exc) or self._is_transient_pg_error(exc):
                 raise Conflict(
                     "Health observation could not be persisted because the database is busy",
                     detail=(

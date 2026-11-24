@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from sqlalchemy import Boolean, Float, ForeignKey, Integer, String, Text, UniqueConstraint
+from sqlalchemy import BigInteger, Boolean, Float, ForeignKey, Integer, String, Text, UniqueConstraint
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy.types import JSON
 
@@ -91,7 +91,9 @@ class ProcessInstance(Base):
     status: Mapped[str] = mapped_column(String, nullable=False)
     started_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
     ended_at: Mapped[str | None] = mapped_column(String)
-    exit_code: Mapped[int | None] = mapped_column(Integer)
+    # Windows reports some terminations as unsigned 32-bit codes (up to
+    # 4294967295), which exceeds PG INT4: use BIGINT.
+    exit_code: Mapped[int | None] = mapped_column(BigInteger)
     log_path: Mapped[str | None] = mapped_column(Text)
     working_directory: Mapped[str | None] = mapped_column(Text)
     command_preview: Mapped[str | None] = mapped_column(Text)
@@ -1428,8 +1430,9 @@ class ScriptRecord(Base):
     script_number: Mapped[int | None] = mapped_column(Integer)
     title: Mapped[str] = mapped_column(String, default="", nullable=False)
     content_sha256: Mapped[str] = mapped_column(String, default="", nullable=False)
-    file_size: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
-    mtime_ns: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    # Nanosecond mtimes (~1.8e18) and large files exceed INT4: use BIGINT.
+    file_size: Mapped[int] = mapped_column(BigInteger, default=0, nullable=False)
+    mtime_ns: Mapped[int] = mapped_column(BigInteger, default=0, nullable=False)
     status: Mapped[str] = mapped_column(String, default="discovered", nullable=False)
     archived: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     missing: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
