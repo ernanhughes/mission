@@ -167,10 +167,16 @@ Existing suites (from `backend/`):
   count is 1, not 2. Neither the test nor `cultivation/sources.py` is touched
   by this change (no worktree modifications; introduced in commit `2341e03`),
   and none of the changed files (`processes/manager.py`,
-  `projects/service.py`, `persistence/db.py`) are in its import path. A second
-  pass over the remaining tests with that test deselected was launched to
-  confirm no other failures (log
-  `C:\Users\ernan\AppData\Local\Temp\opencode\full-suite-2.log`).
+  `projects/service.py`, `persistence/db.py`) are in its import path.
+  Follow-up: fixed in `test_mc_websites_cultivation.py` by pinning the test's
+  reference time to a mid-week Wednesday and passing it via
+  `blog_observation(..., now=now)` (the function already supports an explicit
+  reference time) — the full file now passes (19/19), making the suite
+  weekday-independent.
+- Full second pass (no `-x`, whole `tests/` tree): **858 passed, 2 skipped, 1
+  failed** in ~25 min, the single failure being the weekday flake above
+  (since fixed). Skips are environmental (Writer CLI path unconfigured, Docker
+  daemon unavailable).
 
 ## 5. Before / after
 

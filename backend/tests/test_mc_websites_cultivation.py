@@ -294,13 +294,16 @@ def test_blog_observation_award_and_recent_ordering(tmp_path: Path) -> None:
     from mission_control.cultivation.sources import blog_observation, scan_hugo_blog
 
     root = _blog_root(tmp_path)
-    now = datetime.now(timezone.utc)
+    # Frozen mid-week reference: relative now-1d/now-2d dates fall outside the
+    # calendar week when the suite runs on a Monday/Tuesday, so pin `now` to a
+    # Wednesday and pass it explicitly for a deterministic week window.
+    now = datetime(2026, 11, 18, 12, 0, tzinfo=timezone.utc)  # a Wednesday
     recent = (now - timedelta(days=1)).isoformat()
     older = (now - timedelta(days=2)).isoformat()
     _post(root / "newest.md", "Newest", date=recent)
     _post(root / "middle.md", "Middle", date=older)
     _post(root / "old.md", "Old", date="2024-05-01T10:00:00Z")
-    observed = blog_observation(scan_hugo_blog(root))
+    observed = blog_observation(scan_hugo_blog(root), now=now)
     assert observed["published"] == 3
     assert observed["this_week"] == 2
     assert observed["weekly_award"]["level"] == "silver"
