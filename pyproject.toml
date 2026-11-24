@@ -39,13 +39,16 @@ mission_control = ["persistence/*.sql"]
 
 [tool.pytest.ini_options]
 testpaths = ["backend/tests"]
-addopts = "-ra"
+addopts = "-ra -p aitest.pytest_plugin"
 timeout = 60
 markers = [
   "integration: exercises real local process execution",
   "long: wall-clock >2s; keep out of routine agent verification",
 ]
 
+aitest_enabled = true
+aitest_policy = "observe"
+aitest_hard_deadline_seconds = 300
 [tool.ruff]
 line-length = 100
 target-version = "py312"

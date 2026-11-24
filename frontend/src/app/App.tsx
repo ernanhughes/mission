@@ -14,6 +14,7 @@ import { CultivationPage } from "../pages/CultivationPage";
 import { ScriptsPage } from "../pages/ScriptsPage";
 import { SettingsPage } from "../pages/SettingsPage";
 import { InboxPage } from "../pages/InboxPage";
+import { TestsPage } from "../pages/TestsPage";
 import { SearchPage } from "../pages/SearchPage";
 import { IntegrationsPage } from "../pages/IntegrationsPage";
 import { IntegrationWorkspacePage } from "../pages/IntegrationWorkspacePage";
@@ -31,6 +32,7 @@ export function App() {
         <Route index element={<HomePage />} />
         <Route path="inbox" element={<InboxPage />} />
         <Route path="search" element={<SearchPage />} />
+        <Route path="tests" element={<TestsPage />} />
         <Route path="next" element={<IntegrationWorkspacePage key="next" appId="next" />} />
         <Route path="work" element={<IntegrationWorkspacePage key="work" appId="work" />} />
         <Route path="cocoder" element={<IntegrationWorkspacePage key="cocoder" appId="cocoder" />} />

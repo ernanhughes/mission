@@ -2132,3 +2132,86 @@ class SoftwarePrompt(Base):
     prompt: Mapped[str] = mapped_column(Text, default="", nullable=False)
     provenance: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict, nullable=False)
     created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+class AitestProject(Base):
+    """AITEST-02 R12: a pytest project registered for central testing visibility."""
+
+    __tablename__ = "aitest_projects"
+
+    project_id: Mapped[str] = mapped_column(String, primary_key=True)
+    name: Mapped[str] = mapped_column(String, default="", nullable=False)
+    root: Mapped[str] = mapped_column(String, default="", nullable=False)
+    remote_url: Mapped[str] = mapped_column(String, default="", nullable=False)
+    mc_project_id: Mapped[str] = mapped_column(String, default="", nullable=False)
+    integration_state: Mapped[str] = mapped_column(String, default="observation", nullable=False)
+    policy: Mapped[str] = mapped_column(String, default="observe", nullable=False)
+    aitest_version: Mapped[str] = mapped_column(String, default="", nullable=False)
+    last_receipt_id: Mapped[str] = mapped_column(String, default="", nullable=False)
+    last_status: Mapped[str] = mapped_column(String, default="", nullable=False)
+    last_seen_at: Mapped[str] = mapped_column(String, default="", nullable=False)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+    updated_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class AitestTest(Base):
+    """AITEST-02 R12: one inventoried test with measured classification."""
+
+    __tablename__ = "aitest_tests"
+
+    project_id: Mapped[str] = mapped_column(String, primary_key=True)
+    logical_id: Mapped[str] = mapped_column(String, primary_key=True)
+    relpath: Mapped[str] = mapped_column(String, default="", nullable=False)
+    class_name: Mapped[str] = mapped_column(String, default="", nullable=False)
+    func_name: Mapped[str] = mapped_column(String, default="", nullable=False)
+    duration_ms: Mapped[float] = mapped_column(Float, default=0, nullable=False)
+    band: Mapped[str] = mapped_column(String, default="UNASSESSED", nullable=False)
+    lifecycle: Mapped[str] = mapped_column(String, default="DISCOVERED", nullable=False)
+    last_outcome: Mapped[str] = mapped_column(String, default="", nullable=False)
+    last_seen_at: Mapped[str] = mapped_column(String, default="", nullable=False)
+
+
+class AitestReceipt(Base):
+    """AITEST-02 R12: execution receipts (partial runs never read as passes)."""
+
+    __tablename__ = "aitest_receipts"
+
+    execution_id: Mapped[str] = mapped_column(String, primary_key=True)
+    project_id: Mapped[str] = mapped_column(String, nullable=False)
+    snapshot_id: Mapped[str] = mapped_column(String, default="", nullable=False)
+    status: Mapped[str] = mapped_column(String, default="PENDING", nullable=False)
+    discovered: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    executed: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    passed: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    failed: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    skipped: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    quarantined: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    deferred: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    timed_out: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    unobserved: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    duration_ms: Mapped[float] = mapped_column(Float, default=0, nullable=False)
+    receipt_json: Mapped[str] = mapped_column(Text, default="{}", nullable=False)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class AitestIssue(Base):
+    """AITEST-02 R12/R15: unresolved testing problems (deduplicated by project+test+kind)."""
+
+    __tablename__ = "aitest_issues"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    project_id: Mapped[str] = mapped_column(String, nullable=False)
+    test_logical_id: Mapped[str] = mapped_column(String, default="", nullable=False)
+    kind: Mapped[str] = mapped_column(String, default="UNKNOWN", nullable=False)
+    title: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    detail_json: Mapped[str] = mapped_column(Text, default="{}", nullable=False)
+    status: Mapped[str] = mapped_column(String, default="open", nullable=False)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+    updated_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class AitestEventSeen(Base):
+    """AITEST-02 R12: idempotent event ingestion (exactly-once per event_id)."""
+
+    __tablename__ = "aitest_events_seen"
+
+    event_id: Mapped[str] = mapped_column(String, primary_key=True)
+    received_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)

@@ -43,6 +43,7 @@ from mission_control.api import (
     settings as settings_api,
     software_quality as software_quality_api,
     technical as technical_api,
+    testing as testing_api,
     website_posts as website_posts_api,
     websites as websites_api,
     worker_runtime as worker_runtime_api,
@@ -398,6 +399,7 @@ def create_app(runtime: RuntimeSettings | None = None) -> FastAPI:
     app.include_router(writer_evaluations_api.router)
     app.include_router(quality_api.router)
     app.include_router(technical_api.router)
+    app.include_router(testing_api.router)
     app.include_router(publication_api.router)
     app.include_router(pipeline_api.router)
     app.include_router(artifact_load_api.router)

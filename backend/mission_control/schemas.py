@@ -3891,3 +3891,86 @@ class CostSpikesRead(BaseModel):
 
 
 SoftwareEvaluationDetailRead.model_rebuild()
+
+
+# -------------------------------------------------- AITEST-02 testing schemas
+class AitestProjectRead(BaseModel):
+    project_id: str
+    name: str = ""
+    root: str = ""
+    remote_url: str = ""
+    mc_project_id: str = ""
+    integration_state: str = "observation"
+    policy: str = "observe"
+    aitest_version: str = ""
+    last_receipt_id: str = ""
+    last_status: str = ""
+    last_seen_at: str = ""
+
+
+class AitestTestRead(BaseModel):
+    project_id: str
+    logical_id: str
+    relpath: str = ""
+    class_name: str = ""
+    func_name: str = ""
+    duration_ms: float = 0
+    band: str = "UNASSESSED"
+    lifecycle: str = "DISCOVERED"
+    last_outcome: str = ""
+    last_seen_at: str = ""
+
+
+class AitestReceiptRead(BaseModel):
+    execution_id: str
+    project_id: str
+    snapshot_id: str = ""
+    status: str = "PENDING"
+    discovered: int = 0
+    executed: int = 0
+    passed: int = 0
+    failed: int = 0
+    skipped: int = 0
+    quarantined: int = 0
+    deferred: int = 0
+    timed_out: int = 0
+    unobserved: int = 0
+    duration_ms: float = 0
+    created_at: str = ""
+
+
+class AitestIssueRead(BaseModel):
+    id: int
+    project_id: str
+    test_logical_id: str = ""
+    kind: str = "UNKNOWN"
+    title: str = ""
+    status: str = "open"
+    created_at: str = ""
+    updated_at: str = ""
+
+
+class AitestSummaryRead(BaseModel):
+    projects: int = 0
+    total_tests: int = 0
+    assessed: int = 0
+    unassessed: int = 0
+    healthy: int = 0
+    failing: int = 0
+    quarantined: int = 0
+    deferred: int = 0
+    repair_needed: int = 0
+
+
+class AitestEventIngest(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
+    schema_version: str = "aitest.event.v1"
+    event_id: str
+    event_type: str
+    project_id: str
+    source_snapshot_id: str = ""
+    occurred_at: float = 0
+    producer_version: str = ""
+    policy_version: str = ""
+    payload: dict[str, Any] = Field(default_factory=dict)

@@ -27,6 +27,7 @@ import { OverviewTab } from "../features/project/OverviewTab";
 import { BookTab } from "../features/project/BookTab";
 import { WorkTab } from "../features/project/WorkTab";
 import { ActivityTab } from "../features/project/ActivityTab";
+import { TestsTab } from "../features/project/TestsTab";
 import {
   ActionButton,
   EmptyState,
@@ -3122,6 +3123,12 @@ export function ProjectPage() {
         {tab === "activity" ? (
           <section role="tabpanel" id="panel-activity" aria-labelledby="tab-activity">
             <ActivityTab data={data} />
+          </section>
+        ) : null}
+
+        {tab === "tests" ? (
+          <section role="tabpanel" id="panel-tests" aria-labelledby="tab-tests">
+            <TestsTab mcProjectId={projectId} />
           </section>
         ) : null}
       </div>
