@@ -26,6 +26,7 @@ from mission_control.adapters.base import (
     ResourceSeed,
 )
 from mission_control.integrations.runner import run_tool
+from mission_control.publication.maintenance import MAINTENANCE_POLICY_VERSION
 
 CLI_SCHEMA = "writer.editing.cli.v1"
 SUMMARY_SCHEMA = "writer-editing-summary-v1"
@@ -33,6 +34,125 @@ REPORT_SCHEMA = "writer-editing-report-v1"
 RESOURCE_TYPE = "writer_editing_book"
 PROFILE = "technical-nonfiction-v1"
 _BOOK_ID = re.compile(r"^[a-z0-9][a-z0-9._-]{0,127}$")
+
+#: Receipt schema for the governed deterministic MRI observation (M3).
+#: This is Mission Control's execution record, not a Writer contract: it
+#: proves the operation ran with model usage disabled and where its
+#: artifacts landed. Current-ness is decided exclusively by the read-only
+#: projection, never by this receipt.
+MRI_OBSERVE_RECEIPT_SCHEMA = "mc.mri_observe_chapter.v1"
+
+#: Receipt schema for the automatic deterministic Writer post observation
+#: (BLOG-01 D5). Same contract as the governed M3 receipt: proves the
+#: operation ran with model usage disabled. Current-ness is decided
+#: exclusively by the read-only projection, never by this receipt.
+POST_OBSERVE_RECEIPT_SCHEMA = "mc.writer_observe_post.v1"
+
+#: Hard bound for automatic in-process post analysis. Larger files are
+#: refused with an explicit reason instead of consuming unbounded resources.
+BLOG_AUTO_MAX_BYTES = 2_000_000
+
+
+def _require_identity(value: Any, name: str) -> str:
+    text = str(value or "").strip()
+    if not text:
+        raise ValueError(f"{name} is required")
+    if text.startswith("/") or text.startswith("\\") or ".." in Path(text).parts:
+        raise ValueError(f"{name} must be a site-relative post path")
+    if any(not part for part in Path(text).parts):
+        raise ValueError(f"{name} must not contain empty segments")
+    return text
+
+
+def _validate_post_observe(parameters: dict[str, Any]) -> tuple[str, str, str]:
+    """Prerequisite checks before an automatic post observation may run."""
+    from mission_control.websites import maintenance as _blog_maintenance
+
+    policy = str(parameters.get("policy_version") or "").strip()
+    if policy != _blog_maintenance.BLOG_AUTO_POLICY_VERSION:
+        raise ValueError(
+            "policy_version must name the current automatic-maintenance "
+            f"policy ({_blog_maintenance.BLOG_AUTO_POLICY_VERSION})."
+        )
+    website_id = str(parameters.get("website_id") or "").strip()
+    if not website_id:
+        raise ValueError("website_id is required")
+    identity = _require_identity(parameters.get("article_identity"), "article_identity")
+    _require_existing_dir(parameters.get("blog_dir"), "blog_dir")
+    return website_id, identity, str(parameters.get("blog_dir"))
+
+
+#: Pinned deterministic flags. Every flag that could enable model, embedding,
+#: or semantic-adjudication spend is fixed here; adding spend requires a new
+#: action, never a parameter.
+_MRI_DETERMINISTIC_FLAGS = [
+    "--observer",
+    "deterministic",
+    "--quality-model",
+    "none",
+    "--semantic-model",
+    "none",
+    "--beat-mode",
+    "deterministic",
+]
+_MRI_PROFILES = ("technical", "fiction")
+
+
+def _mri_observe_argv(
+    chapter_file: str, output_dir: str, profile: str, metadata_file: str | None
+) -> list[str]:
+    """Exact Writer CLI argv for a deterministic chapter observation."""
+    argv = ["mri", "chapter", chapter_file, "--format", "json"]
+    argv.extend(_MRI_DETERMINISTIC_FLAGS)
+    argv.extend(["--profile", profile])
+    if metadata_file:
+        argv.extend(["--metadata", metadata_file])
+    argv.extend(["--output-dir", output_dir])
+    return argv
+
+
+def _require_existing_file(value: Any, name: str, suffixes: tuple[str, ...]) -> Path:
+    text = str(value or "").strip()
+    if not text:
+        raise ValueError(f"{name} is required")
+    path = Path(text)
+    if not path.is_absolute():
+        raise ValueError(f"{name} must be an absolute path")
+    if path.suffix.casefold() not in suffixes:
+        raise ValueError(f"{name} must end in {', '.join(suffixes)}")
+    try:
+        if not path.is_file():
+            raise ValueError(f"{name} does not exist: {path}")
+    except OSError as exc:
+        raise ValueError(f"{name} cannot be accessed: {exc}") from exc
+    return path
+
+
+def _require_existing_dir(value: Any, name: str) -> Path:
+    text = str(value or "").strip()
+    if not text:
+        raise ValueError(f"{name} is required")
+    path = Path(text)
+    if not path.is_absolute():
+        raise ValueError(f"{name} must be an absolute path")
+    try:
+        if not path.is_dir():
+            raise ValueError(f"{name} does not exist: {path}")
+    except OSError as exc:
+        raise ValueError(f"{name} cannot be accessed: {exc}") from exc
+    return path
+
+
+def _validate_mri_observe_chapter(parameters: dict[str, Any]) -> None:
+    """Prerequisite checks before a deterministic observation may be queued."""
+    profile = str(parameters.get("profile") or "technical")
+    if profile not in _MRI_PROFILES:
+        raise ValueError(f"Unsupported MRI profile: {profile}")
+    _require_existing_file(parameters.get("chapter_file"), "chapter_file", (".md",))
+    metadata = parameters.get("metadata_file")
+    if metadata is not None and str(metadata).strip():
+        _require_existing_file(metadata, "metadata_file", (".yaml", ".yml"))
+    _require_existing_dir(parameters.get("output_dir"), "output_dir")
 
 
 def _book_summary(book: dict[str, Any]) -> str:
@@ -134,6 +254,103 @@ class WriterAdapter(Adapter):
             },
         ),
         ActionSpec(
+            id="mri_observe_chapter",
+            title="Run deterministic MRI observation for one chapter file",
+            description=(
+                "Runs Writer's MRI chapter command with model usage disabled "
+                "by construction (--observer deterministic --quality-model none "
+                "--semantic-model none --beat-mode deterministic). Writes "
+                "<stem>.mri.{json,md} under output_dir only; never modifies "
+                "manuscripts. The persisted execution receipt records "
+                "provenance only: whether the analysis is current is decided "
+                "exclusively by the read-only projection comparing the stored "
+                "report against the live chapter, never by this receipt."
+            ),
+            risk="bounded_local_computation",
+            capability="execute_action",
+            approval_required=True,
+            side_effect="local_generated_artifacts",
+            parameters_schema={
+                "type": "object",
+                "properties": {
+                    "chapter_file": {"type": "string"},
+                    "metadata_file": {"type": "string"},
+                    "output_dir": {"type": "string"},
+                    "profile": {
+                        "type": "string",
+                        "enum": ["technical", "fiction"],
+                        "default": "technical",
+                    },
+                },
+                "required": ["chapter_file", "output_dir"],
+                "additionalProperties": False,
+            },
+        ),
+        ActionSpec(
+            id="mri_observe_chapter_auto",
+            title="Automatic deterministic MRI observation for one chapter file",
+            description=(
+                "Standing-policy twin of mri_observe_chapter: identical "
+                "deterministic flags and receipt contract, but authorized "
+                "once by the automatic-maintenance policy instead of per "
+                "run. Runs only when the maintenance scheduler dispatches "
+                "it for eligible work; every run persists a full receipt row."
+            ),
+            risk="bounded_local_computation",
+            capability="execute_action",
+            approval_required=False,
+            side_effect="local_generated_artifacts",
+            parameters_schema={
+                "type": "object",
+                "properties": {
+                    "chapter_file": {"type": "string"},
+                    "metadata_file": {"type": "string"},
+                    "output_dir": {"type": "string"},
+                    "profile": {
+                        "type": "string",
+                        "enum": ["technical", "fiction"],
+                        "default": "technical",
+                    },
+                    "policy_version": {"type": "string"},
+                },
+                "required": ["chapter_file", "output_dir", "policy_version"],
+                "additionalProperties": False,
+            },
+        ),
+        ActionSpec(
+            id="writer_observe_post_auto",
+            title="Automatic deterministic Writer observation for one blog post",
+            description=(
+                "Runs Writer's deterministic artifact detector in-process "
+                "against one post's live body bytes (no models, no writes, "
+                "no manuscripts modified). Authorized once by the "
+                "automatic-maintenance policy instead of per run; runs only "
+                "when the blog maintenance scheduler dispatches it for "
+                "eligible work. The persisted receipt records provenance "
+                "only: current-ness is decided by the read-only projection."
+            ),
+            risk="bounded_local_computation",
+            capability="execute_action",
+            approval_required=False,
+            side_effect="local_generated_artifacts",
+            parameters_schema={
+                "type": "object",
+                "properties": {
+                    "website_id": {"type": "string"},
+                    "article_identity": {"type": "string"},
+                    "blog_dir": {"type": "string"},
+                    "policy_version": {"type": "string"},
+                },
+                "required": [
+                    "website_id",
+                    "article_identity",
+                    "blog_dir",
+                    "policy_version",
+                ],
+                "additionalProperties": False,
+            },
+        ),
+        ActionSpec(
             id="book_campaign_create",
             title="Create a book improvement campaign",
             description=(
@@ -149,9 +366,11 @@ class WriterAdapter(Adapter):
                 "properties": {
                     "book_root": {"type": "string"},
                     "book_id": {"type": "string"},
-                    "mode": {"type": "string", "enum": ["DISCOVER", "ASSESS", "PLAN",
-                                                        "IMPROVE_CANDIDATES", "REVIEW"],
-                             "default": "PLAN"},
+                    "mode": {
+                        "type": "string",
+                        "enum": ["DISCOVER", "ASSESS", "PLAN", "IMPROVE_CANDIDATES", "REVIEW"],
+                        "default": "PLAN",
+                    },
                 },
                 "required": ["book_root"],
                 "additionalProperties": True,
@@ -194,9 +413,11 @@ class WriterAdapter(Adapter):
                 "properties": {
                     "campaign_id": {"type": "string"},
                     "book_root": {"type": "string"},
-                    "selective": {"type": "string",
-                                  "enum": ["all", "new", "eligible", "author", "mixed"],
-                                  "default": "all"},
+                    "selective": {
+                        "type": "string",
+                        "enum": ["all", "new", "eligible", "author", "mixed"],
+                        "default": "all",
+                    },
                 },
                 "required": ["campaign_id", "book_root"],
                 "additionalProperties": True,
@@ -430,17 +651,43 @@ class WriterAdapter(Adapter):
             if profile != PROFILE:
                 raise ValueError(f"Unsupported Writer editing profile: {profile}")
             return
+        if action_id == "mri_observe_chapter":
+            _validate_mri_observe_chapter(parameters)
+            return
+        if action_id == "mri_observe_chapter_auto":
+            policy = str(parameters.get("policy_version") or "").strip()
+            if policy != MAINTENANCE_POLICY_VERSION:
+                raise ValueError(
+                    "policy_version must name the current automatic-maintenance "
+                    f"policy ({MAINTENANCE_POLICY_VERSION})."
+                )
+            _validate_mri_observe_chapter(parameters)
+            return
+        if action_id == "writer_observe_post_auto":
+            _validate_post_observe(parameters)
+            return
         if action_id in {
-            "book_campaign_create", "book_campaign_manifest", "book_campaign_plan",
-            "book_campaign_run_chunk", "book_campaign_pause", "book_campaign_resume",
-            "book_campaign_cancel", "book_campaign_status",
+            "book_campaign_create",
+            "book_campaign_manifest",
+            "book_campaign_plan",
+            "book_campaign_run_chunk",
+            "book_campaign_pause",
+            "book_campaign_resume",
+            "book_campaign_cancel",
+            "book_campaign_status",
             "book_strategy_experiment_run",
         }:
-            if action_id in {"book_campaign_manifest", "book_campaign_plan"} and not parameters.get("campaign_id"):
+            if action_id in {"book_campaign_manifest", "book_campaign_plan"} and not parameters.get(
+                "campaign_id"
+            ):
                 raise ValueError(f"{action_id} requires campaign_id")
-            if action_id in {"book_campaign_run_chunk", "book_campaign_pause",
-                             "book_campaign_resume", "book_campaign_cancel",
-                             "book_campaign_status"} and not parameters.get("run_id"):
+            if action_id in {
+                "book_campaign_run_chunk",
+                "book_campaign_pause",
+                "book_campaign_resume",
+                "book_campaign_cancel",
+                "book_campaign_status",
+            } and not parameters.get("run_id"):
                 raise ValueError(f"{action_id} requires run_id")
             if action_id == "book_strategy_experiment_run":
                 if not parameters.get("experiment_id"):
@@ -455,51 +702,80 @@ class WriterAdapter(Adapter):
     def _campaign_args(self, action_id: str, parameters: dict[str, Any]) -> list[str]:
         book_root = str(parameters.get("book_root") or "")
         if action_id == "book_campaign_create":
-            args = ["book-campaign", "create", "--book-root", book_root,
-                    "--mode", str(parameters.get("mode") or "PLAN")]
+            args = [
+                "book-campaign",
+                "create",
+                "--book-root",
+                book_root,
+                "--mode",
+                str(parameters.get("mode") or "PLAN"),
+            ]
             if parameters.get("book_id"):
                 args += ["--book-id", str(parameters["book_id"])]
-            for key, flag in (("max_chapters", "--max-chapters"),
-                              ("max_total_opportunities", "--max-total-opportunities"),
-                              ("max_attempts_per_opportunity", "--max-attempts"),
-                              ("max_total_candidates", "--max-total-candidates"),
-                              ("max_model_calls", "--max-model-calls")):
+            for key, flag in (
+                ("max_chapters", "--max-chapters"),
+                ("max_total_opportunities", "--max-total-opportunities"),
+                ("max_attempts_per_opportunity", "--max-attempts"),
+                ("max_total_candidates", "--max-total-candidates"),
+                ("max_model_calls", "--max-model-calls"),
+            ):
                 if parameters.get(key) is not None:
                     args += [flag, str(parameters[key])]
             return args
         if action_id == "book_campaign_manifest":
-            return ["book-campaign", "manifest", str(parameters["campaign_id"]),
-                    "--book-root", book_root]
+            return [
+                "book-campaign",
+                "manifest",
+                str(parameters["campaign_id"]),
+                "--book-root",
+                book_root,
+            ]
         if action_id == "book_campaign_plan":
-            args = ["book-campaign", "plan", str(parameters["campaign_id"]),
-                    "--book-root", book_root]
+            args = [
+                "book-campaign",
+                "plan",
+                str(parameters["campaign_id"]),
+                "--book-root",
+                book_root,
+            ]
             selective = str(parameters.get("selective", "all") or "all")
             if selective not in ("all", "new", "eligible", "author", "mixed"):
-                raise ValueError(f"book_campaign_plan requires selective in "
-                                 "all|new|eligible|author|mixed")
+                raise ValueError(
+                    "book_campaign_plan requires selective in all|new|eligible|author|mixed"
+                )
             if selective != "all":
                 args += ["--selective", selective]
             return args
         if action_id == "book_campaign_run_chunk":
-            return ["book-campaign", "run", str(parameters["run_id"]),
-                    "--book-root", book_root,
-                    "--max-wall-seconds", str(parameters.get("max_wall_seconds", 240))]
+            return [
+                "book-campaign",
+                "run",
+                str(parameters["run_id"]),
+                "--book-root",
+                book_root,
+                "--max-wall-seconds",
+                str(parameters.get("max_wall_seconds", 240)),
+            ]
         if action_id == "book_campaign_pause":
-            return ["book-campaign", "pause", str(parameters["run_id"]),
-                    "--book-root", book_root]
+            return ["book-campaign", "pause", str(parameters["run_id"]), "--book-root", book_root]
         if action_id == "book_campaign_resume":
-            return ["book-campaign", "resume", str(parameters["run_id"]),
-                    "--book-root", book_root]
+            return ["book-campaign", "resume", str(parameters["run_id"]), "--book-root", book_root]
         if action_id == "book_campaign_cancel":
-            return ["book-campaign", "cancel", str(parameters["run_id"]),
-                    "--book-root", book_root]
+            return ["book-campaign", "cancel", str(parameters["run_id"]), "--book-root", book_root]
         if action_id == "book_campaign_status":
-            return ["book-campaign", "status", str(parameters["run_id"]),
-                    "--book-root", book_root]
+            return ["book-campaign", "status", str(parameters["run_id"]), "--book-root", book_root]
         if action_id == "book_strategy_experiment_run":
-            return ["strategy-evolution", "run-experiment", str(parameters["experiment_id"]),
-                    "--arm", str(parameters["arm"]), "--book-root", book_root,
-                    "--max-wall-seconds", str(parameters.get("max_wall_seconds", 900))]
+            return [
+                "strategy-evolution",
+                "run-experiment",
+                str(parameters["experiment_id"]),
+                "--arm",
+                str(parameters["arm"]),
+                "--book-root",
+                book_root,
+                "--max-wall-seconds",
+                str(parameters.get("max_wall_seconds", 900)),
+            ]
         raise ValueError(f"Unsupported Writer action: {action_id}")
 
     @staticmethod
@@ -515,6 +791,10 @@ class WriterAdapter(Adapter):
     ) -> ActionResult:
         if action_id == "audit_registered_book":
             return await self._execute_scoped_audit(action_id, parameters, context)
+        if action_id in ("mri_observe_chapter", "mri_observe_chapter_auto"):
+            return await self._execute_mri_observe_chapter(action_id, parameters, context)
+        if action_id == "writer_observe_post_auto":
+            return await self._execute_post_observe(action_id, parameters, context)
         if action_id.startswith(("book_campaign_", "book_strategy_")):
             return await self._execute_campaign_action(action_id, parameters, context)
         if action_id != "audit_registered_books":
@@ -649,14 +929,12 @@ class WriterAdapter(Adapter):
                 result={"stderr": (result.stderr or "")[-2000:]},
                 exit_code=result.exit_code,
                 error=(
-                    "Writer scoped audit failed or did not return the editing "
-                    "report contract."
+                    "Writer scoped audit failed or did not return the editing report contract."
                     if result.exit_code == 0
                     else (result.stderr or result.stdout or "Writer audit failed")[-1200:]
                 ),
             )
-        findings = [f for f in (report.get("findings") or [])
-                    if isinstance(f, dict)]
+        findings = [f for f in (report.get("findings") or []) if isinstance(f, dict)]
         counts: dict[str, int] = {}
         for finding in findings:
             severity = str(finding.get("severity") or "unknown").casefold()
@@ -677,8 +955,7 @@ class WriterAdapter(Adapter):
                 "profile": report.get("profile"),
                 "canonical_fingerprint": report.get("canonical_fingerprint"),
                 "scope": report.get("scope"),
-                "source_revision": (report.get("book") or {}).get(
-                    "source_revision"),
+                "source_revision": (report.get("book") or {}).get("source_revision"),
                 "source_dirty": (report.get("book") or {}).get("source_dirty"),
                 "partial": bool(report.get("partial")),
                 "finding_counts": counts,
@@ -687,8 +964,290 @@ class WriterAdapter(Adapter):
                 "limitations": list(report.get("limitations") or [])[:10],
                 "generated_at": report.get("generated_at"),
             },
-            artifact_ref=(artifacts[0] if artifacts
-                          else "writer:editing"),
+            artifact_ref=(artifacts[0] if artifacts else "writer:editing"),
+            exit_code=0,
+        )
+
+    async def _execute_mri_observe_chapter(
+        self, action_id: str, parameters: dict[str, Any], context: ActionContext
+    ) -> ActionResult:
+        repo = (
+            Path(context.application_repository_path)
+            if context.application_repository_path
+            else None
+        )
+        if repo is None or not repo.is_dir():
+            return ActionResult(
+                status="failed",
+                error="Writer repository is not configured or unavailable.",
+            )
+        try:
+            self.validate_action(action_id, parameters, context)
+        except ValueError as exc:
+            return ActionResult(status="failed", error=str(exc))
+        chapter_file = str(parameters.get("chapter_file"))
+        metadata_file = parameters.get("metadata_file")
+        metadata_text = str(metadata_file).strip() if metadata_file else ""
+        output_dir = str(parameters.get("output_dir"))
+        profile = str(parameters.get("profile") or "technical")
+        target = AdapterTarget(
+            name="Writer",
+            application_id="writer",
+            repository_paths=[(str(repo), "primary")],
+            config=dict(context.config or {}),
+        )
+        executable, arguments, working_directory, timeout = self._command(
+            target,
+            repo,
+            _mri_observe_argv(
+                chapter_file,
+                output_dir,
+                profile,
+                metadata_text or None,
+            ),
+        )
+        try:
+            result = await run_tool(
+                executable,
+                arguments,
+                working_directory=working_directory,
+                env_names=list((context.config or {}).get("env_names") or []),
+                timeout_seconds=timeout,
+            )
+        except Exception as exc:
+            return ActionResult(
+                status="failed",
+                error=f"{exc.__class__.__name__}: {str(exc)[:800]}",
+            )
+        return self._parse_mri_observe_result(
+            result.stdout,
+            result.stderr,
+            result.exit_code,
+            chapter_file=chapter_file,
+            output_dir=output_dir,
+            metadata_file=metadata_text or None,
+            profile=profile,
+        )
+
+    @staticmethod
+    def _parse_mri_observe_result(
+        stdout: str | None,
+        stderr: str | None,
+        exit_code: int | None,
+        *,
+        chapter_file: str,
+        output_dir: str,
+        metadata_file: str | None = None,
+        profile: str = "technical",
+    ) -> ActionResult:
+        """Strict receipt parsing for a deterministic MRI chapter run.
+
+        Success requires: exit 0, a single JSON document, status
+        ``succeeded`` or ``succeeded_with_warnings`` (explicit deterministic
+        fallbacks are preserved, never laundered into a clean success), a
+        report carrying a non-empty ``snapshot_hash`` and a provenance block,
+        and the referenced JSON artifact on disk. Anything else is a failed
+        execution with diagnostics. The receipt records what ran; it never
+        declares the analysis current.
+        """
+        try:
+            payload = json.loads((stdout or "").strip())
+        except (TypeError, ValueError):
+            payload = None
+        report = (payload or {}).get("report") if isinstance(payload, dict) else None
+        provenance = (report or {}).get("provenance") if isinstance(report, dict) else {}
+        snapshot = (report or {}).get("snapshot_hash") if isinstance(report, dict) else None
+        status = str((payload or {}).get("status") or "") if isinstance(payload, dict) else ""
+        raw_warnings = provenance.get("warnings")
+        warnings = list(raw_warnings) if isinstance(raw_warnings, list) else []
+        json_path = (payload or {}).get("json_path") if isinstance(payload, dict) else None
+        md_path = (payload or {}).get("markdown_path") if isinstance(payload, dict) else None
+        artifact_ok = False
+        if isinstance(json_path, str) and json_path:
+            try:
+                artifact_ok = Path(json_path).is_file()
+            except OSError:
+                artifact_ok = False
+        valid = (
+            exit_code == 0
+            and isinstance(payload, dict)
+            and status in ("succeeded", "succeeded_with_warnings")
+            and isinstance(report, dict)
+            and isinstance(snapshot, str)
+            and bool(snapshot)
+            and isinstance(provenance, dict)
+            and artifact_ok
+        )
+        if not valid:
+            detail = ""
+            if isinstance(payload, dict):
+                detail = f" Writer status: {status}; report errors: {report.get('errors') if isinstance(report, dict) else 'absent'}."
+            return ActionResult(
+                status="failed",
+                output=(stdout or "")[-8000:],
+                result={"stderr": (stderr or "")[-2000:]},
+                exit_code=exit_code,
+                error=(
+                    "Writer deterministic MRI observation did not succeed:"
+                    + detail
+                    + " No artifact was accepted; the projection is unchanged."
+                    if exit_code == 0
+                    else (stderr or stdout or "Writer MRI observation failed")[-1200:]
+                ),
+            )
+        try:
+            live_text = Path(chapter_file).read_text(encoding="utf-8")
+        except (OSError, UnicodeDecodeError) as exc:
+            return ActionResult(
+                status="failed",
+                error=f"Report was written but the chapter cannot be re-read: {exc}.",
+            )
+        import hashlib as _hashlib
+
+        live_digest = _hashlib.sha256(live_text.encode("utf-8")).hexdigest()
+        clean = status == "succeeded"
+        from mission_control.publication.maintenance import build_auto_inputs
+
+        auto_inputs = build_auto_inputs(
+            source_digest=live_digest,
+            metadata_file=metadata_file,
+            profile=profile,
+        )
+        return ActionResult(
+            status="succeeded",
+            output=(
+                f"Deterministic MRI observation complete ({status}): "
+                f"{Path(chapter_file).name} -> {json_path} (snapshot {snapshot[:12]}…). "
+                + (
+                    "Warnings preserved in the receipt; review them before relying on the analysis. "
+                    if not clean
+                    else ""
+                )
+                + "Receipt only: current-ness is decided by the projection, not this run."
+            ),
+            result={
+                "schema_version": MRI_OBSERVE_RECEIPT_SCHEMA,
+                "status": status,
+                "clean": clean,
+                "warnings": list(warnings) if isinstance(warnings, list) else [],
+                "snapshot_hash": snapshot,
+                "live_source_digest": live_digest,
+                "receipt_digest_match": snapshot == live_digest,
+                "auto_inputs": auto_inputs,
+                "auto_fingerprint": auto_inputs["fingerprint"],
+                "json_path": json_path,
+                "md_path": md_path,
+                "chapter_file": chapter_file,
+                "output_dir": output_dir,
+                "provenance": {
+                    "observer_mode": provenance.get("observer_mode"),
+                    "observer_model": provenance.get("observer_model"),
+                    "quality_model": provenance.get("quality_model"),
+                    "beat_mode": provenance.get("beat_mode"),
+                    "semantic_model": provenance.get("semantic_model"),
+                    "embed_runtime_used": provenance.get("embed_runtime_used"),
+                    "fallback_used": provenance.get("fallback_used"),
+                    "alignment_version": provenance.get("alignment_version"),
+                    "observer_prompt_version": provenance.get("observer_prompt_version"),
+                    "generated_at": provenance.get("generated_at"),
+                },
+            },
+            artifact_ref=str(json_path),
+            exit_code=0,
+        )
+
+    async def _execute_post_observe(
+        self, action_id: str, parameters: dict[str, Any], context: ActionContext
+    ) -> ActionResult:
+        from datetime import datetime, timezone
+
+        from mission_control.websites import post_artifact as _post_artifact
+        from mission_control.websites import maintenance as _blog_maintenance
+
+        _auto_fingerprint = _blog_maintenance.auto_fingerprint
+
+        try:
+            self.validate_action(action_id, parameters, context)
+        except ValueError as exc:
+            return ActionResult(status="failed", error=str(exc))
+        website_id = str(parameters.get("website_id"))
+        identity = str(parameters.get("article_identity"))
+        blog_dir = Path(str(parameters.get("blog_dir")))
+        try:
+            candidate = blog_dir / Path(*Path(identity).parts)
+        except (OSError, ValueError) as exc:
+            return ActionResult(status="failed", error=f"Identity does not map to a file: {exc}")
+        try:
+            size = candidate.stat().st_size
+        except OSError as exc:
+            return ActionResult(status="failed", error=f"Post file is not accessible: {exc}")
+        if size > BLOG_AUTO_MAX_BYTES:
+            return ActionResult(
+                status="failed",
+                error=(
+                    f"Post file is {size} bytes, over the automatic-observation "
+                    f"budget of {BLOG_AUTO_MAX_BYTES}; refusing instead of "
+                    "consuming unbounded resources."
+                ),
+            )
+        observed_at = datetime.now(timezone.utc).isoformat()
+        try:
+            envelope = _post_artifact.artifact_envelope_for_live_post(
+                blog_dir, identity=identity, observed_at=observed_at
+            )
+        except FileNotFoundError as exc:
+            return ActionResult(status="failed", error=str(exc))
+        except Exception as exc:
+            return ActionResult(
+                status="failed", error=f"{exc.__class__.__name__}: {str(exc)[:800]}"
+            )
+        if envelope is None:
+            return ActionResult(
+                status="failed",
+                error="Post body cannot be mapped to evaluated bytes; no observation was made.",
+            )
+        work = envelope.get("work_object", {})
+        provenance = envelope.get("provenance", {})
+        fingerprint = _auto_fingerprint(
+            source_digest=str(work.get("source_hash") or ""),
+            metadata_digest=str(work.get("content_sha256") or ""),
+            profile="post",
+            flags_version=_blog_maintenance.BLOG_FLAGS_VERSION,
+            policy_version=_blog_maintenance.BLOG_AUTO_POLICY_VERSION,
+        )
+        return ActionResult(
+            status="succeeded",
+            output=(
+                f"Deterministic Writer observation complete for {identity} "
+                f"(status {envelope.get('status')}, "
+                f"{len(envelope.get('findings') or [])} finding(s)). "
+                "Receipt only: current-ness is decided by the projection, not this run."
+            ),
+            result={
+                "schema_version": POST_OBSERVE_RECEIPT_SCHEMA,
+                "status": envelope.get("status"),
+                "evaluation_id": envelope.get("evaluation_id"),
+                "source_digest": work.get("source_hash"),
+                "content_digest": work.get("content_sha256"),
+                "auto_inputs": {
+                    "source_digest": work.get("source_hash"),
+                    "metadata_digest": work.get("content_sha256"),
+                    "profile": "post",
+                    "flags_version": _blog_maintenance.BLOG_FLAGS_VERSION,
+                    "policy_version": _blog_maintenance.BLOG_AUTO_POLICY_VERSION,
+                    "fingerprint": fingerprint,
+                },
+                "auto_fingerprint": fingerprint,
+                "producer": provenance
+                and {
+                    "runtime_name": (envelope.get("producer") or {}).get("runtime_name"),
+                    "method": (envelope.get("producer") or {}).get("method"),
+                    "method_version": (envelope.get("producer") or {}).get("method_version"),
+                },
+                "finding_count": len(envelope.get("findings") or []),
+                "observed_at": envelope.get("observed_at"),
+            },
+            artifact_ref=f"writer-post-observation:{website_id}:{identity}:{str(work.get('source_hash') or '')[:12]}",
             exit_code=0,
         )
 
@@ -741,7 +1300,8 @@ class WriterAdapter(Adapter):
                 output=(result.stdout or "")[-8000:],
                 result={"stderr": (result.stderr or "")[-2000:]},
                 exit_code=result.exit_code,
-                error=detail or (result.stderr or result.stdout or "Writer campaign failed")[-1200:],
+                error=detail
+                or (result.stderr or result.stdout or "Writer campaign failed")[-1200:],
             )
         return ActionResult(
             status="succeeded",
@@ -756,9 +1316,7 @@ class WriterAdapter(Adapter):
         target: AdapterTarget, repo: Path, default_arguments: list[str]
     ) -> tuple[str, list[str], str, float]:
         config = target.config or {}
-        executable = str(
-            config.get("executable") or (repo / "venv" / "Scripts" / "writer.exe")
-        )
+        executable = str(config.get("executable") or (repo / "venv" / "Scripts" / "writer.exe"))
         if default_arguments[:2] == ["editing", "summary"]:
             arguments = list(config.get("arguments") or default_arguments)
         else:

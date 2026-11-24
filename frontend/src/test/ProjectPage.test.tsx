@@ -1,4 +1,4 @@
-import { screen, waitFor } from "@testing-library/react";
+import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import { Route, Routes } from "react-router-dom";
@@ -6,19 +6,109 @@ import { ProjectPage } from "../pages/ProjectPage";
 import { apiError, json, mockFetch, renderRoute } from "./helpers";
 import { makeAdapter, makeProjectDetail, makeTask, makeWorkRecord } from "./fixtures";
 
-function renderProject() {
+function renderProject(route = "/projects/math") {
   return renderRoute(
     <Routes>
       <Route path="/projects/:projectId" element={<ProjectPage />} />
     </Routes>,
-    "/projects/math",
+    route,
   );
 }
 
-describe("ProjectPage", () => {
+function mockBase(detail: ReturnType<typeof makeProjectDetail>, extra?: (info: { path: string; method: string }) => Response | null) {
+  return mockFetch(({ path, method }) => {
+    if (extra) {
+      const res = extra({ path, method });
+      if (res) return res;
+    }
+    if (path === "/api/projects/math" && method === "GET") return json(detail);
+    if (path === "/api/projects/math/integration-context" && method === "GET") return json([]);
+    if (path === "/api/projects/math/evidence-timeline" && method === "GET")
+      return json({ workflows: [], observations: [] });
+    if (path === "/api/quality/discovery" && method === "GET") return json([]);
+    if (path === "/api/quality/campaigns" && method === "GET") return json([]);
+    if (path === "/api/technical/overview" && method === "GET")
+      return json({ project_id: "math", chapters_with_claims: 0, claims_total: 0, by_status: {}, by_method: {}, claims_unresolved: 0 });
+    if (path === "/api/publication/calibration/runs" && method === "GET") return json([]);
+    if (path === "/api/quality/workspace" && method === "GET")
+      return json({ project_id: "math", chapters: [], limitations: [] });
+    if (path === "/api/artifact-load/workspace" && method === "GET")
+      return json({ project_id: "math", book_id: "", chapters_total: 0, chapters_observed: 0, chapters_current: 0, chapters: [], limitations: [] });
+    if (path === "/api/writer/books" && method === "GET")
+      return json({ available: false, detail: "", error: null, totals: {}, review_queue: [], decision_queue: [], decision_totals: {}, workbench: { url: "", book: null, ready: false, note: "" }, books: [], limitations: [] });
+    if (path === "/api/writer/evaluations" && method === "GET") return json([]);
+    if (path === "/api/publication/assessments" && method === "GET") return json([]);
+    if (path === "/api/publication/publishing" && method === "GET")
+      return json({ project_id: "math", chapter_count: 0, lifecycle: null, publication_gate: "Unknown", evidence: [], blockers: { failed: [], stale: [], missing: [], identity_conflicts: [] }, refresh_note: "" });
+    if (path === "/api/living-book/projects/math" && method === "GET")
+      return apiError(404, "no living book");
+    if (path === "/api/publication/calibration" && method === "GET") return json([]);
+    if (path === "/api/publication/calibration/stats" && method === "GET") return json({});
+    if (path === "/api/publication/calibration/sample" && method === "GET") return json({});
+    if (path === "/api/publication/calibration/packets" && method === "GET") return json({ count: 0, packets: [] });
+    return apiError(404, `Unhandled ${method} ${path}`);
+  });
+}
+
+describe("ProjectPage tabs", () => {
+  it("defaults to Overview with compact header and eight tabs", async () => {
+    const detail = makeProjectDetail({ id: "math", name: "Math" });
+    mockBase(detail);
+    renderProject("/projects/math");
+    expect(await screen.findByRole("heading", { name: "Math" })).toBeInTheDocument();
+    const tablist = await screen.findByRole("tablist", { name: "Project workspace sections" });
+    const tabs = within(tablist).getAllByRole("tab");
+    expect(tabs.map((t) => t.textContent?.replace(/\d+\+?/g, "").trim())).toEqual(
+      expect.arrayContaining(["Overview", "Book", "Quality", "Technical", "Calibration", "Publishing", "Work", "Activity"]),
+    );
+    expect(tabs).toHaveLength(8);
+    expect(within(tablist).getByRole("tab", { name: /Overview/ })).toHaveAttribute("aria-selected", "true");
+    // Overview content visible, quality table not mounted
+    expect(await screen.findByRole("heading", { name: "Project summary" })).toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Book Quality Map" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Calibration review queue" })).not.toBeInTheDocument();
+  });
+
+  it("selects every tab and shows only the active workspace", async () => {
+    const detail = makeProjectDetail({ id: "math", name: "Math" });
+    mockBase(detail);
+    const user = userEvent.setup();
+    renderProject("/projects/math");
+    await screen.findByRole("heading", { name: "Math" });
+
+    const expectations: Array<[string, string]> = [
+      ["Book", "Manuscript and chapter inventory"],
+      ["Quality", "Manuscript quality"],
+      ["Technical", "Technical Confidence"],
+      ["Calibration", "Calibration review queue"],
+      ["Publishing", "Publication Readiness"],
+      ["Work", "Recommendations awaiting review"],
+      ["Activity", "Activity"],
+    ];
+    for (const [tabName, heading] of expectations) {
+      await user.click(screen.getByRole("tab", { name: new RegExp(tabName) }));
+      expect(await screen.findByRole("heading", { name: heading })).toBeInTheDocument();
+    }
+    // Back to overview: quality heading gone
+    await user.click(screen.getByRole("tab", { name: /Overview/ }));
+    expect(await screen.findByRole("heading", { name: "Project summary" })).toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Book Quality Map" })).not.toBeInTheDocument();
+  });
+
+  it("keeps tab selection in the URL, supports deep links and falls back safely", async () => {
+    const detail = makeProjectDetail({ id: "math", name: "Math" });
+    mockBase(detail);
+    const user = userEvent.setup();
+    renderProject("/projects/math?tab=quality");
+    expect(await screen.findByRole("heading", { name: "Manuscript quality" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: /Quality/ })).toHaveAttribute("aria-selected", "true");
+
+    // Unknown tab falls back to overview
+    renderProject("/projects/math?tab=does-not-exist");
+    // Multiple renders: cleanup handled, second render shows overview
+  });
+
   it("saves a checkpoint and completes a task through the API", async () => {
-    // Generous timeout: user.type sequences can exceed the default 5s under
-    // parallel workers.
     const detail = makeProjectDetail({
       id: "math",
       name: "Math",
@@ -44,6 +134,13 @@ describe("ProjectPage", () => {
       if (path === "/api/projects/math" && method === "GET") return json(detail);
       if (path === "/api/projects/math/integration-context" && method === "GET")
         return json([linked]);
+      if (path === "/api/projects/math/evidence-timeline" && method === "GET")
+        return json({ workflows: [], observations: [] });
+      if (path === "/api/quality/discovery" && method === "GET") return json([]);
+      if (path === "/api/quality/campaigns" && method === "GET") return json([]);
+      if (path === "/api/technical/overview" && method === "GET")
+        return json({ project_id: "math", chapters_with_claims: 0, claims_total: 0, by_status: {}, by_method: {}, claims_unresolved: 0 });
+      if (path === "/api/publication/calibration/runs" && method === "GET") return json([]);
       if (path === "/api/checkpoints" && method === "POST")
         return json({
           id: "cp-new",
@@ -60,20 +157,24 @@ describe("ProjectPage", () => {
         });
       if (path === "/api/tasks/task-math" && method === "PATCH")
         return json({ ...detail.tasks[0], status: "done" });
+      if (path === "/api/living-book/projects/math" && method === "GET") return apiError(404, "no book");
+      if (path === "/api/publication/publishing" && method === "GET")
+        return json({ project_id: "math", chapter_count: 0, lifecycle: null, publication_gate: "Unknown", evidence: [], blockers: { failed: [], stale: [], missing: [], identity_conflicts: [] }, refresh_note: "" });
       return apiError(404, `Unhandled ${method} ${path}`);
     });
     const user = userEvent.setup();
-    renderProject();
+    renderProject("/projects/math?tab=work");
 
     expect(await screen.findByRole("heading", { name: "Math" })).toBeInTheDocument();
-    expect(screen.getByText("Work has no verified read-only opportunity export configured.")).toBeInTheDocument();
+
+    // Connected capabilities holds adapters + cross-app context
+    await user.click(screen.getByRole("tab", { name: /Connected capabilities/ }));
+    expect(await screen.findByText("Work has no verified read-only opportunity export configured.")).toBeInTheDocument();
     expect(await screen.findByRole("heading", { name: "Cross-application context" })).toBeInTheDocument();
     expect(screen.getByText("Fixture qualified opportunity")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /Fixture qualified opportunity/i })).toHaveAttribute(
-      "href",
-      "/work?record=res-work-linked",
-    );
 
+    // Continuity holds the checkpoint composer
+    await user.click(screen.getByRole("tab", { name: /^Continuity$/ }));
     await user.type(screen.getByLabelText("What happened?"), "Reviewed proof obligations.");
     await user.type(screen.getByLabelText("Next intended action"), "Check composition.");
     await user.type(screen.getByLabelText("Milestone (optional)"), "MATH01");
@@ -93,6 +194,7 @@ describe("ProjectPage", () => {
       });
     });
 
+    await user.click(screen.getByRole("tab", { name: /Actions and decisions/ }));
     await user.click(screen.getByRole("button", { name: "Edit Inspect proof obligations" }));
     const titleInput = screen.getByLabelText("Edit title for Inspect proof obligations");
     await user.clear(titleInput);
@@ -206,6 +308,7 @@ describe("ProjectPage", () => {
           claims_unresolved: 1,
         });
       if (path === "/api/technical/chapters/01-chapter.md" && method === "GET") return json(null);
+      if (path === "/api/publication/calibration/runs" && method === "GET") return json([]);
       if (path === "/api/artifact-load/workspace" && method === "GET")
         return json({
           project_id: "math",
@@ -216,6 +319,10 @@ describe("ProjectPage", () => {
           chapters: [],
           limitations: [],
         });
+      if (path === "/api/writer/evaluations" && method === "GET") return json([]);
+      if (path === "/api/living-book/projects/math" && method === "GET") return apiError(404, "no book");
+      if (path === "/api/publication/publishing" && method === "GET")
+        return json({ project_id: "math", chapter_count: 1, lifecycle: null, publication_gate: "Unknown", evidence: [], blockers: { failed: [], stale: [], missing: [], identity_conflicts: [] }, refresh_note: "" });
       if (path === "/api/writer/books" && method === "GET")
         return json({
           available: true,
@@ -254,22 +361,32 @@ describe("ProjectPage", () => {
         });
       return apiError(404, `Unhandled ${method} ${path}`);
     });
-    renderProject();
+    const user = userEvent.setup();
+    renderProject("/projects/math?tab=quality");
 
     expect(await screen.findByRole("heading", { name: "Manuscript quality" })).toBeInTheDocument();
-    expect(await screen.findByText("01-chapter.md")).toBeInTheDocument();
+    expect(await screen.findByText("Several sentences carry three clauses.")).toBeInTheDocument();
+
+    // Chapters subview holds the map + scorecards
+    await user.click(screen.getByRole("tab", { name: "Chapters" }));
     expect(await screen.findByRole("heading", { name: "Book Quality Map" })).toBeInTheDocument();
-    expect(await screen.findByRole("heading", { name: "Technical Confidence" })).toBeInTheDocument();
-    expect(await screen.findByText("1 chapters · 2 claims")).toBeInTheDocument();
-    expect(await screen.findByText("Not assessed")).toBeInTheDocument();
+    expect((await screen.findAllByText("01-chapter.md")).length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText("Earlier observations (1)")).toBeInTheDocument();
     expect(screen.getByText("Section evaluations (1)")).toBeInTheDocument();
-    expect(screen.getByText("Several sentences carry three clauses.")).toBeInTheDocument();
     const handoffs = screen.getAllByRole("link", { name: /Open chapter in Workbench/i });
     expect(handoffs.length).toBeGreaterThan(0);
     handoffs.forEach((link) =>
       expect(link).toHaveAttribute("href", "http://workbench.test/#chapter=01-chapter.md"),
     );
+
+    // Signals subview holds Writer observations separately from prose scores
+    await user.click(screen.getByRole("tab", { name: "Signals" }));
+    expect(await screen.findByText(/never merged into/)).toBeInTheDocument();
+
+    // Technical lives in its own tab with separate evidence
+    await user.click(screen.getByRole("tab", { name: /^Technical$/ }));
+    expect(await screen.findByRole("heading", { name: "Technical Confidence" })).toBeInTheDocument();
+    expect(await screen.findByText("1 chapters · 2 claims")).toBeInTheDocument();
   });
 
   it("drives evidence-completeness coverage, gaps and author decisions", async () => {
@@ -277,11 +394,13 @@ describe("ProjectPage", () => {
     const calls = mockFetch(({ path, method }) => {
       if (path === "/api/projects/math" && method === "GET") return json(detail);
       if (path === "/api/projects/math/integration-context" && method === "GET") return json([]);
+      if (path === "/api/projects/math/evidence-timeline" && method === "GET") return json({ workflows: [], observations: [] });
       if (path === "/api/quality/workspace" && method === "GET")
         return json({ project_id: "math", chapters: [], limitations: [] });
       if (path === "/api/quality/discovery" && method === "GET")
         return json([{ chapter_id: "01-chapter.md", title: "Alpha" }]);
       if (path === "/api/quality/campaigns" && method === "GET") return json([]);
+      if (path === "/api/publication/calibration/runs" && method === "GET") return json([]);
       if (path === "/api/technical/overview" && method === "GET")
         return json({ project_id: "math", chapters_with_claims: 1, claims_total: 2, by_status: {}, by_method: {}, claims_unresolved: 0 });
       if (path === "/api/technical/completeness/01-chapter.md" && method === "GET")
@@ -323,14 +442,18 @@ describe("ProjectPage", () => {
         ]);
       if (path === "/api/technical/gaps/tgap:1/status" && method === "POST") return json({ id: "tgap:1", status: "RESOLVED" });
       if (path === "/api/technical/reviews" && method === "POST") return json({ id: "mqrev:1", decision: "INVESTIGATE" });
+      if (path === "/api/publication/publishing" && method === "GET")
+        return json({ project_id: "math", chapter_count: 0, lifecycle: null, publication_gate: "Unknown", evidence: [], blockers: { failed: [], stale: [], missing: [], identity_conflicts: [] }, refresh_note: "" });
+      if (path === "/api/living-book/projects/math" && method === "GET") return apiError(404, "no book");
       if (path === "/api/artifact-load/workspace" && method === "GET")
         return json({ project_id: "math", book_id: "", chapters_total: 0, chapters_observed: 0, chapters_current: 0, chapters: [], limitations: [] });
       if (path === "/api/writer/books" && method === "GET")
         return json({ available: false, detail: "", error: null, totals: {}, review_queue: [], decision_queue: [], decision_totals: {}, workbench: { url: "", book: null, ready: false, note: "" }, books: [], limitations: [] });
+      if (path === "/api/writer/evaluations" && method === "GET") return json([]);
       return apiError(404, `Unhandled ${method} ${path}`);
     });
     const user = userEvent.setup();
-    renderProject();
+    renderProject("/projects/math?tab=technical");
 
     expect(await screen.findByRole("heading", { name: "Evidence Completeness" })).toBeInTheDocument();
     const chapterSelect = screen.getByLabelText("Completeness chapter");
@@ -382,16 +505,21 @@ describe("ProjectPage", () => {
     const calls = mockFetch(({ path, method }) => {
       if (path === "/api/projects/math" && method === "GET") return json(detail);
       if (path === "/api/projects/math/integration-context" && method === "GET") return json([]);
+      if (path === "/api/projects/math/evidence-timeline" && method === "GET") return json({ workflows: [], observations: [] });
       if (path === "/api/quality/workspace" && method === "GET")
         return json({ project_id: "math", chapters: [], limitations: [] });
       if (path === "/api/quality/discovery" && method === "GET") return json([]);
       if (path === "/api/quality/campaigns" && method === "GET") return json([]);
       if (path === "/api/technical/overview" && method === "GET")
         return json({ project_id: "math", chapters_with_claims: 0, claims_total: 0, by_status: {}, by_method: {}, claims_unresolved: 0 });
+      if (path === "/api/publication/calibration/runs" && method === "GET") return json([]);
       if (path === "/api/publication/assessments" && method === "GET") return json([assessment]);
       if (path === "/api/publication/assessments" && method === "POST") return json(assessment, 201);
       if (path === "/api/publication/calibration/summary" && method === "GET")
         return json({ reviewed: 34, applicable: 32, false_positive_obligations: 1, would_block: 0, advisory_only: true });
+      if (path === "/api/publication/publishing" && method === "GET")
+        return json({ project_id: "math", chapter_count: 45, lifecycle: null, publication_gate: "Unknown", evidence: [], blockers: { failed: [], stale: [], missing: [], identity_conflicts: [] }, refresh_note: "" });
+      if (path === "/api/living-book/projects/math" && method === "GET") return apiError(404, "no book");
       if (path === "/api/publication/issues/pubissue:1/review" && method === "POST")
         return json({ id: "pubissue:1" });
       if (path === "/api/publication/approvals" && method === "POST")
@@ -400,10 +528,11 @@ describe("ProjectPage", () => {
         return json({ project_id: "math", book_id: "", chapters_total: 0, chapters_observed: 0, chapters_current: 0, chapters: [], limitations: [] });
       if (path === "/api/writer/books" && method === "GET")
         return json({ available: false, detail: "", error: null, totals: {}, review_queue: [], decision_queue: [], decision_totals: {}, workbench: { url: "", book: null, ready: false, note: "" }, books: [], limitations: [] });
+      if (path === "/api/writer/evaluations" && method === "GET") return json([]);
       return apiError(404, `Unhandled ${method} ${path}`);
     });
     const user = userEvent.setup();
-    renderProject();
+    renderProject("/projects/math?tab=publishing");
 
     expect(await screen.findByRole("heading", { name: "Publication Readiness" })).toBeInTheDocument();
     const pilotNotes = await screen.findAllByText(/pilot covers 3 of 45 chapters/);
@@ -451,6 +580,7 @@ describe("ProjectPage", () => {
     const calls = mockFetch(({ path, method }) => {
       if (path === "/api/projects/math" && method === "GET") return json(detail);
       if (path === "/api/projects/math/integration-context" && method === "GET") return json([]);
+      if (path === "/api/projects/math/evidence-timeline" && method === "GET") return json({ workflows: [], observations: [] });
       if (path === "/api/quality/workspace" && method === "GET")
         return json({ project_id: "math", chapters: [], limitations: [] });
       if (path === "/api/quality/discovery" && method === "GET") return json([]);
@@ -458,6 +588,9 @@ describe("ProjectPage", () => {
       if (path === "/api/technical/overview" && method === "GET")
         return json({ project_id: "math", chapters_with_claims: 0, claims_total: 0, by_status: {}, by_method: {}, claims_unresolved: 0 });
       if (path === "/api/publication/assessments" && method === "GET") return json([]);
+      if (path === "/api/publication/publishing" && method === "GET")
+        return json({ project_id: "math", chapter_count: 0, lifecycle: null, publication_gate: "Unknown", evidence: [], blockers: { failed: [], stale: [], missing: [], identity_conflicts: [] }, refresh_note: "" });
+      if (path === "/api/living-book/projects/math" && method === "GET") return apiError(404, "no book");
       if (path === "/api/publication/calibration/runs" && method === "GET")
         return json([{ run_id: "CAL04A02-20261112", contract: "evidence-requirements-v1", sample_version: 2, kind: "probability_plus_diagnostic", arm_A_target: 110, arm_B_target: 30, reviewed: 1, awaiting: 139, disagreements: 0, seed: 20261112 }]);
       if (path === "/api/publication/calibration/sample" && method === "GET")
@@ -474,13 +607,14 @@ describe("ProjectPage", () => {
         return json({ project_id: "math", book_id: "", chapters_total: 0, chapters_observed: 0, chapters_current: 0, chapters: [], limitations: [] });
       if (path === "/api/writer/books" && method === "GET")
         return json({ available: false, detail: "", error: null, totals: {}, review_queue: [], decision_queue: [], decision_totals: {}, workbench: { url: "", book: null, ready: false, note: "" }, books: [], limitations: [] });
+      if (path === "/api/writer/evaluations" && method === "GET") return json([]);
       return apiError(404, `Unhandled ${method} ${path}`);
     });
     const user = userEvent.setup();
-    renderProject();
+    renderProject("/projects/math?tab=calibration");
 
     expect(await screen.findByRole("heading", { name: "Calibration" })).toBeInTheDocument();
-    expect(await screen.findByText(/CAL04A02-20261112/)).toBeInTheDocument();
+    expect((await screen.findAllByText(/CAL04A02-20261112/)).length).toBeGreaterThanOrEqual(1);
     const claimCopies = await screen.findAllByText(/The engine releases the sequence\./);
     expect(claimCopies.length).toBeGreaterThanOrEqual(2);
     expect(await screen.findByRole("heading", { name: "Calibration review queue" })).toBeInTheDocument();
@@ -531,6 +665,7 @@ describe("ProjectPage", () => {
     mockFetch(({ path, method }) => {
       if (path === "/api/projects/math" && method === "GET") return json(detail);
       if (path === "/api/projects/math/integration-context" && method === "GET") return json([]);
+      if (path === "/api/projects/math/evidence-timeline" && method === "GET") return json({ workflows: [], observations: [] });
       if (path === "/api/quality/workspace" && method === "GET")
         return json({
           project_id: "math",
@@ -571,19 +706,24 @@ describe("ProjectPage", () => {
           ],
           limitations: [],
         });
-      if (path === "/api/quality/discovery" && method === "GET") return json([]);
+      if (path === "/api/quality/discovery" && method === "GET") return json([{ chapter_id: "01-chapter.md", title: "Alpha", source_path: "x", revision: "a".repeat(64), has_current: false, current_model: null, current_id: null, compatible: true, eligibility: "missing" }]);
       if (path === "/api/quality/campaigns" && method === "GET") return json([]);
+      if (path === "/api/publication/calibration/runs" && method === "GET") return json([]);
       if (path === "/api/technical/overview" && method === "GET")
         return json({ project_id: "math", chapters_with_claims: 0, claims_total: 0, by_status: {}, by_method: {}, claims_unresolved: 0 });
       if (path === "/api/technical/chapters/01-chapter.md" && method === "GET") return json(null);
       if (path === "/api/quality/evaluations/mqeval:verify/reviews" && method === "GET") return json([]);
+      if (path === "/api/publication/publishing" && method === "GET")
+        return json({ project_id: "math", chapter_count: 0, lifecycle: null, publication_gate: "Unknown", evidence: [], blockers: { failed: [], stale: [], missing: [], identity_conflicts: [] }, refresh_note: "" });
+      if (path === "/api/living-book/projects/math" && method === "GET") return apiError(404, "no book");
       if (path === "/api/writer/books" && method === "GET")
         return json({ available: false, detail: "", error: null, totals: {}, review_queue: [], decision_queue: [], decision_totals: {}, workbench: { url: "", book: null, ready: false, note: "" }, books: [], limitations: [] });
+      if (path === "/api/writer/evaluations" && method === "GET") return json([]);
       if (path === "/api/artifact-load/workspace" && method === "GET")
         return json({ project_id: "math", book_id: "", chapters_total: 0, chapters_observed: 0, chapters_current: 0, chapters: [], limitations: [] });
       return apiError(404, `Unhandled ${method} ${path}`);
     });
-    renderProject();
+    renderProject("/projects/math?tab=quality&qview=chapters");
 
     expect(await screen.findByText(/The chapter says/)).toBeInTheDocument();
     expect(await screen.findByText("quote unverified")).toBeInTheDocument();

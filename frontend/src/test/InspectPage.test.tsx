@@ -409,6 +409,15 @@ describe("InspectPanel on ProjectPage", () => {
       if (method !== "GET") return apiError(404, `Unhandled ${method} ${path}`);
       if (path === "/api/projects/math") return json(detail);
       if (path === "/api/projects/math/integration-context") return json([]);
+      if (path === "/api/projects/math/evidence-timeline") return json({ workflows: [], observations: [] });
+      if (path === "/api/quality/discovery") return json([]);
+      if (path === "/api/quality/campaigns") return json([]);
+      if (path === "/api/technical/overview")
+        return json({ project_id: "math", chapters_with_claims: 0, claims_total: 0, by_status: {}, by_method: {}, claims_unresolved: 0 });
+      if (path === "/api/publication/calibration/runs") return json([]);
+      if (path === "/api/publication/publishing")
+        return json({ project_id: "math", chapter_count: 0, lifecycle: null, publication_gate: "Unknown", evidence: [], blockers: { failed: [], stale: [], missing: [], identity_conflicts: [] }, refresh_note: "" });
+      if (path === "/api/living-book/projects/math") return apiError(404, "no book");
       if (path === "/api/inspect/manifest") return json(manifest);
       if (path === "/api/inspect/projects") return json(projects);
       if (path === "/api/inspect/capabilities") return json(capabilities);
@@ -425,8 +434,11 @@ describe("InspectPanel on ProjectPage", () => {
       <Routes>
         <Route path="/projects/:projectId" element={<ProjectPage />} />
       </Routes>,
-      "/projects/math",
+      "/projects/math?tab=work",
     );
+
+    const user = userEvent.setup();
+    await user.click(await screen.findByRole("tab", { name: /Connected capabilities/ }));
 
     const section = await screen.findByRole("heading", { name: "Inspect" });
     expect(section).toBeInTheDocument();

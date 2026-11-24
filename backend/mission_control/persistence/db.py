@@ -28,10 +28,14 @@ class Database:
     test suite create isolated databases in temporary directories.
     """
 
-    def __init__(self, settings: RuntimeSettings) -> None:
+    def __init__(self, settings: RuntimeSettings, *, busy_timeout_ms: int = 30_000) -> None:
         self.settings = settings
+        self.busy_timeout_ms = max(0, int(busy_timeout_ms))
         settings.ensure_directories()
-        connect_args = {"check_same_thread": False} if settings.database_url.startswith("sqlite") else {}
+        if settings.database_url.startswith("sqlite"):
+            connect_args = {"check_same_thread": False, "timeout": 30.0}
+        else:
+            connect_args = {}
         self.engine: Engine = create_engine(
             settings.database_url,
             connect_args=connect_args,
@@ -39,7 +43,8 @@ class Database:
             pool_pre_ping=True,
         )
         if settings.database_url.startswith("sqlite"):
-            event.listen(self.engine, "connect", _enable_sqlite_pragmas)
+            timeout_ms = self.busy_timeout_ms
+            event.listen(self.engine, "connect", lambda c, r: _enable_sqlite_pragmas(c, r, timeout_ms))
         self.session_factory = sessionmaker(self.engine, expire_on_commit=False, future=True)
 
     @contextmanager
@@ -58,7 +63,9 @@ class Database:
         self.engine.dispose()
 
 
-def _enable_sqlite_pragmas(dbapi_connection, _connection_record) -> None:  # type: ignore[no-untyped-def]
+def _enable_sqlite_pragmas(
+    dbapi_connection, _connection_record, busy_timeout_ms: int = 30_000
+) -> None:  # type: ignore[no-untyped-def]
     cursor = dbapi_connection.cursor()
     cursor.execute("PRAGMA foreign_keys=ON")
     # The Git activity index writes from a bounded worker pool while the UI
@@ -69,7 +76,7 @@ def _enable_sqlite_pragmas(dbapi_connection, _connection_record) -> None:  # typ
     except Exception:  # pragma: no cover - defensive; keep DELETE mode
         pass
     try:
-        cursor.execute("PRAGMA busy_timeout=30000")
+        cursor.execute(f"PRAGMA busy_timeout={max(0, int(busy_timeout_ms))}")
     except Exception:  # pragma: no cover - defensive
         pass
     cursor.close()

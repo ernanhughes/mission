@@ -10,6 +10,7 @@ import {
   Section,
   SimpleStatusBadge,
 } from "../../components/ui";
+import { MaintenanceStrip } from "./MaintenanceStrip";
 import {
   PIPELINE_VISIBILITY_KEY,
   bookMatchesFilters,
@@ -87,6 +88,8 @@ export function ProductionOverview({
           </button>
         }
       />
+
+      <MaintenanceStrip />
 
       <Section title="Catalogue status">
         {stagesQuery.loading || overviewQuery.loading ? <LoadingBlock label="Reading stored production evidence…" /> : null}

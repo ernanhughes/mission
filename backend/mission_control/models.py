@@ -236,7 +236,9 @@ class ActivityEvent(Base):
     provenance: Mapped[str] = mapped_column(String, default="user", nullable=False)
     occurred_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
     observed_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
-    metadata_json: Mapped[dict[str, Any]] = mapped_column("metadata", JSON, default=dict, nullable=False)
+    metadata_json: Mapped[dict[str, Any]] = mapped_column(
+        "metadata", JSON, default=dict, nullable=False
+    )
     dedupe_key: Mapped[str | None] = mapped_column(String, unique=True)
 
 
@@ -287,9 +289,7 @@ class Recommendation(Base):
     source_application: Mapped[str | None] = mapped_column(String)
     source_ref: Mapped[str | None] = mapped_column(Text)
     external_id: Mapped[str | None] = mapped_column(String)
-    provenance: Mapped[str] = mapped_column(
-        String, default="derived_observation", nullable=False
-    )
+    provenance: Mapped[str] = mapped_column(String, default="derived_observation", nullable=False)
     review_state: Mapped[str] = mapped_column(String, default="pending", nullable=False)
     created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
     updated_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
@@ -474,9 +474,11 @@ class CultivationSource(Base):
     name: Mapped[str] = mapped_column(String, nullable=False)
     kind: Mapped[str] = mapped_column(String, default="hugo_blog", nullable=False)
     skill_id: Mapped[str | None] = mapped_column(
-        String, ForeignKey("cultivation_skills.id", ondelete="SET NULL"))
+        String, ForeignKey("cultivation_skills.id", ondelete="SET NULL")
+    )
     goal_id: Mapped[str | None] = mapped_column(
-        String, ForeignKey("cultivation_goals.id", ondelete="SET NULL"))
+        String, ForeignKey("cultivation_goals.id", ondelete="SET NULL")
+    )
     path: Mapped[str] = mapped_column(Text, default="", nullable=False)
     config: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict, nullable=False)
     last_sync_at: Mapped[str | None] = mapped_column(String)
@@ -625,7 +627,8 @@ class CultivationGoal(Base):
     dependencies: Mapped[list[str]] = mapped_column(JSON, default=list, nullable=False)
     evidence_source: Mapped[str] = mapped_column(String, default="manual", nullable=False)
     skill_id: Mapped[str | None] = mapped_column(
-        String, ForeignKey("cultivation_skills.id", ondelete="SET NULL"))
+        String, ForeignKey("cultivation_skills.id", ondelete="SET NULL")
+    )
     created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
     updated_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
 
@@ -718,7 +721,9 @@ class CultivationEvidence(Base):
 class IntegrationRecord(Base):
     __tablename__ = "integration_records"
     __table_args__ = (
-        UniqueConstraint("application_id", "resource_type", "external_id", name="uq_integration_resource"),
+        UniqueConstraint(
+            "application_id", "resource_type", "external_id", name="uq_integration_resource"
+        ),
     )
 
     id: Mapped[str] = mapped_column(String, primary_key=True)
@@ -1160,7 +1165,9 @@ class TechnicalExtractionCoverage(Base):
         String, ForeignKey("quality_campaigns.id", ondelete="SET NULL")
     )
     source_hash: Mapped[str] = mapped_column(String, default="", nullable=False)
-    extractor_version: Mapped[str] = mapped_column(String, default="technical-claim-v1", nullable=False)
+    extractor_version: Mapped[str] = mapped_column(
+        String, default="technical-claim-v1", nullable=False
+    )
     model_id: Mapped[str | None] = mapped_column(String)
     prompt_version: Mapped[str] = mapped_column(String, default="1", nullable=False)
     requested_limit: Mapped[int] = mapped_column(Integer, default=40, nullable=False)
@@ -1879,6 +1886,44 @@ class WebsitePostReview(Base):
     reason: Mapped[str] = mapped_column(Text, default="", nullable=False)
     reviewer: Mapped[str] = mapped_column(String, default="", nullable=False)
     source_digest: Mapped[str] = mapped_column(String, default="", nullable=False)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class WebsitePostWriterObservation(Base):
+    """Deterministic Writer artifact observation for a blog post (BLOG-01 D5).
+
+    Append-only and deliberately separate from editorial evaluations:
+    editorial readers are rubric-blind in places, so Writer evidence gets
+    its own table and can never masquerade as an editorial verdict.
+    Freshness is derived at read time (body_sha256 vs the live evaluated
+    body), never by overwriting. A rename creates a new identity with no
+    transferred history.
+    """
+
+    __tablename__ = "website_post_writer_observations"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    website_id: Mapped[str] = mapped_column(String, nullable=False)
+    article_identity: Mapped[str] = mapped_column(String, nullable=False)
+    relpath: Mapped[str] = mapped_column(String, nullable=False)
+    content_sha256: Mapped[str] = mapped_column(String, nullable=False)
+    body_sha256: Mapped[str] = mapped_column(String, nullable=False)
+    producer_runtime: Mapped[str] = mapped_column(String, default="artifact", nullable=False)
+    method: Mapped[str] = mapped_column(String, default="analyze_text", nullable=False)
+    method_version: Mapped[str] = mapped_column(
+        String, default="writer-artifact-detection.v1", nullable=False
+    )
+    status: Mapped[str] = mapped_column(String, default="complete", nullable=False)
+    evaluation_id: Mapped[str] = mapped_column(String, nullable=False)
+    envelope: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict, nullable=False)
+    finding_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    execution_id: Mapped[str | None] = mapped_column(String)
+    policy_version: Mapped[str] = mapped_column(String, default="blog-auto-v1", nullable=False)
+    flags_version: Mapped[str] = mapped_column(
+        String, default="writer-artifact-detection.v1", nullable=False
+    )
+    fingerprint: Mapped[str] = mapped_column(String, default="", nullable=False)
+    observed_at: Mapped[str] = mapped_column(String, default="", nullable=False)
     created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
 
 

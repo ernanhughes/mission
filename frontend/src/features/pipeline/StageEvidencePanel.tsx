@@ -1,6 +1,9 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
+import { RefreshCw } from "lucide-react";
+import { api, errorMessage } from "../../api/client";
 import { useApi } from "../../api/useApi";
 import type { PipelineEvidenceCell, PipelineStage } from "../../types/api";
+import { useToast } from "../../components/Toast";
 import {
   ErrorState,
   KeyValue,
@@ -57,6 +60,38 @@ export function StageEvidencePanel({
     diagnostics?: string;
   }>(`/api/pipeline/books/${projectId}/stages/${stage.stage_id}`);
   const cell = detailQuery.data?.cells.find((item) => item.chapter_id === chapterId) ?? null;
+  const toast = useToast();
+  const [retrying, setRetrying] = useState(false);
+  const [retryId, setRetryId] = useState<string | null>(null);
+
+  const detail = (cell?.detail ?? {}) as Record<string, unknown>;
+  const expectedMode = detail["expected_deterministic_mode"] === true;
+  const unexpectedWarnings = Array.isArray(detail["unexpected_warnings"])
+    ? (detail["unexpected_warnings"] as unknown[]).map(String)
+    : [];
+  const retryable =
+    cell !== null &&
+    cell.applicable &&
+    cell.freshness !== "current" &&
+    stage.execution_class === "automatic";
+
+  async function retry() {
+    if (!cell) return;
+    setRetrying(true);
+    try {
+      const queued = await api.post<{ execution_id: string; status: string }>(
+        "/api/pipeline/maintenance/retry",
+        { project_id: projectId, chapter_id: cell.chapter_id, stage_id: cell.stage_id },
+      );
+      setRetryId(queued.execution_id);
+      toast.push("success", `Automatic run queued (${queued.execution_id})`);
+      detailQuery.reload();
+    } catch (caught) {
+      toast.push("error", "Could not queue an automatic run", errorMessage(caught));
+    } finally {
+      setRetrying(false);
+    }
+  }
 
   return (
     <Modal
@@ -65,9 +100,21 @@ export function StageEvidencePanel({
       title={`${stage.name} evidence`}
       onClose={onClose}
       footer={
-        <span className="muted small">
-          Analysis execution is not available in this view — execution arrives with M3.
-        </span>
+        retryable ? (
+          <span className="muted small">
+            {retryId ? (
+              <>Automatic run queued ({retryId}). Close and reopen to see fresh evidence.</>
+            ) : (
+              <>This stage runs automatically — Retry is a recovery control, not the normal path.</>
+            )}
+          </span>
+        ) : (
+          <span className="muted small">
+            {stage.execution_class === "automatic"
+              ? "Evidence is current; nothing to run."
+              : "This stage runs only with explicit authorization — automatic maintenance never runs it."}
+          </span>
+        )
       }
     >
       {detailQuery.loading && !detailQuery.data ? (
@@ -110,6 +157,34 @@ export function StageEvidencePanel({
               A current editing audit does not mean the chapter was edited or improved — it
               means the stored audit evidence matches the live manuscript.
             </p>
+          ) : null}
+          {expectedMode ? (
+            <p className="muted small">
+              Deterministic mode: this run used expected local fallbacks with no provider
+              review. The evidence is current; the deeper semantic assessment remains pending
+              by design, not by failure.
+            </p>
+          ) : null}
+          {unexpectedWarnings.length ? (
+            <p className="resume-blocker">
+              Unexpected warnings need review: {unexpectedWarnings.join(", ")}.
+            </p>
+          ) : null}
+
+          {retryable ? (
+            <div className="button-row">
+              <button
+                className="button button-secondary button-small"
+                type="button"
+                disabled={retrying}
+                onClick={() => void retry()}
+              >
+                <RefreshCw size={14} /> {retrying ? "Queueing…" : "Retry automatically"}
+              </button>
+            </div>
+          ) : null}
+          {stage.execution_class !== "automatic" && stage.execution_note ? (
+            <p className="muted small">{stage.execution_note}</p>
           ) : null}
 
           <dl className="kv-list">

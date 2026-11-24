@@ -64,6 +64,19 @@ PIPELINE_REGISTRY_VERSION = "pipeline-stages-v1"
 #: never chapters even when they match the chapter glob.
 NON_CHAPTER_STEMS = frozenset({"_index", "index"})
 
+#: Fallback codes that are the normal, expected behaviour of a deterministic
+#: MRI run (no provider available by policy, so the engine uses its
+#: deterministic section observer, reducer fallback, and reference-section
+#: handling). Presence of ONLY these codes is expected deterministic mode,
+#: not an execution anomaly. Anything else is a genuine warning.
+EXPECTED_DETERMINISTIC_WARNINGS = frozenset(
+    {
+        "chapter_reducer_fallback",
+        "deterministic_section_observer",
+        "reference_section",
+    }
+)
+
 #: Refuse to parse stored artifacts larger than this (read-only guard).
 MAX_ARTIFACT_BYTES = 50_000_000
 
@@ -122,6 +135,11 @@ class StageDefinition:
     presentation_order: int
     availability: str  # implemented | planned | unavailable
     availability_reason: str
+    # M4A execution class: automatic = allowlisted for automatic maintenance
+    # (verified deterministic, local-only, no manuscript writes); governed =
+    # needs explicit per-run authorization; unavailable = no provider.
+    execution_class: str = "governed"
+    execution_note: str = ""
     ui_actions: list[str] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
@@ -137,6 +155,8 @@ class StageDefinition:
             "presentation_order": self.presentation_order,
             "availability": self.availability,
             "availability_reason": self.availability_reason,
+            "execution_class": self.execution_class,
+            "execution_note": self.execution_note,
             "ui_actions": list(self.ui_actions),
         }
 
@@ -166,6 +186,12 @@ STAGE_DEFINITIONS: list[StageDefinition] = [
         presentation_order=10,
         availability="implemented",
         availability_reason="Declaration files and YAML validity are verifiable read-only.",
+        execution_class="governed",
+        execution_note=(
+            "Not automatic: existence checks alone cannot verify analysis "
+            "freshness, and contract evaluation needs a verified stored "
+            "outcome contract first."
+        ),
         ui_actions=["open_writer_metadata", "refresh_analysis_m3"],
     ),
     StageDefinition(
@@ -189,6 +215,12 @@ STAGE_DEFINITIONS: list[StageDefinition] = [
         presentation_order=20,
         availability="implemented",
         availability_reason="Stored reports carry snapshot_hash; recomputation is exact.",
+        execution_class="automatic",
+        execution_note=(
+            "Allowlisted for automatic maintenance (M4A): verified "
+            "deterministic operation, local-only, writes Writer-owned "
+            "reports, never modifies manuscripts."
+        ),
         ui_actions=["open_writer_mri", "rerun_deterministic_mri_m3", "compare_reports_m5"],
     ),
     StageDefinition(
@@ -210,6 +242,11 @@ STAGE_DEFINITIONS: list[StageDefinition] = [
             "HTTP-only response with no stored artifact; requires M3 "
             "execution with result persistence before projection."
         ),
+        execution_class="governed",
+        execution_note=(
+            "Not automatic: no stored artifact exists, so Mission Control "
+            "cannot independently verify the outcome yet."
+        ),
         ui_actions=["run_patterns_m3"],
     ),
     StageDefinition(
@@ -227,6 +264,8 @@ STAGE_DEFINITIONS: list[StageDefinition] = [
         presentation_order=40,
         availability="planned",
         availability_reason="Model spend and approval gates; M5 work.",
+        execution_class="governed",
+        execution_note="Model-backed and editorial: never automatic.",
         ui_actions=["open_writer_campaign", "request_strengthening_m5"],
     ),
     StageDefinition(
@@ -248,6 +287,11 @@ STAGE_DEFINITIONS: list[StageDefinition] = [
         presentation_order=50,
         availability="implemented",
         availability_reason="Summary/index stores carry per-chapter sha256 fingerprints.",
+        execution_class="governed",
+        execution_note=(
+            "Not automatic: audits are author-facing review signals with "
+            "human cadence semantics; auto-running them is not verified."
+        ),
         ui_actions=["open_writer_editing", "compare_reports_m5"],
     ),
     StageDefinition(
@@ -272,6 +316,11 @@ STAGE_DEFINITIONS: list[StageDefinition] = [
             "Stored runs carry machine_status and source_digest; the digest "
             "algorithm is already replicated in Mission Control."
         ),
+        execution_class="governed",
+        execution_note=(
+            "Not automatic: validation profiles may invoke model-backed "
+            "runtimes and human-gated checks; not verified spend-free."
+        ),
         ui_actions=["run_writer_validate_m3"],
     ),
     StageDefinition(
@@ -293,6 +342,8 @@ STAGE_DEFINITIONS: list[StageDefinition] = [
             "population are unverified per book. Never report as available "
             "until a per-book verification passes."
         ),
+        execution_class="unavailable",
+        execution_note="No verified provider; never scheduled.",
         ui_actions=[],
     ),
 ]
@@ -532,17 +583,26 @@ def read_mri_cell(
 ) -> dict[str, Any]:
     cell = _base_cell("mri", project_id, chapter)
     cell["digest_algorithm"] = "snapshot:sha256-utf8-text (Writer read_text semantics)"
+    # The live digest is always computed when the chapter is readable, even
+    # without a stored report: automation decisions need the current input
+    # identity to detect changes and to debounce mid-save edits.
+    live, read_error = read_mri_snapshot(chapter.path)
+    cell["live_digest"] = live
     if reports_dir is None:
         cell["diagnostics"] = (
             "No MRI report directory observed at "
             + ("; ".join(checked) if checked else "(no repository roots)")
             + ". No qualifying evidence."
+            if live is not None
+            else (read_error or "Chapter is unreadable.")
         )
         return cell
     report_path = reports_dir / f"{chapter.chapter_id}.mri.json"
     if not report_path.is_file():
         cell["diagnostics"] = (
             f"No MRI report at {report_path}: chapter not covered until evaluated."
+            if live is not None
+            else (read_error or "Chapter is unreadable.")
         )
         cell["detail"] = {"checked": checked}
         return cell
@@ -564,8 +624,6 @@ def read_mri_cell(
         )
         cell["detail"] = {"provenance_keys": sorted(provenance.keys())}
         return cell
-    live, read_error = read_mri_snapshot(chapter.path)
-    cell["live_digest"] = live
     if live is None:
         cell["diagnostics"] = read_error or "Chapter is unreadable."
         return cell
@@ -587,9 +645,19 @@ def read_mri_cell(
     }
     statuses = [str(v).lower() for v in stage_status.values()]
     observer_error = provenance.get("observer_error")
+    # "skipped" is a policy-disabled stage (e.g. the quality judge is
+    # explicitly "none"), not a failure and not missing analysis. It is
+    # neutral: a run whose stages all pass (or are skipped by policy)
+    # completed its analysis. At least one pass/ok is required so a fully
+    # skipped report stays pending rather than passed.
+    ok_states = {"pass", "ok", "skipped"}
     if observer_error or any(s in ("fail", "failed", "error") for s in statuses):
         cell["result"] = "failed"
-    elif statuses and all(s in ("pass", "ok") for s in statuses):
+    elif (
+        statuses
+        and all(s in ok_states for s in statuses)
+        and any(s in ("pass", "ok") for s in statuses)
+    ):
         cell["result"] = "passed"
     else:
         cell["result"] = "pending"
@@ -616,6 +684,13 @@ def read_mri_cell(
         "recomputed (recomputing them requires running Writer)."
     )
     cell["stage_version"] = str(provenance.get("alignment_version") or "") or None
+    stored_warnings = provenance.get("warnings")
+    warning_list = (
+        [str(w) for w in stored_warnings if isinstance(w, str)]
+        if isinstance(stored_warnings, list)
+        else []
+    )
+    unexpected_warnings = [w for w in warning_list if w not in EXPECTED_DETERMINISTIC_WARNINGS]
     cell["detail"] = {
         "observer_mode": provenance.get("observer_mode"),
         "quality_model": provenance.get("quality_model"),
@@ -625,6 +700,14 @@ def read_mri_cell(
         "stored_metadata_version": provenance.get("metadata_version"),
         "stored_observer_prompt_version": provenance.get("observer_prompt_version"),
         "stored_alignment_version": provenance.get("alignment_version"),
+        "warnings": warning_list,
+        "unexpected_warnings": unexpected_warnings,
+        "expected_deterministic_mode": (
+            provenance.get("observer_mode") == "deterministic"
+            and provenance.get("quality_model") == "none"
+            and provenance.get("semantic_model") in (None, "none")
+            and not unexpected_warnings
+        ),
         "md_report": str(reports_dir / f"{chapter.chapter_id}.mri.md"),
     }
     return cell

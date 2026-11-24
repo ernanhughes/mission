@@ -21,7 +21,7 @@ import type {
   ProjectDetail,
   ProjectGitLink,
 } from "../../types/api";
-import { AdapterCard, CheckpointForm, RecommendationRow, TaskRow } from "../../pages/ProjectPage";
+import { AdapterCard, CheckpointForm, RecommendationRow, TaskRow } from "../project/shared";
 import { FindingsSection, PromptsSection, SoftwareQualityTab } from "./SoftwareQualityTab";
 
 type TabId = "overview" | "activity" | "inspect" | "quality" | "improvements" | "context";

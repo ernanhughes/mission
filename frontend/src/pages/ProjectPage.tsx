@@ -1,29 +1,32 @@
-import { useState, type FormEvent } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 import {
   ArrowLeft,
   BookOpen,
-  CheckCircle2,
-  Circle,
   Crosshair,
   ExternalLink,
   FolderOpen,
   GitBranch,
-  Pencil,
   Pin,
   PinOff,
   Play,
   Plus,
   RefreshCw,
-  Save,
-  X,
 } from "lucide-react";
 import { api, errorMessage } from "../api/client";
 import { useApi } from "../api/useApi";
-import { LivingBookCard } from "../features/living-book/LivingBookCard";
-import { InspectPanel } from "../features/inspect/InspectPanels";
 import { SoftwareWorkspace } from "../features/software/SoftwareWorkspace";
 import { useToast } from "../components/Toast";
+import {
+  PROJECT_TABS,
+  normalizeProjectTab,
+  type ProjectTabId,
+} from "../features/project/projectTabs";
+import { ProjectTabBar } from "../features/project/ProjectTabBar";
+import { OverviewTab } from "../features/project/OverviewTab";
+import { BookTab } from "../features/project/BookTab";
+import { WorkTab } from "../features/project/WorkTab";
+import { ActivityTab } from "../features/project/ActivityTab";
 import {
   ActionButton,
   EmptyState,
@@ -75,324 +78,7 @@ import type {
   WriterWorkspace,
 } from "../types/api";
 
-export function CheckpointForm({ projectId, onSaved }: { projectId: string; onSaved: () => void }) {
-  const toast = useToast();
-  const [summary, setSummary] = useState("");
-  const [lastCompleted, setLastCompleted] = useState("");
-  const [nextAction, setNextAction] = useState("");
-  const [blockers, setBlockers] = useState("");
-  const [milestone, setMilestone] = useState("");
-  const [evidence, setEvidence] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [saving, setSaving] = useState(false);
-
-  async function save(event: FormEvent) {
-    event.preventDefault();
-    setSaving(true);
-    setError(null);
-    try {
-      await api.post("/api/checkpoints", {
-        project_id: projectId,
-        summary,
-        last_completed: lastCompleted,
-        next_action: nextAction,
-        blockers,
-        milestone,
-        evidence_refs: evidence
-          .split(/\r?\n|,/)
-          .map((item) => item.trim())
-          .filter(Boolean),
-      });
-      toast.push("success", "Checkpoint saved", "This project is now the current focus.");
-      setSummary("");
-      setLastCompleted("");
-      setNextAction("");
-      setBlockers("");
-      setMilestone("");
-      setEvidence("");
-      onSaved();
-    } catch (caught) {
-      setError(errorMessage(caught));
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  return (
-    <form className="form-stack checkpoint-form" onSubmit={(event) => void save(event)}>
-      <InlineError message={error} />
-      <label className="field">
-        <span>What happened?</span>
-        <textarea
-          rows={3}
-          value={summary}
-          onChange={(event) => setSummary(event.target.value)}
-          placeholder="A plain summary of where the work stopped."
-          required
-        />
-      </label>
-      <div className="form-grid two">
-        <label className="field">
-          <span>Last completed action</span>
-          <input value={lastCompleted} onChange={(event) => setLastCompleted(event.target.value)} />
-        </label>
-        <label className="field">
-          <span>Next intended action</span>
-          <input value={nextAction} onChange={(event) => setNextAction(event.target.value)} />
-        </label>
-      </div>
-      <div className="form-grid two">
-        <label className="field">
-          <span>Blockers</span>
-          <input value={blockers} onChange={(event) => setBlockers(event.target.value)} />
-        </label>
-        <label className="field">
-          <span>Milestone (optional)</span>
-          <input value={milestone} onChange={(event) => setMilestone(event.target.value)} />
-        </label>
-      </div>
-      <label className="field">
-        <span>Evidence references (one per line)</span>
-        <textarea
-          rows={2}
-          value={evidence}
-          onChange={(event) => setEvidence(event.target.value)}
-          placeholder="artifacts/math01/report.json"
-        />
-      </label>
-      <div className="form-actions">
-        <button className="button button-primary" type="submit" disabled={saving || !summary.trim()}>
-          <Save size={15} /> {saving ? "Saving checkpoint…" : "Save checkpoint"}
-        </button>
-      </div>
-    </form>
-  );
-}
-
-export function TaskRow({
-  task,
-  onChanged,
-}: {
-  task: Task;
-  onChanged: () => void;
-}) {
-  const toast = useToast();
-  const [busy, setBusy] = useState(false);
-  const [editing, setEditing] = useState(false);
-  const [title, setTitle] = useState(task.title);
-  async function toggle() {
-    setBusy(true);
-    try {
-      await api.patch(`/api/tasks/${task.id}`, {
-        status: task.status === "done" ? "open" : "done",
-      });
-      onChanged();
-    } catch (caught) {
-      toast.push("error", "Could not update task", errorMessage(caught));
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function saveTitle() {
-    if (!title.trim() || title.trim() === task.title) {
-      setEditing(false);
-      return;
-    }
-    setBusy(true);
-    try {
-      await api.patch(`/api/tasks/${task.id}`, { title: title.trim() });
-      toast.push("success", "Task updated");
-      setEditing(false);
-      onChanged();
-    } catch (caught) {
-      toast.push("error", "Could not update task", errorMessage(caught));
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  return (
-    <li className={`task-row ${task.status === "done" ? "done" : ""}`}>
-      <button
-        className="task-check"
-        onClick={() => void toggle()}
-        disabled={busy}
-        aria-label={task.status === "done" ? `Reopen ${task.title}` : `Complete ${task.title}`}
-      >
-        {task.status === "done" ? <CheckCircle2 size={17} /> : <Circle size={17} />}
-      </button>
-      <div className="task-copy">
-        {editing ? (
-          <span className="task-edit">
-            <input
-              value={title}
-              onChange={(event) => setTitle(event.target.value)}
-              aria-label={`Edit title for ${task.title}`}
-              autoFocus
-              onKeyDown={(event) => {
-                if (event.key === "Enter") void saveTitle();
-                if (event.key === "Escape") {
-                  setTitle(task.title);
-                  setEditing(false);
-                }
-              }}
-            />
-            <button className="icon-button" onClick={() => void saveTitle()} aria-label="Save task title">
-              <Save size={14} />
-            </button>
-            <button
-              className="icon-button"
-              onClick={() => {
-                setTitle(task.title);
-                setEditing(false);
-              }}
-              aria-label="Cancel task edit"
-            >
-              <X size={14} />
-            </button>
-          </span>
-        ) : (
-          <strong>{task.title}</strong>
-        )}
-        {task.description ? <span>{task.description}</span> : null}
-      </div>
-      <div className="task-row-actions">
-        <SimpleStatusBadge state={task.status} />
-        {!editing ? (
-          <button
-            className="icon-button"
-            onClick={() => setEditing(true)}
-            aria-label={`Edit ${task.title}`}
-            disabled={busy}
-          >
-            <Pencil size={13} />
-          </button>
-        ) : null}
-      </div>
-    </li>
-  );
-}
-
-export function RecommendationRow({
-  recommendation,
-  onChanged,
-}: {
-  recommendation: Recommendation;
-  onChanged: () => void;
-}) {
-  const toast = useToast();
-  const [busy, setBusy] = useState<string | null>(null);
-  async function review(state: string) {
-    setBusy(state);
-    try {
-      await api.patch(`/api/recommendations/${recommendation.id}`, {
-        review_state: state,
-        note: state === "accepted" ? "Accepted from the project workspace." : "",
-      });
-      toast.push("success", `Recommendation ${state}`);
-      onChanged();
-    } catch (caught) {
-      toast.push("error", "Could not review recommendation", errorMessage(caught));
-    } finally {
-      setBusy(null);
-    }
-  }
-  return (
-    <li className="recommendation-card">
-      <div className="recommendation-head">
-        <div>
-          <strong>{recommendation.title}</strong>
-          <div className="inline-meta">
-            <ProvenanceBadge value={recommendation.provenance} />
-            <span>{recommendation.source_application ?? "Workspace"}</span>
-            <span>{timeAgo(recommendation.created_at)}</span>
-          </div>
-        </div>
-        <SimpleStatusBadge state={recommendation.review_state} />
-      </div>
-      <p>{truncate(recommendation.rationale, 500)}</p>
-      {recommendation.evidence.length ? (
-        <details className="evidence-list">
-          <summary>Evidence ({recommendation.evidence.length})</summary>
-          <ul>
-            {recommendation.evidence.map((item) => (
-              <li key={item}>
-                <code>{item}</code>
-              </li>
-            ))}
-          </ul>
-        </details>
-      ) : null}
-      {recommendation.review_state === "pending" ? (
-        <div className="button-row">
-          <button
-            className="button button-primary button-small"
-            disabled={busy !== null}
-            onClick={() => void review("accepted")}
-          >
-            Accept
-          </button>
-          <button
-            className="button button-secondary button-small"
-            disabled={busy !== null}
-            onClick={() => void review("deferred")}
-          >
-            Defer
-          </button>
-          <button
-            className="button button-ghost button-small"
-            disabled={busy !== null}
-            onClick={() => void review("rejected")}
-          >
-            Reject
-          </button>
-        </div>
-      ) : null}
-    </li>
-  );
-}
-
-export function AdapterCard({ adapter, projectId, onChanged }: { adapter: Adapter; projectId: string; onChanged: () => void }) {
-  const toast = useToast();
-  const [busy, setBusy] = useState(false);
-  async function refresh() {
-    setBusy(true);
-    try {
-      await api.post(`/api/adapters/projects/${projectId}/refresh`);
-      toast.push("success", "Adapter refreshed");
-      onChanged();
-    } catch (caught) {
-      toast.push("error", "Adapter refresh failed", errorMessage(caught));
-    } finally {
-      setBusy(false);
-    }
-  }
-  return (
-    <div className="adapter-card">
-      <div className="adapter-head">
-        <div>
-          <strong>{titleCase(adapter.adapter)}</strong>
-          <span className="adapter-status">
-            <SimpleStatusBadge
-              state={adapter.available ? (adapter.stale ? "stale" : "running") : "unavailable"}
-              label={adapter.available ? (adapter.stale ? "Stale" : "Available") : "Unavailable"}
-            />
-          </span>
-        </div>
-        <button className="icon-button" onClick={() => void refresh()} disabled={busy} aria-label="Refresh adapter">
-          <RefreshCw size={14} className={busy ? "spin" : ""} />
-        </button>
-      </div>
-      <p>{adapter.detail}</p>
-      {adapter.error ? <p className="warn-text small">{adapter.error}</p> : null}
-      <div className="adapter-meta">
-        <span>{adapter.last_checked_at ? timeAgo(adapter.last_checked_at) : "Never checked"}</span>
-        {adapter.capabilities.length ? <span>{adapter.capabilities.join(" · ")}</span> : null}
-      </div>
-    </div>
-  );
-}
+// Shared primitives live in ../features/project/shared.tsx (CheckpointForm, TaskRow, RecommendationRow, AdapterCard)
 
 const QUALITY_DIMENSIONS = ["clarity", "argument", "precision", "economy", "voice", "structure"];
 const QUALITY_DIM_SHORT: Record<string, string> = {
@@ -1129,6 +815,7 @@ function TechnicalClaimCard({
 
 function TechnicalPanel({ projectId }: { projectId: string }) {
   const toast = useToast();
+  const [searchParams, setSearchParams] = useSearchParams();
   const overview = useApi<Record<string, any>>(`/api/technical/overview?project_id=${projectId}`, { pollMs: 60000 });
   const discovery = useApi<QualityDiscovery[]>(`/api/quality/discovery?project_id=${projectId}`, { pollMs: 60000 });
   const campaigns = useApi<QualityCampaign[]>(`/api/quality/campaigns?project_id=${projectId}`, { pollMs: 15000 });
@@ -1136,8 +823,19 @@ function TechnicalPanel({ projectId }: { projectId: string }) {
   const [mode, setMode] = useState("selected");
   const [model, setModel] = useState("opencode-go/deepseek-v4.1-flash");
   const [selected, setSelected] = useState<string[]>(["01-chapter.md", "39-chapter.md", "43-chapter.md"]);
-  const [chapterId, setChapterId] = useState<string | null>(null);
+  const [chapterId, setChapterIdState] = useState<string | null>(() => searchParams.get("tchapter"));
   const [candidateFor, setCandidateFor] = useState<string | null>(null);
+
+  function setChapterId(next: string | null) {
+    setChapterIdState(next);
+    setCandidateFor(null);
+    setSearchParams((prev) => {
+      const u = new URLSearchParams(prev);
+      if (!next) u.delete("tchapter");
+      else u.set("tchapter", next);
+      return u;
+    }, { replace: true });
+  }
 
   const techCampaigns = (campaigns.data ?? []).filter((c) => (c.assessment_type ?? "prose") === "technical");
   const active = techCampaigns.find((c) => ["pending", "running", "cancelling"].includes(c.status)) ?? null;
@@ -1368,9 +1066,21 @@ function TechnicalPanel({ projectId }: { projectId: string }) {
 
 function CompletenessPanel({ projectId }: { projectId: string }) {
   const toast = useToast();
+  const [searchParams, setSearchParams] = useSearchParams();
   const discovery = useApi<QualityDiscovery[]>(`/api/quality/discovery?project_id=${projectId}`, { pollMs: 60000 });
-  const [chapterId, setChapterId] = useState<string | null>(null);
+  const [chapterId, setChapterIdState] = useState<string | null>(() => searchParams.get("cchapter"));
   const [gapFilter, setGapFilter] = useState("ALL");
+
+  function setChapterId(next: string | null) {
+    setChapterIdState(next);
+    setGapFilter("ALL");
+    setSearchParams((prev) => {
+      const u = new URLSearchParams(prev);
+      if (!next) u.delete("cchapter");
+      else u.set("cchapter", next);
+      return u;
+    }, { replace: true });
+  }
 
   const completeness = useApi<TechnicalCompleteness | null>(
     chapterId ? `/api/technical/completeness/${chapterId}?project_id=${projectId}` : null,
@@ -2247,22 +1957,184 @@ function CalibrationReviewCard({ packet, existing, onSaved }: {
   );
 }
 
-function CalibrationPanel({ projectId }: { projectId: string }) {
-  void projectId;
+function CalibrationDetailForm({
+  packet,
+  existing,
+  projectId,
+  onSaved,
+}: {
+  packet: CalibrationPacket;
+  existing: CalibrationReview[];
+  projectId: string;
+  onSaved: () => void;
+}) {
   const toast = useToast();
+  const storageKey = `mc.cal.draft.${projectId}.${packet.requirement_id}`;
+  type Draft = Record<string, string | boolean>;
+  const [draft, setDraft] = useState<Draft>(() => {
+    try {
+      const raw = localStorage.getItem(storageKey);
+      if (raw) return JSON.parse(raw) as Draft;
+    } catch {
+      /* ignore */
+    }
+    return {};
+  });
+  function setField(key: string, value: string | boolean) {
+    setDraft((prev) => {
+      const next = { ...prev, [key]: value };
+      try {
+        localStorage.setItem(storageKey, JSON.stringify(next));
+      } catch {
+        /* ignore */
+      }
+      return next;
+    });
+  }
+  const claimAccurate = (draft.claimAccurate as string) ?? "VALID";
+  const applicability = (draft.applicability as string) ?? "APPLICABLE";
+  const necessity = (draft.necessity as string) ?? "REQUIRED";
+  const epistemic = (draft.epistemic as string) ?? "OK";
+  const relevance = (draft.relevance as string) ?? "unknown";
+  const independence = (draft.independence as string) ?? "unknown";
+  const satisfaction = (draft.satisfaction as string) ?? "unknown";
+  const gapJustified = (draft.gapJustified as string) ?? "justified";
+  const gapCorrection = (draft.gapCorrection as string) ?? "";
+  const priority = (draft.priority as string) ?? "proportionate";
+  const blocking = (draft.blocking as string) ?? "advisory";
+  const qualsOk = draft.qualsOk === undefined ? true : Boolean(draft.qualsOk);
+  const duplicateOf = (draft.duplicateOf as string) ?? "";
+  const summary = (draft.summary as string) ?? "";
+  const reviewer = (draft.reviewer as string) ?? "human:author";
+
+  async function submit(state: "completed" | "draft" | "deferred" | "abstained") {
+    const r1 = claimAccurate === "VALID" ? "R1:VALID" : claimAccurate === "PARTIAL" ? "R1:PARTIAL" : "R1:INVALID";
+    const verdictCore = `${r1} R2:${applicability} R3:${necessity} R4:${epistemic} R5:${relevance} R6:${independence} R7:${satisfaction} R8:${gapJustified} R9:${priority} R10:${blocking} | ${summary}`.slice(0, 900);
+    const verdict = state === "completed" ? verdictCore : `${state.toUpperCase()}: ${verdictCore}`;
+    const correction = [
+      gapCorrection ? `gap_correction:${gapCorrection}` : "",
+      duplicateOf ? `duplicate_of:${duplicateOf}` : "",
+    ].filter(Boolean).join(" ").slice(0, 900);
+    try {
+      await api.post("/api/publication/calibration", {
+        requirement_id: packet.requirement_id,
+        sample_version: 2,
+        sample_reason: `run:CAL04A02-20261112|${packet.sampling_arm === "A" ? "A" : `B:${packet.sample_reason}`}`,
+        claim_accurate: claimAccurate !== "INVALID",
+        requirement_applicable: applicability,
+        necessary: necessity === "REQUIRED",
+        strictness_ok: epistemic === "OK",
+        satisfied_by_evidence: satisfaction,
+        gap_justified: gapJustified === "justified",
+        priority_proportionate: priority === "proportionate",
+        would_block: blocking === "blocker-candidate",
+        qualification_sufficient: qualsOk,
+        duplicate_of: duplicateOf,
+        verdict,
+        correction,
+        reviewer,
+      });
+      toast.push("success", `Review ${state}`, packet.calibration_case_id);
+      if (state !== "draft") {
+        try {
+          localStorage.removeItem(storageKey);
+        } catch {
+          /* ignore */
+        }
+        setDraft({});
+      }
+      onSaved();
+    } catch (caught) {
+      toast.push("error", "Could not record review", errorMessage(caught));
+    }
+  }
+
+  const integrity = packet.integrity as Record<string, unknown>;
+  const hasDraft = Object.keys(draft).length > 0;
+  return (
+    <article className="cal-detail" aria-label={`Review ${packet.calibration_case_id}`}>
+      <div className="writer-decision-head">
+        <Tag tone={packet.sampling_arm === "A" ? "accent" : "default"}>{packet.sampling_arm}</Tag>
+        <strong>{packet.calibration_case_id} · {packet.requirement_template}</strong>
+        <span className="writer-decision-count">
+          {packet.current_applicability} · {packet.current_satisfaction}
+          {integrity["stale_or_missing"] ? " · STALE SOURCE" : ""}
+        </span>
+      </div>
+      {hasDraft ? <p className="warn-text small">Unsaved draft restored from this browser. Switching packets or tabs preserves it.</p> : null}
+      <p className="muted small"><strong>Claim</strong> [{packet.claim_type}/{packet.epistemic_role}] {packet.chapter_id}: {packet.claim_text.slice(0, 300)}</p>
+      <blockquote className="writer-excerpt">{packet.exact_manuscript_excerpt.slice(0, 400)}</blockquote>
+      {packet.surrounding_source_context.text ? (
+        <details><summary className="muted small">Surrounding source context ({packet.surrounding_source_context.char_span[1] - packet.surrounding_source_context.char_span[0]} chars)</summary>
+          <p className="muted small">{String(packet.surrounding_source_context.text).slice(0, 1200)}</p>
+        </details>
+      ) : <p className="warn-text small">No source context: excerpt could not be anchored. Do not review as verified.</p>}
+      <p className="muted small"><strong>Requirement</strong> ({packet.requirement_type}): {packet.requirement_description} Acceptance: {packet.requirement_acceptance_rule.slice(0, 200)}</p>
+      <p className="muted small"><strong>System verdict</strong>: applicability {packet.applicability_reason.slice(0, 120)} · satisfaction: {packet.satisfaction_detail || packet.current_satisfaction}</p>
+      {(packet.existing_gap as Array<Record<string, unknown>>).map((g) => (
+        <p key={String(g["id"])} className="muted small">
+          Gap <Tag tone={String(g["status"]) === "OPEN" ? "danger" : "default"}>{String(g["gap_type"])}</Tag> {String(g["priority_rationale"])} — {String(g["title"]).slice(0, 140)}
+        </p>
+      ))}
+      {existing.length ? (
+        <p className="muted small">Prior reviews: {existing.map((r) => `${provenanceOf(r.reviewer)}:${r.verdict.slice(0, 60)}`).join(" | ").slice(0, 300)}</p>
+      ) : null}
+      <div className="inline-form">
+        <label className="muted small">R1 fidelity <select value={claimAccurate} onChange={(e) => setField("claimAccurate", e.target.value)} aria-label="R1 claim fidelity"><option>VALID</option><option>PARTIAL</option><option>INVALID</option></select></label>
+        <label className="muted small">R2 applicable <select value={applicability} onChange={(e) => setField("applicability", e.target.value)} aria-label="R2 applicability"><option>APPLICABLE</option><option>NOT_APPLICABLE</option><option>UNDETERMINED</option></select></label>
+        <label className="muted small">R3 necessary <select value={necessity} onChange={(e) => setField("necessity", e.target.value)} aria-label="R3 necessity"><option>REQUIRED</option><option>OPTIONAL</option><option>REDUNDANT</option><option>UNJUSTIFIED</option><option>UNDETERMINED</option></select></label>
+        <label className="muted small">R4 epistemic <select value={epistemic} onChange={(e) => setField("epistemic", e.target.value)} aria-label="R4 epistemic fit"><option>OK</option><option>MISMATCH</option></select></label>
+        <label className="muted small">R5 relevance <select value={relevance} onChange={(e) => setField("relevance", e.target.value)} aria-label="R5 evidence relevance"><option value="unknown">unknown</option><option value="direct">direct</option><option value="partial">partial</option><option value="contextual">contextual</option><option value="unrelated">unrelated</option><option value="none">none</option></select></label>
+        <label className="muted small">R6 independence <select value={independence} onChange={(e) => setField("independence", e.target.value)} aria-label="R6 evidence independence"><option value="unknown">unknown</option><option value="independent">independent</option><option value="restates">restates</option><option value="shared">shared</option><option value="circular">circular</option><option value="none">none</option></select></label>
+        <label className="muted small">R7 satisfied <select value={satisfaction} onChange={(e) => setField("satisfaction", e.target.value)} aria-label="R7 satisfaction"><option value="unknown">unknown</option><option value="yes">yes</option><option value="no">no</option><option value="partial">partial</option><option value="waived">waived</option></select></label>
+        <label className="muted small">R8 gap <select value={gapJustified} onChange={(e) => setField("gapJustified", e.target.value)} aria-label="R8 gap classification"><option value="justified">justified</option><option value="misclassified">misclassified</option></select></label>
+        <input value={gapCorrection} onChange={(e) => setField("gapCorrection", e.target.value)} aria-label="Gap correction type" placeholder="correct gap type if misclassified" size={24} />
+        <label className="muted small">R9 priority <select value={priority} onChange={(e) => setField("priority", e.target.value)} aria-label="R9 priority"><option value="proportionate">proportionate</option><option value="inflated">inflated</option><option value="deflated">deflated</option></select></label>
+        <label className="muted small">R10 blocking <select value={blocking} onChange={(e) => setField("blocking", e.target.value)} aria-label="R10 blocking potential"><option value="advisory">advisory</option><option value="blocker-candidate">blocker-candidate</option><option value="policy-decision">policy-decision</option><option value="na">na</option><option value="undetermined">undetermined</option></select></label>
+        <label className="muted small"><input type="checkbox" checked={qualsOk} onChange={(e) => setField("qualsOk", e.target.checked)} /> qualifications preserved</label>
+        <label className="muted small">Reviewer <input value={reviewer} onChange={(e) => setField("reviewer", e.target.value)} aria-label="Reviewer identity" size={18} /></label>
+      </div>
+      <div className="inline-form">
+        <input value={summary} onChange={(e) => setField("summary", e.target.value)} aria-label="Review summary" placeholder="One-line verdict summary" size={50} />
+      </div>
+      <div className="button-row">
+        <button className="button button-primary button-small" onClick={() => void submit("completed")}>Submit completed review</button>
+        <button className="button button-secondary button-small" onClick={() => void submit("draft")}>Save draft</button>
+        <button className="button button-secondary button-small" onClick={() => void submit("deferred")}>Defer</button>
+        <button className="button button-secondary button-small" onClick={() => void submit("abstained")}>Abstain</button>
+      </div>
+    </article>
+  );
+}
+
+function CalibrationPanel({ projectId }: { projectId: string }) {
+  const toast = useToast();
+  const [searchParams, setSearchParams] = useSearchParams();
   const runs = useApi<CalibrationRun[]>("/api/publication/calibration/runs", { pollMs: 60000 });
   const sample = useApi<Record<string, unknown>>("/api/publication/calibration/sample", { pollMs: 60000 });
   const stats = useApi<Record<string, unknown>>("/api/publication/calibration/stats", { pollMs: 60000 });
   const reviews = useApi<CalibrationReview[]>("/api/publication/calibration", { pollMs: 30000 });
-  const [arm, setArm] = useState("ALL");
-  const [chapter, setChapter] = useState("ALL");
+  const [arm, setArm] = useState(() => searchParams.get("arm") ?? "ALL");
+  const [chapter, setChapter] = useState(() => searchParams.get("calChapter") ?? "ALL");
   const [template, setTemplate] = useState("ALL");
-  const [state, setState] = useState("ALL");
-  const [visible, setVisible] = useState(10);
+  const [state, setState] = useState(() => searchParams.get("calState") ?? "ALL");
+  const [query, setQuery] = useState("");
+  const [visible, setVisible] = useState(25);
 
   const packets = useApi<{ count: number; packets: CalibrationPacket[] }>(
     arm === "ALL" ? "/api/publication/calibration/packets?limit=140" : `/api/publication/calibration/packets?arm=${arm}&limit=140`,
   );
+
+  function syncParam(key: string, value: string, setter: (v: string) => void) {
+    setter(value);
+    setVisible(25);
+    setSearchParams((prev) => {
+      const u = new URLSearchParams(prev);
+      if (value === "ALL" || !value) u.delete(key);
+      else u.set(key, value);
+      return u;
+    }, { replace: true });
+  }
 
   async function refresh() {
     reviews.reload();
@@ -2272,16 +2144,42 @@ function CalibrationPanel({ projectId }: { projectId: string }) {
   }
 
   const reviewedIds = new Set((reviews.data ?? []).filter((r) => !(r.verdict.startsWith("DRAFT:") || r.verdict.startsWith("DEFERRED:") || r.verdict.startsWith("ABSTAINED:") || !r.verdict.trim())).map((r) => r.requirement_id));
-  const chapters = [...new Set((packets.data?.packets ?? []).map((p) => p.chapter_id))].sort();
-  const templates = [...new Set((packets.data?.packets ?? []).map((p) => p.requirement_template))].sort();
-  const filtered = (packets.data?.packets ?? []).filter((p) =>
+  const allPackets = packets.data?.packets ?? [];
+  const chapters = [...new Set(allPackets.map((p) => p.chapter_id))].sort();
+  const templates = [...new Set(allPackets.map((p) => p.requirement_template))].sort();
+  const needle = query.trim().toLowerCase();
+  const filtered = allPackets.filter((p) =>
     (chapter === "ALL" || p.chapter_id === chapter) &&
     (template === "ALL" || p.requirement_template === template) &&
     (state === "ALL" ||
       (state === "awaiting" && !reviewedIds.has(p.requirement_id)) ||
       (state === "reviewed" && reviewedIds.has(p.requirement_id)) ||
-      (state === "integrity-flag" && p.integrity["stale_or_missing"])),
+      (state === "integrity-flag" && p.integrity["stale_or_missing"])) &&
+    (!needle || `${p.calibration_case_id} ${p.chapter_id} ${p.requirement_template} ${p.claim_text}`.toLowerCase().includes(needle)),
   );
+
+  const selectedId = searchParams.get("packet");
+  const selectedIndex = filtered.findIndex((p) => p.calibration_case_id === selectedId);
+  const selected = selectedIndex >= 0 ? filtered[selectedIndex] : filtered[0] ?? null;
+
+  function selectPacket(id: string | null) {
+    setSearchParams((prev) => {
+      const u = new URLSearchParams(prev);
+      if (!id) u.delete("packet");
+      else u.set("packet", id);
+      return u;
+    }, { replace: true });
+  }
+
+  function step(delta: number) {
+    if (!filtered.length) return;
+    const current = selected ? filtered.findIndex((p) => p.calibration_case_id === selected.calibration_case_id) : -1;
+    const next = (current + delta + filtered.length) % filtered.length;
+    selectPacket(filtered[next].calibration_case_id);
+  }
+
+  const completedCount = reviewedIds.size;
+  const pendingCount = filtered.length - filtered.filter((p) => reviewedIds.has(p.requirement_id)).length;
 
   return (
     <>
@@ -2289,6 +2187,11 @@ function CalibrationPanel({ projectId }: { projectId: string }) {
         title="Calibration"
         description="Evidence-requirement qualification: sampled obligations, source-grounded packets, explicit reviewer provenance. Provisional machine analysis is never ground truth."
       >
+        <p className="muted small">
+          Shared frozen sample CAL04A02 (book-inference, 140 packets) shown in this project for review continuity.
+          Packets are <strong>not project-owned</strong>: chapters like 43-chapter.md belong to the Inference sample,
+          not the Math manuscript. Review provenance stays explicit below.
+        </p>
         {runs.error ? <InlineError message={runs.error.message} /> : null}
         {(runs.data ?? []).map((run) => (
           <p key={run.run_id} className="muted small">
@@ -2298,6 +2201,11 @@ function CalibrationPanel({ projectId }: { projectId: string }) {
             {run.seed !== undefined ? ` · seed ${String(run.seed)}` : ""}
           </p>
         ))}
+        {sample.data ? (
+          <p className="muted small">
+            Sample {(sample.data as { new_distinct?: number }).new_distinct ?? "—"} distinct · {(sample.data as { new_model_calls?: number }).new_model_calls ?? "—"} model calls · run {(sample.data as { run_id?: string }).run_id ?? "CAL04A02-20261112"}
+          </p>
+        ) : null}
         {stats.data ? (
           <p className="muted small">
             Human completed: {String((stats.data["human_completed"] as number) ?? 0)} ·
@@ -2313,34 +2221,71 @@ function CalibrationPanel({ projectId }: { projectId: string }) {
 
       <Section
         title="Calibration review queue"
-        description="R1–R10 rubric per packet. Drafts, deferrals and abstentions are recorded, never silently completed."
+        description="Compact queue with detail pane. Select a packet to review; drafts persist across navigation. R1–R10 rubric per packet."
+        actions={filtered.length ? <Tag>{completedCount} reviewed · {pendingCount} pending in filter</Tag> : undefined}
       >
-        <div className="inline-form">
-          <label className="muted small">Arm <select value={arm} onChange={(e) => { setArm(e.target.value); setVisible(10); }} aria-label="Sampling arm"><option value="ALL">All</option><option value="A">A (probability)</option><option value="B">B (diagnostic)</option></select></label>
-          <label className="muted small">Chapter <select value={chapter} onChange={(e) => { setChapter(e.target.value); setVisible(10); }} aria-label="Calibration chapter"><option value="ALL">All</option>{chapters.map((c) => <option key={c} value={c}>{c}</option>)}</select></label>
-          <label className="muted small">Template <select value={template} onChange={(e) => { setTemplate(e.target.value); setVisible(10); }} aria-label="Requirement template"><option value="ALL">All</option>{templates.map((t) => <option key={t} value={t}>{t}</option>)}</select></label>
-          <label className="muted small">State <select value={state} onChange={(e) => { setState(e.target.value); setVisible(10); }} aria-label="Review state"><option value="ALL">All</option><option value="awaiting">Awaiting</option><option value="reviewed">Reviewed</option><option value="integrity-flag">Integrity flag</option></select></label>
+        <div className="inline-form" role="search">
+          <label className="muted small">Search <input value={query} onChange={(e) => { setQuery(e.target.value); setVisible(25); }} placeholder="case, chapter, claim" aria-label="Search review queue" size={24} /></label>
+          <label className="muted small">Arm <select value={arm} onChange={(e) => syncParam("arm", e.target.value, setArm)} aria-label="Sampling arm"><option value="ALL">All</option><option value="A">A (probability)</option><option value="B">B (diagnostic)</option></select></label>
+          <label className="muted small">Chapter <select value={chapter} onChange={(e) => syncParam("calChapter", e.target.value, setChapter)} aria-label="Calibration chapter"><option value="ALL">All</option>{chapters.map((c) => <option key={c} value={c}>{c}</option>)}</select></label>
+          <label className="muted small">Template <select value={template} onChange={(e) => { setTemplate(e.target.value); setVisible(25); }} aria-label="Requirement template"><option value="ALL">All</option>{templates.map((t) => <option key={t} value={t}>{t}</option>)}</select></label>
+          <label className="muted small">State <select value={state} onChange={(e) => syncParam("calState", e.target.value, setState)} aria-label="Review state"><option value="ALL">All</option><option value="awaiting">Awaiting</option><option value="reviewed">Reviewed</option><option value="integrity-flag">Integrity flag</option></select></label>
         </div>
         {packets.error ? <InlineError message={packets.error.message} /> : null}
         {packets.loading ? <LoadingBlock label="Loading review packets" compact /> : null}
-        <div className="writer-decision-queue">
-          {filtered.slice(0, visible).map((packet) => (
-            <CalibrationReviewCard
-              key={packet.calibration_case_id}
-              packet={packet}
-              existing={(reviews.data ?? []).filter((r) => r.requirement_id === packet.requirement_id)}
-              onSaved={() => { reviews.reload(); stats.reload(); }}
-            />
-          ))}
-        </div>
-        {filtered.length > visible ? (
-          <button className="button button-secondary button-small" onClick={() => setVisible((v) => v + 10)}>
-            Show more ({filtered.length - visible} remaining)
-          </button>
-        ) : null}
         {packets.data && filtered.length === 0 && !packets.loading ? (
           <p className="muted small">No packets match these filters. Unreviewed packets stay awaiting — never counted as reviewed.</p>
         ) : null}
+        <div className="cal-queue-layout">
+          <div className="cal-queue-list" role="listbox" aria-label="Review packets">
+            {filtered.slice(0, visible).map((packet) => {
+              const reviewed = reviewedIds.has(packet.requirement_id);
+              const active = selected?.calibration_case_id === packet.calibration_case_id;
+              return (
+                <button
+                  key={packet.calibration_case_id}
+                  role="option"
+                  aria-selected={active}
+                  className={`cal-queue-row ${active ? "active" : ""}`}
+                  onClick={() => selectPacket(packet.calibration_case_id)}
+                >
+                  <span className="cal-queue-main">
+                    <strong>{packet.calibration_case_id} · {packet.requirement_template}</strong>
+                    <small>{packet.chapter_id} · {packet.current_applicability} · {packet.current_satisfaction} · {reviewed ? "reviewed" : "awaiting"}{packet.integrity["stale_or_missing"] ? " · integrity flag" : ""}</small>
+                    <small>{packet.claim_text.slice(0, 110)}…</small>
+                  </span>
+                </button>
+              );
+            })}
+            {filtered.length > visible ? (
+              <button className="button button-secondary button-small" onClick={() => setVisible((v) => v + 25)}>
+                Show more ({filtered.length - visible} remaining)
+              </button>
+            ) : null}
+          </div>
+          <div>
+            {selected ? (
+              <>
+                <div className="cal-detail-nav">
+                  <span className="muted small">{selectedIndex >= 0 ? selectedIndex + 1 : 1} of {filtered.length}</span>
+                  <div className="button-row">
+                    <button className="button button-secondary button-small" onClick={() => step(-1)} aria-label="Previous packet">Previous</button>
+                    <button className="button button-secondary button-small" onClick={() => step(1)} aria-label="Next packet">Next</button>
+                  </div>
+                </div>
+                <CalibrationDetailForm
+                  key={selected.calibration_case_id}
+                  packet={selected}
+                  existing={(reviews.data ?? []).filter((r) => r.requirement_id === selected.requirement_id)}
+                  projectId={projectId}
+                  onSaved={() => { reviews.reload(); stats.reload(); }}
+                />
+              </>
+            ) : (
+              <p className="muted small">Select a packet to review. No packet is auto-completed.</p>
+            )}
+          </div>
+        </div>
       </Section>
     </>
   );
@@ -2348,6 +2293,7 @@ function CalibrationPanel({ projectId }: { projectId: string }) {
 
 function QualityPanel({ projectId }: { projectId: string }) {
   const toast = useToast();
+  const [searchParams, setSearchParams] = useSearchParams();
   const quality = useApi<QualityWorkspace>(`/api/quality/workspace?project_id=${projectId}`, { pollMs: 60000 });
   const discovery = useApi<QualityDiscovery[]>(`/api/quality/discovery?project_id=${projectId}`, { pollMs: 60000 });
   const writer = useApi<WriterWorkspace>("/api/writer/books", { pollMs: 60000 });
@@ -2359,6 +2305,27 @@ function QualityPanel({ projectId }: { projectId: string }) {
   const [campaignModel, setCampaignModel] = useState("opencode-go/deepseek-v4.1-flash");
   const [campaignStrategy, setCampaignStrategy] = useState("direct");
   const [selectedChapters, setSelectedChapters] = useState<string[]>([]);
+
+  const qview = searchParams.get("qview") ?? "overview";
+  const qchapter = searchParams.get("qchapter") ?? "ALL";
+  const [qsearch, setQsearch] = useState("");
+
+  function setQview(v: string) {
+    setSearchParams((prev) => {
+      const u = new URLSearchParams(prev);
+      if (v === "overview") u.delete("qview");
+      else u.set("qview", v);
+      return u;
+    }, { replace: true });
+  }
+  function setQchapter(v: string) {
+    setSearchParams((prev) => {
+      const u = new URLSearchParams(prev);
+      if (v === "ALL") u.delete("qchapter");
+      else u.set("qchapter", v);
+      return u;
+    }, { replace: true });
+  }
 
   const writerFindings = (writer.data?.decision_queue ?? []).filter(
     (item) => item.project_id === projectId,
@@ -2477,321 +2444,363 @@ function QualityPanel({ projectId }: { projectId: string }) {
     }
   }
 
+  const needle = qsearch.trim().toLowerCase();
+  function matchesChapter(id: string, title: string | null): boolean {
+    if (qchapter !== "ALL" && id !== qchapter) return false;
+    if (!needle) return true;
+    return `${id} ${title ?? ""}`.toLowerCase().includes(needle);
+  }
+  const filteredMapRows = mapRows.filter((r) => matchesChapter(r.chapter_id, r.title));
+  const filteredChapters = (quality.data?.chapters ?? []).filter((c) =>
+    matchesChapter(c.chapter_id, c.chapter_title),
+  );
+  const allChapters = [...new Set((discovery.data ?? []).map((d) => d.chapter_id))].sort();
+
+  const artifactRows = (discovery.data ?? []).map((d) => {
+    const chapter = (artifactLoad.data?.chapters ?? []).find(
+      (c: ArtifactLoadChapter) => c.chapter_id === d.chapter_id,
+    );
+    const current = chapter?.current;
+    const prose = evalByChapter.get(d.chapter_id)?.current?.overall ?? null;
+    return {
+      chapter_id: d.chapter_id,
+      title: d.title,
+      prose_overall: prose,
+      mech: current?.mechanical_pressure ?? null,
+      weighted_load: current?.weighted_load ?? null,
+      confirmed: current?.confirmed ?? 0,
+      high: current?.high ?? 0,
+      unreviewed: current?.unreviewed ?? 0,
+      coverage_mech: current?.coverage_mechanical ?? 0,
+      coverage_sem: current?.coverage_semantic ?? 0,
+      assessment: current?.assessment_state ?? "not_assessed",
+      workbench_link: current?.workbench_link ?? null,
+    };
+  }).filter((r) => matchesChapter(r.chapter_id, r.title));
+
+  const writerRows = (discovery.data ?? []).map((d) => {
+    const target = d.chapter_id.replace(/\.md$/, "");
+    const items = (writerEvals.data ?? []).filter(
+      (item) => item.envelope.work_object.target_id.replace(/\.md$/, "") === target,
+    );
+    return {
+      chapter_id: d.chapter_id,
+      title: d.title,
+      current: items.filter((item) => item.current),
+      historical: items.filter((item) => !item.current),
+    };
+  }).filter((row) => (row.current.length > 0 || row.historical.length > 0) && matchesChapter(row.chapter_id, row.title));
+
+  const validViews = new Set(["overview", "chapters", "signals", "campaigns"]);
+  const activeView = validViews.has(qview) ? qview : "overview";
+
   return (
     <>
-      <Section
-        title="Manuscript quality"
-        description="Independent AI prose-quality observations. Hygiene, technical evidence and publication readiness are separate measurements, never folded into these scores."
-        actions={
-          quality.data?.chapters_current ? (
-            <Tag tone="accent">{quality.data.chapters_current} current</Tag>
-          ) : null
-        }
-      >
-        {quality.loading ? <LoadingBlock label="Loading quality evaluations" compact /> : null}
-        {quality.error ? <InlineError message={quality.error.message} /> : null}
-        {quality.data && quality.data.chapters.length === 0 && discovery.data?.length ? (
-          <EmptyState
-            title="No quality evaluations yet"
-            description="Use the evaluation campaign below to assess the missing chapters."
-            icon={<Crosshair size={19} />}
-          />
-        ) : null}
-        {discovery.data ? (
-          <p className="muted small">
-            Coverage: {quality.data?.chapters_current ?? 0} of {discovery.data.length} chapters current ·{" "}
-            {comparableNote}
-          </p>
-        ) : null}
-        {(() => {
-          const stages: Record<string, number> = {};
-          for (const chapter of quality.data?.chapters ?? []) {
-            const latest = [...chapter.evaluations].sort((a, b) =>
-              a.created_at < b.created_at ? 1 : -1,
-            )[0];
-            for (const unit of latest?.execution?.coverage?.units ?? []) {
-              stages[unit.stage] = (stages[unit.stage] ?? 0) + 1;
-            }
-          }
-          const parts = Object.entries(stages).map(([stage, count]) => `${stage}: ${count}`);
-          if (!parts.length) return null;
-          return (
-            <p className="muted small">
-              Unit stages (latest evaluation per chapter): {parts.join(" · ")}
-            </p>
-          );
-        })()}
-        {currentEvals.length ? (
-          <div className="writer-mini-scores">
-            {QUALITY_DIMENSIONS.map((dim) => {
-              const values = currentEvals
-                .map((e) => e.dimensions[dim]?.score)
-                .filter((s): s is number => typeof s === "number");
-              return (
-                <span key={dim} title={`${dim}: mean and median over current chapter observations`}>
-                  {QUALITY_DIM_SHORT[dim]}: mean {mean(values) ?? "—"} · median {median(values)}
-                </span>
-              );
-            })}
-          </div>
-        ) : null}
-      </Section>
-
-      <Section
-        title="Book Quality Map"
-        description="Chapter by chapter across the six prose dimensions. Dashes mean no current observation; low values are review directions, not defect verdicts."
-      >
-        {mapRows.length ? <QualityMap rows={mapRows} /> : <LoadingBlock label="Loading chapter map" compact />}
-      </Section>
-
-      <Section
-        title="Artifact Load"
-        description="Independent burden measure: confirmed expository-overload concentration per chapter. Higher means more confirmed problems. Never merged into prose scores; disagreement between the two is useful evidence."
-        actions={
-          artifactLoad.data?.chapters_current ? (
-            <Tag tone="accent">{artifactLoad.data.chapters_current} current</Tag>
-          ) : null
-        }
-      >
-        {artifactLoad.loading ? <LoadingBlock label="Loading artifact load" compact /> : null}
-        {artifactLoad.error ? <InlineError message={artifactLoad.error.message} /> : null}
-        {artifactLoad.data && artifactLoad.data.chapters.length === 0 ? (
-          <EmptyState
-            title="No artifact load observations yet"
-            description="Record deterministic Writer findings per chapter; confirmed load appears here alongside prose scores."
-            icon={<Crosshair size={19} />}
-          />
-        ) : null}
-        {artifactLoad.data ? (
-          <ArtifactLoadMap
-            rows={(discovery.data ?? []).map((d) => {
-              const chapter = (artifactLoad.data?.chapters ?? []).find(
-                (c: ArtifactLoadChapter) => c.chapter_id === d.chapter_id,
-              );
-              const current = chapter?.current;
-              const prose = evalByChapter.get(d.chapter_id)?.current?.overall ?? null;
-              return {
-                chapter_id: d.chapter_id,
-                title: d.title,
-                prose_overall: prose,
-                mech: current?.mechanical_pressure ?? null,
-                weighted_load: current?.weighted_load ?? null,
-                confirmed: current?.confirmed ?? 0,
-                high: current?.high ?? 0,
-                unreviewed: current?.unreviewed ?? 0,
-                coverage_mech: current?.coverage_mechanical ?? 0,
-                coverage_sem: current?.coverage_semantic ?? 0,
-                assessment: current?.assessment_state ?? "not_assessed",
-                workbench_link: current?.workbench_link ?? null,
-              };
-            })}
-          />
-        ) : null}
-        {artifactLoad.data?.limitations?.map((note: string) => (
-          <p key={note} className="muted small">{note}</p>
+      <div className="button-row quality-subnav" role="tablist" aria-label="Quality subviews">
+        {(["overview", "chapters", "signals", "campaigns"] as const).map((v) => (
+          <button
+            key={v}
+            type="button"
+            role="tab"
+            aria-selected={activeView === v}
+            className={`button button-small ${activeView === v ? "button-secondary" : "button-ghost"}`}
+            onClick={() => setQview(v)}
+          >
+            {v === "overview" ? "Summary" : v === "chapters" ? "Chapters" : v === "signals" ? "Signals" : "Campaigns"}
+          </button>
         ))}
-      </Section>
-
-      <Section
-        title="Writer evaluations"
-        description="Independent Writer specialist observations (QC verdicts, artifact findings) with native scales and provenance. Shown alongside — never merged into — prose, technical, artifact-load, and publication measures."
-      >
-        {writerEvals.loading ? <LoadingBlock label="Loading Writer evaluations" compact /> : null}
-        {writerEvals.error ? <InlineError message={writerEvals.error.message} /> : null}
-        {!writerEvals.loading && !writerEvals.error && (writerEvals.data ?? []).length === 0 ? (
-          <EmptyState
-            title="No Writer evaluations yet"
-            description="Ingest a Writer evaluation envelope for a chapter; it appears here with its native evidence and history."
-            icon={<Crosshair size={19} />}
-          />
+      </div>
+      <div className="inline-form" role="search">
+        <label className="muted small">
+          Search{" "}
+          <input value={qsearch} onChange={(e) => setQsearch(e.target.value)} placeholder="chapter id or title" aria-label="Search quality chapters" size={24} />
+        </label>
+        <label className="muted small">
+          Chapter{" "}
+          <select value={qchapter} onChange={(e) => setQchapter(e.target.value)} aria-label="Filter by chapter">
+            <option value="ALL">All ({(discovery.data ?? []).length})</option>
+            {allChapters.map((c) => (
+              <option key={c} value={c}>{c}</option>
+            ))}
+          </select>
+        </label>
+        {(qchapter !== "ALL" || needle) ? (
+          <button className="button button-secondary button-small" onClick={() => { setQsearch(""); setQchapter("ALL"); }}>Clear filter</button>
         ) : null}
-        {(writerEvals.data ?? []).length ? (
-          <WriterEvaluationsMap
-            rows={(discovery.data ?? []).map((d) => {
-              const target = d.chapter_id.replace(/\.md$/, "");
-              const items = (writerEvals.data ?? []).filter(
-                (item) => item.envelope.work_object.target_id.replace(/\.md$/, "") === target,
-              );
-              return {
-                chapter_id: d.chapter_id,
-                title: d.title,
-                current: items.filter((item) => item.current),
-                historical: items.filter((item) => !item.current),
-              };
-            }).filter((row) => row.current.length > 0 || row.historical.length > 0)}
-          />
-        ) : null}
-      </Section>
+      </div>
 
-      <Section
-        title="Evaluation campaign"
-        description="One deliberate operation evaluates missing or outdated chapters. Progress persists per chapter; stopping and resuming never discards completed work."
-      >
-        {campaigns.error ? <InlineError message={campaigns.error.message} /> : null}
-        {activeCampaign ? (
-          <div className="writer-decision-card">
-            <div className="writer-decision-head">
-              <strong>{activeCampaign.id.slice(0, 14)} · {activeCampaign.mode} · {activeCampaign.strategy ?? "direct"}</strong>
-              <span className="writer-decision-count">
-                {activeCampaign.completed} done · {activeCampaign.failed} failed · {activeCampaign.remaining} remaining
-                {activeCampaign.current_chapter ? ` · now: ${activeCampaign.current_chapter}` : ""}
-              </span>
-              <Tag tone={activeCampaign.status === "running" ? "accent" : "default"}>{titleCase(activeCampaign.status)}</Tag>
-            </div>
-            {activeCampaign.error ? <p className="warn-text small">{activeCampaign.error}</p> : null}
-            <div className="button-row">
-              {activeCampaign.status === "running" || activeCampaign.status === "pending" ? (
-                <button className="button button-secondary button-small" onClick={() => void stopCampaign(activeCampaign.id)}>
-                  Stop after current chapter
-                </button>
-              ) : null}
-              {["partial", "interrupted", "failed"].includes(activeCampaign.status) ? (
-                <button className="button button-secondary button-small" onClick={() => void resumeCampaign(activeCampaign.id)}>
-                  Resume remaining chapters
-                </button>
-              ) : null}
-            </div>
-          </div>
-        ) : (
-          <div className="inline-form">
-            <label className="muted small">
-              Mode{" "}
-              <select value={campaignMode} onChange={(event) => setCampaignMode(event.target.value)} aria-label="Campaign mode">
-                <option value="missing">Evaluate missing</option>
-                <option value="outdated">Evaluate outdated</option>
-                <option value="selected">Evaluate selected</option>
-                <option value="full">Re-evaluate entire book</option>
-              </select>
-            </label>
-            <label className="muted small">
-              Strategy{" "}
-              <select value={campaignStrategy} onChange={(event) => setCampaignStrategy(event.target.value)} aria-label="Campaign strategy">
-                <option value="deterministic">Deterministic checks</option>
-                <option value="direct">Direct semantic review</option>
-                <option value="bounded_judge">Bounded judgment (shadow)</option>
-              </select>
-            </label>
-            <label className="muted small">
-              Model{" "}
-              <input
-                value={campaignModel}
-                onChange={(event) => setCampaignModel(event.target.value)}
-                placeholder="opencode-go/deepseek-v4.1-flash"
-                aria-label="Campaign model route"
-                size={32}
+      {activeView === "overview" ? (
+        <>
+          <Section
+            title="Manuscript quality"
+            description="Independent AI prose-quality observations. Hygiene, technical evidence and publication readiness are separate measurements, never folded into these scores."
+            actions={
+              quality.data?.chapters_current ? (
+                <Tag tone="accent">{quality.data.chapters_current} current</Tag>
+              ) : null
+            }
+          >
+            {quality.loading ? <LoadingBlock label="Loading quality evaluations" compact /> : null}
+            {quality.error ? <InlineError message={quality.error.message} /> : null}
+            {quality.data && quality.data.chapters.length === 0 && discovery.data?.length ? (
+              <EmptyState
+                title="No quality evaluations yet"
+                description="Use the evaluation campaign below to assess the missing chapters."
+                icon={<Crosshair size={19} />}
               />
-            </label>
-            <button
-              className="button button-primary button-small"
-              disabled={campaignBusy}
-              onClick={() => void createCampaign(campaignMode, campaignMode === "selected" ? selectedChapters : undefined)}
-            >
-              {campaignBusy ? "Starting…" : campaignMode === "full" ? "Confirm full-book re-evaluation" : "Start campaign"}
-            </button>
-          </div>
-        )}
-        {campaignMode === "selected" && !activeCampaign ? (
-          <div className="table-wrap">
-            <p className="muted small">Tick chapters for a targeted run ({selectedChapters.length} selected).</p>
-            {(discovery.data ?? []).map((row) => (
-              <label key={row.chapter_id} className="muted small" style={{ display: "block" }}>
-                <input
-                  type="checkbox"
-                  checked={selectedChapters.includes(row.chapter_id)}
-                  onChange={(event) =>
-                    setSelectedChapters((current) =>
-                      event.target.checked
-                        ? [...current, row.chapter_id]
-                        : current.filter((id) => id !== row.chapter_id),
-                    )
-                  }
-                />{" "}
-                {row.chapter_id} — {row.title ?? "untitled"} ({row.eligibility})
-              </label>
-            ))}
-          </div>
-        ) : null}
-        {pastCampaigns.length ? (
-          <details className="history-list">
-            <summary>Past campaigns ({pastCampaigns.length})</summary>
-            {pastCampaigns.map((c) => (
-              <p key={c.id} className="muted small">
-                {c.id.slice(0, 14)} · {c.mode} · {c.strategy ?? "direct"} · {c.status} · {c.completed} done, {c.failed} failed
-                {c.error ? ` · ${c.error}` : ""}
+            ) : null}
+            {discovery.data ? (
+              <p className="muted small">
+                Coverage: {quality.data?.chapters_current ?? 0} of {discovery.data.length} chapters current ·{" "}
+                {comparableNote}
               </p>
-            ))}
-          </details>
-        ) : null}
-      </Section>
-
-      <Section
-        title="Priority review"
-        description="Review directions grounded in specific observations and verified evidence — never bare low scores, and never automatic rewrites."
-      >
-        {priorities.length === 0 ? (
-          <p className="muted small">No grounded review items. Scores alone do not create findings.</p>
-        ) : (
-          <ul className="plain-list">
-            {priorities.slice(0, 20).map((item, index) => (
-              <li key={`${item.title}-${index}`}>
-                <strong>{item.title}</strong>
-                <br />
-                <span className="muted small">{item.detail}</span>{" "}
-                {item.chapter_id ? (
-                  <a className="text-link" href={`#quality-${item.chapter_id}`}>
-                    Open evaluation
-                  </a>
-                ) : null}
-              </li>
-            ))}
-          </ul>
-        )}
-        {writerFindings.length ? (
-          <>
-            <span className="eyebrow">Readability signals (Writer, deterministic)</span>
-            <div className="writer-decision-queue">
-              {writerFindings.slice(0, 5).map((item: WriterDecisionQueueItem) => (
-                <article className="writer-decision-card" key={item.id}>
-                  <div className="writer-decision-head">
-                    <Tag tone={item.severity === "high" ? "danger" : item.severity === "medium" ? "accent" : "default"}>
-                      {item.severity.toUpperCase()}
-                    </Tag>
-                    <strong>{item.code}</strong>
-                    <span className="writer-decision-count">
-                      {item.count} finding{item.count === 1 ? "" : "s"} · {item.chapter_title || item.chapter_name}
+            ) : null}
+            {currentEvals.length ? (
+              <div className="writer-mini-scores">
+                {QUALITY_DIMENSIONS.map((dim) => {
+                  const values = currentEvals
+                    .map((e) => e.dimensions[dim]?.score)
+                    .filter((s): s is number => typeof s === "number");
+                  return (
+                    <span key={dim} title={`${dim}: mean and median over current chapter observations`}>
+                      {QUALITY_DIM_SHORT[dim]}: mean {mean(values) ?? "—"} · median {median(values)}
                     </span>
-                  </div>
-                  <p className="muted small">{item.reason}</p>
-                </article>
+                  );
+                })}
+              </div>
+            ) : null}
+          </Section>
+          <Section
+            title="Priority review"
+            description="Review directions grounded in specific observations and verified evidence — never bare low scores, and never automatic rewrites."
+          >
+            {priorities.length === 0 ? (
+              <p className="muted small">No grounded review items. Scores alone do not create findings.</p>
+            ) : (
+              <ul className="plain-list">
+                {priorities.slice(0, 20).map((item, index) => (
+                  <li key={`${item.title}-${index}`}>
+                    <strong>{item.title}</strong>
+                    <br />
+                    <span className="muted small">{item.detail}</span>{" "}
+                    {item.chapter_id ? (
+                      <button className="text-link" onClick={() => { setQchapter(item.chapter_id as string); setQview("chapters"); }}>
+                        Open in Chapters
+                      </button>
+                    ) : null}
+                  </li>
+                ))}
+              </ul>
+            )}
+            {writerFindings.length ? (
+              <>
+                <span className="eyebrow">Readability signals (Writer, deterministic)</span>
+                <div className="writer-decision-queue">
+                  {writerFindings.slice(0, 5).map((item: WriterDecisionQueueItem) => (
+                    <article className="writer-decision-card" key={item.id}>
+                      <div className="writer-decision-head">
+                        <Tag tone={item.severity === "high" ? "danger" : item.severity === "medium" ? "accent" : "default"}>
+                          {item.severity.toUpperCase()}
+                        </Tag>
+                        <strong>{item.code}</strong>
+                        <span className="writer-decision-count">
+                          {item.count} finding{item.count === 1 ? "" : "s"} · {item.chapter_title || item.chapter_name}
+                        </span>
+                      </div>
+                      <p className="muted small">{item.reason}</p>
+                    </article>
+                  ))}
+                </div>
+                <p className="muted small">Deterministic readability signals; not AI judgments and not combined with the scores above.</p>
+              </>
+            ) : null}
+          </Section>
+        </>
+      ) : null}
+
+      {activeView === "chapters" ? (
+        <>
+          <Section
+            title="Book Quality Map"
+            description="Chapter by chapter across the six prose dimensions. Dashes mean no current observation; low values are review directions, not defect verdicts."
+            actions={filteredMapRows.length !== mapRows.length ? <Tag>{filteredMapRows.length} of {mapRows.length} shown</Tag> : undefined}
+          >
+            {filteredMapRows.length ? <QualityMap rows={filteredMapRows} /> : <p className="muted small">No chapters match this filter. Unassessed is not a healthy zero.</p>}
+          </Section>
+          <Section title="Chapter evaluations" description="Scorecards with provenance, history and Workbench handoff. Filtered by the shared chapter selector above.">
+            {filteredChapters.length ? (
+              <div className="writer-decision-queue">
+                {filteredChapters.map((chapter) => (
+                  <QualityChapterCard key={chapter.chapter_id} chapter={chapter} />
+                ))}
+              </div>
+            ) : (
+              <p className="muted small">No chapter evaluations match this filter.</p>
+            )}
+            {quality.data?.limitations.length ? (
+              <ul className="plain-list writer-boundaries">
+                {quality.data.limitations.map((limitation) => (
+                  <li key={limitation}>{limitation}</li>
+                ))}
+              </ul>
+            ) : null}
+          </Section>
+        </>
+      ) : null}
+
+      {activeView === "signals" ? (
+        <>
+          <Section
+            title="Artifact Load"
+            description="Independent burden measure: confirmed expository-overload concentration per chapter. Higher means more confirmed problems. Never merged into prose scores; disagreement between the two is useful evidence."
+            actions={
+              artifactLoad.data?.chapters_current ? (
+                <Tag tone="accent">{artifactLoad.data.chapters_current} current</Tag>
+              ) : null
+            }
+          >
+            {artifactLoad.loading ? <LoadingBlock label="Loading artifact load" compact /> : null}
+            {artifactLoad.error ? <InlineError message={artifactLoad.error.message} /> : null}
+            {artifactRows.length ? (
+              <ArtifactLoadMap rows={artifactRows} />
+            ) : (
+              <p className="muted small">No artifact-load rows match this filter. Not assessed is never a healthy zero.</p>
+            )}
+            {artifactLoad.data?.limitations?.map((note: string) => (
+              <p key={note} className="muted small">{note}</p>
+            ))}
+          </Section>
+
+          <Section
+            title="Writer evaluations"
+            description="Independent Writer specialist observations (QC verdicts, artifact findings) with native scales and provenance. Shown alongside — never merged into — prose, technical, artifact-load, and publication measures."
+          >
+            {writerEvals.loading ? <LoadingBlock label="Loading Writer evaluations" compact /> : null}
+            {writerEvals.error ? <InlineError message={writerEvals.error.message} /> : null}
+            {!writerEvals.loading && !writerEvals.error && writerRows.length === 0 ? (
+              <EmptyState
+                title={(writerEvals.data ?? []).length === 0 ? "No Writer evaluations yet" : "No Writer evaluations match"}
+                description="Ingest a Writer evaluation envelope for a chapter; it appears here with its native evidence and history."
+                icon={<Crosshair size={19} />}
+              />
+            ) : null}
+            {writerRows.length ? (
+              <WriterEvaluationsMap rows={writerRows} />
+            ) : null}
+          </Section>
+        </>
+      ) : null}
+
+      {activeView === "campaigns" ? (
+        <Section
+          title="Evaluation campaign"
+          description="One deliberate operation evaluates missing or outdated chapters. Progress persists per chapter; stopping and resuming never discards completed work."
+        >
+          {campaigns.error ? <InlineError message={campaigns.error.message} /> : null}
+          {activeCampaign ? (
+            <div className="writer-decision-card">
+              <div className="writer-decision-head">
+                <strong>{activeCampaign.id.slice(0, 14)} · {activeCampaign.mode} · {activeCampaign.strategy ?? "direct"}</strong>
+                <span className="writer-decision-count">
+                  {activeCampaign.completed} done · {activeCampaign.failed} failed · {activeCampaign.remaining} remaining
+                  {activeCampaign.current_chapter ? ` · now: ${activeCampaign.current_chapter}` : ""}
+                </span>
+                <Tag tone={activeCampaign.status === "running" ? "accent" : "default"}>{titleCase(activeCampaign.status)}</Tag>
+              </div>
+              {activeCampaign.error ? <p className="warn-text small">{activeCampaign.error}</p> : null}
+              <div className="button-row">
+                {activeCampaign.status === "running" || activeCampaign.status === "pending" ? (
+                  <button className="button button-secondary button-small" onClick={() => void stopCampaign(activeCampaign.id)}>
+                    Stop after current chapter
+                  </button>
+                ) : null}
+                {["partial", "interrupted", "failed"].includes(activeCampaign.status) ? (
+                  <button className="button button-secondary button-small" onClick={() => void resumeCampaign(activeCampaign.id)}>
+                    Resume remaining chapters
+                  </button>
+                ) : null}
+              </div>
+            </div>
+          ) : (
+            <div className="inline-form">
+              <label className="muted small">
+                Mode{" "}
+                <select value={campaignMode} onChange={(event) => setCampaignMode(event.target.value)} aria-label="Campaign mode">
+                  <option value="missing">Evaluate missing</option>
+                  <option value="outdated">Evaluate outdated</option>
+                  <option value="selected">Evaluate selected</option>
+                  <option value="full">Re-evaluate entire book</option>
+                </select>
+              </label>
+              <label className="muted small">
+                Strategy{" "}
+                <select value={campaignStrategy} onChange={(event) => setCampaignStrategy(event.target.value)} aria-label="Campaign strategy">
+                  <option value="deterministic">Deterministic checks</option>
+                  <option value="direct">Direct semantic review</option>
+                  <option value="bounded_judge">Bounded judgment (shadow)</option>
+                </select>
+              </label>
+              <label className="muted small">
+                Model{" "}
+                <input
+                  value={campaignModel}
+                  onChange={(event) => setCampaignModel(event.target.value)}
+                  placeholder="opencode-go/deepseek-v4.1-flash"
+                  aria-label="Campaign model route"
+                  size={32}
+                />
+              </label>
+              <button
+                className="button button-primary button-small"
+                disabled={campaignBusy}
+                onClick={() => void createCampaign(campaignMode, campaignMode === "selected" ? selectedChapters : undefined)}
+              >
+                {campaignBusy ? "Starting…" : campaignMode === "full" ? "Confirm full-book re-evaluation" : "Start campaign"}
+              </button>
+            </div>
+          )}
+          {campaignMode === "selected" && !activeCampaign ? (
+            <div className="table-wrap">
+              <p className="muted small">Tick chapters for a targeted run ({selectedChapters.length} selected).</p>
+              {(discovery.data ?? []).map((row) => (
+                <label key={row.chapter_id} className="muted small" style={{ display: "block" }}>
+                  <input
+                    type="checkbox"
+                    checked={selectedChapters.includes(row.chapter_id)}
+                    onChange={(event) =>
+                      setSelectedChapters((current) =>
+                        event.target.checked
+                          ? [...current, row.chapter_id]
+                          : current.filter((id) => id !== row.chapter_id),
+                      )
+                    }
+                  />{" "}
+                  {row.chapter_id} — {row.title ?? "untitled"} ({row.eligibility})
+                </label>
               ))}
             </div>
-            <p className="muted small">Deterministic readability signals; not AI judgments and not combined with the scores above.</p>
-          </>
-        ) : null}
-      </Section>
-
-      <Section title="Chapter evaluations" description="Scorecards with provenance, history and Workbench handoff.">
-        {quality.data ? (
-          <div className="writer-decision-queue">
-            {quality.data.chapters.map((chapter) => (
-              <QualityChapterCard key={chapter.chapter_id} chapter={chapter} />
-            ))}
-          </div>
-        ) : null}
-        {quality.data?.limitations.length ? (
-          <ul className="plain-list writer-boundaries">
-            {quality.data.limitations.map((limitation) => (
-              <li key={limitation}>{limitation}</li>
-            ))}
-          </ul>
-        ) : null}
-      </Section>
+          ) : null}
+          {pastCampaigns.length ? (
+            <details className="history-list">
+              <summary>Past campaigns ({pastCampaigns.length})</summary>
+              {pastCampaigns.map((c) => (
+                <p key={c.id} className="muted small">
+                  {c.id.slice(0, 14)} · {c.mode} · {c.strategy ?? "direct"} · {c.status} · {c.completed} done, {c.failed} failed
+                  {c.error ? ` · ${c.error}` : ""}
+                </p>
+              ))}
+            </details>
+          ) : null}
+        </Section>
+      ) : null}
     </>
   );
 }
 
 export function ProjectPage() {
   const { projectId = "" } = useParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const tab = normalizeProjectTab(searchParams.get("tab"));
   const project = useApi<ProjectDetail>(`/api/projects/${projectId}`, { pollMs: 60000 });
   const applications = useApi<Application[]>("/api/applications?enabled_only=true");
   const integrationContext = useApi<IntegrationRecord[]>(
@@ -2802,12 +2811,52 @@ export function ProjectPage() {
     `/api/projects/${projectId}/evidence-timeline`,
     { pollMs: 60000 },
   );
+  // Lightweight badge/overview data: always mounted so badges stay accurate when tabs switch.
+  const discovery = useApi<QualityDiscovery[]>(`/api/quality/discovery?project_id=${projectId}`, {
+    pollMs: 60000,
+  });
+  const techOverview = useApi<Record<string, unknown>>(
+    `/api/technical/overview?project_id=${projectId}`,
+    { pollMs: 60000 },
+  );
+  const qualityCampaigns = useApi<QualityCampaign[]>(`/api/quality/campaigns?project_id=${projectId}`, {
+    pollMs: 15000,
+  });
+  const calRuns = useApi<Array<{ run_id: string; awaiting?: number; reviewed?: number }>>(
+    "/api/publication/calibration/runs",
+    { pollMs: 60000 },
+  );
   const toast = useToast();
   const [busy, setBusy] = useState(false);
-  const [taskTitle, setTaskTitle] = useState("");
-  const [taskError, setTaskError] = useState<string | null>(null);
-  const [decisionTitle, setDecisionTitle] = useState("");
-  const [decisionRationale, setDecisionRationale] = useState("");
+
+  function setTab(next: ProjectTabId) {
+    setSearchParams((prev) => {
+      const updated = new URLSearchParams(prev);
+      if (next === "overview") updated.delete("tab");
+      else updated.set("tab", next);
+      return updated;
+    });
+  }
+
+  // Reset/validate tab when project changes: unknown tabs fall back via normalize.
+  // If the URL contains a packet/chapter from another project, keep it only when valid;
+  // packet validation happens inside Calibration workspace.
+  useEffect(() => {
+    // Ensure tab param is valid on project switch; normalize already handles fallback,
+    // but clean the URL once so refresh/back stay consistent.
+    const raw = searchParams.get("tab");
+    if (raw && normalizeProjectTab(raw) !== raw) {
+      setSearchParams(
+        (prev) => {
+          const u = new URLSearchParams(prev);
+          u.delete("tab");
+          return u;
+        },
+        { replace: true },
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [projectId]);
 
   async function refreshProject() {
     project.reload();
@@ -2851,9 +2900,7 @@ export function ProjectPage() {
 
   async function launchApplication(app: Application) {
     if (app.control_policy.confirmation_required) {
-      const confirmed = window.confirm(
-        `${app.name} is configured to require confirmation. Launch it now?`,
-      );
+      const confirmed = window.confirm(`${app.name} is configured to require confirmation. Launch it now?`);
       if (!confirmed) return;
     }
     try {
@@ -2866,37 +2913,20 @@ export function ProjectPage() {
     }
   }
 
-  async function addTask(event: FormEvent) {
+  const tablistRef = useRef<HTMLDivElement>(null);
+  function onTabKeyDown(event: React.KeyboardEvent) {
+    if (event.key !== "ArrowRight" && event.key !== "ArrowLeft" && event.key !== "Home" && event.key !== "End") return;
+    const buttons = Array.from(tablistRef.current?.querySelectorAll<HTMLButtonElement>('[role="tab"]') ?? []);
+    if (!buttons.length) return;
+    const idx = buttons.findIndex((b) => b.getAttribute("aria-selected") === "true");
     event.preventDefault();
-    if (!taskTitle.trim()) return;
-    setTaskError(null);
-    try {
-      await api.post("/api/tasks", { project_id: projectId, title: taskTitle });
-      setTaskTitle("");
-      toast.push("success", "Task added");
-      project.reload();
-    } catch (caught) {
-      setTaskError(errorMessage(caught));
-    }
-  }
-
-  async function addDecision(event: FormEvent) {
-    event.preventDefault();
-    if (!decisionTitle.trim()) return;
-    try {
-      await api.post("/api/decisions", {
-        project_id: projectId,
-        title: decisionTitle,
-        rationale: decisionRationale,
-        status: "accepted",
-      });
-      setDecisionTitle("");
-      setDecisionRationale("");
-      toast.push("success", "Decision recorded");
-      project.reload();
-    } catch (caught) {
-      toast.push("error", "Could not record decision", errorMessage(caught));
-    }
+    let next = idx;
+    if (event.key === "ArrowRight") next = (idx + 1) % buttons.length;
+    else if (event.key === "ArrowLeft") next = (idx - 1 + buttons.length) % buttons.length;
+    else if (event.key === "Home") next = 0;
+    else if (event.key === "End") next = buttons.length - 1;
+    buttons[next]?.focus();
+    buttons[next]?.click();
   }
 
   if (project.loading && !project.data) {
@@ -2916,10 +2946,8 @@ export function ProjectPage() {
   if (!project.data) return null;
 
   const data = project.data;
-  const checkpoint = data.latest_checkpoint;
-  const openTasks = data.tasks.filter((task) => task.status !== "done" && task.status !== "cancelled");
-  const doneTasks = data.tasks.filter((task) => task.status === "done");
   const pendingRecs = data.recommendations.filter((rec) => rec.review_state === "pending");
+  const openTasks = data.tasks.filter((t) => t.status !== "done" && t.status !== "cancelled");
 
   const isSoftware = data.kind !== "book" && !data.book;
   if (isSoftware) {
@@ -2963,512 +2991,141 @@ export function ProjectPage() {
     );
   }
 
+  const missingQuality = (discovery.data ?? []).filter((d) => !d.has_current).length;
+  const staleQuality = (discovery.data ?? []).filter((d) => d.eligibility === "stale").length;
+  const qualityBadge = missingQuality + staleQuality > 0 ? missingQuality + staleQuality : null;
+  const calBadge = (calRuns.data ?? []).reduce((s, r) => s + (r.awaiting ?? 0), 0) || null;
+  const workBadge = pendingRecs.length + openTasks.length > 0 ? pendingRecs.length + openTasks.length : null;
+  const badges: Partial<Record<ProjectTabId, number | null>> = {
+    quality: qualityBadge,
+    calibration: calBadge,
+    work: workBadge,
+  };
+
+  const shortDesc =
+    data.description && data.description.length > 180
+      ? `${data.description.slice(0, 179)}…`
+      : data.description;
+
   return (
     <div className="page project-workspace">
       <Link className="back-link" to="/projects">
         <ArrowLeft size={14} /> All projects
       </Link>
-      <PageHeader
-        eyebrow={`${projectLabel(data.kind)} workspace`}
-        title={data.name}
-        description={data.description}
-        actions={
-          <>
-            <button className="button button-secondary" onClick={() => void togglePin()} disabled={busy}>
-              {data.pinned ? <PinOff size={15} /> : <Pin size={15} />}
+      <header className="project-header-compact">
+        <div className="project-header-main">
+          <div>
+            <span className="eyebrow">{projectLabel(data.kind)} workspace</span>
+            <h1>{data.name}</h1>
+            {shortDesc ? <p className="muted small">{shortDesc}</p> : null}
+          </div>
+          <div className="project-header-actions">
+            <SimpleStatusBadge state={data.status} />
+            <button className="button button-secondary button-small" onClick={() => void togglePin()} disabled={busy}>
+              {data.pinned ? <PinOff size={14} /> : <Pin size={14} />}
               {data.pinned ? "Unpin" : "Pin"}
             </button>
-            <button className="button button-secondary" onClick={() => void setFocus()} disabled={busy}>
-              <Crosshair size={15} /> Set focus
+            <button className="button button-secondary button-small" onClick={() => void setFocus()} disabled={busy}>
+              <Crosshair size={14} /> Focus
             </button>
             <ActionButton
               action={data.repository_action ?? undefined}
               onClick={() => void openRepository()}
               variant="primary"
-              icon={<FolderOpen size={15} />}
+              icon={<FolderOpen size={14} />}
+              small
             >
               Repository
             </ActionButton>
-          </>
-        }
-      />
+          </div>
+        </div>
+        <div className="project-header-meta inline-meta">
+          <span className="muted small">Milestone: {data.current_milestone || "—"}</span>
+          <span className="muted small">Next: {data.next_action || "—"}</span>
+          <span className="muted small">Updated {timeAgo(data.last_activity_at)}</span>
+        </div>
+      </header>
 
-      <div className="workspace-banner">
-        <div>
-          <span className="eyebrow">Current milestone</span>
-          <p>{data.current_milestone || "No milestone recorded."}</p>
-        </div>
-        <div>
-          <span className="eyebrow">Next action</span>
-          <p>{data.next_action || "No next action saved."}</p>
-        </div>
-        <div>
-          <span className="eyebrow">Last activity</span>
-          <p>{timeAgo(data.last_activity_at)}</p>
-        </div>
+      <div className="project-tabbar-sticky">
+        <ProjectTabBar active={tab} onSelect={setTab} badges={badges} />
       </div>
 
-      {data.book ? <LivingBookCard projectId={projectId} /> : null}
-
-      <div className="workspace-grid">
-        <div className="workspace-main">
-          <Section title="Checkpoint and resume" description="Persisted locally. Restarting Mission Control does not lose it.">
-            {checkpoint ? (
-              <div className="latest-checkpoint">
-                <div className="latest-checkpoint-head">
-                  <div>
-                    <span className="eyebrow">Latest checkpoint</span>
-                    <h3>{checkpoint.summary}</h3>
-                  </div>
-                  <ProvenanceBadge value="recorded_checkpoint" />
-                </div>
-                <div className="checkpoint-facts">
-                  <div>
-                    <span>Last completed</span>
-                    <p>{checkpoint.last_completed || "Not recorded"}</p>
-                  </div>
-                  <div>
-                    <span>Next intended action</span>
-                    <p>{checkpoint.next_action || data.next_action || "Not recorded"}</p>
-                  </div>
-                  {checkpoint.blockers ? (
-                    <div>
-                      <span>Blocker</span>
-                      <p>{checkpoint.blockers}</p>
-                    </div>
-                  ) : null}
-                </div>
-                <div className="inline-meta">
-                  <span>{formatDateTime(checkpoint.created_at)}</span>
-                  {checkpoint.milestone ? <span>{checkpoint.milestone}</span> : null}
-                  {checkpoint.evidence_refs.map((reference) => (
-                    <code key={reference}>{reference}</code>
-                  ))}
-                </div>
-              </div>
-            ) : (
-              <EmptyState
-                title="No checkpoint recorded"
-                description="A checkpoint captures where the work stopped and what should happen next."
-                icon={<Crosshair size={19} />}
-              />
-            )}
-            <details className="checkpoint-composer" open={!checkpoint}>
-              <summary>
-                <Plus size={14} /> Save a new checkpoint
-              </summary>
-              <CheckpointForm projectId={projectId} onSaved={refreshProject} />
-            </details>
-            {data.checkpoints.length > 1 ? (
-              <details className="history-list">
-                <summary>Earlier checkpoints ({data.checkpoints.length - 1})</summary>
-                <ul>
-                  {data.checkpoints.slice(1).map((item: Checkpoint) => (
-                    <li key={item.id}>
-                      <strong>{formatDateTime(item.created_at)}</strong>
-                      <span>{item.summary}</span>
-                    </li>
-                  ))}
-                </ul>
-              </details>
-            ) : null}
-          </Section>
-
-          <Section
-            title="Recommendations awaiting review"
-            description="Adapter evidence and AI suggestions remain proposals until a person reviews them."
-            actions={pendingRecs.length ? <Tag tone="accent">{pendingRecs.length} pending</Tag> : null}
-          >
-            {pendingRecs.length ? (
-              <ul className="recommendation-list">
-                {pendingRecs.map((rec) => (
-                  <RecommendationRow key={rec.id} recommendation={rec} onChanged={refreshProject} />
-                ))}
-              </ul>
-            ) : (
-              <EmptyState
-                title="No pending recommendations"
-                description="Math, Next and CoCoder evidence will appear here when adapters find something reviewable."
-              />
-            )}
-          </Section>
-
-          <Section
-            title="Cross-application context"
-            description="Next research, Work opportunities and CoCoder findings associated with this project. Source systems remain authoritative."
-            actions={
-              integrationContext.data?.length ? (
-                <Tag tone="accent">{integrationContext.data.length} linked</Tag>
-              ) : null
-            }
-          >
-            {integrationContext.loading ? <LoadingBlock label="Loading linked context" compact /> : null}
-            {integrationContext.error ? (
-              <InlineError message={integrationContext.error.message} />
-            ) : null}
-            {integrationContext.data?.length ? (
-              <div className="project-context-list">
-                {integrationContext.data.map((record) => (
-                  <Link
-                    className="project-context-item"
-                    key={record.id}
-                    to={`/${record.application_id}?record=${record.id}`}
-                  >
-                    <div className="project-context-head">
-                      <span className={`source-pill source-${record.application_id}`}>
-                        {record.application_name ?? titleCase(record.application_id)}
-                      </span>
-                      <SimpleStatusBadge
-                        state={record.stale ? "stale" : "running"}
-                        label={record.state || titleCase(record.resource_type)}
-                      />
-                      <span className="project-context-time">
-                        {timeAgo(record.source_timestamp || record.observed_at)}
-                      </span>
-                    </div>
-                    <strong>{record.title}</strong>
-                    <p>{truncate(record.summary || "No source summary.", 240)}</p>
-                    <div className="project-context-meta">
-                      <span>{titleCase(record.resource_type.replace(/_/g, " "))}</span>
-                      {record.local_decision ? (
-                        <span className="local-decision-pill">
-                          {record.local_decision.decision} · local only
-                        </span>
-                      ) : null}
-                      {record.stale ? <span className="warn-text">stale observation</span> : null}
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            ) : null}
-            {integrationContext.data && integrationContext.data.length === 0 ? (
-              <EmptyState
-                title="No linked application records"
-                description="Open a record in Next, Work or CoCoder and associate it with this project."
-                icon={<Crosshair size={19} />}
-              />
-            ) : null}
-          </Section>
-
-          <Section
-            title="Experiment evidence"
-            description="Cross-application workflows and Language observations associated with this project. Observations never rewrite intentions or decisions."
-            actions={
-              experimentTimeline.data?.workflows.length ? (
-                <Tag tone="accent">{experimentTimeline.data.workflows.length} workflows</Tag>
-              ) : null
-            }
-          >
-            {experimentTimeline.loading ? <LoadingBlock label="Loading experiment evidence" compact /> : null}
-            {experimentTimeline.error ? <InlineError message={experimentTimeline.error.message} /> : null}
-            {experimentTimeline.data?.workflows.length ? (
-              <div className="workflow-list">
-                {experimentTimeline.data.workflows.map((workflow) => (
-                  <Link className="workflow-card" key={workflow.id} to={`/workflows/${workflow.id}`}>
-                    <div className="workflow-card-head">
-                      <div>
-                        <span className="eyebrow">{workflow.template}</span>
-                        <h2>{workflow.title}</h2>
-                      </div>
-                      <SimpleStatusBadge state={workflow.status === "decided" ? "running" : workflow.status === "cancelled" ? "cancelled" : "pending"} label={titleCase(workflow.status)} />
-                    </div>
-                    <div className="workflow-card-meta">
-                      <span>{workflow.measurement?.passed ? "Measurement passed" : "Measurement not passed"}</span>
-                      <span>{workflow.adverse_review ? "Adverse review" : "No adverse review"}</span>
-                      {workflow.final_decision ? <Tag tone="accent">Decision: {workflow.final_decision}</Tag> : null}
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            ) : null}
-            {experimentTimeline.data?.observations.length ? (
-              <div className="project-observations">
-                {experimentTimeline.data.observations.map((observation) => (
-                  <div key={observation.id}>
-                    <span className="eyebrow">{observation.schema}</span>
-                    <strong>{observation.subject}</strong>
-                    <span className={`tag ${observation.constraint_result === "pass" ? "tag-accent" : ""}`}>
-                      Constraint {observation.constraint_result}
-                    </span>
-                    <ul className="plain-list">
-                      {observation.properties.map((property) => (
-                        <li key={property.id}>
-                          {titleCase(property.id.replace(/_/g, " "))}: expected {JSON.stringify(property.expected)}, observed {JSON.stringify(property.observed)}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
-              </div>
-            ) : null}
-            {experimentTimeline.data &&
-            experimentTimeline.data.workflows.length === 0 &&
-            experimentTimeline.data.observations.length === 0 ? (
-              <EmptyState
-                title="No experiment evidence"
-                description="Approved experiment workflows associated with this project will appear here."
-                icon={<Crosshair size={19} />}
-              />
-            ) : null}
-          </Section>
-
-          <QualityPanel projectId={projectId} />
-          <TechnicalPanel projectId={projectId} />
-          <CompletenessPanel projectId={projectId} />
-          <ReadinessPanel projectId={projectId} />
-          <PublishingPanel projectId={projectId} />
-          <CalibrationPanel projectId={projectId} />
-          <InspectPanel applicationIds={(data.applications ?? []).map((app) => app.id)} />
-
-          <Section title="Tasks" description="Explicit user actions. Evidence adapters do not create tasks automatically.">
-            <form className="inline-form" onSubmit={(event) => void addTask(event)}>
-              <input
-                value={taskTitle}
-                onChange={(event) => setTaskTitle(event.target.value)}
-                placeholder="Add a task for this project"
-                aria-label="New task"
-              />
-              <button className="button button-secondary" type="submit" disabled={!taskTitle.trim()}>
-                <Plus size={14} /> Add task
-              </button>
-            </form>
-            <InlineError message={taskError} />
-            {openTasks.length ? (
-              <ul className="task-list">
-                {openTasks.map((task) => (
-                  <TaskRow task={task} key={task.id} onChanged={refreshProject} />
-                ))}
-              </ul>
-            ) : (
-              <p className="muted small">No open tasks.</p>
-            )}
-            {doneTasks.length ? (
-              <details className="history-list">
-                <summary>Completed tasks ({doneTasks.length})</summary>
-                <ul className="task-list">
-                  {doneTasks.map((task) => (
-                    <TaskRow task={task} key={task.id} onChanged={refreshProject} />
-                  ))}
-                </ul>
-              </details>
-            ) : null}
-          </Section>
-
-          <Section title="Decisions" description="Accepted, rejected or deferred choices stay visible with their rationale.">
-            <form className="decision-form form-stack" onSubmit={(event) => void addDecision(event)}>
-              <div className="form-grid two">
-                <label className="field">
-                  <span>Decision</span>
-                  <input
-                    value={decisionTitle}
-                    onChange={(event) => setDecisionTitle(event.target.value)}
-                    placeholder="What was decided?"
-                  />
-                </label>
-                <label className="field">
-                  <span>Rationale</span>
-                  <input
-                    value={decisionRationale}
-                    onChange={(event) => setDecisionRationale(event.target.value)}
-                    placeholder="Why?"
-                  />
-                </label>
-              </div>
-              <div className="form-actions">
-                <button className="button button-secondary button-small" type="submit" disabled={!decisionTitle.trim()}>
-                  Record decision
-                </button>
-              </div>
-            </form>
-            {data.decisions.length ? (
-              <ul className="decision-list">
-                {data.decisions.map((decision) => (
-                  <li key={decision.id}>
-                    <div>
-                      <strong>{decision.title}</strong>
-                      <p>{decision.rationale || "No rationale recorded."}</p>
-                    </div>
-                    <span>{formatDateTime(decision.decided_at)}</span>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="muted small">No decisions recorded.</p>
-            )}
-          </Section>
-
-          <Section title="Activity" description="Project-scoped history with provenance.">
-            {data.activity.length ? (
-              <ul className="activity-feed">
-                {data.activity.map((event) => (
-                  <li key={event.id}>
-                    <span className={`activity-marker type-${event.provenance}`} aria-hidden="true" />
-                    <div>
-                      <div className="activity-head">
-                        <strong>{event.title}</strong>
-                        <span className="activity-type">{activityLabel(event.type)}</span>
-                      </div>
-                      <span className="activity-meta">
-                        {timeAgo(event.occurred_at)} · <ProvenanceBadge value={event.provenance} />
-                      </span>
-                      {event.detail ? <p className="activity-detail">{truncate(event.detail, 280)}</p> : null}
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="muted small">No activity recorded for this project yet.</p>
-            )}
-          </Section>
-        </div>
-
-        <aside className="workspace-side">
-          <section className="panel">
-            <span className="eyebrow">Outcomes</span>
-            <div className="outcome-stack">
-              {data.outcomes.length ? (
-                data.outcomes.map((outcome) => (
-                  <div className="outcome-mini" key={outcome.id}>
-                    <strong>{outcome.name}</strong>
-                    <span>{outcome.status}</span>
-                  </div>
-                ))
-              ) : (
-                <p className="muted small">No outcome relationship configured.</p>
-              )}
-            </div>
+      <div className="project-tab-panels">
+        {tab === "overview" ? (
+          <section role="tabpanel" id="panel-overview" aria-labelledby="tab-overview">
+            <OverviewTab
+              projectId={projectId}
+              data={data}
+              discovery={discovery.data}
+              techOverview={techOverview.data}
+              campaigns={qualityCampaigns.data}
+              calRuns={calRuns.data ?? null}
+              onNavigate={setTab}
+            />
           </section>
+        ) : null}
 
-          {data.book ? (
-            <section className="panel">
-              <span className="eyebrow">Book</span>
-              <h3>{data.book.title}</h3>
-              <div className="inline-meta">
-                <SimpleStatusBadge state={data.book.status} />
-                <span>{data.book.quality_review_state.replace(/_/g, " ")}</span>
-              </div>
-              <div className="mini-block">
-                <span>Next action</span>
-                <p>{data.book.next_action || "Not recorded"}</p>
-              </div>
-              <Link className="button button-secondary button-small" to="/books">
-                <BookOpen size={14} /> Open books view
-              </Link>
-            </section>
-          ) : null}
-
-          <section className="panel">
-            <span className="eyebrow">Repositories</span>
-            {data.repositories.length ? (
-              <ul className="repo-list">
-                {data.repositories.map((repository) => (
-                  <li key={repository.id}>
-                    <div className="repo-head">
-                      <strong>{repository.name}</strong>
-                      {repository.role ? <Tag>{repository.role}</Tag> : null}
-                    </div>
-                    <PathText>{repository.path}</PathText>
-                    <div className="git-facts">
-                      {repository.is_git ? <GitBranch size={13} /> : null}
-                      {repository.is_git ? (
-                        <>
-                          <span>{repository.branch ?? "detached"}</span>
-                          <span>{shortCommit(repository.commit_hash)}</span>
-                          <span className={repository.dirty ? "warn-text" : "muted"}>
-                            {repository.dirty ? "uncommitted changes" : "clean tracked tree"}
-                          </span>
-                        </>
-                      ) : (
-                        <span className="muted">Not a Git repository</span>
-                      )}
-                    </div>
-                    <span className="muted small">
-                      Observed {repository.last_observed_at ? timeAgo(repository.last_observed_at) : "not yet"}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="muted small">No repositories linked.</p>
-            )}
+        {tab === "book" ? (
+          <section role="tabpanel" id="panel-book" aria-labelledby="tab-book">
+            <BookTab projectId={projectId} data={data} discovery={discovery.data} />
           </section>
+        ) : null}
 
-          <section className="panel">
-            <span className="eyebrow">Supporting tools</span>
-            {data.applications.length ? (
-              <ul className="tool-list">
-                {data.applications.map((summary) => {
-                  const app = applications.data?.find((item) => item.id === summary.id);
-                  return (
-                    <li className="tool-row" key={summary.id}>
-                      <div className="tool-copy">
-                        <Link to="/applications" className="text-link">
-                          {summary.name} <ExternalLink size={12} />
-                        </Link>
-                        <span>
-                          {app ? <SimpleStatusBadge state={app.status.state} /> : titleCase(summary.category)}
-                        </span>
-                      </div>
-                      {app ? (
-                        <ActionButton
-                          action={app.actions.launch}
-                          onClick={() => void launchApplication(app)}
-                          variant="secondary"
-                          small
-                          icon={<Play size={13} />}
-                        >
-                          Launch
-                        </ActionButton>
-                      ) : null}
-                    </li>
-                  );
-                })}
-              </ul>
-            ) : (
-              <p className="muted small">No applications associated.</p>
-            )}
+        {tab === "quality" ? (
+          <section role="tabpanel" id="panel-quality" aria-labelledby="tab-quality">
+            <QualityPanel projectId={projectId} />
           </section>
+        ) : null}
 
-          <section className="panel">
-            <span className="eyebrow">Adapters</span>
-            <div className="adapter-list">
-              {data.adapters.length ? (
-                data.adapters.map((adapter) => (
-                  <AdapterCard
-                    key={adapter.id}
-                    adapter={adapter}
-                    projectId={projectId}
-                    onChanged={refreshProject}
-                  />
-                ))
-              ) : (
-                <p className="muted small">No adapter registered for this project.</p>
-              )}
-            </div>
+        {tab === "technical" ? (
+          <section role="tabpanel" id="panel-technical" aria-labelledby="tab-technical">
+            <TechnicalPanel projectId={projectId} />
+            <CompletenessPanel projectId={projectId} />
           </section>
+        ) : null}
 
-          {data.notes ? (
-            <section className="panel">
-              <span className="eyebrow">Notes</span>
-              <p className="small">{data.notes}</p>
-            </section>
-          ) : null}
-
-          <section className="panel">
-            <span className="eyebrow">Workspace</span>
-            <dl className="kv-list">
-              <KeyValue label="Kind">{projectLabel(data.kind)}</KeyValue>
-              <KeyValue label="Status">
-                <SimpleStatusBadge state={data.status} />
-              </KeyValue>
-              <KeyValue label="Priority">{data.priority}</KeyValue>
-              <KeyValue label="Created">{formatDateTime(data.created_at)}</KeyValue>
-              <KeyValue label="Open tasks">{data.open_task_count}</KeyValue>
-              <KeyValue label="Pending reviews">{data.pending_recommendation_count}</KeyValue>
-            </dl>
+        {tab === "calibration" ? (
+          <section role="tabpanel" id="panel-calibration" aria-labelledby="tab-calibration">
+            <CalibrationPanel projectId={projectId} />
           </section>
-        </aside>
+        ) : null}
+
+        {tab === "publishing" ? (
+          <section role="tabpanel" id="panel-publishing" aria-labelledby="tab-publishing">
+            <ReadinessPanel projectId={projectId} />
+            <PublishingPanel projectId={projectId} />
+          </section>
+        ) : null}
+
+        {tab === "work" ? (
+          <section role="tabpanel" id="panel-work" aria-labelledby="tab-work">
+            <WorkTab
+              projectId={projectId}
+              data={data}
+              integrationContext={{
+                data: integrationContext.data,
+                loading: integrationContext.loading,
+                error: integrationContext.error,
+              }}
+              experimentTimeline={{
+                data: experimentTimeline.data,
+                loading: experimentTimeline.loading,
+                error: experimentTimeline.error,
+              }}
+              applications={applications.data}
+              onChanged={() => void refreshProject()}
+              onLaunchApp={(app) => void launchApplication(app)}
+            />
+          </section>
+        ) : null}
+
+        {tab === "activity" ? (
+          <section role="tabpanel" id="panel-activity" aria-labelledby="tab-activity">
+            <ActivityTab data={data} />
+          </section>
+        ) : null}
       </div>
     </div>
   );
 }
+

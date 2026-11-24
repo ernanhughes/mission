@@ -239,7 +239,7 @@ function PostsList(props: {
   );
 }
 
-function PostDetail({
+export function PostDetail({
   site,
   identity,
   onBack,

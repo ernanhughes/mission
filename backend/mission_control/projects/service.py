@@ -522,12 +522,17 @@ def current_focus(session: Session) -> Project | None:
 
 
 def reorder_projects(session: Session, ordered_ids: list[str]) -> None:
-    for index, project_id in enumerate(ordered_ids):
-        project = session.get(Project, project_id)
-        if project:
-            project.priority = index + 1
-            project.display_order = (index + 1) * 10
-            project.updated_at = now_iso()
+    # Single batched read, then one update per known project. Unknown ids are
+    # ignored (as before); the request transaction stays short and atomic.
+    if ordered_ids:
+        rows = session.scalars(select(Project).where(Project.id.in_(ordered_ids))).all()
+        by_id = {project.id: project for project in rows}
+        for index, project_id in enumerate(ordered_ids):
+            project = by_id.get(project_id)
+            if project is not None:
+                project.priority = index + 1
+                project.display_order = (index + 1) * 10
+                project.updated_at = now_iso()
     record_activity(
         session,
         event_type="system",
@@ -628,11 +633,25 @@ def update_book(session: Session, book_id: str, payload: BookUpdate) -> Book:
 
 
 def reorder_books(session: Session, ordered_book_ids: list[str]) -> None:
-    for index, book_id in enumerate(ordered_book_ids):
-        book = session.get(Book, book_id)
-        if book:
-            project = session.get(Project, book.project_id)
-            if project:
+    # Book order is stored on the parent project. Batch the reads so a reorder
+    # is two short queries plus in-transaction updates: the write transaction
+    # stays open only for the commit, minimising the SQLite write-lock window.
+    # Unknown book ids are ignored and books absent from the list keep their
+    # existing position (as before).
+    if ordered_book_ids:
+        books = session.scalars(select(Book).where(Book.id.in_(ordered_book_ids))).all()
+        by_book_id = {book.id: book for book in books}
+        project_ids = {book.project_id for book in by_book_id.values()}
+        by_project_id: dict[str, Project] = {}
+        if project_ids:
+            projects = session.scalars(select(Project).where(Project.id.in_(project_ids))).all()
+            by_project_id = {project.id: project for project in projects}
+        for index, book_id in enumerate(ordered_book_ids):
+            book = by_book_id.get(book_id)
+            if book is None:
+                continue
+            project = by_project_id.get(book.project_id)
+            if project is not None:
                 project.priority = index + 1
                 project.display_order = (index + 1) * 10
                 project.updated_at = now_iso()

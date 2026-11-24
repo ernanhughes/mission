@@ -4,6 +4,7 @@ import { api, errorMessage } from "../api/client";
 import { useApi } from "../api/useApi";
 import { useToast } from "../components/Toast";
 import { PostsTab } from "../features/websites/PostsTab";
+import { CollectionTab } from "../features/websites/CollectionTab";
 import {
   EmptyState,
   ErrorState,
@@ -114,7 +115,7 @@ function DiagnosticsSection() {
 function WebsiteWorkspace({ site, onChanged }: { site: Website; onChanged: () => void }) {
   const toast = useToast();
   const [busy, setBusy] = useState<"launch" | "stop" | "open" | null>(null);
-  const [tab, setTab] = useState<"overview" | "posts" | "preview">("overview");
+  const [tab, setTab] = useState<"overview" | "posts" | "collection" | "preview">("overview");
 
   async function launch() {
     setBusy("launch");
@@ -183,7 +184,7 @@ function WebsiteWorkspace({ site, onChanged }: { site: Website; onChanged: () =>
 
       <div className="toolbar" role="tablist" aria-label="Website workspace views">
         {(
-          ["overview", ...(site.content_section ? ["posts" as const] : []), "preview"] as const
+          ["overview", ...(site.content_section ? (["posts", "collection"] as const) : []), "preview"] as const
         ).map((name) => (
             <button
               key={name}
@@ -192,12 +193,13 @@ function WebsiteWorkspace({ site, onChanged }: { site: Website; onChanged: () =>
               className={`button button-small ${tab === name ? "button-primary" : "button-ghost"}`}
               onClick={() => setTab(name)}
             >
-              {name === "overview" ? "Overview" : name === "posts" ? "Posts" : "Preview"}
+              {name === "overview" ? "Overview" : name === "posts" ? "Posts" : name === "collection" ? "Collection" : "Preview"}
             </button>
           ))}
       </div>
 
       {tab === "posts" && site.content_section ? <PostsTab site={site} /> : null}
+      {tab === "collection" && site.content_section ? <CollectionTab site={site} /> : null}
       {tab === "overview" ? (
         <section className="panel">
           <span className="eyebrow">Site</span>

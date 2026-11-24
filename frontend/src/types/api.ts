@@ -1947,6 +1947,110 @@ export type WebsitePostsSummary = {
   coverage_percent: number | null;
 };
 
+export type WebsiteCollectionQueueEntry = {
+  identity: string;
+  relpath?: string | null;
+  title?: string | null;
+  date?: string | null;
+  evaluation_id?: string | null;
+  overall?: number | null;
+  evaluated_digest?: string | null;
+  live_digest?: string | null;
+  content_sha256?: string | null;
+};
+
+export type WebsiteCollectionCandidate = {
+  candidate_id: string;
+  kind: string;
+  decision: string;
+  note: string;
+  evidence: Record<string, unknown>;
+};
+
+export type WebsiteCollectionQuality = {
+  schema: string;
+  generated_at: string;
+  generator: string;
+  site: { website_id: string; blog_dir: string };
+  inventory: {
+    discovered: number;
+    published: number;
+    draft: number;
+    scheduled: number;
+    unknown: number;
+  };
+  coverage: {
+    denominator: string;
+    published: number;
+    evaluated_current: number;
+    evaluated_stale: number;
+    unevaluated: number;
+    coverage_percent: number | null;
+  };
+  scores: {
+    rubric_id: string;
+    rubric_version: number;
+    aggregation_method: string;
+    max_total: number;
+    denominator: string;
+    n_scored: number;
+    average: number | null;
+    min: number | null;
+    max: number | null;
+    weakest: Array<{
+      identity: string;
+      relpath?: string | null;
+      title?: string | null;
+      overall: number;
+      evaluation_id: string;
+    }>;
+    excluded: {
+      stale_or_superseded: number;
+      non_current_status: number;
+      other_rubric: number;
+      unscored_or_missing_post: number;
+    };
+    rows_examined: number;
+    rows_capped: boolean;
+  };
+  review_queues: {
+    stale_oldest_first: WebsiteCollectionQueueEntry[];
+    unevaluated_oldest_first: WebsiteCollectionQueueEntry[];
+  };
+  duplication_candidates: WebsiteCollectionCandidate[];
+  duplication_unmapped: Array<{ identity: string; reason: string }>;
+  provisional: Record<string, { status: string; reason: string }>;
+  limitations: string[];
+};
+
+export type WebsiteWriterObservation = {
+  schema_version: string;
+  evaluation_id: string;
+  observed_at: string;
+  status: string;
+  work_object: {
+    kind: string;
+    target_id: string;
+    source_hash: string;
+    content_sha256?: string | null;
+    text_sha256?: string | null;
+    body_offset_bytes?: number | null;
+  };
+  producer: {
+    runtime_name: string;
+    method: string;
+    method_version: string;
+  };
+  dimensions: Array<{ dimension: string; score: number }>;
+  findings: Array<{
+    code: string;
+    claim: string;
+    severity?: string;
+    evidence?: string[];
+  }>;
+  limitations: string[];
+};
+
 export type CultivationStageDef = {
   id: string;
   label: string;
@@ -2685,6 +2789,8 @@ export type PipelineStage = {
   presentation_order: number;
   availability: string;
   availability_reason: string;
+  execution_class?: string;
+  execution_note?: string;
   ui_actions: string[];
 };
 
@@ -2784,6 +2890,70 @@ export type PipelineStageDetail = {
   summary?: PipelineSummary;
   cells: PipelineEvidenceCell[];
   diagnostics?: string;
+};
+
+// --------------------------------- automatic maintenance (MC-BOOK-PIPELINE-01 M4A)
+// Read-only status plus recovery controls. The scheduler runs server-side;
+// the UI only toggles policy and triggers passes.
+
+export type PipelineMaintenanceActive = {
+  execution_id: string;
+  chapter_file: string;
+};
+
+export type PipelineMaintenanceFailure = {
+  execution_id: string;
+  chapter_file: string;
+  error: string;
+  ended_at: string;
+};
+
+export type PipelineMaintenanceStatus = {
+  policy_version: string;
+  auto_stages: string[];
+  enabled: boolean;
+  paused_books: string[];
+  book_count: number;
+  elapsed_ms: number;
+  books: Array<{ project_id: string; paused: boolean }>;
+  queue_preview: unknown[];
+  active: PipelineMaintenanceActive[];
+  recent_failures: PipelineMaintenanceFailure[];
+  queue_note: string;
+  refresh_note: string;
+};
+
+export type PipelineMaintenanceEligible = {
+  project_id: string;
+  chapter_id: string;
+  stage_id: string;
+  decision: string;
+  reason: string;
+  fingerprint: string | null;
+  result?: string;
+  freshness?: string;
+  has_evidence?: boolean;
+};
+
+export type PipelineMaintenanceDispatched = {
+  execution_id: string;
+  project_id: string;
+  chapter_id: string;
+  stage_id: string;
+};
+
+export type PipelineMaintenanceReport = {
+  started_at: string;
+  elapsed_ms: number;
+  enabled: boolean;
+  dry_run: boolean;
+  books_scanned: number;
+  eligible: PipelineMaintenanceEligible[];
+  dispatched: PipelineMaintenanceDispatched[];
+  skipped: number;
+  blocked: number;
+  waiting: number;
+  errors: string[];
 };
 
 // Mirrors backend schemas Cost*Read verbatim (MC-COST-01, extended MC-COST-02).

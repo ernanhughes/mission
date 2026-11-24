@@ -83,7 +83,12 @@ export function ChapterMatrix({
                     const summary = data.summaries[stage.stage_id];
                     return (
                       <th key={stage.stage_id} scope="col" title={stage.description}>
-                        {stage.name}
+                        {stage.name}{" "}
+                        {stage.execution_class === "automatic" ? (
+                          <span className="pipe-auto-tag" title="Runs automatically when eligible">
+                            auto
+                          </span>
+                        ) : null}
                         {summary && stage.availability === "implemented" ? (
                           <span className="table-note">{summary.coverage}</span>
                         ) : (

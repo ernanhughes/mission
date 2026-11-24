@@ -16,6 +16,7 @@ from urllib.parse import urlparse
 import httpx
 import psutil
 from sqlalchemy import desc, func, select
+from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import Session
 
 from mission_control.activity.service import record_activity
@@ -41,7 +42,7 @@ from mission_control.models import (
     Setting,
 )
 from mission_control.persistence.db import Database, now_iso
-from mission_control.processes.health import port_is_open, probe
+from mission_control.processes.health import ProbeResult, port_is_open, probe
 
 logger = logging.getLogger(__name__)
 
@@ -875,17 +876,24 @@ class ProcessManager:
         }
 
     # ------------------------------------------------------------------ health
-    async def check_health(
-        self,
-        application_id: str,
-        *,
-        definition: LaunchDefinition | None = None,
-        timeout: float = 2.0,
-    ) -> HealthObservation:
+    @staticmethod
+    def _is_database_locked_error(exc: BaseException) -> bool:
+        text = f"{exc.__class__.__name__}: {exc}".casefold()
+        return "database is locked" in text or "database table is locked" in text
+
+    def _health_snapshot(
+        self, application_id: str, definition: LaunchDefinition | None
+    ) -> tuple[str, SimpleNamespace | None]:
+        """Load detached health-probe inputs in a short-lived session.
+
+        Only plain values are returned so the network probe can run without
+        holding a database connection or transaction open.
+        """
         with self.database.session() as session:
             application = session.get(Application, application_id)
             if application is None:
                 raise NotFound("Application not found")
+            app_name = application.name
             if definition is None:
                 definition = session.scalar(
                     select(LaunchDefinition)
@@ -895,7 +903,23 @@ class ProcessManager:
                     )
                     .order_by(desc(LaunchDefinition.is_primary), LaunchDefinition.id)
                 )
-            result = await probe(definition, timeout=timeout)
+            if definition is None:
+                return app_name, None
+            return app_name, SimpleNamespace(
+                health_type=definition.health_type,
+                health_url=definition.health_url,
+                expected_port=definition.expected_port,
+            )
+
+    def _persist_health_observation(
+        self,
+        application_id: str,
+        app_name: str,
+        snapshot: SimpleNamespace | None,
+        result: ProbeResult,
+    ) -> HealthObservation:
+        """Persist one probe result in a short, dedicated transaction."""
+        with self.database.session() as session:
             previous = session.scalar(
                 select(HealthObservation)
                 .where(HealthObservation.application_id == application_id)
@@ -915,47 +939,95 @@ class ProcessManager:
                 record_activity(
                     session,
                     event_type="application_health",
-                    title=f"{application.name}: {result.state}",
+                    title=f"{app_name}: {result.state}",
                     detail=result.detail,
                     application_id=application_id,
-                    source=definition.health_url if definition else "mission-control",
+                    source=snapshot.health_url if snapshot and snapshot.health_url else "mission-control",
                     provenance="verified_observation",
                 )
             session.flush()
             session.expunge(observation)
             return observation
 
+    async def check_health(
+        self,
+        application_id: str,
+        *,
+        definition: LaunchDefinition | None = None,
+        timeout: float = 2.0,
+    ) -> HealthObservation:
+        # The snapshot session is closed before the network probe starts, so a
+        # slow or timed-out probe never holds a SQLite connection/transaction.
+        # Probe failures describe the monitored endpoint; persistence failures
+        # below describe Mission Control's own database and must not be
+        # mistaken for application health.
+        app_name, snapshot = await asyncio.to_thread(
+            self._health_snapshot, application_id, definition
+        )
+        result = await probe(snapshot, timeout=timeout)
+        try:
+            return await asyncio.to_thread(
+                self._persist_health_observation, application_id, app_name, snapshot, result
+            )
+        except OperationalError as exc:
+            if self._is_database_locked_error(exc):
+                raise Conflict(
+                    "Health observation could not be persisted because the database is busy",
+                    detail=(
+                        f"Probe result was {result.state}: {result.detail}. "
+                        "The monitored application state is unchanged; retry shortly."
+                    ),
+                ) from exc
+            raise
+
     def start_monitor(self) -> None:
         if not self.settings.start_monitor or self._monitor_task:
             return
         self._monitor_task = asyncio.create_task(self._monitor_loop(), name="mission-control-health-monitor")
 
+    async def _monitor_once(self) -> int:
+        """Run one health-check pass over all monitored applications.
+
+        Persistence contention is logged concisely and never stops the pass:
+        a busy database is Mission Control's problem, not evidence that the
+        monitored application is unhealthy.
+        """
+        interval = 30
+        with self.database.session() as session:
+            setting = session.get(Setting, "processes")
+            if setting and isinstance(setting.value, dict):
+                interval = max(10, int(setting.value.get("health_check_interval_seconds", 30)))
+            applications = session.scalars(
+                select(Application.id)
+                .join(LaunchDefinition, LaunchDefinition.application_id == Application.id)
+                .where(
+                    Application.enabled.is_(True),
+                    Application.archived.is_(False),
+                    LaunchDefinition.enabled.is_(True),
+                    LaunchDefinition.health_type != "none",
+                )
+                .distinct()
+            ).all()
+        for application_id in applications:
+            if self._shutting_down:
+                break
+            try:
+                await self.check_health(application_id, timeout=2.0)
+            except Conflict as exc:
+                logger.warning(
+                    "health_observation_persistence_failed application_id=%s detail=%s",
+                    application_id,
+                    exc.detail or exc.message,
+                )
+            except Exception:
+                logger.warning("Health check failed for %s", application_id, exc_info=True)
+        return interval
+
     async def _monitor_loop(self) -> None:
         while not self._shutting_down:
             interval = 30
             try:
-                with self.database.session() as session:
-                    setting = session.get(Setting, "processes")
-                    if setting and isinstance(setting.value, dict):
-                        interval = max(10, int(setting.value.get("health_check_interval_seconds", 30)))
-                    applications = session.scalars(
-                        select(Application.id)
-                        .join(LaunchDefinition, LaunchDefinition.application_id == Application.id)
-                        .where(
-                            Application.enabled.is_(True),
-                            Application.archived.is_(False),
-                            LaunchDefinition.enabled.is_(True),
-                            LaunchDefinition.health_type != "none",
-                        )
-                        .distinct()
-                    ).all()
-                for application_id in applications:
-                    if self._shutting_down:
-                        break
-                    try:
-                        await self.check_health(application_id, timeout=2.0)
-                    except Exception:
-                        logger.warning("Health check failed for %s", application_id, exc_info=True)
+                interval = await self._monitor_once()
             except asyncio.CancelledError:
                 raise
             except Exception:

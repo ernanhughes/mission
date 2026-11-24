@@ -27,21 +27,48 @@ const STAGES: PipelineStage[] = [
     stage_id: "mri", name: "MRI", description: "MRI reports", owner: "writer",
     scope: "chapter", applicability: "all", freshness_method: "snapshot compare",
     prerequisites: "none", presentation_order: 20, availability: "implemented",
-    availability_reason: "verified", ui_actions: [],
+    availability_reason: "verified", execution_class: "automatic",
+    execution_note: "Runs on its own when eligible.",
+    ui_actions: [],
   },
   {
     stage_id: "editing", name: "Editing", description: "editing audits", owner: "writer",
     scope: "chapter", applicability: "all", freshness_method: "fingerprint compare",
     prerequisites: "none", presentation_order: 50, availability: "implemented",
-    availability_reason: "verified", ui_actions: [],
+    availability_reason: "verified", execution_class: "governed",
+    execution_note: "Audits run only with explicit authorization.",
+    ui_actions: [],
   },
   {
     stage_id: "graph", name: "Graph", description: "graph", owner: "writer",
     scope: "chapter", applicability: "verified only", freshness_method: "n/a",
     prerequisites: "provider", presentation_order: 70, availability: "unavailable",
-    availability_reason: "provider unverified", ui_actions: [],
+    availability_reason: "provider unverified", execution_class: "unavailable",
+    execution_note: "No verified provider; never scheduled.",
+    ui_actions: [],
   },
 ];
+
+function maintenanceStatus(overrides: Record<string, unknown> = {}) {
+  return {
+    policy_version: "pipeline-auto-v1",
+    auto_stages: ["mri"],
+    enabled: false,
+    paused_books: [],
+    book_count: 2,
+    elapsed_ms: 40,
+    books: [
+      { project_id: "memory", paused: false },
+      { project_id: "language", paused: false },
+    ],
+    queue_preview: [],
+    active: [],
+    recent_failures: [],
+    queue_note: "dry run",
+    refresh_note: "read-only",
+    ...overrides,
+  };
+}
 
 function summary(overrides: Partial<PipelineSummary> = {}): PipelineSummary {
   return {
@@ -131,6 +158,7 @@ describe("ProductionOverview", () => {
     return mockFetch(({ path }) => {
       if (path === "/api/pipeline/stages") return json({ registry_version: "pipeline-stages-v1", stages: STAGES });
       if (path === "/api/pipeline/overview") return json(overviewPayload());
+      if (path === "/api/pipeline/maintenance") return json(maintenanceStatus());
       return apiError(404, `Unhandled ${path}`);
     });
   }
@@ -168,6 +196,7 @@ describe("ProductionOverview", () => {
   it("shows loading, error and empty states", async () => {
     mockFetch(({ path }) => {
       if (path === "/api/pipeline/stages") return json({ registry_version: "v1", stages: STAGES });
+      if (path === "/api/pipeline/maintenance") return json(maintenanceStatus());
       if (path === "/api/pipeline/overview") return apiError(500, "boom");
       return apiError(404, `Unhandled ${path}`);
     });
@@ -300,7 +329,7 @@ describe("StageEvidencePanel", () => {
     expect(await screen.findByText("Stored snapshot no longer matches the live chapter.")).toBeInTheDocument();
     expect(screen.getByText("snapshot:sha256-utf8-text")).toBeInTheDocument();
     expect(screen.getByText(/Failed and stale are separate/)).toBeInTheDocument();
-    expect(screen.getByText(/Analysis execution is not available in this view/)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Retry automatically" })).toBeInTheDocument();
     await user.keyboard("{Escape}");
     expect(closed).toBe(true);
   });
@@ -319,17 +348,91 @@ describe("StageEvidencePanel", () => {
       "/books",
     );
     expect(await screen.findByText(/does not mean the chapter was edited or improved/)).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Retry automatically" })).not.toBeInTheDocument();
+    expect(screen.getByText("Audits run only with explicit authorization.")).toBeInTheDocument();
+  });
+
+  it("queues an automatic retry and reports the execution id", async () => {
+    const calls = mockFetch(({ path }) => {
+      if (path === "/api/pipeline/books/memory/stages/mri") return json(stageDetailPayload());
+      if (path === "/api/pipeline/maintenance/retry")
+        return json({ execution_id: "exec-1", status: "queued" });
+      return apiError(404, `Unhandled ${path}`);
+    });
+    const user = userEvent.setup();
+    renderRoute(
+      <StageEvidencePanel projectId="memory" bookTitle="memory title" chapterId="01-chapter" stage={STAGES[0]} onClose={() => undefined} />,
+      "/books",
+    );
+    await user.click(await screen.findByRole("button", { name: "Retry automatically" }));
+    expect(screen.getAllByText(/Automatic run queued \(exec-1\)/).length).toBeGreaterThan(0);
+    expect(calls.some((call) => call.path === "/api/pipeline/maintenance/retry")).toBe(true);
+  });
+
+  it("distinguishes expected deterministic mode from genuine warnings", async () => {
+    mockFetch(({ path }) => {
+      if (path === "/api/pipeline/books/memory/stages/mri") {
+        const payload = stageDetailPayload();
+        const cell = {
+          ...payload.cells[0],
+          result: "pending",
+          freshness: "current",
+          digest_match: true,
+          diagnostics: "Stored fingerprint matches the live file exactly.",
+          detail: {
+            ...payload.cells[0].detail,
+            unexpected_warnings: [],
+            expected_deterministic_mode: true,
+          },
+        };
+        return json({ ...payload, cells: [cell] });
+      }
+      return apiError(404, `Unhandled ${path}`);
+    });
+    renderRoute(
+      <StageEvidencePanel projectId="memory" bookTitle="memory title" chapterId="01-chapter" stage={STAGES[0]} onClose={() => undefined} />,
+      "/books",
+    );
+    expect(await screen.findByText(/no provider review/)).toBeInTheDocument();
+    expect(screen.queryByText(/Unexpected warnings need review/)).not.toBeInTheDocument();
+  });
+
+  it("surfaces unexpected warnings as attention", async () => {
+    mockFetch(({ path }) => {
+      if (path === "/api/pipeline/books/memory/stages/mri") {
+        const payload = stageDetailPayload();
+        const cell = {
+          ...payload.cells[0],
+          result: "failed",
+          freshness: "current",
+          detail: {
+            ...payload.cells[0].detail,
+            unexpected_warnings: ["mystery_verifier_offline"],
+            expected_deterministic_mode: false,
+          },
+        };
+        return json({ ...payload, cells: [cell] });
+      }
+      return apiError(404, `Unhandled ${path}`);
+    });
+    renderRoute(
+      <StageEvidencePanel projectId="memory" bookTitle="memory title" chapterId="01-chapter" stage={STAGES[0]} onClose={() => undefined} />,
+      "/books",
+    );
+    expect(await screen.findByText(/Unexpected warnings need review/)).toBeInTheDocument();
+    expect(screen.getByText(/mystery_verifier_offline/)).toBeInTheDocument();
   });
 });
 
 // --- Books page integration ------------------------------------------------------------
 
 describe("BooksPage production tab", () => {
-  function mockWorkspace() {
+  function mockWorkspace(maintenance = maintenanceStatus()) {
     return mockFetch(({ path }) => {
       if (path === "/api/books") return json([makeBook()]);
       if (path === "/api/pipeline/stages") return json({ registry_version: "pipeline-stages-v1", stages: STAGES });
       if (path === "/api/pipeline/overview") return json(overviewPayload());
+      if (path === "/api/pipeline/maintenance") return json(maintenance);
       return apiError(404, `Unhandled ${path}`);
     });
   }
@@ -380,5 +483,110 @@ describe("BooksPage production tab", () => {
     await screen.findByRole("heading", { name: "Language: When Intelligence Enters the Channel" });
     expect(screen.queryByRole("tab", { name: "Production" })).not.toBeInTheDocument();
     expect(calls.some((call) => call.path.startsWith("/api/pipeline"))).toBe(false);
+  });
+});
+
+// --- automatic maintenance UI (M4A) --------------------------------------------------------
+
+describe("MaintenanceStrip", () => {
+  function mockMaintenance(statusOverrides: Record<string, unknown> = {}) {
+    return mockFetch(({ path }) => {
+      if (path === "/api/pipeline/maintenance") return json(maintenanceStatus(statusOverrides));
+      return apiError(404, `Unhandled ${path}`);
+    });
+  }
+
+  it("shows paused state with policy version and toggles it on", async () => {
+    const calls = mockMaintenance();
+    const user = userEvent.setup();
+    renderRoute(<BooksPage />, "/books");
+    await user.click(screen.getByRole("tab", { name: "Production" }));
+    expect(await screen.findByText("policy pipeline-auto-v1")).toBeInTheDocument();
+    expect(screen.getByText("automatic: mri")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Resume all" }));
+    expect(
+      calls.some(
+        (call) => call.path === "/api/pipeline/maintenance/enabled" && JSON.stringify(call.body).includes("true"),
+      ),
+    ).toBe(true);
+  });
+
+  it("previews eligible work without dispatching", async () => {
+    mockFetch(({ path }) => {
+      if (path === "/api/pipeline/maintenance") return json(maintenanceStatus({ enabled: true }));
+      if (path === "/api/pipeline/maintenance/reconcile")
+        return json({
+          started_at: "2026-01-01T00:00:00Z",
+          elapsed_ms: 12,
+          enabled: true,
+          dry_run: true,
+          books_scanned: 1,
+          eligible: [
+            { project_id: "memory", chapter_id: "02-chapter", stage_id: "mri", decision: "run", reason: "Evidence is stale.", fingerprint: "abc", result: "passed", freshness: "stale", has_evidence: true },
+          ],
+          dispatched: [],
+          skipped: 5,
+          blocked: 0,
+          waiting: 0,
+          errors: [],
+        });
+      if (path === "/api/pipeline/stages") return json({ registry_version: "pipeline-stages-v1", stages: STAGES });
+      if (path === "/api/pipeline/overview") return json(overviewPayload());
+      return apiError(404, `Unhandled ${path}`);
+    });
+    const user = userEvent.setup();
+    renderRoute(<BooksPage />, "/books");
+    await user.click(screen.getByRole("tab", { name: "Production" }));
+    await screen.findByText("memory title");
+    await user.click(screen.getByRole("button", { name: "Check for work" }));
+    expect(await screen.findByText(/02-chapter/)).toBeInTheDocument();
+    expect(screen.getByText(/dry run — nothing dispatched/)).toBeInTheDocument();
+  });
+
+  it("lists recent failures needing attention", async () => {
+    mockMaintenance({
+      recent_failures: [
+        { execution_id: "exec-1", chapter_file: "C:\\books\\x\\01-chapter.md", error: "boom", ended_at: "2026-01-01T00:00:00Z" },
+      ],
+    });
+    const user = userEvent.setup();
+    renderRoute(<BooksPage />, "/books");
+    await user.click(screen.getByRole("tab", { name: "Production" }));
+    expect(await screen.findByText("recent failures: 1")).toBeInTheDocument();
+    expect(screen.getByText(/Recent failures needing attention/)).toBeInTheDocument();
+  });
+});
+
+describe("Matrix automatic stages and per-book pause", () => {
+  it("marks automatic stages and pauses a book on request", async () => {
+    let paused = false;
+    const calls = mockFetch(({ path, body }) => {
+      if (path === "/api/books") return json([makeBook()]);
+      if (path === "/api/pipeline/stages") return json({ registry_version: "pipeline-stages-v1", stages: STAGES });
+      if (path === "/api/pipeline/overview") return json(overviewPayload());
+      if (path === "/api/pipeline/maintenance")
+        return json(maintenanceStatus({ paused_books: paused ? ["memory"] : [] }));
+      if (path === "/api/pipeline/books/memory") return json(matrixPayload());
+      if (path === "/api/pipeline/maintenance/pause") {
+        paused = (body as { paused?: boolean }).paused === true;
+        return json({ project_id: "memory", paused_books: paused ? ["memory"] : [] });
+      }
+      return apiError(404, `Unhandled ${path}`);
+    });
+    const user = userEvent.setup();
+    renderRoute(<BooksPage />, "/books");
+    await user.click(screen.getByRole("tab", { name: "Production" }));
+    await user.click(await screen.findByRole("button", { name: "Open production matrix for memory title" }));
+    expect(await screen.findByText(/memory title — Production Pipeline/)).toBeInTheDocument();
+    expect(screen.getAllByText("auto").length).toBeGreaterThan(0);
+    await user.click(screen.getByRole("button", { name: "Pause automatic maintenance" }));
+    expect(
+      calls.some(
+        (call) =>
+          call.path === "/api/pipeline/maintenance/pause" &&
+          JSON.stringify(call.body).includes("memory"),
+      ),
+    ).toBe(true);
+    expect(await screen.findByRole("button", { name: "Resume automatic maintenance" })).toBeInTheDocument();
   });
 });

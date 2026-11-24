@@ -179,6 +179,11 @@ def create_app(runtime: RuntimeSettings | None = None) -> FastAPI:
         integration_service = IntegrationService(database, settings)
         workflow_service = WorkflowService(database, settings, integration_service)
         praxis_proposal_service = PraxisProposalService(database, integration_service)
+        from mission_control.publication.maintenance import (
+            MaintenanceService as _MaintenanceService,
+        )
+
+        maintenance_service = _MaintenanceService(database, settings, integration_service)
         research_chat = ResearchChatService(database, settings)
         git_activity_service = GitActivityService(database)
         from mission_control.quality_software.service import (
@@ -197,6 +202,7 @@ def create_app(runtime: RuntimeSettings | None = None) -> FastAPI:
         app.state.integration_service = integration_service
         app.state.workflow_service = workflow_service
         app.state.praxis_proposal_service = praxis_proposal_service
+        app.state.maintenance_service = maintenance_service
         app.state.research_chat = research_chat
         app.state.git_activity = git_activity_service
         app.state.software_quality = software_quality_service
@@ -217,6 +223,10 @@ def create_app(runtime: RuntimeSettings | None = None) -> FastAPI:
                 _startup_refresh(app), name="mission-control-startup-refresh"
             )
             process_manager.start_monitor()
+            # Automatic deterministic maintenance: read-only reconciliation
+            # loop. Dispatch additionally requires the pipeline_auto_enabled
+            # setting, so the loop is inert until explicitly enabled.
+            await maintenance_service.start()
         logger.info(
             "Mission Control %s ready on http://%s:%s", __version__, settings.host, settings.port
         )
@@ -233,6 +243,10 @@ def create_app(runtime: RuntimeSettings | None = None) -> FastAPI:
                 await integration_service.shutdown()
             except Exception:
                 logger.exception("Integration action shutdown failed")
+            try:
+                await maintenance_service.stop()
+            except Exception:
+                logger.exception("Maintenance shutdown failed")
             await process_manager.shutdown()
             try:
                 await discovery_service.shutdown()

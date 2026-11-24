@@ -71,6 +71,10 @@ describe("Writer evaluations layer", () => {
           },
         ]);
       if (path === "/api/quality/campaigns" && method === "GET") return json([]);
+      if (path === "/api/publication/calibration/runs" && method === "GET") return json([]);
+      if (path === "/api/publication/publishing" && method === "GET")
+        return json({ project_id: "math", chapter_count: 0, lifecycle: null, publication_gate: "Unknown", evidence: [], blockers: { failed: [], stale: [], missing: [], identity_conflicts: [] }, refresh_note: "" });
+      if (path === "/api/living-book/projects/math" && method === "GET") return apiError(404, "no book");
       if (path === "/api/technical/overview" && method === "GET")
         return json({ project_id: "math", chapters_with_claims: 0, claims_total: 0, by_status: {}, by_method: {}, claims_unresolved: 0 });
       if (path === "/api/artifact-load/workspace" && method === "GET")
@@ -128,7 +132,7 @@ describe("Writer evaluations layer", () => {
       <Routes>
         <Route path="/projects/:projectId" element={<ProjectPage />} />
       </Routes>,
-      "/projects/math",
+      "/projects/math?tab=quality&qview=signals",
     );
 
     expect(await screen.findByRole("heading", { name: "Writer evaluations" })).toBeInTheDocument();
@@ -151,10 +155,16 @@ describe("Writer evaluations layer", () => {
     mockFetch(({ path, method }) => {
       if (path === "/api/projects/math" && method === "GET") return json(detail);
       if (path === "/api/projects/math/integration-context" && method === "GET") return json([]);
+      if (path === "/api/projects/math/evidence-timeline" && method === "GET")
+        return json({ workflows: [], observations: [] });
       if (path === "/api/quality/workspace" && method === "GET")
         return json({ project_id: "math", chapters: [], limitations: [] });
       if (path === "/api/quality/discovery" && method === "GET") return json([]);
       if (path === "/api/quality/campaigns" && method === "GET") return json([]);
+      if (path === "/api/publication/calibration/runs" && method === "GET") return json([]);
+      if (path === "/api/publication/publishing" && method === "GET")
+        return json({ project_id: "math", chapter_count: 0, lifecycle: null, publication_gate: "Unknown", evidence: [], blockers: { failed: [], stale: [], missing: [], identity_conflicts: [] }, refresh_note: "" });
+      if (path === "/api/living-book/projects/math" && method === "GET") return apiError(404, "no book");
       if (path === "/api/technical/overview" && method === "GET")
         return json({ project_id: "math", chapters_with_claims: 0, claims_total: 0, by_status: {}, by_method: {}, claims_unresolved: 0 });
       if (path === "/api/artifact-load/workspace" && method === "GET")
@@ -168,7 +178,7 @@ describe("Writer evaluations layer", () => {
       <Routes>
         <Route path="/projects/:projectId" element={<ProjectPage />} />
       </Routes>,
-      "/projects/math",
+      "/projects/math?tab=quality&qview=signals",
     );
 
     expect(await screen.findByRole("heading", { name: "Writer evaluations" })).toBeInTheDocument();
