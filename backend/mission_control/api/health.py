@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
+import json
 import logging
 import os
 import subprocess
 import sys
 import threading
+import time
 from typing import Any
 
 from fastapi import APIRouter, HTTPException, Request
@@ -118,11 +120,16 @@ def database_diagnostics(request: Request) -> dict[str, object]:
         pool_status = {}
     server_version: object = None
     db_name: object = None
+    latency_ms: object = None
+    pg_extra: dict[str, object] = {}
     try:
         with database.engine.connect() as connection:
             if backend == "postgresql":
+                started = time.perf_counter()
                 server_version = connection.execute(text("SHOW server_version")).scalar()
+                latency_ms = round((time.perf_counter() - started) * 1000, 2)
                 db_name = connection.execute(text("SELECT current_database()")).scalar()
+                pg_extra = _postgresql_diagnostics(connection)
             else:
                 server_version = connection.execute(text("select sqlite_version()")).scalar()
                 db_name = "sqlite"
@@ -135,9 +142,93 @@ def database_diagnostics(request: Request) -> dict[str, object]:
         "server_version": server_version,
         "schema_version": version,
         "pool": pool_status,
+        "latency_ms": latency_ms,
+        "postgresql": pg_extra,
+        "last_verified_backup": _last_verified_backup(),
         "url_redacted": settings.redacted_database_url,
         "last_error_category": last_error,
     }
+
+
+def _postgresql_diagnostics(connection) -> dict[str, object]:
+    """Read-only PostgreSQL operational snapshot (MC-POSTGRES-02 Phase 6).
+
+    Every probe is defensive: any failure yields ``unknown`` for that field
+    rather than failing the endpoint. Exposes counts and durations only —
+    never query text, PIDs, credentials, or record contents.
+    """
+    out: dict[str, object] = {}
+    try:
+        out["size_bytes"] = connection.execute(
+            text("SELECT pg_database_size(current_database())")
+        ).scalar()
+    except Exception:
+        out["size_bytes"] = "unknown"
+    try:
+        row = connection.execute(
+            text(
+                "SELECT "
+                "COUNT(*) FILTER (WHERE state = 'active') AS active, "
+                "COUNT(*) FILTER (WHERE state = 'idle in transaction') AS idle_in_tx "
+                "FROM pg_stat_activity "
+                "WHERE datname = current_database() AND pid <> pg_backend_pid()"
+            )
+        ).fetchone()
+        out["active_connections"] = int(row[0])
+        out["idle_in_transaction"] = int(row[1])
+    except Exception:
+        out["active_connections"] = "unknown"
+        out["idle_in_transaction"] = "unknown"
+    try:
+        row = connection.execute(
+            text(
+                "SELECT COUNT(*), COALESCE(MAX(EXTRACT(EPOCH FROM (now() - xact_start))), 0) "
+                "FROM pg_stat_activity WHERE datname = current_database() "
+                "AND pid <> pg_backend_pid() AND xact_start IS NOT NULL "
+                "AND now() - xact_start > interval '60 seconds'"
+            )
+        ).fetchone()
+        out["long_transactions"] = int(row[0])
+        out["longest_transaction_seconds"] = round(float(row[1]), 1)
+    except Exception:
+        out["long_transactions"] = "unknown"
+        out["longest_transaction_seconds"] = "unknown"
+    try:
+        out["waiting_locks"] = int(
+            connection.execute(
+                text(
+                    "SELECT COUNT(*) FROM pg_locks "
+                    "WHERE NOT granted AND database = ("
+                    "SELECT oid FROM pg_database WHERE datname = current_database())"
+                )
+            ).scalar()
+        )
+    except Exception:
+        out["waiting_locks"] = "unknown"
+    return out
+
+
+def _last_verified_backup() -> dict[str, object]:
+    """Metadata of the last restore-validated backup, if recorded.
+
+    Written by the backup verification workflow (see
+    ``docs/migration/MC-POSTGRES-01/08-recovery-runbook.md``); unknown when
+    absent. Never contains credentials.
+    """
+    try:
+        from mission_control.config import _repo_root
+
+        candidate = _repo_root() / "data" / "backups" / "last_verified_backup.json"
+        if candidate.exists():
+            payload = json.loads(candidate.read_text(encoding="utf-8"))
+            if isinstance(payload, dict):
+                return {
+                    key: payload.get(key)
+                    for key in ("path", "bytes", "sha256", "validated_at", "method")
+                }
+    except Exception:
+        pass
+    return {"status": "unknown"}
 
 
 @router.post("/restart", status_code=202, response_model=dict[str, Any])

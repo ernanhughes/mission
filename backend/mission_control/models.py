@@ -1,4 +1,13 @@
-"""SQLAlchemy models mirroring the explicit SQL migrations."""
+"""SQLAlchemy models mirroring the explicit SQL migrations.
+
+Persistence convention (MC-POSTGRES-02): models declare column-level
+``ForeignKey`` constraints but no ``relationship()`` attributes. SQLAlchemy
+orders pending inserts via relationship dependency processors, so bare
+foreign keys alone do NOT order a flush: adding a transient parent and child
+in one flush emits the child INSERT first and any FK-enforcing backend
+rejects it. Always ``flush()`` parents before adding children in a session
+(see ``seed_defaults``). Pinned by ``tests/test_persistence_conventions.py``.
+"""
 
 from __future__ import annotations
 

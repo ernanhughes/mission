@@ -635,9 +635,10 @@ def cmd_execute(args) -> int:
         print(f"  {entry['table']}|src={entry['source_rows']}|pg={entry['target_rows']}|"
               f"pk={entry['pk_match']}|content={entry['content_match']}|{entry['status']}")
     Path(REPO_ROOT / "docs" / "migration" / "MC-POSTGRES-01").mkdir(parents=True, exist_ok=True)
-    (REPO_ROOT / "docs" / "migration" / "MC-POSTGRES-01" / "05-reconciliation.json").write_text(
-        json.dumps(rec, indent=2), encoding="utf-8"
+    report_path = Path(args.report_path) if args.report_path else (
+        REPO_ROOT / "docs" / "migration" / "MC-POSTGRES-01" / "05-reconciliation.json"
     )
+    report_path.write_text(json.dumps(rec, indent=2), encoding="utf-8")
     return 0 if rec["ok"] else 6
 
 
@@ -677,6 +678,8 @@ def main() -> int:
     parser.add_argument("--source", default=str(REPO_ROOT / "data" / "mission_control.db"))
     parser.add_argument("--target", default=None, help="PostgreSQL DSN (default: MC_DSN)")
     parser.add_argument("--backup-dir", default=None)
+    parser.add_argument("--report-path", default=None,
+                        help="where to write the reconciliation JSON (default: docs/migration/MC-POSTGRES-01/05-reconciliation.json)")
     parser.add_argument("--allow-nonempty", action="store_true")
     parser.add_argument("--resume", action="store_true",
                         help="resume an interrupted migration: skip tables that already have rows, verify at the end")

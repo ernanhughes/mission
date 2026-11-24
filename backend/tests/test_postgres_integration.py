@@ -37,38 +37,56 @@ def _test_dsn() -> str:
     return dsn
 
 
-def _pg_database(dsn: str):
-    from mission_control.config import RuntimeSettings
+def _pg_database(dsn: str, monkeypatch: pytest.MonkeyPatch):
+    """Connect the isolated PG test database via explicit opt-in only."""
+    from mission_control.config import RuntimeSettings, normalize_database_url
     from mission_control.persistence.db import Database
 
+    # Explicit opt-in: the ONLY postgres URL a test may use is MC_TEST_DSN.
+    # The conftest autouse fixture strips any inherited MC_DSN first.
+    monkeypatch.setenv("MC_DSN", dsn)
+    monkeypatch.delenv("MISSION_CONTROL_DATABASE_URL", raising=False)
     settings = RuntimeSettings()
-    previous_mc, previous_legacy = os.environ.get("MC_DSN"), os.environ.get(
-        "MISSION_CONTROL_DATABASE_URL"
+    database = Database(settings)
+    assert database.is_postgres
+    assert normalize_database_url(database.database_url) == normalize_database_url(dsn), (
+        "test Database resolved to an unexpected URL"
     )
-    os.environ["MC_DSN"] = dsn
-    os.environ.pop("MISSION_CONTROL_DATABASE_URL", None)
-    try:
-        database = Database(settings)
-        assert database.is_postgres
-        return database
-    finally:
-        if previous_mc is None:
-            os.environ.pop("MC_DSN", None)
-        else:
-            os.environ["MC_DSN"] = previous_mc
-        if previous_legacy is not None:
-            os.environ["MISSION_CONTROL_DATABASE_URL"] = previous_legacy
+    return database
+
+
+def _isolated_subprocess_env() -> dict[str, str]:
+    """Env for migration-subprocess tests: no implicit database fallback.
+
+    MC_DSN is removed so the script can only succeed via the explicit
+    ``--target`` argument, proving subprocess tests cannot escape isolation
+    through inherited configuration.
+    """
+    env = dict(os.environ)
+    env.pop("MC_DSN", None)
+    env.pop("MISSION_CONTROL_DATABASE_URL", None)
+    return env
 
 
 @pytest.fixture()
-def pg_database():
+def pg_database(monkeypatch: pytest.MonkeyPatch):
+    from urllib.parse import urlparse
+
     dsn = _test_dsn()
-    database = _pg_database(dsn)
+    database = _pg_database(dsn, monkeypatch)
+    expected_db = urlparse(dsn).path.lstrip("/") or "mc_test"
+    # Validate the ACTUAL connected database identity (not just the URL):
+    # the fixture refuses to proceed unless the server confirms we are on
+    # the isolated test database.
+    from sqlalchemy import text
+
+    with database.engine.connect() as connection:
+        actual_db = connection.execute(text("SELECT current_database()")).scalar()
+    assert actual_db == expected_db, f"connected to {actual_db!r}, expected {expected_db!r}"
+    assert actual_db != "mc", "refusing to run destructive fixtures on the operational database"
     from mission_control.persistence.migrations import apply_migrations
 
     # Clean slate: drop all tables in public then rebuild via the runner.
-    from sqlalchemy import text
-
     with database.engine.begin() as connection:
         tables = connection.execute(
             text(
@@ -104,20 +122,13 @@ def test_credentials_never_logged():
     assert "***" in redacted
 
 
-def test_missing_operational_config_fails_clearly():
-    previous_mc, previous_legacy = os.environ.get("MC_DSN"), os.environ.get(
-        "MISSION_CONTROL_DATABASE_URL"
-    )
-    os.environ.pop("MC_DSN", None)
-    os.environ.pop("MISSION_CONTROL_DATABASE_URL", None)
-    try:
-        with pytest.raises(DatabaseConfigurationError):
-            resolve_database_url(allow_sqlite_fallback=False)
-    finally:
-        if previous_mc is not None:
-            os.environ["MC_DSN"] = previous_mc
-        if previous_legacy is not None:
-            os.environ["MISSION_CONTROL_DATABASE_URL"] = previous_legacy
+def test_missing_operational_config_fails_clearly(monkeypatch: pytest.MonkeyPatch):
+    # The conftest autouse fixture already strips operational config; this
+    # test pins the explicit contract for resolve_database_url itself.
+    monkeypatch.delenv("MC_DSN", raising=False)
+    monkeypatch.delenv("MISSION_CONTROL_DATABASE_URL", raising=False)
+    with pytest.raises(DatabaseConfigurationError):
+        resolve_database_url(allow_sqlite_fallback=False)
 
 
 # -------------------------------------------------------------------- schema
@@ -149,72 +160,67 @@ def test_pg_schema_has_all_tables(pg_database):
 # ----------------------------------------------------------------- migration
 
 
-def _make_source_db(path, *, books: int = 2, health: int = 3):
+def _make_source_db(path, monkeypatch: pytest.MonkeyPatch, *, books: int = 2, health: int = 3):
     from mission_control.config import RuntimeSettings
     from mission_control.persistence.db import Database
     from mission_control.persistence.migrations import apply_migrations
     from mission_control.persistence.seed import seed_defaults
 
     repo_root = __import__("pathlib").Path(__file__).resolve().parents[2]
+    # Point this Database at the given sqlite file via legacy override.
+    # monkeypatch (on top of the conftest autouse strip) guarantees no
+    # production DSN leaks into this helper.
+    monkeypatch.delenv("MC_DSN", raising=False)
+    monkeypatch.setenv("MISSION_CONTROL_DATABASE_URL", f"sqlite:///{path.as_posix()}")
     settings = RuntimeSettings(
         data_dir=path.parent, config_dir=repo_root / "config", frontend_dist=path.parent,
     )
-    # Point this Database at the given sqlite file via legacy override.
-    previous = os.environ.get("MISSION_CONTROL_DATABASE_URL")
-    os.environ.pop("MC_DSN", None)
-    os.environ["MISSION_CONTROL_DATABASE_URL"] = f"sqlite:///{path.as_posix()}"
-    try:
-        database = Database(settings)
-        apply_migrations(database)
-        with database.session() as session:
-            seed_defaults(session, settings)
-            from mission_control.models import Application, Book, HealthObservation, Project
+    database = Database(settings)
+    apply_migrations(database)
+    with database.session() as session:
+        seed_defaults(session, settings)
+        from mission_control.models import Application, Book, HealthObservation, Project
 
-            # Application convention (see seed_defaults): flush parents before
-            # adding children; one flush never mixes transient parent+child.
-            for index in range(books):
-                session.add(Project(id=f"pg-proj-{index}", name=f"PG Proj {index}"))
-            session.flush()
-            for index in range(books):
-                session.add(
-                    Book(
-                        id=f"pg-book-{index}", project_id=f"pg-proj-{index}",
-                        title=f"PG Book {index}",
-                    )
+        # Application convention (see seed_defaults): flush parents before
+        # adding children; one flush never mixes transient parent+child.
+        for index in range(books):
+            session.add(Project(id=f"pg-proj-{index}", name=f"PG Proj {index}"))
+        session.flush()
+        for index in range(books):
+            session.add(
+                Book(
+                    id=f"pg-book-{index}", project_id=f"pg-proj-{index}",
+                    title=f"PG Book {index}",
                 )
-            session.flush()
-            session.add(Application(id="pg-app", name="PG App"))
-            session.flush()
-            for index in range(health):
-                session.add(
-                    HealthObservation(
-                        application_id="pg-app", state="healthy",
-                        detail=f"ok {index}",
-                    )
+            )
+        session.flush()
+        session.add(Application(id="pg-app", name="PG App"))
+        session.flush()
+        for index in range(health):
+            session.add(
+                HealthObservation(
+                    application_id="pg-app", state="healthy",
+                    detail=f"ok {index}",
                 )
-    finally:
-        if previous is None:
-            os.environ.pop("MISSION_CONTROL_DATABASE_URL", None)
-        else:
-            os.environ["MISSION_CONTROL_DATABASE_URL"] = previous
+            )
     return path
 
 
-def test_pg_import_preserves_pks_and_sequences(tmp_path, pg_database):
+def test_pg_import_preserves_pks_and_sequences(tmp_path, pg_database, monkeypatch):
     from mission_control.persistence.migrations import schema_version
 
-    src = _make_source_db(tmp_path / "src.db")
+    src = _make_source_db(tmp_path / "src.db", monkeypatch)
     import subprocess
     import sys
 
     target = _test_dsn()
     repo_root = __import__("pathlib").Path(__file__).resolve().parents[2]
     script = repo_root / "scripts" / "migrate_sqlite_to_postgres.py"
-    env = dict(os.environ)
     completed = subprocess.run(
         [sys.executable, str(script), "--execute", "--yes",
-         "--source", str(src), "--target", target],
-        capture_output=True, text=True, env=env, timeout=300,
+         "--source", str(src), "--target", target,
+         "--report-path", str(tmp_path / "reconciliation.json")],
+        capture_output=True, text=True, env=_isolated_subprocess_env(), timeout=300,
     )
     assert completed.returncode == 0, completed.stdout[-3000:] + completed.stderr[-3000:]
     with pg_database.session() as session:
@@ -230,11 +236,11 @@ def test_pg_import_preserves_pks_and_sequences(tmp_path, pg_database):
     assert schema_version(pg_database) >= 39
 
 
-def test_pg_migration_refuses_populated_target(tmp_path, pg_database):
+def test_pg_migration_refuses_populated_target(tmp_path, pg_database, monkeypatch):
     import subprocess
     import sys
 
-    src = _make_source_db(tmp_path / "src2.db")
+    src = _make_source_db(tmp_path / "src2.db", monkeypatch)
     target = _test_dsn()
     with pg_database.session() as session:
         from mission_control.models import Project
@@ -245,7 +251,7 @@ def test_pg_migration_refuses_populated_target(tmp_path, pg_database):
     completed = subprocess.run(
         [sys.executable, str(script), "--execute", "--yes",
          "--source", str(src), "--target", target],
-        capture_output=True, text=True, env=dict(os.environ), timeout=120,
+        capture_output=True, text=True, env=_isolated_subprocess_env(), timeout=120,
     )
     assert completed.returncode != 0
     assert "REFUSING" in completed.stdout or "already matches" in completed.stdout
@@ -419,3 +425,80 @@ def test_pg_no_sqlite_fallback_in_production_paths(pg_database):
     # a live property of the process environment, so assert on the capture.
     assert pg_database.database_url.startswith("postgresql+psycopg://")
     assert "sqlite" not in pg_database.database_url
+
+
+# ------------------------------------------------------- resilience (Phase 7)
+
+
+def test_pg_connection_recovery_after_dispose(pg_database):
+    # pool_pre_ping must transparently recover after connections die.
+    pg_database.health_check()
+    pg_database.dispose()
+    pg_database.health_check()
+    with pg_database.session() as session:
+        from mission_control.models import Setting
+
+        assert session.get(Setting, "nonexistent-key") is None
+
+
+def test_pg_failed_transaction_rolls_back_cleanly(pg_database):
+    from sqlalchemy.exc import IntegrityError
+
+    from mission_control.models import Project
+
+    with pg_database.session() as session:
+        session.add(Project(id="resil-proj", name="Resilient"))
+    try:
+        with pg_database.session() as session:
+            session.add(Project(id="resil-proj", name="Duplicate"))
+            session.flush()
+        raise AssertionError("expected IntegrityError")
+    except IntegrityError:
+        pass
+    # The failed transaction must not poison the factory: later writes work.
+    with pg_database.session() as session:
+        assert session.get(Project, "resil-proj") is not None
+        session.add(Project(id="resil-proj-2", name="Resilient 2"))
+    with pg_database.session() as session:
+        assert session.get(Project, "resil-proj-2") is not None
+
+
+def test_pg_unavailable_points_at_postgres_not_sqlite(monkeypatch):
+    # An unreachable PostgreSQL must surface as a PG connectivity error.
+    # It must never silently become SQLite.
+    from mission_control.config import RuntimeSettings
+    from mission_control.persistence.db import Database
+
+    monkeypatch.setenv("MC_DSN", "postgresql://mc:mc@127.0.0.1:5499/mc_test")
+    monkeypatch.setenv("MC_TEST_DSN", "postgresql://mc:mc@127.0.0.1:5499/mc_test")
+    database = Database(RuntimeSettings())
+    assert database.backend == "postgresql"
+    assert "sqlite" not in database.database_url
+    with pytest.raises(Exception):
+        database.health_check()
+    database.dispose()
+
+
+def test_pg_monitor_recovers_after_failures(pg_database):
+    # A failing observation (unknown application) must not stop later passes,
+    # and persistence failures stay distinct from endpoint health.
+    import asyncio
+
+    from mission_control.processes.manager import ProcessManager
+
+    manager = ProcessManager(pg_database, pg_database.settings)
+    with pytest.raises(Exception):
+        asyncio.run(manager.check_health("no-such-app", timeout=0.3))
+    with pg_database.session() as session:
+        from mission_control.models import Application, LaunchDefinition
+
+        session.add(Application(id="resil-mon", name="Resilient Monitor"))
+        session.add(
+            LaunchDefinition(
+                id="resil-mon-def", application_id="resil-mon", name="web",
+                launch_type="server", health_type="tcp", expected_port=9,
+                enabled=True, is_primary=True,
+            )
+        )
+    observation = asyncio.run(manager.check_health("resil-mon", timeout=0.3))
+    assert observation.application_id == "resil-mon"
