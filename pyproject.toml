@@ -47,7 +47,7 @@ markers = [
 ]
 
 aitest_enabled = true
-aitest_policy = "observe"
+aitest_policy = "standard"
 aitest_hard_deadline_seconds = 300
 [tool.ruff]
 line-length = 100

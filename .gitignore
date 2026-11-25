@@ -32,3 +32,6 @@ Thumbs.db
 
 # Test artifacts
 .pytest_tmp/
+
+# aitest local evidence and runtime state
+.aitest/
