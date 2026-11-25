@@ -1,0 +1,1249 @@
+{
+ "instrument": "probe-scoring-v0.2",
+ "inputs": {
+  "model_judgements": "model-judgements.json (134 records, read-only)",
+  "probe_key_sha": "36f48dc2760f11420bad45ac2d8094efaa713d9d75d858aad6b9079983c67c36",
+  "blind_pack_sha": "15aa5ea9a4445582d62e3cd8e7a5b1c768b9e13f664e2b00db862b6b7946cbe5"
+ },
+ "buckets": {
+  "parsed-original": 116,
+  "recovered-deterministic": 0,
+  "still-malformed": 18
+ },
+ "verdict_buckets": {
+  "exact": 21,
+  "normalized-equivalent": 24,
+  "genuine-incorrect": 1,
+  "abstentions": 19,
+  "needs-adjudication": 8,
+  "unassessed": 0
+ },
+ "per_arm": {
+  "T1": {
+   "arm": "B1",
+   "scored": 14,
+   "v02_correct": 14,
+   "malformed": 1,
+   "coverage_scored_of_15": 0.933,
+   "accuracy_of_scored": 1.0
+  },
+  "T2": {
+   "arm": "A1",
+   "scored": 11,
+   "v02_correct": 10,
+   "malformed": 4,
+   "coverage_scored_of_15": 0.733,
+   "accuracy_of_scored": 0.909
+  },
+  "T3": {
+   "arm": "H",
+   "scored": 13,
+   "v02_correct": 13,
+   "malformed": 2,
+   "coverage_scored_of_15": 0.867,
+   "accuracy_of_scored": 1.0
+  },
+  "T4": {
+   "arm": "O",
+   "scored": 8,
+   "v02_correct": 8,
+   "malformed": 7,
+   "coverage_scored_of_15": 0.533,
+   "accuracy_of_scored": 1.0
+  }
+ },
+ "probes": {
+  "T1:F1": {
+   "arm": "B1",
+   "orig_status": "fail_malformed",
+   "bucket": "still-malformed",
+   "recovery_refusal": "refused: truncation marker '...' \u2014 bytes incomplete"
+  },
+  "T1:F2": {
+   "arm": "B1",
+   "orig_status": "scored",
+   "orig_score": "incorrect",
+   "v02_verdict": "correct",
+   "v02_rule": "F2:number+match-stem",
+   "bucket": "normalized-equivalent",
+   "old_containment": "incorrect",
+   "flipped": true
+  },
+  "T1:F3": {
+   "arm": "B1",
+   "orig_status": "scored",
+   "orig_score": "correct",
+   "v02_verdict": "correct",
+   "v02_rule": "F3:exact-payload",
+   "bucket": "exact",
+   "old_containment": "correct",
+   "flipped": false
+  },
+  "T1:F4": {
+   "arm": "B1",
+   "orig_status": "scored",
+   "orig_score": "incorrect",
+   "v02_verdict": "correct",
+   "v02_rule": "F4:zero-tokens+latency",
+   "bucket": "normalized-equivalent",
+   "old_containment": "incorrect",
+   "flipped": true
+  },
+  "T1:F5": {
+   "arm": "B1",
+   "orig_status": "scored",
+   "orig_score": "incorrect",
+   "v02_verdict": "correct",
+   "v02_rule": "F5:structure+negated-correctness",
+   "bucket": "normalized-equivalent",
+   "old_containment": "incorrect",
+   "flipped": true
+  },
+  "T1:F6": {
+   "arm": "B1",
+   "orig_status": "scored",
+   "orig_score": "correct",
+   "v02_verdict": "correct",
+   "v02_rule": "F6:rate+unit",
+   "bucket": "exact",
+   "old_containment": "correct",
+   "flipped": false
+  },
+  "T1:F7": {
+   "arm": "B1",
+   "orig_status": "scored",
+   "orig_score": "correct",
+   "v02_verdict": "correct",
+   "v02_rule": "F7:range+bounds+unit",
+   "bucket": "exact",
+   "old_containment": "correct",
+   "flipped": false
+  },
+  "T1:F8": {
+   "arm": "B1",
+   "orig_status": "scored",
+   "orig_score": "correct",
+   "v02_verdict": "correct",
+   "v02_rule": "F8:number+unit",
+   "bucket": "exact",
+   "old_containment": "correct",
+   "flipped": false
+  },
+  "T1:F9": {
+   "arm": "B1",
+   "orig_status": "scored",
+   "orig_score": "correct",
+   "v02_verdict": "correct",
+   "v02_rule": "F9:number+case-sensitive-unit",
+   "bucket": "exact",
+   "old_containment": "correct",
+   "flipped": false
+  },
+  "T1:F10": {
+   "arm": "B1",
+   "orig_status": "scored",
+   "orig_score": "correct",
+   "v02_verdict": "correct",
+   "v02_rule": "F10:numbers+concept",
+   "bucket": "exact",
+   "old_containment": "correct",
+   "flipped": false
+  },
+  "T1:F11": {
+   "arm": "B1",
+   "orig_status": "scored",
+   "orig_score": "incorrect",
+   "v02_verdict": "correct",
+   "v02_rule": "F11:ordered-identifiers",
+   "bucket": "normalized-equivalent",
+   "old_containment": "incorrect",
+   "flipped": true
+  },
+  "T1:F12": {
+   "arm": "B1",
+   "orig_status": "scored",
+   "orig_score": "incorrect",
+   "v02_verdict": "correct",
+   "v02_rule": "F12:ordered-keys",
+   "bucket": "normalized-equivalent",
+   "old_containment": "incorrect",
+   "flipped": true
+  },
+  "T1:E1": {
+   "arm": "B1",
+   "orig_status": "scored",
+   "orig_score": "incorrect",
+   "v02_verdict": "correct",
+   "v02_rule": "E1:negated-run",
+   "bucket": "normalized-equivalent",
+   "old_containment": "incorrect",
+   "flipped": true
+  },
+  "T1:E2": {
+   "arm": "B1",
+   "orig_status": "scored",
+   "orig_score": "incorrect",
+   "v02_verdict": "correct",
+   "v02_rule": "E2:negated-documented",
+   "bucket": "normalized-equivalent",
+   "old_containment": "incorrect",
+   "flipped": true
+  },
+  "T1:E3": {
+   "arm": "B1",
+   "orig_status": "scored",
+   "orig_score": "incorrect",
+   "v02_verdict": "correct",
+   "v02_rule": "E3:negated-measured",
+   "bucket": "normalized-equivalent",
+   "old_containment": "incorrect",
+   "flipped": true
+  },
+  "T2:F1": {
+   "arm": "A1",
+   "orig_status": "fail_malformed",
+   "bucket": "still-malformed",
+   "recovery_refusal": "refused: truncation marker '...' \u2014 bytes incomplete"
+  },
+  "T2:F2": {
+   "arm": "A1",
+   "orig_status": "scored",
+   "orig_score": "incorrect",
+   "v02_verdict": "correct",
+   "v02_rule": "F2:number+match-stem",
+   "bucket": "normalized-equivalent",
+   "old_containment": "incorrect",
+   "flipped": true
+  },
+  "T2:F3": {
+   "arm": "A1",
+   "orig_status": "fail_malformed",
+   "bucket": "still-malformed",
+   "recovery_refusal": "refused: truncation marker '...' \u2014 bytes incomplete"
+  },
+  "T2:F4": {
+   "arm": "A1",
+   "orig_status": "scored",
+   "orig_score": "incorrect",
+   "v02_verdict": "correct",
+   "v02_rule": "F4:zero-tokens+latency",
+   "bucket": "normalized-equivalent",
+   "old_containment": "incorrect",
+   "flipped": true
+  },
+  "T2:F5": {
+   "arm": "A1",
+   "orig_status": "scored",
+   "orig_score": "incorrect",
+   "v02_verdict": "incorrect",
+   "v02_rule": "F5:concept-or-negation-missing",
+   "bucket": "genuine-incorrect",
+   "old_containment": "incorrect",
+   "flipped": false
+  },
+  "T2:F6": {
+   "arm": "A1",
+   "orig_status": "scored",
+   "orig_score": "correct",
+   "v02_verdict": "correct",
+   "v02_rule": "F6:rate+unit",
+   "bucket": "exact",
+   "old_containment": "correct",
+   "flipped": false
+  },
+  "T2:F7": {
+   "arm": "A1",
+   "orig_status": "scored",
+   "orig_score": "correct",
+   "v02_verdict": "correct",
+   "v02_rule": "F7:range+bounds+unit",
+   "bucket": "exact",
+   "old_containment": "correct",
+   "flipped": false
+  },
+  "T2:F8": {
+   "arm": "A1",
+   "orig_status": "scored",
+   "orig_score": "correct",
+   "v02_verdict": "correct",
+   "v02_rule": "F8:number+unit",
+   "bucket": "exact",
+   "old_containment": "correct",
+   "flipped": false
+  },
+  "T2:F9": {
+   "arm": "A1",
+   "orig_status": "scored",
+   "orig_score": "correct",
+   "v02_verdict": "correct",
+   "v02_rule": "F9:number+case-sensitive-unit",
+   "bucket": "exact",
+   "old_containment": "correct",
+   "flipped": false
+  },
+  "T2:F10": {
+   "arm": "A1",
+   "orig_status": "scored",
+   "orig_score": "correct",
+   "v02_verdict": "correct",
+   "v02_rule": "F10:numbers+concept",
+   "bucket": "exact",
+   "old_containment": "correct",
+   "flipped": false
+  },
+  "T2:F11": {
+   "arm": "A1",
+   "orig_status": "fail_malformed",
+   "bucket": "still-malformed",
+   "recovery_refusal": "refused: truncation marker '...' \u2014 bytes incomplete"
+  },
+  "T2:F12": {
+   "arm": "A1",
+   "orig_status": "scored",
+   "orig_score": "incorrect",
+   "v02_verdict": "correct",
+   "v02_rule": "F12:ordered-keys",
+   "bucket": "normalized-equivalent",
+   "old_containment": "incorrect",
+   "flipped": true
+  },
+  "T2:E1": {
+   "arm": "A1",
+   "orig_status": "fail_malformed",
+   "bucket": "still-malformed",
+   "recovery_refusal": "refused: truncation marker '...' \u2014 bytes incomplete"
+  },
+  "T2:E2": {
+   "arm": "A1",
+   "orig_status": "scored",
+   "orig_score": "incorrect",
+   "v02_verdict": "correct",
+   "v02_rule": "E2:negated-documented",
+   "bucket": "normalized-equivalent",
+   "old_containment": "incorrect",
+   "flipped": true
+  },
+  "T2:E3": {
+   "arm": "A1",
+   "orig_status": "scored",
+   "orig_score": "incorrect",
+   "v02_verdict": "correct",
+   "v02_rule": "E3:negated-measured",
+   "bucket": "normalized-equivalent",
+   "old_containment": "incorrect",
+   "flipped": true
+  },
+  "T3:F1": {
+   "arm": "H",
+   "orig_status": "scored",
+   "orig_score": "incorrect",
+   "v02_verdict": "correct",
+   "v02_rule": "F1:counts-pair",
+   "bucket": "normalized-equivalent",
+   "old_containment": "incorrect",
+   "flipped": true
+  },
+  "T3:F2": {
+   "arm": "H",
+   "orig_status": "fail_malformed",
+   "bucket": "still-malformed",
+   "recovery_refusal": "refused: truncation marker '...' \u2014 bytes incomplete"
+  },
+  "T3:F3": {
+   "arm": "H",
+   "orig_status": "scored",
+   "orig_score": "correct",
+   "v02_verdict": "correct",
+   "v02_rule": "F3:exact-payload",
+   "bucket": "exact",
+   "old_containment": "correct",
+   "flipped": false
+  },
+  "T3:F4": {
+   "arm": "H",
+   "orig_status": "scored",
+   "orig_score": "incorrect",
+   "v02_verdict": "correct",
+   "v02_rule": "F4:zero-tokens+latency",
+   "bucket": "normalized-equivalent",
+   "old_containment": "incorrect",
+   "flipped": true
+  },
+  "T3:F5": {
+   "arm": "H",
+   "orig_status": "scored",
+   "orig_score": "incorrect",
+   "v02_verdict": "correct",
+   "v02_rule": "F5:structure+negated-correctness",
+   "bucket": "normalized-equivalent",
+   "old_containment": "incorrect",
+   "flipped": true
+  },
+  "T3:F6": {
+   "arm": "H",
+   "orig_status": "scored",
+   "orig_score": "correct",
+   "v02_verdict": "correct",
+   "v02_rule": "F6:rate+unit",
+   "bucket": "exact",
+   "old_containment": "correct",
+   "flipped": false
+  },
+  "T3:F7": {
+   "arm": "H",
+   "orig_status": "scored",
+   "orig_score": "correct",
+   "v02_verdict": "correct",
+   "v02_rule": "F7:range+bounds+unit",
+   "bucket": "exact",
+   "old_containment": "correct",
+   "flipped": false
+  },
+  "T3:F8": {
+   "arm": "H",
+   "orig_status": "scored",
+   "orig_score": "correct",
+   "v02_verdict": "correct",
+   "v02_rule": "F8:number+unit",
+   "bucket": "exact",
+   "old_containment": "correct",
+   "flipped": false
+  },
+  "T3:F9": {
+   "arm": "H",
+   "orig_status": "scored",
+   "orig_score": "correct",
+   "v02_verdict": "correct",
+   "v02_rule": "F9:number+case-sensitive-unit",
+   "bucket": "exact",
+   "old_containment": "correct",
+   "flipped": false
+  },
+  "T3:F10": {
+   "arm": "H",
+   "orig_status": "scored",
+   "orig_score": "correct",
+   "v02_verdict": "correct",
+   "v02_rule": "F10:numbers+concept",
+   "bucket": "exact",
+   "old_containment": "correct",
+   "flipped": false
+  },
+  "T3:F11": {
+   "arm": "H",
+   "orig_status": "scored",
+   "orig_score": "incorrect",
+   "v02_verdict": "correct",
+   "v02_rule": "F11:ordered-identifiers",
+   "bucket": "normalized-equivalent",
+   "old_containment": "incorrect",
+   "flipped": true
+  },
+  "T3:F12": {
+   "arm": "H",
+   "orig_status": "scored",
+   "orig_score": "incorrect",
+   "v02_verdict": "correct",
+   "v02_rule": "F12:ordered-keys",
+   "bucket": "normalized-equivalent",
+   "old_containment": "incorrect",
+   "flipped": true
+  },
+  "T3:E1": {
+   "arm": "H",
+   "orig_status": "scored",
+   "orig_score": "incorrect",
+   "v02_verdict": "correct",
+   "v02_rule": "E1:negated-run",
+   "bucket": "normalized-equivalent",
+   "old_containment": "incorrect",
+   "flipped": true
+  },
+  "T3:E2": {
+   "arm": "H",
+   "orig_status": "scored",
+   "orig_score": "incorrect",
+   "v02_verdict": "correct",
+   "v02_rule": "E2:negated-documented",
+   "bucket": "normalized-equivalent",
+   "old_containment": "incorrect",
+   "flipped": true
+  },
+  "T3:E3": {
+   "arm": "H",
+   "orig_status": "fail_malformed",
+   "bucket": "still-malformed",
+   "recovery_refusal": "refused: truncation marker '...' \u2014 bytes incomplete"
+  },
+  "T4:F1": {
+   "arm": "O",
+   "orig_status": "fail_malformed",
+   "bucket": "still-malformed",
+   "recovery_refusal": "refused: truncation marker '...' \u2014 bytes incomplete"
+  },
+  "T4:F2": {
+   "arm": "O",
+   "orig_status": "scored",
+   "orig_score": "incorrect",
+   "v02_verdict": "correct",
+   "v02_rule": "F2:number+match-stem",
+   "bucket": "normalized-equivalent",
+   "old_containment": "incorrect",
+   "flipped": true
+  },
+  "T4:F3": {
+   "arm": "O",
+   "orig_status": "fail_malformed",
+   "bucket": "still-malformed",
+   "recovery_refusal": "refused: truncation marker '...' \u2014 bytes incomplete"
+  },
+  "T4:F4": {
+   "arm": "O",
+   "orig_status": "fail_malformed",
+   "bucket": "still-malformed",
+   "recovery_refusal": "refused: truncation marker '...' \u2014 bytes incomplete"
+  },
+  "T4:F5": {
+   "arm": "O",
+   "orig_status": "fail_malformed",
+   "bucket": "still-malformed",
+   "recovery_refusal": "refused: truncation marker '...' \u2014 bytes incomplete"
+  },
+  "T4:F6": {
+   "arm": "O",
+   "orig_status": "scored",
+   "orig_score": "correct",
+   "v02_verdict": "correct",
+   "v02_rule": "F6:rate+unit",
+   "bucket": "exact",
+   "old_containment": "correct",
+   "flipped": false
+  },
+  "T4:F7": {
+   "arm": "O",
+   "orig_status": "scored",
+   "orig_score": "correct",
+   "v02_verdict": "correct",
+   "v02_rule": "F7:range+bounds+unit",
+   "bucket": "exact",
+   "old_containment": "correct",
+   "flipped": false
+  },
+  "T4:F8": {
+   "arm": "O",
+   "orig_status": "scored",
+   "orig_score": "correct",
+   "v02_verdict": "correct",
+   "v02_rule": "F8:number+unit",
+   "bucket": "exact",
+   "old_containment": "correct",
+   "flipped": false
+  },
+  "T4:F9": {
+   "arm": "O",
+   "orig_status": "scored",
+   "orig_score": "correct",
+   "v02_verdict": "correct",
+   "v02_rule": "F9:number+case-sensitive-unit",
+   "bucket": "exact",
+   "old_containment": "correct",
+   "flipped": false
+  },
+  "T4:F10": {
+   "arm": "O",
+   "orig_status": "fail_malformed",
+   "bucket": "still-malformed",
+   "recovery_refusal": "refused: truncation marker '...' \u2014 bytes incomplete"
+  },
+  "T4:F11": {
+   "arm": "O",
+   "orig_status": "fail_malformed",
+   "bucket": "still-malformed",
+   "recovery_refusal": "refused: truncation marker '...' \u2014 bytes incomplete"
+  },
+  "T4:F12": {
+   "arm": "O",
+   "orig_status": "scored",
+   "orig_score": "incorrect",
+   "v02_verdict": "correct",
+   "v02_rule": "F12:ordered-keys",
+   "bucket": "normalized-equivalent",
+   "old_containment": "incorrect",
+   "flipped": true
+  },
+  "T4:E1": {
+   "arm": "O",
+   "orig_status": "scored",
+   "orig_score": "incorrect",
+   "v02_verdict": "correct",
+   "v02_rule": "E1:negated-run",
+   "bucket": "normalized-equivalent",
+   "old_containment": "incorrect",
+   "flipped": true
+  },
+  "T4:E2": {
+   "arm": "O",
+   "orig_status": "fail_malformed",
+   "bucket": "still-malformed",
+   "recovery_refusal": "refused: truncation marker '...' \u2014 bytes incomplete"
+  },
+  "T4:E3": {
+   "arm": "O",
+   "orig_status": "scored",
+   "orig_score": "incorrect",
+   "v02_verdict": "correct",
+   "v02_rule": "E3:negated-measured",
+   "bucket": "normalized-equivalent",
+   "old_containment": "incorrect",
+   "flipped": true
+  }
+ },
+ "checklist": {
+  "T1:C1": {
+   "verdict": "flag",
+   "quote_verbatim_recorded": true,
+   "quote_verbatim_reverified": true,
+   "bucket": "parsed-original"
+  },
+  "T1:C2": {
+   "verdict": "abstain",
+   "orig_status": "abstain",
+   "bucket": "abstention",
+   "rationale_prefix": "The checkable figures are internally consistent. The 25-character payload matches the literal `{\"refund_approved\": true}`, the 10 answered / 10 declined / 8 correct counts agree with the walkthrough r"
+  },
+  "T1:C3": {
+   "verdict": "flag",
+   "quote_verbatim_recorded": true,
+   "quote_verbatim_reverified": true,
+   "bucket": "parsed-original"
+  },
+  "T1:C4": {
+   "verdict": "abstain",
+   "orig_status": "abstain",
+   "bucket": "abstention",
+   "rationale_prefix": "The criterion applies to citations marked NO_CHANGE, and T1 contains no NO_CHANGE marker or other reference text to compare against, so byte-intactness cannot be checked against a baseline on the page"
+  },
+  "T1:C5": {
+   "verdict": "abstain",
+   "orig_status": "abstain",
+   "bucket": "abstention",
+   "rationale_prefix": "C5 requires comparing code, table, and figure blocks against a reference version to confirm they are byte-identical where NO_CHANGE applies. T1 is a single text with no prior version, diff, or NO_CHAN"
+  },
+  "T1:C6": {
+   "verdict": "pass",
+   "quote_verbatim_recorded": true,
+   "quote_verbatim_reverified": true,
+   "bucket": "parsed-original"
+  },
+  "T1:C7": {
+   "verdict": "flag",
+   "quote_verbatim_recorded": true,
+   "quote_verbatim_reverified": true,
+   "bucket": "parsed-original"
+  },
+  "T1:C8": {
+   "verdict": "abstain",
+   "orig_status": "abstain",
+   "bucket": "abstention",
+   "rationale_prefix": "C8 asks whether edits added obscurity, which requires comparing a pre-edit and post-edit version. T1 is a single final text with no revision history or marked changes, so there is no edit to evaluate "
+  },
+  "T2:C1": {
+   "verdict": "flag",
+   "quote_verbatim_recorded": true,
+   "quote_verbatim_reverified": true,
+   "bucket": "parsed-original"
+  },
+  "T2:C2": {
+   "verdict": "abstain",
+   "orig_status": "abstain",
+   "bucket": "abstention",
+   "rationale_prefix": "The page contains no clear numeric or unit violation. Internal checks are consistent: the 25-character payload matches the literal `{\"refund_approved\": true}`, '< 4e-06 s' matches 'under 4 microsecond"
+  },
+  "T2:C3": {
+   "verdict": "flag",
+   "quote_verbatim_recorded": true,
+   "quote_verbatim_reverified": true,
+   "bucket": "parsed-original"
+  },
+  "T2:C4": {
+   "verdict": "abstain",
+   "orig_status": "abstain",
+   "bucket": "abstention",
+   "rationale_prefix": "T2 contains four arXiv IDs (2307.09702, 2408.02442, 2212.06094, 2406.08660). In each case the link text and the href carry the same ID, so the page is internally consistent. However, the page does not"
+  },
+  "T2:C5": {
+   "verdict": "abstain",
+   "orig_status": "abstain",
+   "bucket": "abstention",
+   "rationale_prefix": "C5 requires code, table, or figure blocks to be byte-identical to a reference where the block is marked NO_CHANGE. T2 contains no reference version and no NO_CHANGE marker, so byte-identity cannot be "
+  },
+  "T2:C6": {
+   "verdict": "pass",
+   "quote_verbatim_recorded": true,
+   "quote_verbatim_reverified": true,
+   "bucket": "parsed-original"
+  },
+  "T2:C7": {
+   "verdict": "flag",
+   "quote_verbatim_recorded": true,
+   "quote_verbatim_reverified": true,
+   "bucket": "parsed-original"
+  },
+  "T2:C8": {
+   "verdict": "abstain",
+   "orig_status": "abstain",
+   "bucket": "abstention",
+   "rationale_prefix": "C8 asks whether edits add obscurity, which requires a pre-edit version to compare against. Only T2 is provided, with no original text or edit trail, so the page cannot show what changed. The criterion"
+  },
+  "T3:C1": {
+   "verdict": "abstain",
+   "orig_status": "coerced_abstain",
+   "bucket": "abstention",
+   "rationale_prefix": "judge returned 'pass' without a verbatim quote from the text: coerced to abstain (quote-or-abstain rule), never retried; original rationale: Every model-backed arm is explicitly marked NOT_OBSERVED in",
+   "needs_adjudication": true
+  },
+  "T3:C2": {
+   "verdict": "abstain",
+   "orig_status": "coerced_abstain",
+   "bucket": "abstention",
+   "rationale_prefix": "judge returned 'pass' without a verbatim quote from the text: coerced to abstain (quote-or-abstain rule), never retried; original rationale: Within the page, the measurement figures are consistent whe",
+   "needs_adjudication": true
+  },
+  "T3:C3": {
+   "verdict": "pass",
+   "quote_verbatim_recorded": true,
+   "quote_verbatim_reverified": true,
+   "bucket": "parsed-original"
+  },
+  "T3:C4": {
+   "verdict": "abstain",
+   "orig_status": "abstain",
+   "bucket": "abstention",
+   "rationale_prefix": "The page cites four arXiv papers (2307.09702, 2408.02442, 2212.06094, 2406.08660), and each link target matches its displayed ID. However, C4 applies where a citation is marked NO_CHANGE, and the page"
+  },
+  "T3:C5": {
+   "verdict": "abstain",
+   "orig_status": "abstain",
+   "bucket": "abstention",
+   "rationale_prefix": "C5 requires code, table, and figure blocks to be byte-identical to a reference where they are marked NO_CHANGE. T3 contains no reference copy or NO_CHANGE marking to compare against, so byte-identity "
+  },
+  "T3:C6": {
+   "verdict": "pass",
+   "quote_verbatim_recorded": true,
+   "quote_verbatim_reverified": true,
+   "bucket": "parsed-original"
+  },
+  "T3:C7": {
+   "verdict": "flag",
+   "quote_verbatim_recorded": true,
+   "quote_verbatim_reverified": true,
+   "bucket": "parsed-original"
+  },
+  "T3:C8": {
+   "verdict": "abstain",
+   "orig_status": "abstain",
+   "bucket": "abstention",
+   "rationale_prefix": "C8 asks whether edits add obscurity, which requires a before-and-after comparison. T3 is a single text with no prior version or edit history, so the page cannot show what changed. The instructions als"
+  },
+  "T4:C1": {
+   "orig_status": "abstain_malformed",
+   "bucket": "still-malformed",
+   "recovery_refusal": "refused: truncation marker '...' \u2014 bytes incomplete",
+   "needs_adjudication": true
+  },
+  "T4:C2": {
+   "verdict": "abstain",
+   "orig_status": "abstain",
+   "bucket": "abstention",
+   "rationale_prefix": "The page has no reference version to compare against, so I cannot confirm that any measurement number or unit is unchanged. Internal checks found no contradictions: the 25-character payload matches `{"
+  },
+  "T4:C3": {
+   "verdict": "abstain",
+   "orig_status": "coerced_abstain",
+   "bucket": "abstention",
+   "rationale_prefix": "judge returned 'flag' without a verbatim quote from the text: coerced to abstain (quote-or-abstain rule), never retried; original rationale: The text reports that Bucher et al.'s conclusion says perfo",
+   "needs_adjudication": true
+  },
+  "T4:C4": {
+   "verdict": "abstain",
+   "orig_status": "abstain",
+   "bucket": "abstention",
+   "rationale_prefix": "T4 cites four arXiv IDs: 2307.09702, 2408.02442, 2212.06094 and 2406.08660. Each appears in link text and in a matching arxiv.org/abs URL, so the IDs are internally consistent on the page. The criteri"
+  },
+  "T4:C5": {
+   "verdict": "abstain",
+   "orig_status": "abstain",
+   "bucket": "abstention",
+   "rationale_prefix": "The page has no NO_CHANGE marking and no reference version of any code, table, or figure block, so byte-identity cannot be checked. The text shows several code and table blocks, but nothing on the pag"
+  },
+  "T4:C6": {
+   "verdict": "pass",
+   "quote_verbatim_recorded": true,
+   "quote_verbatim_reverified": true,
+   "bucket": "parsed-original"
+  },
+  "T4:C7": {
+   "verdict": "abstain",
+   "orig_status": "coerced_abstain",
+   "bucket": "abstention",
+   "rationale_prefix": "judge returned 'flag' without a verbatim quote from the text: coerced to abstain (quote-or-abstain rule), never retried; original rationale: The sentence closes the 'Four words we keep apart' section ",
+   "needs_adjudication": true
+  },
+  "T4:C8": {
+   "verdict": "abstain",
+   "orig_status": "abstain",
+   "bucket": "abstention",
+   "rationale_prefix": "C8 asks whether edits added obscurity. T4 shows only the final text, with no earlier version to compare against, so I cannot tell which passages were edited or what they changed. The page does contain"
+  }
+ },
+ "controls_live_replay": {
+  "match_design": 10,
+  "total": 12,
+  "det_halves_ok": 12,
+  "verdict_mapping_ok": 12,
+  "judge_variance_adjudication": [
+   {
+    "item": "T1:NC7a",
+    "recorded_disposition": "strengthened",
+    "design_expected": "introduced",
+    "live_judge_verdict": "strengthened",
+    "reason": "live judge returned strengthened on an injected redundant-synthesis fixture; semantic judge variance, needs coordinator adjudication (not a live rerun \u2014 re-dispatch cannot resolve variance deterministically)"
+   },
+   {
+    "item": "T4:NC7a",
+    "recorded_disposition": "strengthened",
+    "design_expected": "introduced",
+    "live_judge_verdict": "strengthened",
+    "reason": "live judge returned strengthened on an injected redundant-synthesis fixture; semantic judge variance, needs coordinator adjudication (not a live rerun \u2014 re-dispatch cannot resolve variance deterministically)"
+   }
+  ],
+  "fixture_drift": {
+   "NC2_absent_from_O": true,
+   "NC7a_absent_from_O": true,
+   "NC3_original_present_in_O": true,
+   "NC3_strengthened_absent_from_O": true
+  },
+  "details": {
+   "T1:NC2": {
+    "disposition_recorded": "introduced",
+    "design_expected": "introduced",
+    "matches_design": true,
+    "judge_verdict_recorded": "introduced",
+    "mapping_ok": true,
+    "evidence_recorded": {
+     "in_original": false,
+     "in_candidate": true
+    },
+    "deterministic_reverification": {
+     "fixture_absent_from_O": true,
+     "fixture_absent_from_frozen_file": true,
+     "setup": "constructed"
+    },
+    "det_halves_ok": true,
+    "bucket": "parsed-original"
+   },
+   "T1:NC3": {
+    "disposition_recorded": "strengthened",
+    "design_expected": "strengthened",
+    "matches_design": true,
+    "judge_verdict_recorded": "strengthened",
+    "mapping_ok": true,
+    "evidence_recorded": {
+     "in_original": false,
+     "in_candidate": true
+    },
+    "deterministic_reverification": {
+     "original_present_in_O": true,
+     "strengthened_absent_from_O": true,
+     "setup": "constructed"
+    },
+    "det_halves_ok": true,
+    "bucket": "parsed-original"
+   },
+   "T1:NC7a": {
+    "disposition_recorded": "strengthened",
+    "design_expected": "introduced",
+    "matches_design": false,
+    "judge_verdict_recorded": "strengthened",
+    "mapping_ok": true,
+    "evidence_recorded": {
+     "in_original": false,
+     "in_candidate": true
+    },
+    "deterministic_reverification": {
+     "fixture_absent_from_O": true,
+     "fixture_absent_from_frozen_file": true,
+     "setup": "constructed"
+    },
+    "det_halves_ok": true,
+    "bucket": "parsed-original"
+   },
+   "T2:NC2": {
+    "disposition_recorded": "introduced",
+    "design_expected": "introduced",
+    "matches_design": true,
+    "judge_verdict_recorded": "introduced",
+    "mapping_ok": true,
+    "evidence_recorded": {
+     "in_original": false,
+     "in_candidate": true
+    },
+    "deterministic_reverification": {
+     "fixture_absent_from_O": true,
+     "fixture_absent_from_frozen_file": true,
+     "setup": "constructed"
+    },
+    "det_halves_ok": true,
+    "bucket": "parsed-original"
+   },
+   "T2:NC3": {
+    "disposition_recorded": "strengthened",
+    "design_expected": "strengthened",
+    "matches_design": true,
+    "judge_verdict_recorded": "strengthened",
+    "mapping_ok": true,
+    "evidence_recorded": {
+     "in_original": false,
+     "in_candidate": true
+    },
+    "deterministic_reverification": {
+     "original_present_in_O": true,
+     "strengthened_absent_from_O": true,
+     "setup": "constructed"
+    },
+    "det_halves_ok": true,
+    "bucket": "parsed-original"
+   },
+   "T2:NC7a": {
+    "disposition_recorded": "introduced",
+    "design_expected": "introduced",
+    "matches_design": true,
+    "judge_verdict_recorded": "redundant_synthesis",
+    "mapping_ok": true,
+    "evidence_recorded": {
+     "in_original": false,
+     "in_candidate": true,
+     "semantic_class": "redundant_synthesis"
+    },
+    "deterministic_reverification": {
+     "fixture_absent_from_O": true,
+     "fixture_absent_from_frozen_file": true,
+     "setup": "constructed"
+    },
+    "det_halves_ok": true,
+    "bucket": "parsed-original"
+   },
+   "T3:NC2": {
+    "disposition_recorded": "introduced",
+    "design_expected": "introduced",
+    "matches_design": true,
+    "judge_verdict_recorded": "introduced",
+    "mapping_ok": true,
+    "evidence_recorded": {
+     "in_original": false,
+     "in_candidate": true
+    },
+    "deterministic_reverification": {
+     "fixture_absent_from_O": true,
+     "fixture_absent_from_frozen_file": true,
+     "setup": "constructed"
+    },
+    "det_halves_ok": true,
+    "bucket": "parsed-original"
+   },
+   "T3:NC3": {
+    "disposition_recorded": "strengthened",
+    "design_expected": "strengthened",
+    "matches_design": true,
+    "judge_verdict_recorded": "strengthened",
+    "mapping_ok": true,
+    "evidence_recorded": {
+     "in_original": false,
+     "in_candidate": true
+    },
+    "deterministic_reverification": {
+     "original_present_in_O": true,
+     "strengthened_absent_from_O": true,
+     "setup": "constructed"
+    },
+    "det_halves_ok": true,
+    "bucket": "parsed-original"
+   },
+   "T3:NC7a": {
+    "disposition_recorded": "introduced",
+    "design_expected": "introduced",
+    "matches_design": true,
+    "judge_verdict_recorded": "redundant_synthesis",
+    "mapping_ok": true,
+    "evidence_recorded": {
+     "in_original": false,
+     "in_candidate": true,
+     "semantic_class": "redundant_synthesis"
+    },
+    "deterministic_reverification": {
+     "fixture_absent_from_O": true,
+     "fixture_absent_from_frozen_file": true,
+     "setup": "constructed"
+    },
+    "det_halves_ok": true,
+    "bucket": "parsed-original"
+   },
+   "T4:NC2": {
+    "disposition_recorded": "introduced",
+    "design_expected": "introduced",
+    "matches_design": true,
+    "judge_verdict_recorded": "introduced",
+    "mapping_ok": true,
+    "evidence_recorded": {
+     "in_original": false,
+     "in_candidate": true
+    },
+    "deterministic_reverification": {
+     "fixture_absent_from_O": true,
+     "fixture_absent_from_frozen_file": true,
+     "setup": "constructed"
+    },
+    "det_halves_ok": true,
+    "bucket": "parsed-original"
+   },
+   "T4:NC3": {
+    "disposition_recorded": "strengthened",
+    "design_expected": "strengthened",
+    "matches_design": true,
+    "judge_verdict_recorded": "strengthened",
+    "mapping_ok": true,
+    "evidence_recorded": {
+     "in_original": false,
+     "in_candidate": true
+    },
+    "deterministic_reverification": {
+     "original_present_in_O": true,
+     "strengthened_absent_from_O": true,
+     "setup": "constructed"
+    },
+    "det_halves_ok": true,
+    "bucket": "parsed-original"
+   },
+   "T4:NC7a": {
+    "disposition_recorded": "strengthened",
+    "design_expected": "introduced",
+    "matches_design": false,
+    "judge_verdict_recorded": "strengthened",
+    "mapping_ok": true,
+    "evidence_recorded": {
+     "in_original": false,
+     "in_candidate": true
+    },
+    "deterministic_reverification": {
+     "fixture_absent_from_O": true,
+     "fixture_absent_from_frozen_file": true,
+     "setup": "constructed"
+    },
+    "det_halves_ok": true,
+    "bucket": "parsed-original"
+   }
+  }
+ },
+ "controls_deterministic_rerun_batch6": {
+  "match_expected": 20,
+  "total": 20
+ },
+ "assists": [
+  {
+   "item": "T1vT2:assist:Q1",
+   "preferred": "tie",
+   "bucket": "parsed-original"
+  },
+  {
+   "item": "T1vT2:assist:Q2",
+   "preferred": "tie",
+   "bucket": "parsed-original"
+  },
+  {
+   "item": "T1vT2:assist:Q3",
+   "preferred": "B",
+   "bucket": "parsed-original"
+  },
+  {
+   "item": "T1vT2:assist:Q4",
+   "preferred": "tie",
+   "bucket": "parsed-original"
+  },
+  {
+   "item": "T1vT2:assist:Q5",
+   "preferred": "tie",
+   "bucket": "parsed-original"
+  },
+  {
+   "item": "T1vT3:assist:Q1",
+   "preferred": "tie",
+   "bucket": "parsed-original"
+  },
+  {
+   "item": "T1vT3:assist:Q2",
+   "preferred": "B",
+   "bucket": "parsed-original"
+  },
+  {
+   "item": "T1vT3:assist:Q3",
+   "preferred": "B",
+   "bucket": "parsed-original"
+  },
+  {
+   "item": "T1vT3:assist:Q4",
+   "preferred": "B",
+   "bucket": "parsed-original"
+  },
+  {
+   "item": "T1vT3:assist:Q5",
+   "preferred": "B",
+   "bucket": "parsed-original"
+  },
+  {
+   "item": "T1vT4:assist:Q1",
+   "preferred": "tie",
+   "bucket": "parsed-original"
+  },
+  {
+   "item": "T1vT4:assist:Q2",
+   "preferred": "tie",
+   "bucket": "parsed-original"
+  },
+  {
+   "item": "T1vT4:assist:Q3",
+   "preferred": "B",
+   "bucket": "parsed-original"
+  },
+  {
+   "item": "T1vT4:assist:Q4",
+   "bucket": "still-malformed",
+   "recovery_refusal": "refused: truncation marker '...' \u2014 bytes incomplete"
+  },
+  {
+   "item": "T1vT4:assist:Q5",
+   "bucket": "still-malformed",
+   "recovery_refusal": "refused: truncation marker '...' \u2014 bytes incomplete"
+  },
+  {
+   "item": "T2vT3:assist:Q1",
+   "preferred": "tie",
+   "bucket": "parsed-original"
+  },
+  {
+   "item": "T2vT3:assist:Q2",
+   "bucket": "still-malformed",
+   "recovery_refusal": "refused: truncation marker '...' \u2014 bytes incomplete"
+  },
+  {
+   "item": "T2vT3:assist:Q3",
+   "preferred": "A",
+   "bucket": "parsed-original"
+  },
+  {
+   "item": "T2vT3:assist:Q4",
+   "preferred": "B",
+   "bucket": "parsed-original"
+  },
+  {
+   "item": "T2vT3:assist:Q5",
+   "preferred": "B",
+   "bucket": "parsed-original"
+  },
+  {
+   "item": "T2vT4:assist:Q1",
+   "preferred": "tie",
+   "bucket": "parsed-original"
+  },
+  {
+   "item": "T2vT4:assist:Q2",
+   "preferred": "tie",
+   "bucket": "parsed-original"
+  },
+  {
+   "item": "T2vT4:assist:Q3",
+   "preferred": "B",
+   "bucket": "parsed-original"
+  },
+  {
+   "item": "T2vT4:assist:Q4",
+   "preferred": "tie",
+   "bucket": "parsed-original"
+  },
+  {
+   "item": "T2vT4:assist:Q5",
+   "preferred": "tie",
+   "bucket": "parsed-original"
+  },
+  {
+   "item": "T3vT4:assist:Q1",
+   "preferred": "A",
+   "bucket": "parsed-original"
+  },
+  {
+   "item": "T3vT4:assist:Q2",
+   "preferred": "A",
+   "bucket": "parsed-original"
+  },
+  {
+   "item": "T3vT4:assist:Q3",
+   "preferred": "B",
+   "bucket": "parsed-original"
+  },
+  {
+   "item": "T3vT4:assist:Q4",
+   "preferred": "A",
+   "bucket": "parsed-original"
+  },
+  {
+   "item": "T3vT4:assist:Q5",
+   "preferred": "A",
+   "bucket": "parsed-original"
+  }
+ ],
+ "needs_adjudication": [
+  "T1vT4:assist:Q4",
+  "T1vT4:assist:Q5",
+  "T2vT3:assist:Q2",
+  "T3:C1",
+  "T3:C2",
+  "T4:C1",
+  "T4:C3",
+  "T4:C7"
+ ],
+ "minimal_live_rerun_set": {
+  "note": "NOT executed here (coordinator runs live). Count only.",
+  "still_malformed_probes": [
+   "T1:F1",
+   "T2:E1",
+   "T2:F1",
+   "T2:F11",
+   "T2:F3",
+   "T3:E3",
+   "T3:F2",
+   "T4:E2",
+   "T4:F1",
+   "T4:F10",
+   "T4:F11",
+   "T4:F3",
+   "T4:F4",
+   "T4:F5"
+  ],
+  "still_malformed_checklist": [
+   "T4:C1"
+  ],
+  "still_malformed_assists": [
+   "T1vT4:assist:Q4",
+   "T1vT4:assist:Q5",
+   "T2vT3:assist:Q2"
+  ],
+  "coerced_abstain_checklist": [
+   "T3:C1",
+   "T3:C2",
+   "T4:C3",
+   "T4:C7"
+  ],
+  "controls": "no rerun: 12/12 dispositions verified; any future text rerun needs FRESH live control judges (never reuse verdicts)"
+ },
+ "spend_usd": 0.0,
+ "live_dispatches": 0
+}

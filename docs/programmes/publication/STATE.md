@@ -831,6 +831,133 @@ recorded, not as true). Spend to date $0.0227 / $1.00; Worker
 stopped after use. Fail-closed order: freeze → controls on O/H
 ($0) → 7/7 gate → A₁ → C₁ (verification of A₁ + ≤2 bounded repairs)
 → B₁ (B-hull + merge code + gates) → evaluation → replicate 2.
+B₁ segment 1 (2026-11-25) HALTED fail-closed after 2 consecutive
+package failures with $0.0166 spent (total $0.0393): Path 1
+verify_failed (model reworded byte-true honesty spans + no-change
+block — correct gate catch) and Paths 2&3 editorial_invalid (one
+non-verbatim quote — correct gate catch). Diagnosis: runner bug
+(CRLF text + wrapped adjudications; fixed to mirror production) +
+runner rule narrower than production (no failure-driven
+corrections). Protocol amended + recorded (production parity,
+shared ≤2 budget; fairness note: B gets corrections, A none — by
+design); runner patched (resume support, failure-text recompute,
+driven_by marking) with gate tests updated to pin the new rule
+(18/18 + 175 neighbours green). Resume executing live with
+--resume (segment-1 records preserved as program.segment1-halted.json).
+Segment-2 corrections ALSO failed (same class: corrections invented
+new non-verbatim quotes instead of repairing). 4/4 attempts on both
+packages are quote/byte-true violations — coordinator stood both
+packages down (DECISION.json per package; recorded failed, never
+redriven): further corrections would test luck, not the workflow.
+Segment 3 running: stood-down packages skip without touching the
+consecutive counter; remaining three packages run fresh.
+B₁ CLOSED 2026-11-25: 2/5 regions review_accepted (Four words,
+Where this leaves) and merged onto O → 571-line candidate
+(`6bc4a86d…`, merge SHA asserted in merge-record); Measured
+verify_failed (correction reworded the 405–406 did-not-run honesty
+spans — same byte-true class); 2 stood down per DECISION records.
+B1 actuals $0.0175; programme total $0.0403 / $1.00. Worker
+stopped. B is a 2-region engineered sample (B-max shape), NOT a
+full-chapter arm — read-out must say so. Batch 6 LANDED 2026-11-25
+($0): blind pack T1–T4 frozen; deterministic dimensions run;
+controls 8/8 on all four texts; model judges/probes HALTED
+fail-closed (no Worker in subagent shell — never escalated).
+Key nuance: A₁ fails owner byte-true 11/10 on reflow joins while
+content checks hold (0 numbers/hedges altered, 25/25 ledger, 1
+genuine dropped sentence) — correct restructuring with low textual
+similarity, the D-PUB-74 case; B₁ passes owner 21/0 with only 2
+regions changed. Dominance: TRADE-OFF on every pair; model gates
+UNASSESSED block any preference. Replicate-2: AGAINST (halts
+fired; allow only after quote-discipline fix + estimator
+recalibration + full 5/5). Batch 7a LANDED 2026-11-25 ($0;
+runner + 22/22 gate, 86 neighbours): blinded judges runner with
+all five fail-closed halts. Coordinator confirmations for live
+execution: (1) 12 controls (4 texts, C skipped); (2) assists = 6
+blind pairs × 5 frozen pairwise questions, top-level; (3)
+held-out burn-before-dispatch with no retry on mid-run halt.
+Accounting correction 2026-11-25: merge-record b1_packages
+counted only the final resume segment; disk-sum authoritative
+total is $0.0703 (13 B1 dispatches + A1), still far under cap;
+runner patched to record both figures going forward. Spend to
+date $0.0703 / $1.00. Judges executing live on the $0 haiku
+route (metered-halt armed). Judges run 1 HALTED fail-closed on a
+frozen-figure mismatch of the same CRLF class (pack froze raw SHAs
+for CRLF worktrees H/O; runner hashed normalized text) — no file
+had changed (all raws matched). Runner patched to hash raw bytes
+for identity + explicit CRLF→LF for prompts; gate 22/22 still
+green. Re-executed: 134 calls $0.00. Track 1 LANDED ($0):
+instrument REPAIRED_AND_QUALIFIED (v0.2 type-aware scorer +
+calibration 86/86 + recovery 6/6; replay 21 exact + 24 normalized
++ 1 genuine-incorrect T2:F5 FINAL + 19 abstentions + 8
+needs-adjudication + 0 unassessed). Live-judge variance
+adjudicated (no dispatch): NC7a 2-2 split is class-boundary noise,
+deterministic mapping stands. Held-out F10/F11 excluded from
+reruns permanently (budget consumed). Batch 8 LANDED live ($0, 19 calls): 8/8 scored adjudicated CORRECT by v0.2; 3 still malformed permanent; assists 2 tie + H-over-A1; abstentions stand; T2:F5 genuine-incorrect FINAL. Final readout in eval/final-readout.md: TRADE-OFF sustained, pipeline value-add is VERIFICATION not generation, replicate-2 AGAINST. Spend $0.0703. Awaiting human read; do NOT close PUB-08 on machine evidence. Batch 7 LANDED live 2026-11-25 (134 haiku
+calls, $0.0000000 metered_zero, 2.05M tokens): model-judgements.json
+recorded with per-call cost/route intact. Headers: (1) ALL C1/C3/C7
+flags quote INHERITED source prose (verified byte- and
+reflow-insensitively in O —incl. A1's reflow-joined hedge) —
+judges reproduced the PUB-07 misattribution pattern at scale;
+attribution layer classifies every one correctly. Zero
+introduced-claim flags stand. (2) Probe scorer too strict
+(comma/case/code containment + judge fence-wrap malforms, 18 failed
++ 19 abstained): instrument INCONCLUSIVE as measurement; manual
+spot-checks show correct substantive recovery (E1 No + reason +
+near-verbatim quote on T1/T3/T4; F1/F2/F4 answers correct
+modulo punctuation). (3) Assists (weak, 1 judge, n=5):
+H>O 4/5, H>B1 4/5, A1≈O ties, B1≈A1 ties. (4) C6 honest-record
+PASS all texts. (5) Raw-byte identity + explicit LF rules now
+standing (3 halt lessons). Dominance: TRADE-OFF, no preference
+declarable. Spend to date $0.0703 / $1.00. Worker stopped;
+scratch cleaned. PUB-08 authorized 2026-11-25 ... (existing narrative through score_calculator/scorer details) ...
+PUB-08 authorized 2026-11-25 ... (existing narrative through score_calculator/scorer details) ...
+Machine evaluation ACCEPTED 2026-11-25 within its demonstrated scope
+(D-PUB-87). Instrument REPAIRED_AND_QUALIFIED: 153 judge calls,
+86/86 scorer calibration, 6/6 recovery checks, 8 rerun probes
+correct after repair, 18 malformed (14 still-permanent with truncated
+previews), 1 genuine-incorrect T2:F5 (finalized, A₁ known loss),
+controls adjudicated live without re-dispatch (NC7a class-boundary
+noise). Dominance: TRADE-OFF on every pair — no editorial preference
+established. Replicate-2 explicitly NOT authorized (halts fired;
+allow only after quote-discipline fix + estimator recalibration +
+full 5/5 B). Spend $0.0703 / $1.00 cap; 134 + 19 judge calls,
+all metered_zero. Worker stopped.
+PUB-08 machine phase COMPLETE and accepted; human author review package ready
+(pub08/human-review/index.html, four blinded tabs W/X/Y/Z, byte-identical
+to sources, forbidden-token scan clean, figure notes reported; mapping held
+separately). Human assessment outstanding — then final coordinator close-out
+of PUB-08. No PUB-09 work; no additional inference authorized. Coordinator: DO NOT close PUB-08 — author
+directs probe repair + human package in parallel (existing $0.9297
+budget, no increase). Qualified conclusions recorded (D-PUB-86):
+zero standing flags ≠ proof of absence; A1 dropped sentence open;
+B1 partial coverage; C6 is property-scoped; pairwise exploratory;
+reader recovery unassessed. Architectural hypothesis recorded, not
+decided: whole-chapter reconstruction + targeted correction as
+sequential modes.
+Arm C₁ CLOSED 2026-11-25 with ZERO paid repairs ($0): composed
+verification over A₁ bytes found 0 introduced / 0 strengthened /
+0 altered numbers / 0 misattributions / 25-25 ledger parity /
+controls 7/7 with A₁ in set; sole genuine defect (one dropped
+13-word framing sentence, O:66) classifies `unresolved_attribution`,
+outside the §2.4 repair scope — preserved as unresolved, not
+converted to a pass. Spend to date $0.0227 / $1.00. Next: batch 4
+(B-hull + deterministic merge + $0 gates), then paid B₁.
+Batch 4 LANDED 2026-11-25 ($0, 2 new writer files, 0 tracked
+modified): hull compilation + bottom-up merge + all 3 gates green
+(no-op merge == O blob `43597470…`; synthetic merge verify pass;
+5/5 single-span hulls in dry-run; production refusal pinned
+unchanged); freeze re-confirmed, zero drift; plan-ch1.json reused
+(not re-planned); dry-run SHAs in
+`pub08/experiment/arm_b1/dry-run.json`. Note: O worktree is CRLF
+checkout artifact; authoritative blob is LF == plan fingerprint;
+merge serializes LF-canonical. Next: batch 5 (B₁ live runner with
+fakes), then paid B₁ (≈$0.026 central / $0.050 band-top) in the
+credential-bearing shell under manual aggregate check. Batch 5a
+LANDED 2026-11-25 ($0; runner + 17/17 fake-gate; 209 neighbours
+green): live B₁ runner with per-package aggregate checks, §5 hard
+stops, drift halts, merge assembly. Paid B₁ EXECUTING in
+credential-bearing shell (Worker started, health ready):
+pre-dispatch aggregate $0.0227 + $0.050 = $0.0727 ≤ $1.00.
 Build batch 1 LANDED 2026-11-25 ($0, 5 new files, 0 tracked modified): D-PUB-84 attribution builder
 (all 9 dispositions pinned) + 7 fixtures + O/H controls gate 7/7 +
 aggregate spend wrapper (cap $1.00) — 34 focused + 123 neighbours

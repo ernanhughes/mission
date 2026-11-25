@@ -1,0 +1,35 @@
+{
+  "seed": 20261125,
+  "mapping": {
+    "T1": "B1",
+    "T2": "A1",
+    "T3": "H",
+    "T4": "O"
+  },
+  "file_sha256": {
+    "O": "144ab665b0868d05b0794e2d61706f57a7de6ee16dfe2066102368fd2e748417",
+    "H": "981cac044b5746296a349f87324cf9492a6019c34238926b3d11e76d37cd5c9c",
+    "A1": "3e6e3061f5fd03be8a4694379dadd689dd24803feae9066f2f09afa6a2ca57bc",
+    "B1": "6bc4a86d1357c368fd5cbfcdf951f9307e25ee2c1cca762f4beca6b6ee8854d9"
+  },
+  "label_sha256": {
+    "T1": "6bc4a86d1357c368fd5cbfcdf951f9307e25ee2c1cca762f4beca6b6ee8854d9",
+    "T2": "3e6e3061f5fd03be8a4694379dadd689dd24803feae9066f2f09afa6a2ca57bc",
+    "T3": "981cac044b5746296a349f87324cf9492a6019c34238926b3d11e76d37cd5c9c",
+    "T4": "144ab665b0868d05b0794e2d61706f57a7de6ee16dfe2066102368fd2e748417"
+  },
+  "pack_sha256": "15aa5ea9a4445582d62e3cd8e7a5b1c768b9e13f664e2b00db862b6b7946cbe5",
+  "arm_c": {
+    "status": "SKIPPED",
+    "reason": "C requires A defects in repairable classes (INTRODUCED/STRENGTHENED/REDUNDANT_SYNTHESIS); C1 closed zero-repair (no repairable defects; sole defect F-DROP-1 is unresolved_attribution outside Sec.2.4 scope). Evaluation covers 4 texts (O/H/A/B)."
+  },
+  "partial_blinding_limitations": [
+    "O recognisable as source (frozen 562-line chapter, known frontmatter).",
+    "H register recognisable (606 lines, Muse-authored engineered reflow, CONFLICTED identity).",
+    "A1 recognisable by full-chapter reflow joins (590 lines; 10 strict misses that are reflow-only).",
+    "B1 recognisable as 2-region merge (571 lines; only Four-words + Where-this-leaves regions rewritten).",
+    "A1/B1 lengths differ (590 vs 571) so a counter of lines can de-blind; labels T1-T4 hide arm identity from judges but not from line-count analysis.",
+    "No human judges used; model judges receive label+text only."
+  ],
+  "canonical_form": "LF + single trailing newline for candidates; pack SHA over canonical JSON (sort_keys, separators)."
+}

@@ -1,0 +1,1885 @@
+{
+  "run_identity": {
+    "batch": "PUB-08 experiment batch 6",
+    "mode": "$0 execution; NO paid generation dispatches; no commits/pushes",
+    "haiku_preflight": {
+      "worker_reachable": false,
+      "detail": "Worker HTTP unreachable (connection refused) in this shell; zero live calls attempted beyond preflight; no result provenance to meter, so metered-fallback halt not tripped by cost>0 — model-mediated judges HALTED fail-closed with $0 spend, never escalated to deepseek/paid.",
+      "live_haiku_dispatches": 0,
+      "live_haiku_cost_usd": 0.0,
+      "deepseek_dispatches": 0
+    }
+  },
+  "blind_pack_ref": {
+    "seed": 20261125,
+    "mapping": {
+      "T1": "B1",
+      "T2": "A1",
+      "T3": "H",
+      "T4": "O"
+    },
+    "pack_sha256": "15aa5ea9a4445582d62e3cd8e7a5b1c768b9e13f664e2b00db862b6b7946cbe5"
+  },
+  "texts": {
+    "O": {
+      "label": "T4",
+      "bytes": 31341,
+      "lines": 562,
+      "sha256": "144ab665b0868d05b0794e2d61706f57a7de6ee16dfe2066102368fd2e748417"
+    },
+    "H": {
+      "label": "T3",
+      "bytes": 34014,
+      "lines": 606,
+      "sha256": "981cac044b5746296a349f87324cf9492a6019c34238926b3d11e76d37cd5c9c"
+    },
+    "A1": {
+      "label": "T2",
+      "bytes": 31376,
+      "lines": 590,
+      "sha256": "3e6e3061f5fd03be8a4694379dadd689dd24803feae9066f2f09afa6a2ca57bc"
+    },
+    "B1": {
+      "label": "T1",
+      "bytes": 31864,
+      "lines": 571,
+      "sha256": "6bc4a86d1357c368fd5cbfcdf951f9307e25ee2c1cca762f4beca6b6ee8854d9"
+    }
+  },
+  "dimensions": {
+    "O": {
+      "bytes": 31341,
+      "lines": 562,
+      "sha256": "144ab665b0868d05b0794e2d61706f57a7de6ee16dfe2066102368fd2e748417",
+      "owner_verify": {
+        "verdict": "pass",
+        "passed": 21,
+        "failed": 0,
+        "failed_checks": []
+      },
+      "reflow": {
+        "fails": 0,
+        "strict_misses": 0,
+        "details": []
+      },
+      "numbers_naive": {
+        "altered_count": 0,
+        "altered": []
+      },
+      "ledger_proxy": {
+        "breaks": [],
+        "break_count": 0
+      },
+      "hedges": [],
+      "sentences": {
+        "new_count": 0,
+        "dropped_count": 0,
+        "new": [],
+        "dropped": []
+      },
+      "honest_count": 8,
+      "cruft": {
+        "total": 1,
+        "by": {
+          "CR04": 1
+        },
+        "preserved": 11
+      },
+      "complexity": {
+        "total": 38,
+        "by": {
+          "CX01": 2,
+          "CX02": 8,
+          "CX03": 8,
+          "CX04": 1,
+          "CX05": 2,
+          "CX08": 1,
+          "CX10": 1,
+          "CX11": 5,
+          "CX13": 1,
+          "CX14": 8,
+          "CX15": 1
+        }
+      },
+      "legibility": {
+        "total": 1,
+        "by": {
+          "reproduction_gap": 1
+        }
+      },
+      "controls": {
+        "NC1": {
+          "disposition": "preserved_unresolved",
+          "reason": "byte-identical unresolved claim carried from original into candidate: inherited unresolved finding",
+          "evidence": {
+            "in_original": true,
+            "in_candidate": true
+          },
+          "judge": {
+            "called": false
+          }
+        },
+        "NC4": {
+          "disposition": "unresolved_attribution",
+          "reason": "quote absent from original and candidate but present in an out-of-scope text: scope/attribution investigation (OUT_OF_SCOPE_CITATION class)",
+          "evidence": {
+            "in_original": false,
+            "in_candidate": false,
+            "scope": "out_of_scope_citation"
+          },
+          "judge": {
+            "called": false
+          }
+        },
+        "NC5": {
+          "disposition": "invalid_review_evidence",
+          "reason": "quote absent from both original and candidate bytes: invalid review evidence",
+          "evidence": {
+            "in_original": false,
+            "in_candidate": false
+          },
+          "judge": {
+            "called": false
+          }
+        },
+        "NC6": {
+          "disposition": "authorized_correction",
+          "reason": "quoted text is a reconcile-allow-listed correction present in the candidate",
+          "evidence": {
+            "in_original": true,
+            "in_candidate": true,
+            "allow_listed": true
+          },
+          "judge": {
+            "called": false
+          }
+        },
+        "NC2": {
+          "disposition": "introduced",
+          "reason": "judge verdict introduced",
+          "evidence": {
+            "in_original": false,
+            "in_candidate": true
+          },
+          "judge": {
+            "called": true,
+            "verdict": "introduced",
+            "rationale": "stub:introduced",
+            "judge": "fake"
+          }
+        },
+        "NC3": {
+          "disposition": "strengthened",
+          "reason": "judge verdict strengthened",
+          "evidence": {
+            "in_original": false,
+            "in_candidate": true
+          },
+          "judge": {
+            "called": true,
+            "verdict": "strengthened",
+            "rationale": "stub:strengthened",
+            "judge": "fake"
+          }
+        },
+        "NC7a": {
+          "disposition": "introduced",
+          "reason": "judge verdict redundant_synthesis (introduced-text subclass)",
+          "evidence": {
+            "in_original": false,
+            "in_candidate": true,
+            "semantic_class": "redundant_synthesis"
+          },
+          "judge": {
+            "called": true,
+            "verdict": "redundant_synthesis",
+            "rationale": "stub:redundant_synthesis",
+            "judge": "fake"
+          }
+        },
+        "NC7b": {
+          "disposition": "introduced",
+          "reason": "judge verdict redundant_synthesis (introduced-text subclass)",
+          "evidence": {
+            "in_original": false,
+            "in_candidate": true,
+            "semantic_class": "redundant_synthesis"
+          },
+          "judge": {
+            "called": true,
+            "verdict": "redundant_synthesis",
+            "rationale": "stub:redundant_synthesis",
+            "judge": "fake"
+          }
+        }
+      },
+      "controls_gate": {
+        "expected": {
+          "NC1": "preserved_unresolved",
+          "NC2": "introduced",
+          "NC3": "strengthened",
+          "NC4": "unresolved_attribution",
+          "NC5": "invalid_review_evidence",
+          "NC6": "authorized_correction",
+          "NC7a": "introduced",
+          "NC7b": "introduced"
+        },
+        "misattributed": {},
+        "gate": "PASS",
+        "nc7b_semantic_class": "redundant_synthesis"
+      },
+      "quotes": [
+        {
+          "quote": "The value is what the application wanted. The prose is packaging.",
+          "byte_in_original": false,
+          "sentence_in_original": true,
+          "byte_in_candidate": false,
+          "sentence_in_candidate": true
+        },
+        {
+          "quote": "The answer is a number, and the number is the whole basis for everything the rest of this book tries to build.",
+          "byte_in_original": false,
+          "sentence_in_original": true,
+          "byte_in_candidate": false,
+          "sentence_in_candidate": true
+        },
+        {
+          "quote": "The value the caller consumes, written out, is 25 characters:",
+          "byte_in_original": true,
+          "sentence_in_original": true,
+          "byte_in_candidate": true,
+          "sentence_in_candidate": true
+        },
+        {
+          "quote": "**OBSERVED**: all 53 pass.",
+          "byte_in_original": true,
+          "sentence_in_original": true,
+          "byte_in_candidate": true,
+          "sentence_in_candidate": true
+        },
+        {
+          "quote": "Generate less. Measure the rest.",
+          "byte_in_original": true,
+          "sentence_in_original": true,
+          "byte_in_candidate": true,
+          "sentence_in_candidate": true
+        }
+      ],
+      "claim_extraction": {
+        "original": 227,
+        "candidate": 227,
+        "new_count": 0,
+        "dropped_count": 0,
+        "new": [],
+        "dropped": []
+      },
+      "semantic_loss": {
+        "available": true,
+        "passed": false,
+        "count": 7,
+        "risk": "high"
+      }
+    },
+    "H": {
+      "bytes": 34014,
+      "lines": 606,
+      "sha256": "981cac044b5746296a349f87324cf9492a6019c34238926b3d11e76d37cd5c9c",
+      "owner_verify": {
+        "verdict": "pass",
+        "passed": 21,
+        "failed": 0,
+        "failed_checks": []
+      },
+      "reflow": {
+        "fails": 1,
+        "strict_misses": 2,
+        "details": [
+          {
+            "span": {
+              "start_line": 525,
+              "end_line": 543
+            },
+            "strict_present": false,
+            "reflow_present": false,
+            "vacuous": false,
+            "verdict": "fail"
+          }
+        ]
+      },
+      "numbers_naive": {
+        "altered_count": 12,
+        "altered": [
+          {
+            "token": "01",
+            "original_count": 27,
+            "candidate_count": 29
+          },
+          {
+            "token": "1",
+            "original_count": 15,
+            "candidate_count": 17
+          },
+          {
+            "token": "1.2",
+            "original_count": 0,
+            "candidate_count": 1
+          },
+          {
+            "token": "1200",
+            "original_count": 1,
+            "candidate_count": 2
+          },
+          {
+            "token": "2",
+            "original_count": 14,
+            "candidate_count": 21
+          },
+          {
+            "token": "25",
+            "original_count": 4,
+            "candidate_count": 6
+          },
+          {
+            "token": "3",
+            "original_count": 10,
+            "candidate_count": 12
+          },
+          {
+            "token": "3,",
+            "original_count": 1,
+            "candidate_count": 2
+          },
+          {
+            "token": "4",
+            "original_count": 10,
+            "candidate_count": 12
+          },
+          {
+            "token": "5",
+            "original_count": 3,
+            "candidate_count": 6
+          },
+          {
+            "token": "520",
+            "original_count": 0,
+            "candidate_count": 1
+          },
+          {
+            "token": "7",
+            "original_count": 4,
+            "candidate_count": 5
+          }
+        ]
+      },
+      "ledger_proxy": {
+        "breaks": [
+          {
+            "id": "1.4",
+            "key_phrase": "around 50 MB",
+            "status_original": "present",
+            "status_candidate": "absent",
+            "parity": false
+          }
+        ],
+        "break_count": 1
+      },
+      "hedges": [
+        {
+          "marker": "cannot",
+          "original_count": 7,
+          "candidate_count": 8
+        },
+        {
+          "marker": "may ",
+          "original_count": 4,
+          "candidate_count": 5
+        },
+        {
+          "marker": "around ",
+          "original_count": 2,
+          "candidate_count": 1
+        }
+      ],
+      "sentences": {
+        "new_count": 31,
+        "dropped_count": 15,
+        "new": [
+          "The shape of the chapter is simple.",
+          "It opens with one concrete refund decision, a predicate that answers it for free, and a walkthrough you can run.",
+          "It then sets out the model-backed routes, which have not yet been run, against the one value the application actually reads.",
+          "It sets out the four words the rest of the book will keep apart, and closes with the one question it cannot yet answer.",
+          "The errors look policy-shaped: they fall where the rule's numeric conditions are met but its intent is not covered.",
+          "Whether a model would share that shape is not yet known; Chapter 7 and the arms below are where that is tested."
+        ],
+        "dropped": [
+          "The prompt is identical for both model-backed paths, which matters: any difference between them is attributable to the decoding constraint, not to a differently worded request.",
+          "**DOCUMENTED.** Two details from their §1 and §5 earn their place here.",
+          "The obvious implementation — score the whole vocabulary each step and zero out the inadmissible tokens — costs O(N) per token with N the vocabulary size, which they note is often 10^4 or larger; the indexed version is O(1) on average.",
+          "And the index is not free: even naively built for an augmented Python grammar, they report it at \"around 50 MB\".",
+          "Constraint is a memory cost before it is a compute win.",
+          "The guarantee is worth stating precisely, because it is routinely overclaimed."
+        ]
+      },
+      "honest_count": 10,
+      "cruft": {
+        "total": 1,
+        "by": {
+          "CR04": 1
+        },
+        "preserved": 12,
+        "delta_vs_O": 0
+      },
+      "complexity": {
+        "total": 39,
+        "by": {
+          "CX01": 2,
+          "CX02": 9,
+          "CX03": 8,
+          "CX04": 1,
+          "CX05": 4,
+          "CX08": 1,
+          "CX10": 1,
+          "CX11": 4,
+          "CX13": 2,
+          "CX14": 6,
+          "CX15": 1
+        },
+        "delta_vs_O": 1
+      },
+      "legibility": {
+        "total": 1,
+        "by": {
+          "reproduction_gap": 1
+        },
+        "delta_vs_O": 0
+      },
+      "controls": {
+        "NC1": {
+          "disposition": "preserved_unresolved",
+          "reason": "byte-identical unresolved claim carried from original into candidate: inherited unresolved finding",
+          "evidence": {
+            "in_original": true,
+            "in_candidate": true
+          },
+          "judge": {
+            "called": false
+          }
+        },
+        "NC4": {
+          "disposition": "unresolved_attribution",
+          "reason": "quote absent from original and candidate but present in an out-of-scope text: scope/attribution investigation (OUT_OF_SCOPE_CITATION class)",
+          "evidence": {
+            "in_original": false,
+            "in_candidate": false,
+            "scope": "out_of_scope_citation"
+          },
+          "judge": {
+            "called": false
+          }
+        },
+        "NC5": {
+          "disposition": "invalid_review_evidence",
+          "reason": "quote absent from both original and candidate bytes: invalid review evidence",
+          "evidence": {
+            "in_original": false,
+            "in_candidate": false
+          },
+          "judge": {
+            "called": false
+          }
+        },
+        "NC6": {
+          "disposition": "authorized_correction",
+          "reason": "quoted text is a reconcile-allow-listed correction present in the candidate",
+          "evidence": {
+            "in_original": true,
+            "in_candidate": true,
+            "allow_listed": true
+          },
+          "judge": {
+            "called": false
+          }
+        },
+        "NC2": {
+          "disposition": "introduced",
+          "reason": "judge verdict introduced",
+          "evidence": {
+            "in_original": false,
+            "in_candidate": true
+          },
+          "judge": {
+            "called": true,
+            "verdict": "introduced",
+            "rationale": "stub:introduced",
+            "judge": "fake"
+          }
+        },
+        "NC3": {
+          "disposition": "strengthened",
+          "reason": "judge verdict strengthened",
+          "evidence": {
+            "in_original": false,
+            "in_candidate": true
+          },
+          "judge": {
+            "called": true,
+            "verdict": "strengthened",
+            "rationale": "stub:strengthened",
+            "judge": "fake"
+          }
+        },
+        "NC7a": {
+          "disposition": "introduced",
+          "reason": "judge verdict redundant_synthesis (introduced-text subclass)",
+          "evidence": {
+            "in_original": false,
+            "in_candidate": true,
+            "semantic_class": "redundant_synthesis"
+          },
+          "judge": {
+            "called": true,
+            "verdict": "redundant_synthesis",
+            "rationale": "stub:redundant_synthesis",
+            "judge": "fake"
+          }
+        },
+        "NC7b": {
+          "disposition": "introduced",
+          "reason": "judge verdict redundant_synthesis (introduced-text subclass)",
+          "evidence": {
+            "in_original": false,
+            "in_candidate": true,
+            "semantic_class": "redundant_synthesis"
+          },
+          "judge": {
+            "called": true,
+            "verdict": "redundant_synthesis",
+            "rationale": "stub:redundant_synthesis",
+            "judge": "fake"
+          }
+        }
+      },
+      "controls_gate": {
+        "expected": {
+          "NC1": "preserved_unresolved",
+          "NC2": "introduced",
+          "NC3": "strengthened",
+          "NC4": "unresolved_attribution",
+          "NC5": "invalid_review_evidence",
+          "NC6": "authorized_correction",
+          "NC7a": "introduced",
+          "NC7b": "introduced"
+        },
+        "misattributed": {},
+        "gate": "PASS",
+        "nc7b_semantic_class": "redundant_synthesis"
+      },
+      "quotes": [
+        {
+          "quote": "The value is what the application wanted. The prose is packaging.",
+          "byte_in_original": false,
+          "sentence_in_original": true,
+          "byte_in_candidate": false,
+          "sentence_in_candidate": true
+        },
+        {
+          "quote": "The answer is a number, and the number is the whole basis for everything the rest of this book tries to build.",
+          "byte_in_original": false,
+          "sentence_in_original": true,
+          "byte_in_candidate": false,
+          "sentence_in_candidate": true
+        },
+        {
+          "quote": "The value the caller consumes, written out, is 25 characters:",
+          "byte_in_original": true,
+          "sentence_in_original": true,
+          "byte_in_candidate": true,
+          "sentence_in_candidate": true
+        },
+        {
+          "quote": "**OBSERVED**: all 53 pass.",
+          "byte_in_original": true,
+          "sentence_in_original": true,
+          "byte_in_candidate": true,
+          "sentence_in_candidate": true
+        },
+        {
+          "quote": "Generate less. Measure the rest.",
+          "byte_in_original": true,
+          "sentence_in_original": true,
+          "byte_in_candidate": true,
+          "sentence_in_candidate": true
+        }
+      ],
+      "claim_extraction": {
+        "original": 227,
+        "candidate": 243,
+        "new_count": 31,
+        "dropped_count": 15,
+        "new": [
+          "The shape of the chapter is simple.",
+          "It opens with one concrete refund decision, a predicate that answers it for free, and a walkthrough you can run.",
+          "It then sets out the model-backed routes, which have not yet been run, against the one value the application actually reads.",
+          "It sets out the four words the rest of the book will keep apart, and closes with the one question it cannot yet answer.",
+          "The errors look policy-shaped: they fall where the rule's numeric conditions are met but its intent is not covered.",
+          "Whether a model would share that shape is not yet known; Chapter 7 and the arms below are where that is tested."
+        ],
+        "dropped": [
+          "The prompt is identical for both model-backed paths, which matters: any difference between them is attributable to the decoding constraint, not to a differently worded request.",
+          "**DOCUMENTED.** Two details from their §1 and §5 earn their place here.",
+          "The obvious implementation — score the whole vocabulary each step and zero out the inadmissible tokens — costs O(N) per token with N the vocabulary size, which they note is often 10^4 or larger; the indexed version is O(1) on average.",
+          "And the index is not free: even naively built for an augmented Python grammar, they report it at \"around 50 MB\".",
+          "Constraint is a memory cost before it is a compute win.",
+          "The guarantee is worth stating precisely, because it is routinely overclaimed."
+        ]
+      },
+      "semantic_loss": {
+        "available": true,
+        "passed": false,
+        "count": 14,
+        "risk": "high"
+      }
+    },
+    "A1": {
+      "bytes": 31376,
+      "lines": 590,
+      "sha256": "3e6e3061f5fd03be8a4694379dadd689dd24803feae9066f2f09afa6a2ca57bc",
+      "owner_verify": {
+        "verdict": "fail",
+        "passed": 11,
+        "failed": 10,
+        "failed_checks": [
+          {
+            "check": "byte_true_present",
+            "span": {
+              "start_line": 101,
+              "end_line": 109
+            },
+            "rule": "amendment",
+            "passed": false,
+            "detail": "missing/reworded lines: ['**Correction from Book Quality Lab (CAPSTONE-02B).** The earlier implementation', 'also tested the channel after accepting a ticket as in-policy. That extra', 'condition was absent from the runbook: it could decline an eligible phone']"
+          },
+          {
+            "check": "byte_true_present",
+            "span": {
+              "start_line": 115,
+              "end_line": 122
+            },
+            "rule": "limitation",
+            "passed": false,
+            "detail": "missing/reworded lines: ['Both errors are worth naming, because they are not noise: `t11` (\"Saw it cheaper', 'yesterday\") and `t60` (\"Not asking for anything, but if you did, I would take it\"). Both', 'are inside the written policy and both are labelled \"decline\" in this case set, which']"
+          },
+          {
+            "check": "byte_true_present",
+            "span": {
+              "start_line": 405,
+              "end_line": 406
+            },
+            "rule": "did-not-run",
+            "passed": false,
+            "detail": "missing/reworded lines: ['The machine this chapter ran on had no local model weights and a CPU-only build of torch,', 'so the model-backed arms did not run. Here is exactly what that leaves open:']"
+          },
+          {
+            "check": "byte_true_present",
+            "span": {
+              "start_line": 432,
+              "end_line": 433
+            },
+            "rule": "not-yet-run",
+            "passed": false,
+            "detail": "missing/reworded lines: ['> **Not yet run.** The model-backed arms fill `results/ch01.jsonl`, one row per case per', '> arm, tagged with `schema_variant`. The command is:']"
+          },
+          {
+            "check": "no_change_identical",
+            "span": {
+              "start_line": 12,
+              "end_line": 18
+            },
+            "passed": false,
+            "detail": "no-change block altered, moved or removed"
+          },
+          {
+            "check": "no_change_identical",
+            "span": {
+              "start_line": 470,
+              "end_line": 476
+            },
+            "passed": false,
+            "detail": "no-change block altered, moved or removed"
+          },
+          {
+            "check": "no_change_identical",
+            "span": {
+              "start_line": 111,
+              "end_line": 113
+            },
+            "passed": false,
+            "detail": "no-change block altered, moved or removed"
+          },
+          {
+            "check": "no_change_identical",
+            "span": {
+              "start_line": 95,
+              "end_line": 99
+            },
+            "passed": false,
+            "detail": "no-change block altered, moved or removed"
+          },
+          {
+            "check": "no_change_identical",
+            "span": {
+              "start_line": 283,
+              "end_line": 289
+            },
+            "passed": false,
+            "detail": "no-change block altered, moved or removed"
+          },
+          {
+            "check": "no_change_identical",
+            "span": {
+              "start_line": 159,
+              "end_line": 159
+            },
+            "passed": false,
+            "detail": "no-change block altered, moved or removed"
+          }
+        ]
+      },
+      "reflow": {
+        "fails": 0,
+        "strict_misses": 10,
+        "details": []
+      },
+      "numbers_naive": {
+        "altered_count": 0,
+        "altered": []
+      },
+      "ledger_proxy": {
+        "breaks": [],
+        "break_count": 0
+      },
+      "hedges": [],
+      "sentences": {
+        "new_count": 3,
+        "dropped_count": 3,
+        "new": [
+          "> Approve automatically if the customer asks for no more than 50.00, the purchase is at most 30 days old, and this is their first refund in the last year.",
+          "Anything else goes to a human. ## Path 1: the predicate Write that policy as ordinary code first.",
+          "> **Not yet run.** The model-backed arms fill `results/ch01.jsonl`, one row per case per arm, tagged with `schema_variant`."
+        ],
+        "dropped": [
+          "The policy, written out as a human would write it in a runbook: > Approve automatically if the customer asks for no more than 50.00, the purchase is at > most 30 days old, and this is their first refund in the last year.",
+          "Anything else goes > to a human. ## Path 1: the predicate Write that policy as ordinary code first.",
+          "> **Not yet run.** The model-backed arms fill `results/ch01.jsonl`, one row per case per > arm, tagged with `schema_variant`."
+        ]
+      },
+      "honest_count": 8,
+      "cruft": {
+        "total": 1,
+        "by": {
+          "CR04": 1
+        },
+        "preserved": 12,
+        "delta_vs_O": 0
+      },
+      "complexity": {
+        "total": 65,
+        "by": {
+          "CX01": 1,
+          "CX02": 8,
+          "CX03": 10,
+          "CX08": 7,
+          "CX10": 26,
+          "CX12": 1,
+          "CX14": 11,
+          "CX15": 1
+        },
+        "delta_vs_O": 27
+      },
+      "legibility": {
+        "total": 1,
+        "by": {
+          "reproduction_gap": 1
+        },
+        "delta_vs_O": 0
+      },
+      "controls": {
+        "NC1": {
+          "disposition": "preserved_unresolved",
+          "reason": "byte-identical unresolved claim carried from original into candidate: inherited unresolved finding",
+          "evidence": {
+            "in_original": true,
+            "in_candidate": true
+          },
+          "judge": {
+            "called": false
+          }
+        },
+        "NC4": {
+          "disposition": "unresolved_attribution",
+          "reason": "quote absent from original and candidate but present in an out-of-scope text: scope/attribution investigation (OUT_OF_SCOPE_CITATION class)",
+          "evidence": {
+            "in_original": false,
+            "in_candidate": false,
+            "scope": "out_of_scope_citation"
+          },
+          "judge": {
+            "called": false
+          }
+        },
+        "NC5": {
+          "disposition": "invalid_review_evidence",
+          "reason": "quote absent from both original and candidate bytes: invalid review evidence",
+          "evidence": {
+            "in_original": false,
+            "in_candidate": false
+          },
+          "judge": {
+            "called": false
+          }
+        },
+        "NC6": {
+          "disposition": "authorized_correction",
+          "reason": "quoted text is a reconcile-allow-listed correction present in the candidate",
+          "evidence": {
+            "in_original": true,
+            "in_candidate": true,
+            "allow_listed": true
+          },
+          "judge": {
+            "called": false
+          }
+        },
+        "NC2": {
+          "disposition": "introduced",
+          "reason": "judge verdict introduced",
+          "evidence": {
+            "in_original": false,
+            "in_candidate": true
+          },
+          "judge": {
+            "called": true,
+            "verdict": "introduced",
+            "rationale": "stub:introduced",
+            "judge": "fake"
+          }
+        },
+        "NC3": {
+          "disposition": "strengthened",
+          "reason": "judge verdict strengthened",
+          "evidence": {
+            "in_original": false,
+            "in_candidate": true
+          },
+          "judge": {
+            "called": true,
+            "verdict": "strengthened",
+            "rationale": "stub:strengthened",
+            "judge": "fake"
+          }
+        },
+        "NC7a": {
+          "disposition": "introduced",
+          "reason": "judge verdict redundant_synthesis (introduced-text subclass)",
+          "evidence": {
+            "in_original": false,
+            "in_candidate": true,
+            "semantic_class": "redundant_synthesis"
+          },
+          "judge": {
+            "called": true,
+            "verdict": "redundant_synthesis",
+            "rationale": "stub:redundant_synthesis",
+            "judge": "fake"
+          }
+        },
+        "NC7b": {
+          "disposition": "introduced",
+          "reason": "judge verdict redundant_synthesis (introduced-text subclass)",
+          "evidence": {
+            "in_original": false,
+            "in_candidate": true,
+            "semantic_class": "redundant_synthesis"
+          },
+          "judge": {
+            "called": true,
+            "verdict": "redundant_synthesis",
+            "rationale": "stub:redundant_synthesis",
+            "judge": "fake"
+          }
+        }
+      },
+      "controls_gate": {
+        "expected": {
+          "NC1": "preserved_unresolved",
+          "NC2": "introduced",
+          "NC3": "strengthened",
+          "NC4": "unresolved_attribution",
+          "NC5": "invalid_review_evidence",
+          "NC6": "authorized_correction",
+          "NC7a": "introduced",
+          "NC7b": "introduced"
+        },
+        "misattributed": {},
+        "gate": "PASS",
+        "nc7b_semantic_class": "redundant_synthesis"
+      },
+      "quotes": [
+        {
+          "quote": "The value is what the application wanted. The prose is packaging.",
+          "byte_in_original": false,
+          "sentence_in_original": true,
+          "byte_in_candidate": true,
+          "sentence_in_candidate": true
+        },
+        {
+          "quote": "The answer is a number, and the number is the whole basis for everything the rest of this book tries to build.",
+          "byte_in_original": false,
+          "sentence_in_original": true,
+          "byte_in_candidate": true,
+          "sentence_in_candidate": true
+        },
+        {
+          "quote": "The value the caller consumes, written out, is 25 characters:",
+          "byte_in_original": true,
+          "sentence_in_original": true,
+          "byte_in_candidate": true,
+          "sentence_in_candidate": true
+        },
+        {
+          "quote": "**OBSERVED**: all 53 pass.",
+          "byte_in_original": true,
+          "sentence_in_original": true,
+          "byte_in_candidate": true,
+          "sentence_in_candidate": true
+        },
+        {
+          "quote": "Generate less. Measure the rest.",
+          "byte_in_original": true,
+          "sentence_in_original": true,
+          "byte_in_candidate": true,
+          "sentence_in_candidate": true
+        }
+      ],
+      "claim_extraction": {
+        "original": 227,
+        "candidate": 227,
+        "new_count": 1,
+        "dropped_count": 1,
+        "new": [
+          "Approve automatically if the customer asks for no more than 50.00, the purchase is at most 30 days old, and this is their first refund in the last year."
+        ],
+        "dropped": [
+          "The policy, written out as a human would write it in a runbook: Approve automatically if the customer asks for no more than 50.00, the purchase is at most 30 days old, and this is their first refund in the last year."
+        ]
+      },
+      "semantic_loss": {
+        "available": true,
+        "passed": false,
+        "count": 14,
+        "risk": "high"
+      }
+    },
+    "B1": {
+      "bytes": 31864,
+      "lines": 571,
+      "sha256": "6bc4a86d1357c368fd5cbfcdf951f9307e25ee2c1cca762f4beca6b6ee8854d9",
+      "owner_verify": {
+        "verdict": "pass",
+        "passed": 21,
+        "failed": 0,
+        "failed_checks": []
+      },
+      "reflow": {
+        "fails": 0,
+        "strict_misses": 0,
+        "details": []
+      },
+      "numbers_naive": {
+        "altered_count": 5,
+        "altered": [
+          {
+            "token": "02",
+            "original_count": 3,
+            "candidate_count": 4
+          },
+          {
+            "token": "1",
+            "original_count": 15,
+            "candidate_count": 16
+          },
+          {
+            "token": "16",
+            "original_count": 2,
+            "candidate_count": 4
+          },
+          {
+            "token": "2",
+            "original_count": 14,
+            "candidate_count": 15
+          },
+          {
+            "token": "2,",
+            "original_count": 1,
+            "candidate_count": 2
+          }
+        ]
+      },
+      "ledger_proxy": {
+        "breaks": [],
+        "break_count": 0
+      },
+      "hedges": [],
+      "sentences": {
+        "new_count": 6,
+        "dropped_count": 2,
+        "new": [
+          "Obtaining a decision that way does not make generation and decision the same act.",
+          "The measurements in this chapter are the evidence that conflating them is expensive.",
+          "Whether a decision deserves to be a programming construct is [Chapter 16](/books/jev/16-chapter/).",
+          "Whether a decision model is a distinct category of model is [Chapter 2](/books/jev/02-chapter/).",
+          "That is the whole claim so far: generation and decision are not the same act; the programming-construct question is [Chapter 16](/books/jev/16-chapter/), and the model-category question is [Chapter 2](/books/jev/02-chapter/). ## What we measured, and what we did not The experiment was pre-registered *before* any run.",
+          "What Chapter 1 leaves standing is an open question handed to Chapter 2, a vendor contract recorded as a third-party claim rather than a specification to be trusted, and a summary held to one line until the primary sources are read."
+        ],
+        "dropped": [
+          "It is not the same act, and the measurements in this chapter are the evidence that conflating them is expensive.",
+          "Whether a decision deserves to be a programming construct is [Chapter 16](/books/jev/16-chapter/); whether a decision model is a distinct category of model is [Chapter 2](/books/jev/02-chapter/). ## What we measured, and what we did not The experiment was pre-registered *before* any run."
+        ]
+      },
+      "honest_count": 8,
+      "cruft": {
+        "total": 1,
+        "by": {
+          "CR04": 1
+        },
+        "preserved": 12,
+        "delta_vs_O": 0
+      },
+      "complexity": {
+        "total": 39,
+        "by": {
+          "CX01": 1,
+          "CX02": 9,
+          "CX03": 8,
+          "CX05": 1,
+          "CX08": 3,
+          "CX10": 3,
+          "CX11": 5,
+          "CX14": 8,
+          "CX15": 1
+        },
+        "delta_vs_O": 1
+      },
+      "legibility": {
+        "total": 1,
+        "by": {
+          "reproduction_gap": 1
+        },
+        "delta_vs_O": 0
+      },
+      "controls": {
+        "NC1": {
+          "disposition": "preserved_unresolved",
+          "reason": "byte-identical unresolved claim carried from original into candidate: inherited unresolved finding",
+          "evidence": {
+            "in_original": true,
+            "in_candidate": true
+          },
+          "judge": {
+            "called": false
+          }
+        },
+        "NC4": {
+          "disposition": "unresolved_attribution",
+          "reason": "quote absent from original and candidate but present in an out-of-scope text: scope/attribution investigation (OUT_OF_SCOPE_CITATION class)",
+          "evidence": {
+            "in_original": false,
+            "in_candidate": false,
+            "scope": "out_of_scope_citation"
+          },
+          "judge": {
+            "called": false
+          }
+        },
+        "NC5": {
+          "disposition": "invalid_review_evidence",
+          "reason": "quote absent from both original and candidate bytes: invalid review evidence",
+          "evidence": {
+            "in_original": false,
+            "in_candidate": false
+          },
+          "judge": {
+            "called": false
+          }
+        },
+        "NC6": {
+          "disposition": "authorized_correction",
+          "reason": "quoted text is a reconcile-allow-listed correction present in the candidate",
+          "evidence": {
+            "in_original": true,
+            "in_candidate": true,
+            "allow_listed": true
+          },
+          "judge": {
+            "called": false
+          }
+        },
+        "NC2": {
+          "disposition": "introduced",
+          "reason": "judge verdict introduced",
+          "evidence": {
+            "in_original": false,
+            "in_candidate": true
+          },
+          "judge": {
+            "called": true,
+            "verdict": "introduced",
+            "rationale": "stub:introduced",
+            "judge": "fake"
+          }
+        },
+        "NC3": {
+          "disposition": "strengthened",
+          "reason": "judge verdict strengthened",
+          "evidence": {
+            "in_original": false,
+            "in_candidate": true
+          },
+          "judge": {
+            "called": true,
+            "verdict": "strengthened",
+            "rationale": "stub:strengthened",
+            "judge": "fake"
+          }
+        },
+        "NC7a": {
+          "disposition": "introduced",
+          "reason": "judge verdict redundant_synthesis (introduced-text subclass)",
+          "evidence": {
+            "in_original": false,
+            "in_candidate": true,
+            "semantic_class": "redundant_synthesis"
+          },
+          "judge": {
+            "called": true,
+            "verdict": "redundant_synthesis",
+            "rationale": "stub:redundant_synthesis",
+            "judge": "fake"
+          }
+        },
+        "NC7b": {
+          "disposition": "introduced",
+          "reason": "judge verdict redundant_synthesis (introduced-text subclass)",
+          "evidence": {
+            "in_original": false,
+            "in_candidate": true,
+            "semantic_class": "redundant_synthesis"
+          },
+          "judge": {
+            "called": true,
+            "verdict": "redundant_synthesis",
+            "rationale": "stub:redundant_synthesis",
+            "judge": "fake"
+          }
+        }
+      },
+      "controls_gate": {
+        "expected": {
+          "NC1": "preserved_unresolved",
+          "NC2": "introduced",
+          "NC3": "strengthened",
+          "NC4": "unresolved_attribution",
+          "NC5": "invalid_review_evidence",
+          "NC6": "authorized_correction",
+          "NC7a": "introduced",
+          "NC7b": "introduced"
+        },
+        "misattributed": {},
+        "gate": "PASS",
+        "nc7b_semantic_class": "redundant_synthesis"
+      },
+      "quotes": [
+        {
+          "quote": "The value is what the application wanted. The prose is packaging.",
+          "byte_in_original": false,
+          "sentence_in_original": true,
+          "byte_in_candidate": false,
+          "sentence_in_candidate": true
+        },
+        {
+          "quote": "The answer is a number, and the number is the whole basis for everything the rest of this book tries to build.",
+          "byte_in_original": false,
+          "sentence_in_original": true,
+          "byte_in_candidate": false,
+          "sentence_in_candidate": true
+        },
+        {
+          "quote": "The value the caller consumes, written out, is 25 characters:",
+          "byte_in_original": true,
+          "sentence_in_original": true,
+          "byte_in_candidate": true,
+          "sentence_in_candidate": true
+        },
+        {
+          "quote": "**OBSERVED**: all 53 pass.",
+          "byte_in_original": true,
+          "sentence_in_original": true,
+          "byte_in_candidate": true,
+          "sentence_in_candidate": true
+        },
+        {
+          "quote": "Generate less. Measure the rest.",
+          "byte_in_original": true,
+          "sentence_in_original": true,
+          "byte_in_candidate": true,
+          "sentence_in_candidate": true
+        }
+      ],
+      "claim_extraction": {
+        "original": 227,
+        "candidate": 231,
+        "new_count": 6,
+        "dropped_count": 2,
+        "new": [
+          "Obtaining a decision that way does not make generation and decision the same act.",
+          "The measurements in this chapter are the evidence that conflating them is expensive.",
+          "Whether a decision deserves to be a programming construct is [Chapter 16](/books/jev/16-chapter/).",
+          "Whether a decision model is a distinct category of model is [Chapter 2](/books/jev/02-chapter/).",
+          "That is the whole claim so far: generation and decision are not the same act; the programming-construct question is [Chapter 16](/books/jev/16-chapter/), and the model-category question is [Chapter 2](/books/jev/02-chapter/).",
+          "What Chapter 1 leaves standing is an open question handed to Chapter 2, a vendor contract recorded as a third-party claim rather than a specification to be trusted, and a summary held to one line until the primary sources are read."
+        ],
+        "dropped": [
+          "It is not the same act, and the measurements in this chapter are the evidence that conflating them is expensive.",
+          "Whether a decision deserves to be a programming construct is [Chapter 16](/books/jev/16-chapter/); whether a decision model is a distinct category of model is [Chapter 2](/books/jev/02-chapter/)."
+        ]
+      },
+      "semantic_loss": {
+        "available": true,
+        "passed": false,
+        "count": 7,
+        "risk": "high"
+      }
+    }
+  },
+  "probes": {
+    "key": [
+      {
+        "id": "F1",
+        "visibility": "public",
+        "question": "On the test split, how many tickets did the predicate answer vs decline?",
+        "expected": "answered 10 and declined 10"
+      },
+      {
+        "id": "F2",
+        "visibility": "public",
+        "question": "Of the answered test cases, how many matched the label?",
+        "expected": "8 match the label"
+      },
+      {
+        "id": "F3",
+        "visibility": "public",
+        "question": "What exact 25-character payload does the caller read?",
+        "expected": "{\"refund_approved\": true}"
+      },
+      {
+        "id": "F4",
+        "visibility": "public",
+        "question": "What did the predicate cost in tokens and latency?",
+        "expected": "generated zero tokens and every call took under 4 microseconds"
+      },
+      {
+        "id": "F5",
+        "visibility": "public",
+        "question": "What does constrained decoding guarantee, per Willard et al. as quoted?",
+        "expected": "Structure, not correctness",
+        "note": "paraphrase proxy: O has Structure + not correctness in adjacent sentences"
+      },
+      {
+        "id": "F6",
+        "visibility": "public",
+        "question": "What JSON parse-error rate does Tam et al. report for LLaMA 3 8B on one task?",
+        "expected": "0.148%"
+      },
+      {
+        "id": "F7",
+        "visibility": "heldout",
+        "question": "What inference cost/latency reduction does LMQL report?",
+        "expected": "26-80%"
+      },
+      {
+        "id": "F8",
+        "visibility": "heldout",
+        "question": "After how many labels does fine-tuning performance begin to saturate (Bucher et al.)?",
+        "expected": "around 200 labels"
+      },
+      {
+        "id": "F9",
+        "visibility": "heldout",
+        "question": "How large is the naively built Outlines index for an augmented Python grammar?",
+        "expected": "around 50 MB",
+        "note": "H carries Around 50 MB (capital A) — case-variant proxy break recorded"
+      },
+      {
+        "id": "F10",
+        "visibility": "heldout",
+        "question": "On how many reasoning datasets did plain natural language still beat CFG-constrained output?",
+        "expected": "2 of 3 reasoning datasets"
+      },
+      {
+        "id": "F11",
+        "visibility": "heldout",
+        "question": "Which two tickets were inside the policy but labelled decline?",
+        "expected": "t11 and t60",
+        "note": "grounded as both tokens present (backticked in source)"
+      },
+      {
+        "id": "F12",
+        "visibility": "heldout",
+        "question": "Which key ordering does the preregistered schema use (harmful per Tam et al. s4.1)?",
+        "expected": "refund_approved first and reason second",
+        "note": "grounded as both keys present; ordering stated in prose"
+      },
+      {
+        "id": "E1",
+        "visibility": "public",
+        "question": "Did the model-backed arms run in this chapter?",
+        "expected": "No — NOT_OBSERVED"
+      },
+      {
+        "id": "E2",
+        "visibility": "public",
+        "question": "Is the Jev contract stated as documented fact?",
+        "expected": "No — third-party claim, not DOCUMENTED"
+      },
+      {
+        "id": "E3",
+        "visibility": "public",
+        "question": "Is generation overhead measured here?",
+        "expected": "No — prediction stands untested"
+      }
+    ],
+    "deterministic_per_text": {
+      "O": [
+        {
+          "id": "F1",
+          "visibility": "public",
+          "deterministic_present": true
+        },
+        {
+          "id": "F2",
+          "visibility": "public",
+          "deterministic_present": true
+        },
+        {
+          "id": "F3",
+          "visibility": "public",
+          "deterministic_present": true
+        },
+        {
+          "id": "F4",
+          "visibility": "public",
+          "deterministic_present": true
+        },
+        {
+          "id": "F5",
+          "visibility": "public",
+          "deterministic_present": true
+        },
+        {
+          "id": "F6",
+          "visibility": "public",
+          "deterministic_present": true
+        },
+        {
+          "id": "F7",
+          "visibility": "heldout",
+          "deterministic_present": true
+        },
+        {
+          "id": "F8",
+          "visibility": "heldout",
+          "deterministic_present": true
+        },
+        {
+          "id": "F9",
+          "visibility": "heldout",
+          "deterministic_present": true
+        },
+        {
+          "id": "F10",
+          "visibility": "heldout",
+          "deterministic_present": true
+        },
+        {
+          "id": "F11",
+          "visibility": "heldout",
+          "deterministic_present": true
+        },
+        {
+          "id": "F12",
+          "visibility": "heldout",
+          "deterministic_present": true
+        },
+        {
+          "id": "E1",
+          "visibility": "public",
+          "deterministic_present": true
+        },
+        {
+          "id": "E2",
+          "visibility": "public",
+          "deterministic_present": true
+        },
+        {
+          "id": "E3",
+          "visibility": "public",
+          "deterministic_present": true
+        }
+      ],
+      "H": [
+        {
+          "id": "F1",
+          "visibility": "public",
+          "deterministic_present": true
+        },
+        {
+          "id": "F2",
+          "visibility": "public",
+          "deterministic_present": true
+        },
+        {
+          "id": "F3",
+          "visibility": "public",
+          "deterministic_present": true
+        },
+        {
+          "id": "F4",
+          "visibility": "public",
+          "deterministic_present": true
+        },
+        {
+          "id": "F5",
+          "visibility": "public",
+          "deterministic_present": true
+        },
+        {
+          "id": "F6",
+          "visibility": "public",
+          "deterministic_present": true
+        },
+        {
+          "id": "F7",
+          "visibility": "heldout",
+          "deterministic_present": true
+        },
+        {
+          "id": "F8",
+          "visibility": "heldout",
+          "deterministic_present": true
+        },
+        {
+          "id": "F9",
+          "visibility": "heldout",
+          "deterministic_present": false
+        },
+        {
+          "id": "F10",
+          "visibility": "heldout",
+          "deterministic_present": true
+        },
+        {
+          "id": "F11",
+          "visibility": "heldout",
+          "deterministic_present": true
+        },
+        {
+          "id": "F12",
+          "visibility": "heldout",
+          "deterministic_present": true
+        },
+        {
+          "id": "E1",
+          "visibility": "public",
+          "deterministic_present": true
+        },
+        {
+          "id": "E2",
+          "visibility": "public",
+          "deterministic_present": true
+        },
+        {
+          "id": "E3",
+          "visibility": "public",
+          "deterministic_present": true
+        }
+      ],
+      "A1": [
+        {
+          "id": "F1",
+          "visibility": "public",
+          "deterministic_present": true
+        },
+        {
+          "id": "F2",
+          "visibility": "public",
+          "deterministic_present": true
+        },
+        {
+          "id": "F3",
+          "visibility": "public",
+          "deterministic_present": true
+        },
+        {
+          "id": "F4",
+          "visibility": "public",
+          "deterministic_present": true
+        },
+        {
+          "id": "F5",
+          "visibility": "public",
+          "deterministic_present": true
+        },
+        {
+          "id": "F6",
+          "visibility": "public",
+          "deterministic_present": true
+        },
+        {
+          "id": "F7",
+          "visibility": "heldout",
+          "deterministic_present": true
+        },
+        {
+          "id": "F8",
+          "visibility": "heldout",
+          "deterministic_present": true
+        },
+        {
+          "id": "F9",
+          "visibility": "heldout",
+          "deterministic_present": true
+        },
+        {
+          "id": "F10",
+          "visibility": "heldout",
+          "deterministic_present": true
+        },
+        {
+          "id": "F11",
+          "visibility": "heldout",
+          "deterministic_present": true
+        },
+        {
+          "id": "F12",
+          "visibility": "heldout",
+          "deterministic_present": true
+        },
+        {
+          "id": "E1",
+          "visibility": "public",
+          "deterministic_present": true
+        },
+        {
+          "id": "E2",
+          "visibility": "public",
+          "deterministic_present": true
+        },
+        {
+          "id": "E3",
+          "visibility": "public",
+          "deterministic_present": true
+        }
+      ],
+      "B1": [
+        {
+          "id": "F1",
+          "visibility": "public",
+          "deterministic_present": true
+        },
+        {
+          "id": "F2",
+          "visibility": "public",
+          "deterministic_present": true
+        },
+        {
+          "id": "F3",
+          "visibility": "public",
+          "deterministic_present": true
+        },
+        {
+          "id": "F4",
+          "visibility": "public",
+          "deterministic_present": true
+        },
+        {
+          "id": "F5",
+          "visibility": "public",
+          "deterministic_present": true
+        },
+        {
+          "id": "F6",
+          "visibility": "public",
+          "deterministic_present": true
+        },
+        {
+          "id": "F7",
+          "visibility": "heldout",
+          "deterministic_present": true
+        },
+        {
+          "id": "F8",
+          "visibility": "heldout",
+          "deterministic_present": true
+        },
+        {
+          "id": "F9",
+          "visibility": "heldout",
+          "deterministic_present": true
+        },
+        {
+          "id": "F10",
+          "visibility": "heldout",
+          "deterministic_present": true
+        },
+        {
+          "id": "F11",
+          "visibility": "heldout",
+          "deterministic_present": true
+        },
+        {
+          "id": "F12",
+          "visibility": "heldout",
+          "deterministic_present": true
+        },
+        {
+          "id": "E1",
+          "visibility": "public",
+          "deterministic_present": true
+        },
+        {
+          "id": "E2",
+          "visibility": "public",
+          "deterministic_present": true
+        },
+        {
+          "id": "E3",
+          "visibility": "public",
+          "deterministic_present": true
+        }
+      ]
+    },
+    "model_reader": {
+      "status": "HALTED-no-live-call",
+      "label": "MODEL_READER_PROBE (not run); never INDEPENDENT_REVIEW or human comprehension",
+      "runs": 0,
+      "heldout_model_runs": 0,
+      "heldout_budget": "0/1 consumed (model); deterministic proxy ran once for record and must not be re-dispatched to any model more than once total"
+    }
+  },
+  "checklist": {
+    "criteria": [
+      {
+        "id": "C1",
+        "verdict": "ABSTAIN",
+        "quote": null,
+        "reason": "no live MODEL_JUDGEMENT call (Worker unreachable, $0 halt); deterministic proxies reported separately, never as judgements"
+      },
+      {
+        "id": "C2",
+        "verdict": "ABSTAIN",
+        "quote": null,
+        "reason": "no live MODEL_JUDGEMENT call (Worker unreachable, $0 halt); deterministic proxies reported separately, never as judgements"
+      },
+      {
+        "id": "C3",
+        "verdict": "ABSTAIN",
+        "quote": null,
+        "reason": "no live MODEL_JUDGEMENT call (Worker unreachable, $0 halt); deterministic proxies reported separately, never as judgements"
+      },
+      {
+        "id": "C4",
+        "verdict": "ABSTAIN",
+        "quote": null,
+        "reason": "no live MODEL_JUDGEMENT call (Worker unreachable, $0 halt); deterministic proxies reported separately, never as judgements"
+      },
+      {
+        "id": "C5",
+        "verdict": "ABSTAIN",
+        "quote": null,
+        "reason": "no live MODEL_JUDGEMENT call (Worker unreachable, $0 halt); deterministic proxies reported separately, never as judgements"
+      },
+      {
+        "id": "C6",
+        "verdict": "ABSTAIN",
+        "quote": null,
+        "reason": "no live MODEL_JUDGEMENT call (Worker unreachable, $0 halt); deterministic proxies reported separately, never as judgements"
+      },
+      {
+        "id": "C7",
+        "verdict": "ABSTAIN",
+        "quote": null,
+        "reason": "no live MODEL_JUDGEMENT call (Worker unreachable, $0 halt); deterministic proxies reported separately, never as judgements"
+      },
+      {
+        "id": "C8",
+        "verdict": "ABSTAIN",
+        "quote": null,
+        "reason": "no live MODEL_JUDGEMENT call (Worker unreachable, $0 halt); deterministic proxies reported separately, never as judgements"
+      }
+    ],
+    "label": "MODEL_JUDGEMENT (not run); generator is deepseek so neither judge is the reviser; never INDEPENDENT_REVIEW"
+  },
+  "hard_gates": {
+    "O": {
+      "preservation_byte_true_owner": "PASS",
+      "numbers_naive_zero": "PASS",
+      "ledger_proxy_parity": "PASS",
+      "certainty_hedges_zero": "PASS",
+      "controls_7_7_plus_NC7b": "PASS",
+      "quotes_valid": "PASS",
+      "new_claims_model": "UNASSESSED-halted-no-live-call",
+      "checklist_model": "UNASSESSED-halted-no-live-call",
+      "reader_probes_model": "UNASSESSED-halted-no-live-call"
+    },
+    "H": {
+      "preservation_byte_true_owner": "PASS",
+      "numbers_naive_zero": "FAIL-proxy",
+      "ledger_proxy_parity": "FAIL-proxy",
+      "certainty_hedges_zero": "FAIL-proxy",
+      "controls_7_7_plus_NC7b": "PASS",
+      "quotes_valid": "PASS",
+      "new_claims_model": "UNASSESSED-halted-no-live-call",
+      "checklist_model": "UNASSESSED-halted-no-live-call",
+      "reader_probes_model": "UNASSESSED-halted-no-live-call"
+    },
+    "A1": {
+      "preservation_byte_true_owner": "FAIL",
+      "numbers_naive_zero": "PASS",
+      "ledger_proxy_parity": "PASS",
+      "certainty_hedges_zero": "PASS",
+      "controls_7_7_plus_NC7b": "PASS",
+      "quotes_valid": "PASS",
+      "new_claims_model": "UNASSESSED-halted-no-live-call",
+      "checklist_model": "UNASSESSED-halted-no-live-call",
+      "reader_probes_model": "UNASSESSED-halted-no-live-call"
+    },
+    "B1": {
+      "preservation_byte_true_owner": "PASS",
+      "numbers_naive_zero": "FAIL-proxy",
+      "ledger_proxy_parity": "PASS",
+      "certainty_hedges_zero": "PASS",
+      "controls_7_7_plus_NC7b": "PASS",
+      "quotes_valid": "PASS",
+      "new_claims_model": "UNASSESSED-halted-no-live-call",
+      "checklist_model": "UNASSESSED-halted-no-live-call",
+      "reader_probes_model": "UNASSESSED-halted-no-live-call"
+    }
+  },
+  "dominance_pairs": {
+    "O_vs_H": {
+      "gates_ge": true,
+      "dims_better_count": 4,
+      "verdict": "PREFER_O"
+    },
+    "O_vs_A1": {
+      "gates_ge": true,
+      "dims_better_count": 1,
+      "verdict": "TRADE-OFF"
+    },
+    "O_vs_B1": {
+      "gates_ge": true,
+      "dims_better_count": 2,
+      "verdict": "PREFER_O"
+    },
+    "H_vs_O": {
+      "gates_ge": false,
+      "dims_better_count": 1,
+      "verdict": "TRADE-OFF"
+    },
+    "H_vs_A1": {
+      "gates_ge": false,
+      "dims_better_count": 2,
+      "verdict": "TRADE-OFF"
+    },
+    "H_vs_B1": {
+      "gates_ge": false,
+      "dims_better_count": 1,
+      "verdict": "TRADE-OFF"
+    },
+    "A1_vs_O": {
+      "gates_ge": false,
+      "dims_better_count": 0,
+      "verdict": "TRADE-OFF"
+    },
+    "A1_vs_H": {
+      "gates_ge": false,
+      "dims_better_count": 3,
+      "verdict": "TRADE-OFF"
+    },
+    "A1_vs_B1": {
+      "gates_ge": false,
+      "dims_better_count": 1,
+      "verdict": "TRADE-OFF"
+    },
+    "B1_vs_O": {
+      "gates_ge": false,
+      "dims_better_count": 0,
+      "verdict": "TRADE-OFF"
+    },
+    "B1_vs_H": {
+      "gates_ge": true,
+      "dims_better_count": 3,
+      "verdict": "PREFER_B1"
+    },
+    "B1_vs_A1": {
+      "gates_ge": false,
+      "dims_better_count": 1,
+      "verdict": "TRADE-OFF"
+    }
+  },
+  "dominance_readout": "TRADE-OFF among candidate treatments (H/A1/B1): every H/A1/B1 pair is TRADE-OFF per Sec.3.7 (no treatment is >= on every hard gate AND better on >=2 dimensions). O is the non-generated source reference, not a ranked treatment: mechanical O_vs_H and O_vs_B1 pairs compute as PREFER_O on deterministic proxies alone, which is a trivial source-identity effect, not an editorial preference claim, and all model-mediated gates are UNASSESSED (halted) which alone blocks any preference claim. H passes owner preservation (21/21) but fails ledger-proxy (1.4 Around/around case variant), naive numbers (12), hedges (3); A1 passes reflow/numbers/ledger/hedges but FAILS owner byte-true (11/21; 10 strict misses that are reflow-only) and carries the dropped 13-word framing sentence; B1 passes owner preservation (21/21)/ledger/hedges but fails naive numbers (5 structural tokens) and adds 6 claim-extraction candidates needing MODEL_JUDGEMENT. No composite score.",
+  "costs": {
+    "actuals": {
+      "A1": 0.0227055,
+      "B1_packages": 0.0175449,
+      "C1": 0.0,
+      "eval_batch6": 0.0,
+      "total": 0.0402504
+    },
+    "cap": 1.0,
+    "remaining": 0.9597496,
+    "this_batch_spend_usd": 0.0,
+    "haiku_spend_usd": 0.0,
+    "note": "A1 $0.0227055 (1.5x band-top, estimator reasoning-light, under 2x hard stop); B1 $0.0175449; total $0.0402504/$1.00. This batch $0.00 (zero dispatches). Spend to date unchanged."
+  },
+  "replicate_2": {
+    "recommendation": "AGAINST",
+    "reason": "Design gates replicate 2 on no-stop-rule-fired; halts DID fire, so the gate condition fails. B1 segment 1 halted on two consecutive package failures (Path 1 verify_failed + Paths 2&3 editorial_invalid, $0.0166 spent), segment 2 corrections also failed same quote-discipline class (4/4 attempts quote/byte-true violations), and 2 packages were stood down by coordinator DECISION (recorded failed, never redriven). B1 closed as a 2-region sample (B-max shape), not a full-chapter arm. Replicating now would spend ~$0.04 to re-demonstrate a systematic quote-discipline limitation, not random noise. A1 estimator was 1.5x band-top (calibration residual). Recommend replicate 2 ONLY after: (1) quote-discipline prompt/hull fix demonstrated on the two failed passages via $0 dry-run + verify, (2) cost estimator recalibrated for reasoning-heavy whole-chapter prompts, (3) a full B-hull success (5/5 review_accepted) in replicate 1 terms. Narrow alternative (replicate only the 2 successful regions) is not a replicate and must not be reported as one."
+  },
+  "disagreements_preserved": [
+    "H reflow 525-543 FAIL vs owner verify PASS 21/21: our reflow-tolerant containment misses a 19-line Limitations block that the owner byte-true check passes — recorded as method disagreement, not corrected to pass.",
+    "H ledger 1.4 proxy FAIL (around vs Around 50 MB case variant; H has Around 50 MB of memory in a table) — deterministic case-sensitive proxy break; semantic sameness needs MODEL_JUDGEMENT (not run).",
+    "Numbers naive: H 12 / B1 5 altered tokens vs A1 0 — tokens are structural (chapter numbers 01/1/16, image dims 1200x520, list counts), not measurement numbers; ledger-number parity is the load-bearing check (H 1 proxy-break above; A1/B1 0).",
+    "Semantic-loss owner screen non-discriminative: O-vs-O itself reports 7 findings HIGH risk; O/H/A1/B1 all passed=False — recorded as uncalibrated screen, never a hard gate.",
+    "Claim-extraction raw: H 31 new/15 dropped (engineered reorganisation) vs owner PASS; B1 6 new/2 dropped (review-accepted connectors) needing attribution judgement (not run); A1 1/1 reflow pair (known). Raw counts are proxies, not unsupported-claim verdicts.",
+    "A1 strict byte-true FAIL (10/21) vs reflow PASS (0 fails): 10 strict misses are line-join artefacts (every word survives, zero added words) plus one genuine dropped 13-word framing sentence (O:66, unresolved_attribution, outside C repair scope) — preserved as disagreement, not a pass.",
+    "Model checklist/probes/epistemics UNASSESSED (Worker unreachable, $0 halt): deterministic proxies run once for record; no MODEL_JUDGEMENT/MODEL_READER_PROBE verdicts claimed; human-study gap recorded as unassessed per design."
+  ],
+  "uncertainties": [
+    "Token estimates ±40% carried; haiku $0 is observed allowance (B1 reviews $0) not a guarantee — this batch made 0 haiku calls so nothing metered.",
+    "Blinding partial (length/register recognisable); judges are model proxies, never human comprehension.",
+    "n=2 would be case comparison, not effect size; single-chapter scope limits generalisation.",
+    "H CONFLICTED identity carried (Muse-authored historical reference, not peer arm)."
+  ],
+  "provenance": {
+    "stack": "publication-c1-verification-v0.1",
+    "classifier": "publication-attribution-v0.1",
+    "detectors": {
+      "cruft": "publication-cruft-v0.1",
+      "complexity": "publication-complexity-v0.1",
+      "legibility": "reader_legibility (deterministic, include_llm=False)"
+    },
+    "spend_usd_this_batch": 0.0,
+    "dispatches_this_batch": 0
+  }
+}

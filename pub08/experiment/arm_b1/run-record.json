@@ -1,0 +1,5 @@
+{
+ "runner": "pub08/experiment/run_arm_b1.py",
+ "verdict": "GO_B1_MERGED",
+ "failures": []
+}

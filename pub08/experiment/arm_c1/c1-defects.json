@@ -1,0 +1,142 @@
+{
+  "c1_identity": "PUB-08 Arm C1 verification of Arm A1 (paired on A1 bytes)",
+  "stack": "publication-c1-verification-v0.1",
+  "classifier": "publication-attribution-v0.1",
+  "classifier_schema": "writer.attribution.record.v1",
+  "dimension_counts": {
+    "preservation_failures_reflow_level": 0,
+    "preservation_strict_line_misses_informational": 10,
+    "numbers_altered": 0,
+    "sentences_new_raw_finder_level": 3,
+    "sentences_dropped_raw_finder_level": 3,
+    "words_added": 0,
+    "words_dropped": 13,
+    "hedges_altered": 0,
+    "ledger_breaks": 0,
+    "controls_misattributed": 0,
+    "quotes_byte_absent_in_O": 2,
+    "quotes_sentence_absent_in_O": 0,
+    "semantic_loss_owner_findings": 14,
+    "claim_extraction_new": 1,
+    "claim_extraction_dropped": 1
+  },
+  "findings": [
+    {
+      "id": "R-A",
+      "kind": "reflow_pair",
+      "quote_a1": "> Approve automatically if the customer asks for no more than 50.00, the purchase is at most 30 days old, and this is their first refund in the last year. Anything else goes to a human.",
+      "a1_line": 70,
+      "quote_o": [
+        "> Approve automatically if the customer asks for no more than 50.00, the purchase is at",
+        "> most 30 days old, and this is their first refund in the last year. Anything else goes",
+        "> to a human."
+      ],
+      "o_lines": [
+        68,
+        69,
+        70
+      ],
+      "disposition": "unresolved_attribution",
+      "reason": "judge verdict unknown: no attribution without judgement",
+      "evidence": {
+        "in_original": false,
+        "in_candidate": true
+      },
+      "judge": {
+        "called": true,
+        "verdict": "unknown",
+        "rationale": "abstain: no semantic verdict claimed ($0, no live call)",
+        "judge": "fake"
+      },
+      "content_verdict": "reflow-only line-wrap/segmentation pair: A1 joins O lines into one line (blockquote-continuation joins); every word survives, no word added, no meaning changed; judge abstained",
+      "repairable": false
+    },
+    {
+      "id": "R-B",
+      "kind": "reflow_pair",
+      "quote_a1": "> Approve automatically if the customer asks for no more than 50.00, the purchase is at most 30 days old, and this is their first refund in the last year. Anything else goes to a human.",
+      "a1_line": 70,
+      "quote_o": [
+        "> most 30 days old, and this is their first refund in the last year. Anything else goes",
+        "> to a human."
+      ],
+      "o_lines": [
+        69,
+        70
+      ],
+      "disposition": "unresolved_attribution",
+      "reason": "judge verdict unknown: no attribution without judgement",
+      "evidence": {
+        "in_original": false,
+        "in_candidate": true
+      },
+      "judge": {
+        "called": true,
+        "verdict": "unknown",
+        "rationale": "abstain: no semantic verdict claimed ($0, no live call)",
+        "judge": "fake"
+      },
+      "content_verdict": "reflow-only line-wrap/segmentation pair: A1 joins O lines into one line (blockquote-continuation joins); every word survives, no word added, no meaning changed; judge abstained",
+      "repairable": false
+    },
+    {
+      "id": "R-C",
+      "kind": "reflow_pair",
+      "quote_a1": "> **Not yet run.** The model-backed arms fill `results/ch01.jsonl`, one row per case per arm, tagged with `schema_variant`. The command is:",
+      "a1_line": 456,
+      "quote_o": [
+        "> **Not yet run.** The model-backed arms fill `results/ch01.jsonl`, one row per case per",
+        "> arm, tagged with `schema_variant`. The command is:"
+      ],
+      "o_lines": [
+        432,
+        433
+      ],
+      "disposition": "unresolved_attribution",
+      "reason": "judge verdict unknown: no attribution without judgement",
+      "evidence": {
+        "in_original": false,
+        "in_candidate": true
+      },
+      "judge": {
+        "called": true,
+        "verdict": "unknown",
+        "rationale": "abstain: no semantic verdict claimed ($0, no live call)",
+        "judge": "fake"
+      },
+      "content_verdict": "reflow-only line-wrap/segmentation pair: A1 joins O lines into one line (blockquote-continuation joins); every word survives, no word added, no meaning changed; judge abstained",
+      "repairable": false
+    },
+    {
+      "id": "F-DROP-1",
+      "kind": "dropped_sentence",
+      "quote_o": [
+        "The policy, written out as a human would write it in a runbook:"
+      ],
+      "o_lines": [
+        66
+      ],
+      "quote_a1": [],
+      "a1_line": null,
+      "disposition": "unresolved_attribution",
+      "reason": "quoted defect present in the original but absent from the candidate with no reconcile allow-list entry: dropped without authorisation",
+      "evidence": {
+        "in_original": true,
+        "in_candidate": false
+      },
+      "judge": {
+        "called": false
+      },
+      "content_verdict": "DROPPED FRAMING SENTENCE: 13 words present in O (line 66), absent in A1; the policy blockquote itself is intact, so the loss is a framing line, not a claim",
+      "repairable": false
+    }
+  ],
+  "repair_plan": [],
+  "spend_usd": 0.0,
+  "dispatches": 0,
+  "word_level_cross_check": {
+    "words_added": 0,
+    "words_dropped": 13
+  },
+  "close_out": "Zero repairable defects: no finding carries disposition 'introduced' or 'strengthened' (the only Sec. 2.4 repair classes), so C1 completes with ZERO paid repairs. One genuine content defect is recorded and preserved as a disagreement, not a pass: A1 drops O's framing sentence 'The policy, written out as a human would write it in a runbook:' (O line 66; 13 words; policy blockquote intact), classified 'unresolved_attribution' (dropped without reconcile authorisation) — outside the Sec. 2.4 repair scope (C repairs only TRANSFORMATION_INTRODUCED / TRANSFORMATION_STRENGTHENED  / TRANSFORMATION_REDUNDANT_SYNTHESIS), hence no bounded repair is authorised here. The three R-pair findings are reflow-only (judge abstained, recorded). Semantic-loss owner screen reports 14 findings (recorded as-is in c1-verification-report.json); all are line-segmentation artefacts of the reflow, cross-checked by the direct number-token multiset (240 = 240, zero per-token delta) and the word multiset (zero added words). Claim-extraction screen is parity-clean at normalised level. Paired real-judge runs are coordinator-executed later work, not this batch."
+}

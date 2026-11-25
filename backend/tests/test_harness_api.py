@@ -219,3 +219,110 @@ def test_remote_worker_url_is_rejected_before_network_access(monkeypatch):
     client.app.state.settings.worker_base_url = "https://worker.example.com"
     response = client.get("/api/harness/catalogue")
     assert response.status_code == 503
+
+
+# -- MC-HARNESS-FIX-01: empty vs unavailable vs unknown ------------------------
+
+from fastapi import HTTPException as _HTTPException
+
+
+def _ledger_client(monkeypatch, get_impl, project_ids=("jev", "ai")):
+    client, _ = make_client(monkeypatch)
+    monkeypatch.setattr(harness, "_get", get_impl)
+
+    class Query:
+        def __init__(self, rows): self.rows = rows
+        def filter(self, *_): return self
+        def all(self): return self.rows
+
+    projects = [SimpleNamespace(id=pid) for pid in project_ids]
+
+    class Session:
+        def __enter__(self): return self
+        def __exit__(self, *_): return None
+        def query(self, model): return Query(projects if model is orm.Project else [])
+
+    client.app.state.database = SimpleNamespace(session=lambda: Session())
+    return client
+
+
+async def _raise_404(_client, _base, _path):
+    raise _HTTPException(status_code=404, detail="Worker execution or retained artifact was not found")
+
+
+async def _raise_503(_client, _base, _path):
+    raise _HTTPException(status_code=503, detail="Worker is unavailable (ConnectError)")
+
+
+async def _empty_ledger(_client, _base, path):
+    assert path == "/v1/executions"
+    return {"executions": [], "more_in_read_window": False}
+
+
+def test_ledger_without_read_window_is_empty_not_error(monkeypatch):
+    client = _ledger_client(monkeypatch, _raise_404)
+    response = client.get("/api/harness/executions?project_key=jev&limit=100")
+    assert response.status_code == 200, response.text
+    payload = response.json()
+    assert payload["executions"] == []
+    assert payload["coverage"]["ledger"]["available"] is False
+    assert payload["coverage"]["unavailable_is_not_zero"] is True
+    assert payload["worker"]["reachable"] is True
+
+
+def test_valid_project_with_zero_executions_is_successful_empty_collection(monkeypatch):
+    client = _ledger_client(monkeypatch, _empty_ledger)
+    response = client.get("/api/harness/executions?project_key=jev&limit=100")
+    assert response.status_code == 200, response.text
+    payload = response.json()
+    assert payload["executions"] == []
+    assert payload["coverage"]["ledger"]["available"] is True
+
+
+def test_unknown_project_is_not_an_empty_history(monkeypatch):
+    client = _ledger_client(monkeypatch, _empty_ledger)
+    response = client.get("/api/harness/executions?project_key=nope&limit=100")
+    assert response.status_code == 404
+    assert "Unknown project" in response.text
+
+
+def test_worker_unavailable_is_not_converted_to_empty_history(monkeypatch):
+    client = _ledger_client(monkeypatch, _raise_503)
+    response = client.get("/api/harness/executions?project_key=jev&limit=100")
+    assert response.status_code == 503
+
+
+def test_project_filter_uses_canonical_identity(monkeypatch):
+    envelope = SimpleNamespace(id="we:fixture", episode_id="episode-1", objective_ref="objective-1")
+    episode = SimpleNamespace(id="episode-1", project_key="Projects/ai")
+
+    class Query:
+        def __init__(self, rows): self.rows = rows
+        def filter(self, *_): return self
+        def all(self): return self.rows
+
+    class Session:
+        def __enter__(self): return self
+        def __exit__(self, *_): return None
+        def query(self, model):
+            if model is orm.Project:
+                return Query([SimpleNamespace(id="ai")])
+            if model is orm.WoWorkEnvelope:
+                return Query([envelope])
+            return Query([episode])
+
+    async def get_with_row(_client, _base, path):
+        assert path == "/v1/executions"
+        return {"executions": [{"operation_id": "we:fixture", "episode_id": "episode-1",
+                                "task_id": "objective-1", "request_id": "wrq_abcdef1234567890"}],
+                "more_in_read_window": False}
+
+    client, _ = make_client(monkeypatch)
+    monkeypatch.setattr(harness, "_get", get_with_row)
+    client.app.state.database = SimpleNamespace(session=lambda: Session())
+    response = client.get("/api/harness/executions?project_key=ai&limit=100")
+    assert response.status_code == 200, response.text
+    assert len(response.json()["executions"]) == 1
+    other = client.get("/api/harness/executions?project_key=writer&limit=100")
+    assert other.status_code == 404
+    assert "Unknown project" in other.text

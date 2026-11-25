@@ -148,3 +148,44 @@ pre-W1 actions closed, no schema writes performed during W0.
   Self-eval re-run (scratch, 3 obligations): incomplete — verified
   episode record exists, cross-family reported-not-verified,
   multi-project not demonstrated. No unconditional acceptance claimed.
+- 2026-11-25: Operational activation executed (operator started backend
+  13:09 UTC; no commission restart). W9 gates verified live (unknown-scope
+  403, fail-closed defaults, 0 model calls, no auto flags). w4-v2 proven
+  NOT yet running (promoted 08C evaluates partial/reported on live;
+  restart to 2a7d22c pending, then re-run). 08C promoted on operational PG
+  with genuine refs (new episode + 3 reqs + 6 links; AI-CORE-08C untouched;
+  run 586d94a3, 0 model calls). Mission enabled (actor operator,
+  manual_evaluation/30d): 76 sessions, 34 episodes, 482 associations, 454
+  triaged (0 queued for model), 10 task episodes extracted (0 requirements
+  + 1 inferred objective) and evaluated (all unknown — no requirements).
+  Findings 296 (+3 08C gaps), groups 27, spend $0. Worker/workbench HELD
+  (requirement recovery is the bottleneck, not reconstruction). DeepSeek
+  free retry 429 again. Checklist 6.5/8; commit/push skipped
+  (unauthorized).
+- 2026-11-25: Requirement-recovery qualification. Root cause proven:
+  deterministic extraction abstains from requirements by design
+  (extract.py:166-169; live packets requirements:[] — truncation not
+  causal; programme docs never searched; semantic gated off,
+  model_not_enabled probe, 0 calls). Ollama loopback UP but backend
+  governed route disabled — Ollama not called directly; human-reviewed
+  path used. Recovered 9/9 via API (W2/W5/W8 gates + 3 programme §31
+  criteria, verbatim excerpts, digests, rev a1410fa, reviewer operator,
+  UNCONFIRMED) + 9 file evidence links → 4 episodes partial,
+  9 verification_gap minors. Coverage: partial 6, reqs 41, findings 305,
+  $0. Worker/workbench enabled (manual_evaluation, actor operator) and
+  reconstructed (2 + 3 eps, git-side only); evaluation deferred to the
+  same recovery pattern. Checklist 8/8 short of confirmations, restart
+  pickup of w4-v2, assurance ruling, and authorized commit/push.
+- 2026-11-25: MC-HARNESS-FIX-01 investigated + fixed (uncommitted).
+  Root cause proven live: Worker :7317 UP but `/v1/executions` 404s
+  (no local ledger configured on that Worker process); adapter mapped it
+  to "execution or artifact not found" for every project (systemic, all 6
+  probed). Backend: ledger-404 → 200 empty + unavailable flag (never
+  zero), 503s propagate, unknown project → 404, canonical basename
+  identity (`Projects/ai` = `ai`). Frontend: unavailable/empty/rows
+  states, status-mapped errors, jargon into diagnostics expander; dist
+  rebuilt and live. Tests: 15/15 backend (5 new), 9/9 frontend (3 new),
+  tsc + build clean; full suite 185/187 (2 unrelated flakes pass solo).
+  Rendered jev panel + global history verified in Chromium (console:
+  only expected ledger-404s, no JS errors). Backend half awaits the same
+  operator restart as w4-v2; no model calls, no launches.

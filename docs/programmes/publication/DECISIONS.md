@@ -1136,6 +1136,58 @@ recorded by coordinator, pending Codex delta verdict)
   issue stays a source-level research obligation in the author-side
   queue — never rewritten to satisfy a misattributed review objection;
   all preceding PUB-06 author-side obligations are preserved.
+- **D-PUB-87 — PUB-08 machine evaluation accepted 2026-11-25 (within
+  demonstrated scope).** Instrument REPAIRED_AND_QUALIFIED: 153 judge
+  calls (134 judges + 19 rerun), 86/86 scorer calibration, 6/6
+  response-recovery checks, 8 rerun probes correct after v0.2 repair,
+  18 still-malformed responses stand unassessed (truncated previews,
+  unrecoverable), 1 genuine-incorrect T2:F5 finalized as A₁'s known
+  loss, controls adjudicated without re-dispatch (NC7a class-boundary
+  noise, deterministic mapping stands). Dominance: TRADE-OFF — no
+  editorial preference established; A₁ ($0.023, complete chapter, 2
+  known losses) vs B₁ ($0.048, 2 verified regions, 3 recorded
+  failures, gates held). Replicate-2 explicitly NOT authorized (halts
+  fired; re-authorize only after quote-discipline fix, estimator
+  recalibration, full 5/5 B). Spend $0.0703 / $1.00 cap; every call
+  metered_zero. Worker stopped. Machine evaluation is an evaluation
+  milestone, not publication readiness; human author review of the
+  blinded W/X/Y/Z package (pub08/human-review/, mapping held
+  separately) is the remaining gate.
+- **D-PUB-88 — Provisional architecture: generate globally, verify
+  locally (direction, not decision).** The experiment supports
+  investigating direct whole-chapter editorial generation combined
+  with PUBLICATION verification as the preferred production strategy:
+  evidence reconciliation → knowledge/pedagogical preparation →
+  coherent whole-chapter generation → forward+backward semantic
+  verification → defect attribution (D-PUB-84) → targeted surgical
+  correction → whole-chapter editorial evaluation → governed approval
+  (Workbench) → publish (PUB-10). The plan becomes guidance for
+  reconstruction rather than a rigid sequence of individual editing
+  operations. Provisional only — not proof of superior quality; existing
+  operation-based transformation retained for targeted editing; no new
+  generation architecture implemented during PUB-08 close-out.
+- **D-PUB-89 — D-PUB-84 defect attribution as cross-system reuse
+  candidate (proposed, not implemented).** Underlying principle: before
+  rejecting an AI's work because a reviewer found a problem,
+  establish whether the AI introduced that problem. Candidate reuse:
+  Writer (inherited defects vs editorial regressions), Praxis
+  (semantic-loss attribution), AITEST (pre-existing vs new defects),
+  CoCoder (findings vs code changes), Workbench (objection validation
+  against candidate changes), Mission Control (new regressions vs
+  historical problems), Improve (living-book update attribution). No
+  separate integration programme initiated; PUBLICATION finishes first.
+- **D-PUB-90 — Quote-discipline defect as reproducible owning-team
+  issue (D-PUB-90).** Four identical correction failures across two
+  passages (Path 1: reworded byte-true honesty spans/no-change block;
+  Paths 2&3: fabricated non-verbatim quotes) across 4/4 attempts
+  (initial + failure-driven correction each). Systematic failure mode:
+  corrections invent new non-verbatim quotes instead of repairing the
+  flagged ones. Correction policy should distinguish retryable
+  execution failures, repairable format failures, semantic
+  misunderstandings, repeated deterministic contract violations, and
+  failures requiring a different editing strategy. Preserve the
+  preservation gate; do not loosen it to obtain passing
+  transformations.
 - **D-PUB-85 — PUB-07 ACCEPTED 2026-11-25 (8/12); rerun is the
   demonstration candidate.** All three rerun-bound deltas closed:
   Codex ACCEPT (4/4 BLOCKED items, digests recomputed MATCH);

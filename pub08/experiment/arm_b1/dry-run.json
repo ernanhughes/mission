@@ -1,0 +1,353 @@
+{
+ "runner": "pub08/experiment/arm_b1/run_arm_b1_dryrun.py",
+ "live_model_dispatches": 0,
+ "spend_usd": 0.0,
+ "freeze_reconfirmation": {
+  "checks": {
+   "O_sha_match_freeze": true,
+   "O_bytes_match_freeze": true,
+   "H_sha_match_freeze": true,
+   "module_publication_automation_match_freeze": true,
+   "module_publication_transformation_match_freeze": true,
+   "module_publication_pedagogy_match_freeze": true,
+   "module_publication_cruft_match_freeze": true,
+   "module_publication_complexity_match_freeze": true,
+   "module_evidence_reconciliation_match_freeze": true,
+   "module_transform_cli_match_freeze": true,
+   "plan_sha_match_design_cb34c18e": true,
+   "packages_sha_match_design_ba7f869c": true,
+   "adjudications_sha_match_design_188d843f": true,
+   "catalogue_sha_match_freeze": true
+  },
+  "drift": []
+ },
+ "O": {
+  "bytes": 31903,
+  "lines": 562,
+  "raw_sha256": "144ab665b0868d05b0794e2d61706f57a7de6ee16dfe2066102368fd2e748417"
+ },
+ "reconcile": {
+  "inventory_revision": "jev@bbbb73b55d7668a8",
+  "repo_revision": "c7aaad70a0bb76f58d6b5bae78e68431ccff1825",
+  "n_claims": 35,
+  "live_states_match_frozen_file": true,
+  "live_states_match_plan_inputs": true,
+  "plan_inventory_rev": "jev@live"
+ },
+ "plan_revalidate": {
+  "plan": "pub06/ch01/plan-ch1.json (frozen; reused, not re-planned)",
+  "reuse_decision": "reused frozen plan-ch1.json: live O canonical fingerprint == plan source_fingerprint AND live reconcile states == plan-bound states (no flips)",
+  "live_O_canonical_fp": "435974701050832da4d39925e753abdafacb9bc990668d0cb182a56e3b73dadb",
+  "plan_source_fingerprint": "435974701050832da4d39925e753abdafacb9bc990668d0cb182a56e3b73dadb",
+  "fingerprint_match": true,
+  "executable": true,
+  "violations_match_frozen": true,
+  "op_verdicts_match_frozen": true,
+  "binding_digest_match_frozen": true,
+  "binding_digest": "ae883922b5c63ece1abec39e385044b019e1573f9430348691a7c8b8ec49c052"
+ },
+ "package": {
+  "n_packages": 7,
+  "expected": 7,
+  "packages_identical_to_frozen": true,
+  "packages": [
+   {
+    "package_id": "chapter:reconstruction",
+    "identical": true,
+    "n_spans": 0,
+    "n_ops": 0,
+    "blocked": false
+   },
+   {
+    "package_id": "passage:Four words we keep apart",
+    "identical": true,
+    "n_spans": 1,
+    "n_ops": 1,
+    "blocked": false
+   },
+   {
+    "package_id": "passage:Path 1: the predicate",
+    "identical": true,
+    "n_spans": 3,
+    "n_ops": 3,
+    "blocked": false
+   },
+   {
+    "package_id": "passage:Paths 2 and 3: generate, then parse",
+    "identical": true,
+    "n_spans": 10,
+    "n_ops": 10,
+    "blocked": false
+   },
+   {
+    "package_id": "passage:What we measured, and what we did not",
+    "identical": true,
+    "n_spans": 2,
+    "n_ops": 2,
+    "blocked": false
+   },
+   {
+    "package_id": "passage:Where this leaves the argument",
+    "identical": true,
+    "n_spans": 1,
+    "n_ops": 1,
+    "blocked": false
+   },
+   {
+    "package_id": "surgical:finalization",
+    "identical": true,
+    "n_spans": 0,
+    "n_ops": 0,
+    "blocked": false
+   }
+  ]
+ },
+ "automate_dry_run": {
+  "passes": 2,
+  "zero_dispatches_note": "--dry-run returns before build_runtime()/ run_typed_task wiring (transform.py dry-run block); no Worker POST, no provider call in either pass",
+  "prompt_sha_drift_pass1_vs_pass2": {},
+  "packages": {
+   "chapter:reconstruction": {
+    "exit_code": 1,
+    "cli_ok": false,
+    "errors": [
+     {
+      "code": "invalid_argument",
+      "message": "package spans are not a single region: refusing",
+      "severity": "error",
+      "path": null,
+      "payload": {}
+     }
+    ],
+    "status": "refused",
+    "refusal": "package spans are not a single region: refusing",
+    "obligations_sha256": "f2974f0eb8864258f9f3340b7348c3ad9078b4ea9d82b1c32799d02cf3b605dc",
+    "n_obligations": 48,
+    "obligations_note": "compile-level (no dry-run payload: production refuses before preparing it)"
+   },
+   "passage:Four words we keep apart": {
+    "exit_code": 0,
+    "cli_ok": true,
+    "errors": [],
+    "status": "dry_run_ok",
+    "passage_sha256": "7698b7df36c32314e18995a6c4c22c608976f438daf9dd0d36b0b4eebed89a6c",
+    "prompt_sha256": "befcc135c260a3c3026870b7d74f626a07fc81b89b054ed47a25a10260789eb6",
+    "review_prompt_sha256": "9657c80350918d3251ec2bbb7cadc34082e6f72ceec397b8a7f8fe82949debbe",
+    "obligations_sha256": "a3bf349f2f2275e436da09f8eb82bf06eede9e7c120ea250e577dadf1f133973",
+    "n_obligations": 27
+   },
+   "passage:Path 1: the predicate": {
+    "exit_code": 1,
+    "cli_ok": false,
+    "errors": [
+     {
+      "code": "invalid_argument",
+      "message": "package spans are not a single region: refusing",
+      "severity": "error",
+      "path": null,
+      "payload": {}
+     }
+    ],
+    "status": "refused",
+    "refusal": "package spans are not a single region: refusing",
+    "obligations_sha256": "1e724b83781de658e602b6e256bc63c0c78d05394461eb30cfccedc318752d5b",
+    "n_obligations": 29,
+    "obligations_note": "compile-level (no dry-run payload: production refuses before preparing it)"
+   },
+   "passage:Paths 2 and 3: generate, then parse": {
+    "exit_code": 1,
+    "cli_ok": false,
+    "errors": [
+     {
+      "code": "invalid_argument",
+      "message": "package spans are not a single region: refusing",
+      "severity": "error",
+      "path": null,
+      "payload": {}
+     }
+    ],
+    "status": "refused",
+    "refusal": "package spans are not a single region: refusing",
+    "obligations_sha256": "a3bf349f2f2275e436da09f8eb82bf06eede9e7c120ea250e577dadf1f133973",
+    "n_obligations": 27,
+    "obligations_note": "compile-level (no dry-run payload: production refuses before preparing it)"
+   },
+   "passage:What we measured, and what we did not": {
+    "exit_code": 1,
+    "cli_ok": false,
+    "errors": [
+     {
+      "code": "invalid_argument",
+      "message": "package spans are not a single region: refusing",
+      "severity": "error",
+      "path": null,
+      "payload": {}
+     }
+    ],
+    "status": "refused",
+    "refusal": "package spans are not a single region: refusing",
+    "obligations_sha256": "9dfb6263fb433faf7e9f586d0d92d64d3fad83b1082470a6f320d8ddefe68941",
+    "n_obligations": 28,
+    "obligations_note": "compile-level (no dry-run payload: production refuses before preparing it)"
+   },
+   "passage:Where this leaves the argument": {
+    "exit_code": 0,
+    "cli_ok": true,
+    "errors": [],
+    "status": "dry_run_ok",
+    "passage_sha256": "46e08ffd266ae419f918ecd8a66d6a43838edd0727fea7bee08150654779e6a2",
+    "prompt_sha256": "5fd12ec07d7dd69f97d4a29027a928d9b9029ac357292560cd86667b2ad3aabc",
+    "review_prompt_sha256": "da0a7f354ebf88f1ee3aa083e0298de96974e4f5fa7d9cdfa9fcdc95121a1a14",
+    "obligations_sha256": "a3bf349f2f2275e436da09f8eb82bf06eede9e7c120ea250e577dadf1f133973",
+    "n_obligations": 27
+   },
+   "surgical:finalization": {
+    "exit_code": 1,
+    "cli_ok": false,
+    "errors": [
+     {
+      "code": "invalid_argument",
+      "message": "package spans are not a single region: refusing",
+      "severity": "error",
+      "path": null,
+      "payload": {}
+     }
+    ],
+    "status": "refused",
+    "refusal": "package spans are not a single region: refusing",
+    "obligations_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "n_obligations": 0,
+    "obligations_note": "compile-level (no dry-run payload: production refuses before preparing it)"
+   }
+  }
+ },
+ "hull": {
+  "gate": "dry-run shows exactly one span per package",
+  "packages": [
+   {
+    "package_id": "chapter:reconstruction",
+    "status": "skipped_no_ops",
+    "hull_span": null
+   },
+   {
+    "package_id": "passage:Four words we keep apart",
+    "status": "single_span",
+    "spans_in": 1,
+    "hull_span": {
+     "start_line": 392,
+     "end_line": 396
+    },
+    "expected_hull_span": {
+     "start_line": 392,
+     "end_line": 396
+    },
+    "match": true,
+    "op_refs": [
+     "op:43597470:005"
+    ]
+   },
+   {
+    "package_id": "passage:Path 1: the predicate",
+    "status": "single_span",
+    "spans_in": 3,
+    "hull_span": {
+     "start_line": 101,
+     "end_line": 122
+    },
+    "expected_hull_span": {
+     "start_line": 101,
+     "end_line": 122
+    },
+    "match": true,
+    "op_refs": [
+     "op:43597470:006",
+     "op:43597470:008",
+     "op:43597470:009"
+    ]
+   },
+   {
+    "package_id": "passage:Paths 2 and 3: generate, then parse",
+    "status": "single_span",
+    "spans_in": 10,
+    "hull_span": {
+     "start_line": 237,
+     "end_line": 317
+    },
+    "expected_hull_span": {
+     "start_line": 237,
+     "end_line": 317
+    },
+    "match": true,
+    "op_refs": [
+     "op:43597470:013",
+     "op:43597470:014",
+     "op:43597470:015",
+     "op:43597470:016",
+     "op:43597470:018",
+     "op:43597470:021",
+     "op:43597470:022",
+     "op:43597470:023",
+     "op:43597470:024",
+     "op:43597470:025"
+    ]
+   },
+   {
+    "package_id": "passage:What we measured, and what we did not",
+    "status": "single_span",
+    "spans_in": 2,
+    "hull_span": {
+     "start_line": 405,
+     "end_line": 420
+    },
+    "expected_hull_span": {
+     "start_line": 405,
+     "end_line": 420
+    },
+    "match": true,
+    "op_refs": [
+     "op:43597470:029",
+     "op:43597470:030"
+    ]
+   },
+   {
+    "package_id": "passage:Where this leaves the argument",
+    "status": "single_span",
+    "spans_in": 1,
+    "hull_span": {
+     "start_line": 509,
+     "end_line": 518
+    },
+    "expected_hull_span": {
+     "start_line": 509,
+     "end_line": 518
+    },
+    "match": true,
+    "op_refs": [
+     "op:43597470:040"
+    ]
+   },
+   {
+    "package_id": "surgical:finalization",
+    "status": "skipped_no_ops",
+    "hull_span": null
+   }
+  ],
+  "all_hulls_match_expected": true,
+  "preview_single_span_rows": 5
+ },
+ "noop_merge_gate": {
+  "merged_sha256": "435974701050832da4d39925e753abdafacb9bc990668d0cb182a56e3b73dadb",
+  "O_blob_sha256": "435974701050832da4d39925e753abdafacb9bc990668d0cb182a56e3b73dadb",
+  "O_worktree_raw_sha256": "144ab665b0868d05b0794e2d61706f57a7de6ee16dfe2066102368fd2e748417",
+  "O_worktree_newlines": {
+   "crlf": 562,
+   "lone_lf": 0
+  },
+  "byte_identical_to_authoritative_blob": true,
+  "worktree_diff_is_crlf_normalisation_only": true,
+  "merged_lines_match_O_lines": true,
+  "n_lines": 562
+ },
+ "verdict": "GO_DRY_RUN",
+ "failures": []
+}

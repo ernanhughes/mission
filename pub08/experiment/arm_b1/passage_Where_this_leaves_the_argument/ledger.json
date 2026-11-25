@@ -1,0 +1,115 @@
+{
+ "ledger_schema": "writer.automation.ledger.v1",
+ "detector": "publication-automation-v0.1",
+ "dispatch_count": 4,
+ "total_cost_usd": 0.0034982999999999998,
+ "total_tokens": 19426,
+ "by_role": {
+  "editorial": {
+   "dispatches": 2,
+   "cost_usd": 0.0034982999999999998,
+   "tokens": 9531
+  },
+  "verification": {
+   "dispatches": 2,
+   "cost_usd": 0.0,
+   "tokens": 9895
+  }
+ },
+ "by_model": {
+  "opencode-go/deepseek-v4.1-flash": {
+   "dispatches": 2,
+   "cost_usd": 0.0034982999999999998,
+   "tokens": 9531
+  },
+  "opencode-go/claude-haiku-5-5": {
+   "dispatches": 2,
+   "cost_usd": 0.0,
+   "tokens": 9895
+  }
+ },
+ "entries": [
+  {
+   "role": "editorial",
+   "task_kind": "publication_editorial",
+   "package_id": "passage:Where this leaves the argument",
+   "attempt": 1,
+   "writer_execution_id": "model-exec-51323c5415e8",
+   "provider": "pi",
+   "model": "opencode-go/deepseek-v4.1-flash",
+   "route": "default_deepseek_go",
+   "economic_tier": "subscription",
+   "input_tokens": 2403,
+   "output_tokens": 2584,
+   "total_tokens": 4987,
+   "cost_usd": 0.00191085,
+   "latency_ms": 20926,
+   "prompt_sha256": "5fd12ec07d7dd69f97d4a29027a928d9b9029ac357292560cd86667b2ad3aabc",
+   "schema_sha256": "a6a3308a87446adea13b699d5b4acf1f9c6207bd3f193612ff8770d1ba2c65ae",
+   "status": "succeeded",
+   "error_kind": null,
+   "replacement_sha256": "4905945311bab3956f3720216b18c8e696610cc8aec38d68bbee44e2046f158b"
+  },
+  {
+   "role": "verification",
+   "task_kind": "publication_review",
+   "package_id": "passage:Where this leaves the argument",
+   "attempt": 1,
+   "writer_execution_id": "model-exec-007d613af004",
+   "provider": "pi",
+   "model": "opencode-go/claude-haiku-5-5",
+   "route": "default_haiku_go",
+   "economic_tier": "subscription",
+   "input_tokens": 4,
+   "output_tokens": 2693,
+   "total_tokens": 5161,
+   "cost_usd": 0,
+   "latency_ms": 15705,
+   "prompt_sha256": "30e1c361290492698f328ef6c6b847c20075dd5f8471dc837cc73a6f6548ded6",
+   "schema_sha256": "7eacde2741c8dae909ffc842ff3513a7e30515c42be7ee4de16c0e209b061d03",
+   "status": "succeeded",
+   "error_kind": null
+  },
+  {
+   "role": "editorial",
+   "task_kind": "publication_editorial",
+   "package_id": "passage:Where this leaves the argument",
+   "attempt": 2,
+   "writer_execution_id": "model-exec-6f0b6f734787",
+   "provider": "pi",
+   "model": "opencode-go/deepseek-v4.1-flash",
+   "route": "default_deepseek_go",
+   "economic_tier": "subscription",
+   "input_tokens": 2531,
+   "output_tokens": 2013,
+   "total_tokens": 4544,
+   "cost_usd": 0.0015874499999999998,
+   "latency_ms": 16797,
+   "prompt_sha256": "417823575765e42b01060274313ed8fb7319af064ad1abcf1da277a09a79e8fd",
+   "schema_sha256": "a6a3308a87446adea13b699d5b4acf1f9c6207bd3f193612ff8770d1ba2c65ae",
+   "status": "succeeded",
+   "error_kind": null,
+   "replacement_sha256": "ad1d86864edbd037e515e0ed425be0b6b8068efa013c13ce3b2512422e8ca0e5"
+  },
+  {
+   "role": "verification",
+   "task_kind": "publication_review",
+   "package_id": "passage:Where this leaves the argument",
+   "attempt": 2,
+   "writer_execution_id": "model-exec-46558b377510",
+   "provider": "pi",
+   "model": "opencode-go/claude-haiku-5-5",
+   "route": "default_haiku_go",
+   "economic_tier": "subscription",
+   "input_tokens": 4,
+   "output_tokens": 2269,
+   "total_tokens": 4734,
+   "cost_usd": 0,
+   "latency_ms": 12212,
+   "prompt_sha256": "2166e4afc2c3a93da420768d9cb28bb106f96bdd5bcb19e2a5501deb66892cca",
+   "schema_sha256": "7eacde2741c8dae909ffc842ff3513a7e30515c42be7ee4de16c0e209b061d03",
+   "status": "succeeded",
+   "error_kind": null
+  }
+ ]
+}

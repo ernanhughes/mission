@@ -1,0 +1,65 @@
+{
+ "ledger_schema": "writer.automation.ledger.v1",
+ "detector": "publication-automation-v0.1",
+ "dispatch_count": 2,
+ "total_cost_usd": 0.01947015,
+ "total_tokens": 38004,
+ "by_role": {
+  "editorial": {
+   "dispatches": 2,
+   "cost_usd": 0.01947015,
+   "tokens": 38004
+  }
+ },
+ "by_model": {
+  "opencode-go/deepseek-v4.1-flash": {
+   "dispatches": 2,
+   "cost_usd": 0.01947015,
+   "tokens": 38004
+  }
+ },
+ "entries": [
+  {
+   "role": "editorial",
+   "task_kind": "publication_editorial",
+   "package_id": "passage:Paths 2 and 3: generate, then parse",
+   "attempt": 1,
+   "writer_execution_id": "model-exec-6c13dc989d32",
+   "provider": "pi",
+   "model": "opencode-go/deepseek-v4.1-flash",
+   "route": "default_deepseek_go",
+   "economic_tier": "subscription",
+   "input_tokens": 3612,
+   "output_tokens": 16440,
+   "total_tokens": 20052,
+   "cost_usd": 0.0104058,
+   "latency_ms": 136703,
+   "prompt_sha256": "d48887230b32c4d57c608b2f41958f8a5f6c515cbb7f87ed265c3f6b461cbe42",
+   "schema_sha256": "a6a3308a87446adea13b699d5b4acf1f9c6207bd3f193612ff8770d1ba2c65ae",
+   "status": "succeeded",
+   "error_kind": null,
+   "replacement_sha256": "884ab8a1ba9a3ce49233d6ba61792677ab05b18e21da9bdaab3860f9b0d94f8e"
+  },
+  {
+   "role": "editorial",
+   "task_kind": "publication_editorial",
+   "package_id": "passage:Paths 2 and 3: generate, then parse",
+   "attempt": 2,
+   "writer_execution_id": "model-exec-fd91a95c24a7",
+   "provider": "pi",
+   "model": "opencode-go/deepseek-v4.1-flash",
+   "route": "default_deepseek_go",
+   "economic_tier": "subscription",
+   "input_tokens": 3793,
+   "output_tokens": 14159,
+   "total_tokens": 17952,
+   "cost_usd": 0.00906435,
+   "latency_ms": 111947,
+   "prompt_sha256": "417538dbce90e313fbd44be75036f9e8f837854aef48d91a77273724ea0598c5",
+   "schema_sha256": "a6a3308a87446adea13b699d5b4acf1f9c6207bd3f193612ff8770d1ba2c65ae",
+   "status": "succeeded",
+   "error_kind": null,
+   "replacement_sha256": "dc555ee61eb381f5e7d42b1d0ba4de2ff01099645ae084ebefdffcfa2d032eb7"
+  }
+ ]
+}

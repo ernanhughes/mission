@@ -25,6 +25,7 @@ import { WriterPage } from "../pages/WriterPage";
 import { PublishingWorkbenchPage } from "../pages/PublishingWorkbenchPage";
 import { BookPublishingPage } from "../pages/BookPublishingPage";
 import { HarnessPage } from "../features/harness/HarnessPage";
+import { ImprovementPage } from "../features/improvement/ImprovementPage";
 
 export function App() {
   return (
@@ -43,6 +44,7 @@ export function App() {
         <Route path="integrations" element={<IntegrationsPage />} />
         <Route path="inspect" element={<InspectPage />} />
         <Route path="harness" element={<HarnessPage />} />
+        <Route path="improvement" element={<ImprovementPage />} />
         <Route path="projects" element={<ProjectsPage />} />
         <Route path="projects/:projectId" element={<ProjectPage />} />
         <Route path="projects/:projectId/read" element={<LivingBookPage />} />

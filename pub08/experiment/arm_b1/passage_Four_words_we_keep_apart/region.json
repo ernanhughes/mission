@@ -1,0 +1,23 @@
+{
+ "package_id": "passage:Four words we keep apart",
+ "span": {
+  "start_line": 392,
+  "end_line": 396
+ },
+ "replacement_lines": [
+  "Generation is how you currently obtain a decision.",
+  "",
+  "Obtaining a decision that way does not make generation and decision the same act.",
+  "",
+  "The measurements in this chapter are the evidence that conflating them is expensive.",
+  "",
+  "That is the whole claim so far.",
+  "",
+  "Whether a decision deserves to be a programming construct is [Chapter 16](/books/jev/16-chapter/).",
+  "",
+  "Whether a decision model is a distinct category of model is [Chapter 2](/books/jev/02-chapter/).",
+  "",
+  "That is the whole claim so far: generation and decision are not the same act; the programming-construct question is [Chapter 16](/books/jev/16-chapter/), and the model-category question is [Chapter 2](/books/jev/02-chapter/)."
+ ],
+ "replacement_sha256": "015a1f71d6341da2d81db346925235c11ee4fab6fc44630e23b6432dce6fc7f5"
+}

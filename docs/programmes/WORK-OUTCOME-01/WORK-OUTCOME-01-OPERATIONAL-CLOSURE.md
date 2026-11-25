@@ -123,6 +123,78 @@ corrective execution, publication work preserved.
   down so live qualification impossible here; all preconditions + payloads
   ready, no silent enablement performed).
 
+## 4b. Operational activation results (2026-11-25, backend operator-started)
+
+Operator started Mission Control (PID 37200, 13:09 UTC — BEFORE the w4-v2
+commit 2a7d22c at 13:32 UTC). Health `ok`, `database ok`, `schema_version
+54`, `model_enabled false`. All API probes below by the local AI; no
+operator-process restart performed by this commission.
+
+- Gate verification (W9 fixes confirmed RUNNING): `GET
+  policies/gate/evaluate_manual?project_key=unknown-xyz-probe` →
+  `disabled/allowed:false`; `GET ...?project_key=mission` (pre-enable) →
+  `disabled/allowed:false`; `POST /api/work-observation/runs
+  {"project_contains":"unknown-xyz-probe"}` → **403** (F3 fix live);
+  cost endpoint `model_calls 0, model_cost_usd 0`; settings contain no
+  `%auto_enabled%` keys (scheduler stays OFF); single historical
+  `wo_observation_runs` row (no timer activity).
+- w4-v2 status: **NOT running** (proven operationally, §2): the promoted
+  08C episode evaluates `partial` / 3× `satisfied_reported` on live —
+  byte-identical inputs verify under w4-v2 on scratch. Operator restart
+  (`mission.cmd`, no `--rebuild`) + re-run `POST
+  /api/work-evaluation/runs {"episode_id":"ep:task:W8-PILOT-VERIFY-08C",
+  "semantic":false}` promotes the live verdict to `complete`.
+- 08C promotion (genuine refs only, idempotent, historical rows untouched):
+  new `ep:task:W8-PILOT-VERIFY-08C` (`Projects/ai`) + objective `w8obj1` +
+  3× `relational`/`explicit_user`/mandatory requirements + association
+  `git-78e0d72b6ea4b329629520f8:88b7c04f38e…` + 6 bound evidence links
+  (3× `git_commit` + 3× `remote_ref`, digest `repro:6cc6e4d7…`).
+  Live eval run `586d94a346de4b10` (513 ms, 0 model calls): `completed`,
+  `partial`, 3 requirements assessed, 3 `verification_gap` findings raised
+  (expected under w4-v1). `ep:task:AI-CORE-08C` and all prior assessments
+  untouched. Rubric-review vs fact-reproduction separation kept: no reviewer
+  assertion was used as evidence; only git plumbing outputs + bindings.
+- Mission activation (actor `operator`, per Q&A): policy set
+  `mission → manual_evaluation` (30-day lookback). Bounded pass, all
+  deterministic, $0: observation `f4a9c9b76a0b49cd` (76 sessions, 2000
+  msgs incl. truncation flag, 197 new signals, 1.0 s); reconstruction
+  `fa115d947cea4cea` (34 episodes, 482 associations, 4 rejected, 4.3 s);
+  triage `6423fcb59da5418a` (454 triaged, 0 queued for model, 9.8 s);
+  deterministic extraction on 10 task episodes (W0–W8 + WORK-OUTCOME-01):
+  0 requirements written (+1 inferred objective on WORK-OUTCOME-01);
+  evaluation of those 10 with `semantic:false`: all `unknown` (no
+  requirements to assess — honest, not a failure). No requirement
+  confirmed (none recovered; confirmation stays human).
+- Metrics for Activity → Work Evaluation: sessions observed 76; episodes
+  reconstructed 34 (mission) incl. `ep:task:W{0..8}`, `WORK-OUTCOME-01`,
+  4× `D-PUB-*`, 19 chains, 1 unresolved bucket; requirements recovered 0;
+  awaiting confirmation 0; verified outcomes 0 on mission (08C partial on
+  live per above); findings raised this pass 3 (all 08C
+  verification_gaps); groups now 27; unevaluated work 24 mission episodes
+  (D-PUBs + chains, bounded pass covered 10); processing ~15.5 s total;
+  model expenditure $0.00 (cost endpoint confirms 0 calls).
+- Worker/workbench: **HELD disabled** (conditional not met). Mission proves
+  the pipeline runs end-to-end, but evaluations stay `unknown` until
+  requirement recovery works — which needs semantic assistance (disabled,
+  $0) or human-authored recovery. Enabling more projects now multiplies
+  unevaluated episodes without assessments. Payloads ready for the
+  operator: same `POST policies` shape with `"project_key":"worker"` (or
+  `"workbench"`), then the three bounded `POST .../runs` above.
+- DeepSeek retry (step 5): `pi --model
+  opencode/deepseek-v4.1-flash-free` probe → **429 FreeUsageLimitError**
+  again. Recorded; no paid route tried. Cross-family stays PARTIAL.
+- Checklist: 8 items — backend started ✓ / code-running verified
+  (w4-v2 ✗ → restart pending) / 08C promoted ✓ (live verdict pending
+  restart) / mission enabled ✓ / mission evaluated ✓ (10 bounded) /
+  worker-workbench held / DeepSeek retried-blocked / commit-push SKIPPED
+  (not authorized — tree left dirty, see below).
+- No code changed in this activation (no regression tests required;
+  focused suites last green 92 on 2a7d22c). Operational writes only:
+  1 policy row (`wo_policy:mission`), 1 observation run, 1 recon run,
+  1 triage run, 1 episode + 1 objective + 3 requirements + 1 association
+  + 6 links, 11 eval runs, 3 findings. Nothing else touched; publication
+  work preserved (no publication files read or written here).
+
 ## 4. Programme self-evaluation re-run (focused, 3 obligations, scratch)
 
 Method mirrors W9F on an isolated copy (no operational writes):
@@ -166,3 +238,121 @@ demo digest linked); `cr3 (multi-project demonstrated) = not_satisfied`
 3. Future independent ruling on w4-v2 (when a cross-family reviewer is
    available): amendment is narrow, tested, and owner-authorized; a REJECT
    ruling would revert 08C to partial without affecting any other verdict.
+
+## Requirement-recovery qualification (2026-11-25, backend operator-started)
+
+- Actual cause of zero mission recovery (evidence, not speculation):
+  deterministic extraction abstains by design (`extract.py:166-169` —
+  "Requirements need judgement and are explicitly abstained here");
+  `_deterministic_packet` emits only objectives (task episodes) + claims
+  (test/completion signals). Live packets for all 10 task episodes:
+  `requirements:[]`, `session_id:null` — the 2,000-message truncation is
+  NOT causal (messages are not requirement-mined on this path). Programme
+  docs were never searched (no repo-doc step on the deterministic path).
+  The authority gate (`record_requirement_manual`: explicit_user /
+  accepted_proposal + digest + basis) is sound but had no feeder. Semantic
+  extraction refused: `model_not_enabled`, 0 calls.
+- Semantic capability: Ollama loopback UP (incl. `mistral:7b-instruct`,
+  `mistral-small`, `ministral-3:8b`); backend governed route DISABLED
+  (`model_enabled:false`). One refused probe spent (0/10 budget used
+  successfully, $0). Ollama NOT called directly (would bypass budget,
+  validation, caching). Fallback used: human-reviewed recovery path.
+- Recovered (API-accepted 9/9, reviewer `operator`, state accepted,
+  UNCONFIRMED — no `/confirmations` called): W2 x2 (deterministic-only
+  gate sentence; PG-write authorization sentence; src W2-ENTRY-GATE.md
+  `4FDC3903…`), W5 x2 (independent-review-pending UI rule; read-contract
+  rule; src W5-ENTRY-GATE.md `FDE8C80E…`), W8 x2 (stop-conditions
+  sentence; W8A→W8F gate order; src W8-ENTRY-GATE.md `79854DB3…`),
+  programme x3 (§31 NOT MET/PARTIAL rows; src W9-FINAL-REPORT.md
+  `3C8DFB07…`), all rev `a1410fa`, kind `acceptance`, mandatory. Texts
+  are verbatim excerpts (minor punctuation normalization where quoted
+  JSON required it — full provenance in `wo_requirement_sources`).
+- Evidence: 9 `file:` citation links (basenames, human-reviewed,
+  moderate) → deterministic assessments 9x `satisfied_reported`
+  (correctness unjudged — honest). Evaluations: W2/W5/W8/WORK-OUTCOME-01
+  all `partial`; 9 `verification_gap`/minor/suspected findings with
+  `next_action: supply independent verification`. Coverage now:
+  partial 6, requirements_assessed 41, findings 305, model_calls 0.
+- Awaiting confirmation: 9. Confirmed: 0.
+- Meaningfully evaluated: 4 mission episodes at requirement level
+  (reported) + 08C (reported live / verified scratch w4-v2) + 10 mission
+  task episodes `unknown` (no requirements — correctly abstained).
+  Worker (2 eps, 455 assoc) + workbench (3 eps, 500 assoc) reconstructed
+  with 0 sessions observed (git-side only; needle matched no session
+  metadata) — policies enabled (`manual_evaluation`, actor operator),
+  evaluation deferred until requirements exist (same honest pattern).
+  No scheduler, no auto-confirm, no paid inference anywhere.
+- Actionable conclusions: (1) Confirm-or-reject the 9 recovered
+  requirements in Activity → Work Evaluation — the highest-leverage human
+  action; each flips a `partial` toward `complete`/`incomplete` honestly.
+  (2) Restart backend (below) flips live 08C to `complete` under w4-v2.
+  (3) Mission's 24 remaining episodes repeat the same recovery pattern.
+- Limitations: reported ≠ verified; reviewer `operator` is the
+  transcription identity (owner confirmation pending — recorded as such);
+  semantic route still operator-gated; DeepSeek free still 429 (no
+  further retries); 08C live verdict awaits restart; worker/workbench
+  episode content is git-derived until session linkage improves.
+- Spend: $0.00 total (1 refused model probe + 1 refused DeepSeek probe,
+  0 successful model calls across ~40 deterministic runs).
+
+## Operator restart for w4-v2 (safe, picks up 2a7d22c)
+
+Preflight already done (v54, backup per W5A, dist fresh). Run from the
+tree at `a1410fa` (contains w4-v2; no `--rebuild` — frontend unchanged):
+
+```
+mission.cmd --stop
+mission.cmd
+```
+
+Verify: `/api/health` → `schema_version 54`; then re-run
+`POST /api/work-evaluation/runs {"episode_id":"ep:task:W8-PILOT-VERIFY-08C","semantic":false}`
+→ expect `complete` / 3x `satisfied_verified`. If it still reports
+`partial`, the restart did not pick up the tree — stop and report.
+
+## MC-HARNESS-FIX-01 — project Harness tab correction (2026-11-25)
+
+- Root cause (reproduced live, not assumed): Worker :7317 is UP
+  (v0.2.0, `/v1/jobs` and `/v1/strategies` healthy) but its
+  `/v1/executions` ledger route returns 404 `NOT_FOUND` because no local
+  execution ledger is configured on that Worker process
+  (`worker/src/server/server.ts:50-55` — read access gated on a local
+  ledger). Mission's adapter mapped every Worker 404 to
+  "Worker execution or retained artifact was not found", and the
+  project panel rendered that verbatim with no empty/unavailable
+  distinction. Same failure on all 6 probed projects (systemic, not
+  jev-specific). Jev (`kind book`, active) has no envelopes, so even a
+  readable ledger would correctly return zero rows for it.
+- Backend fix (`backend/mission_control/api/harness.py`, uncommitted):
+  ledger-read 404 → 200 empty collection + explicit
+  `coverage.ledger {available:false}` and `worker.ledger: unavailable`
+  (renders as unavailable-with-retry, never as zero); worker transport
+  503/504 still propagate as 503 (unavailable distinct from empty);
+  single-record 404s keep not-found semantics; `project_key` validated
+  against the registry (unknown → 404 `Unknown project`, not empty);
+  filtering uses canonical basename identity (`Projects/ai` ≡ `ai`,
+  exact-basename only, no fuzzy matching). Execution≠acceptance and
+  per-record artifact semantics untouched.
+- Frontend fix (`frontend/.../harness/HarnessPage.tsx`, dist rebuilt and
+  live): three states everywhere (unavailable+retry / empty with
+  counts+how-to / rows), friendly error mapping by status, jargon
+  description replaced with user copy + `<details>` diagnostics,
+  Executions tab and ProjectHarnessPanel share the logic. Verified
+  rendering: panel + global history (`/harness?tab=executions&
+  project_key=jev`) both load scoped views with retry; console shows
+  only the expected ledger-404 resource errors, no JS exceptions.
+  Screenshots: `jev-harness2.png`, `jev-global2.png` (temp dir).
+- Regression evidence: 15/15 backend (`test_harness_api.py`, incl. 5 new:
+  ledger-disabled empty-200, zero-executions empty-200, unknown-404,
+  worker-down-503-propagates, canonical-identity match); 9/9 frontend
+  (`HarnessPage.test.tsx`, incl. 3 new panel states); `tsc` clean;
+  production build clean (pre-existing chunk-size warning only). Full
+  frontend suite: 185/187 — the 2 failures (LivingBook, Inspect) pass in
+  isolation and are parallel-run flakes in unrelated pages.
+- Operational status: frontend half LIVE now (dist served, friendly
+  error + retry visible); backend half PENDING operator restart (running
+  backend predates the fix — same restart as w4-v2; one restart picks up
+  both). Post-restart expectation: all 6 projects → 200 empty +
+  unavailable panel; unknown project → 404. No model calls, no
+  executions launched, no auto-confirmation anywhere. Blocker: backend
+  restart authorization.

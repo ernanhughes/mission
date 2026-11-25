@@ -1,0 +1,65 @@
+{
+ "ledger_schema": "writer.automation.ledger.v1",
+ "detector": "publication-automation-v0.1",
+ "dispatch_count": 2,
+ "total_cost_usd": 0.0096165,
+ "total_tokens": 20028,
+ "by_role": {
+  "editorial": {
+   "dispatches": 2,
+   "cost_usd": 0.0096165,
+   "tokens": 20028
+  }
+ },
+ "by_model": {
+  "opencode-go/deepseek-v4.1-flash": {
+   "dispatches": 2,
+   "cost_usd": 0.0096165,
+   "tokens": 20028
+  }
+ },
+ "entries": [
+  {
+   "role": "editorial",
+   "task_kind": "publication_editorial",
+   "package_id": "passage:What we measured, and what we did not",
+   "attempt": 1,
+   "writer_execution_id": "model-exec-dc1f772c4cc3",
+   "provider": "pi",
+   "model": "opencode-go/deepseek-v4.1-flash",
+   "route": "default_deepseek_go",
+   "economic_tier": "subscription",
+   "input_tokens": 2636,
+   "output_tokens": 7862,
+   "total_tokens": 10498,
+   "cost_usd": 0.005112599999999999,
+   "latency_ms": 64802,
+   "prompt_sha256": "b6cb5aa634b08507adc8a0ae276024ea7ed4cca0620690793377e3cf6953e6dc",
+   "schema_sha256": "a6a3308a87446adea13b699d5b4acf1f9c6207bd3f193612ff8770d1ba2c65ae",
+   "status": "succeeded",
+   "error_kind": null,
+   "replacement_sha256": "a035d9b4ec2612e685bc7ad762b8e9f29d395a777b8e165a8b4994b89e6715f2"
+  },
+  {
+   "role": "editorial",
+   "task_kind": "publication_editorial",
+   "package_id": "passage:What we measured, and what we did not",
+   "attempt": 2,
+   "writer_execution_id": "model-exec-a95cb0dab7d7",
+   "provider": "pi",
+   "model": "opencode-go/deepseek-v4.1-flash",
+   "route": "default_deepseek_go",
+   "economic_tier": "subscription",
+   "input_tokens": 2698,
+   "output_tokens": 6832,
+   "total_tokens": 9530,
+   "cost_usd": 0.0045039,
+   "latency_ms": 59834,
+   "prompt_sha256": "9edd4b185e299a1ebf1475d710c67a332759cbc721add6de3cc2d1891b37f10e",
+   "schema_sha256": "a6a3308a87446adea13b699d5b4acf1f9c6207bd3f193612ff8770d1ba2c65ae",
+   "status": "succeeded",
+   "error_kind": null,
+   "replacement_sha256": "14df377125aabbd9666213fe9c23178cdc437aa4efb92bbecc54bec872fb2f27"
+  }
+ ]
+}

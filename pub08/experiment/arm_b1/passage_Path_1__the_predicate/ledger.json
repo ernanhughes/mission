@@ -1,0 +1,65 @@
+{
+ "ledger_schema": "writer.automation.ledger.v1",
+ "detector": "publication-automation-v0.1",
+ "dispatch_count": 2,
+ "total_cost_usd": 0.0106206,
+ "total_tokens": 22012,
+ "by_role": {
+  "editorial": {
+   "dispatches": 2,
+   "cost_usd": 0.0106206,
+   "tokens": 22012
+  }
+ },
+ "by_model": {
+  "opencode-go/deepseek-v4.1-flash": {
+   "dispatches": 2,
+   "cost_usd": 0.0106206,
+   "tokens": 22012
+  }
+ },
+ "entries": [
+  {
+   "role": "editorial",
+   "task_kind": "publication_editorial",
+   "package_id": "passage:Path 1: the predicate",
+   "attempt": 1,
+   "writer_execution_id": "model-exec-778fcbf5d2db",
+   "provider": "pi",
+   "model": "opencode-go/deepseek-v4.1-flash",
+   "route": "default_deepseek_go",
+   "economic_tier": "subscription",
+   "input_tokens": 2791,
+   "output_tokens": 9652,
+   "total_tokens": 12443,
+   "cost_usd": 0.006209849999999999,
+   "latency_ms": 78739,
+   "prompt_sha256": "b6fad011900041a866523d1048f4555decb5ff0e68bcb16207b3f2e530dc45c9",
+   "schema_sha256": "a6a3308a87446adea13b699d5b4acf1f9c6207bd3f193612ff8770d1ba2c65ae",
+   "status": "succeeded",
+   "error_kind": null,
+   "replacement_sha256": "9a97a9baae5b90e50b31f79abb8254409010e16a385d38d9f3e44b13a1148ee2"
+  },
+  {
+   "role": "editorial",
+   "task_kind": "publication_editorial",
+   "package_id": "passage:Path 1: the predicate",
+   "attempt": 2,
+   "writer_execution_id": "model-exec-c3e6c7e68818",
+   "provider": "pi",
+   "model": "opencode-go/deepseek-v4.1-flash",
+   "route": "default_deepseek_go",
+   "economic_tier": "subscription",
+   "input_tokens": 2957,
+   "output_tokens": 6612,
+   "total_tokens": 9569,
+   "cost_usd": 0.00441075,
+   "latency_ms": 63164,
+   "prompt_sha256": "b9802e283b40b4b4e1c5aee13b1c204b28fddee689ffad9389013e17252724c9",
+   "schema_sha256": "a6a3308a87446adea13b699d5b4acf1f9c6207bd3f193612ff8770d1ba2c65ae",
+   "status": "succeeded",
+   "error_kind": null,
+   "replacement_sha256": "75fdd862c63954f9aff3f6ec32dd17c4eb3d974a826eeb78a25184c1f24801f6"
+  }
+ ]
+}

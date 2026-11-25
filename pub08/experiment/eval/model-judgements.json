@@ -1,0 +1,3901 @@
+{
+ "runner": "pub08/experiment/run_eval_judges.py",
+ "batch": "pub08-eval-judges-v0.1",
+ "stage_id": "pub08-eval",
+ "route": "default_haiku_go",
+ "blind_pack_sha256": "15aa5ea9a4445582d62e3cd8e7a5b1c768b9e13f664e2b00db862b6b7946cbe5",
+ "blind_seed": 20261125,
+ "probe_key_probes_sha256": "ae3186b540e7b3177ddcdd4482dc80c5fc9999d712cb5e61ce0afd12d4072eb6",
+ "consumption_after_run": {
+  "model_reader_runs": 1
+ },
+ "priors_usd": {
+  "A1": 0.0227055,
+  "B1_packages": 0.0175449,
+  "aggregate": 0.0402504
+ },
+ "projection_usd": 0.16,
+ "cap_usd": 1.0,
+ "aggregate_guard": {
+  "allowed": true,
+  "total_cost_usd": 0.0402504,
+  "projected_cost_usd": 0.16,
+  "remaining_usd": 0.7997496,
+  "hard_cap_usd": 1.0,
+  "aggregate_actuals_usd": 0.0402504
+ },
+ "counts": {
+  "labels": [
+   "T1",
+   "T2",
+   "T3",
+   "T4"
+  ],
+  "checklist_per_text": 8,
+  "probes_per_text": 15,
+  "controls_per_text": 3,
+  "assist_questions": 5
+ },
+ "texts": {
+  "T1": {
+   "label_sha256": "6bc4a86d1357c368fd5cbfcdf951f9307e25ee2c1cca762f4beca6b6ee8854d9",
+   "bytes": 31864,
+   "lines": 571
+  },
+  "T2": {
+   "label_sha256": "3e6e3061f5fd03be8a4694379dadd689dd24803feae9066f2f09afa6a2ca57bc",
+   "bytes": 31376,
+   "lines": 590
+  },
+  "T3": {
+   "label_sha256": "981cac044b5746296a349f87324cf9492a6019c34238926b3d11e76d37cd5c9c",
+   "bytes": 34014,
+   "lines": 606
+  },
+  "T4": {
+   "label_sha256": "144ab665b0868d05b0794e2d61706f57a7de6ee16dfe2066102368fd2e748417",
+   "bytes": 31341,
+   "lines": 562
+  }
+ },
+ "checklist": {
+  "T1": {
+   "C1": {
+    "item_id": "T1:checklist:C1",
+    "label": "T1",
+    "criterion_id": "C1",
+    "prompt_sha256": "3979244c63e11e6c326d0385f623931f3322881d27d227498d86cc1a69002928",
+    "operation_id": "pub08-eval:T1:checklist:C1",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 13048,
+     "latency_ms": 8206,
+     "writer_execution_id": "model-exec-4ca2a0237f59",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "judged",
+    "verdict": "flag",
+    "quote": "and both are run, so the ordering becomes a measured factor instead of an",
+    "quote_verbatim": true,
+    "rationale": "The text states in the present tense that the reason-first schema variant and the answer-first variant \"are run\", which presents model-backed work as done. The page's own results table marks the generate-schema arms as NOT_OBSERVED, and the text says the model-backed arms did not run. A second sentence, \"The measurements in this chapter are the evidence that conflating them is expensive,\" also presents unobserved model-backed comparisons as established evidence, but the first quote is the clearer violation."
+   },
+   "C2": {
+    "item_id": "T1:checklist:C2",
+    "label": "T1",
+    "criterion_id": "C2",
+    "prompt_sha256": "db07b144b3cebba703bc646f5055f3a56c2c9212bc49846d8ca232908dea4d66",
+    "operation_id": "pub08-eval:T1:checklist:C2",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 15077,
+     "latency_ms": 18135,
+     "writer_execution_id": "model-exec-64db6f43c385",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "abstain",
+    "verdict": "abstain",
+    "quote": "",
+    "quote_verbatim": false,
+    "rationale": "The checkable figures are internally consistent. The 25-character payload matches the literal `{\"refund_approved\": true}`, the 10 answered / 10 declined / 8 correct counts agree with the walkthrough rows, and the '< 4e-06 s' bound matches 'under 4 microseconds'. However, the page discloses a post-measurement correction that removed a channel condition from the predicate, which could change which phone-channel tickets are answered. The page then asserts that the displayed figures 'still match the existing case set' without showing that comparison. Whether the quoted counts are unchanged from the original measurements therefore cannot be established from the page alone."
+   },
+   "C3": {
+    "item_id": "T1:checklist:C3",
+    "label": "T1",
+    "criterion_id": "C3",
+    "prompt_sha256": "1984f8169d55c3225ad080aee4c7d7f26c9781fa1b33bcdb6e99f3c1c6702c22",
+    "operation_id": "pub08-eval:T1:checklist:C3",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 13708,
+     "latency_ms": 10570,
+     "writer_execution_id": "model-exec-4b9cf2778ecf",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "judged",
+    "verdict": "flag",
+    "quote": "The measurements in this chapter are the evidence that conflating them is expensive.",
+    "quote_verbatim": true,
+    "rationale": "The page marks every model-backed arm NOT_OBSERVED and says the prediction 'stands untested on the arms that matter.' It also says 'What we cannot say today is how much larger in practice.' The quoted sentence nonetheless presents the chapter's measurements as established evidence that conflating generation and decision is expensive. That upgrades a hedged, untested prediction into a settled finding. A second upgrade appears where LMQL's cost reduction, recorded as DOCUMENTED only 'from its framing and that headline figure,' is later described as 'already on the record.'"
+   },
+   "C4": {
+    "item_id": "T1:checklist:C4",
+    "label": "T1",
+    "criterion_id": "C4",
+    "prompt_sha256": "c3a0711398dca943fb3f6dfd142fb4018019c06aeeced1c76f7778fa8ba14cf1",
+    "operation_id": "pub08-eval:T1:checklist:C4",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 12393,
+     "latency_ms": 6090,
+     "writer_execution_id": "model-exec-e21dd14d0c55",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "abstain",
+    "verdict": "abstain",
+    "quote": "",
+    "quote_verbatim": false,
+    "rationale": "The criterion applies to citations marked NO_CHANGE, and T1 contains no NO_CHANGE marker or other reference text to compare against, so byte-intactness cannot be checked against a baseline on the page. Within the page, the four arXiv citations are internally consistent: each link label matches its URL (arXiv:2307.09702, arXiv:2408.02442, arXiv:2212.06094, arXiv:2406.08660). That is not enough for a pass, because verifying intactness would require the source reference, which is not provided."
+   },
+   "C5": {
+    "item_id": "T1:checklist:C5",
+    "label": "T1",
+    "criterion_id": "C5",
+    "prompt_sha256": "c9adb2395d3ca75e24995f3f412f15f7de9eb2d40078af5775d9de11c9043d93",
+    "operation_id": "pub08-eval:T1:checklist:C5",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 12305,
+     "latency_ms": 8491,
+     "writer_execution_id": "model-exec-e13f04792726",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "abstain",
+    "verdict": "abstain",
+    "quote": "",
+    "quote_verbatim": false,
+    "rationale": "C5 requires comparing code, table, and figure blocks against a reference version to confirm they are byte-identical where NO_CHANGE applies. T1 is a single text with no prior version, diff, or NO_CHANGE marking, so byte-identity cannot be checked. The page does not show an internal alteration either: the displayed predicate output (t11 True/False, t60 True/False, 10 answered, 8 correct) agrees with the prose, and no block is visibly broken. Without a baseline, the criterion cannot be verified as pass or violated."
+   },
+   "C6": {
+    "item_id": "T1:checklist:C6",
+    "label": "T1",
+    "criterion_id": "C6",
+    "prompt_sha256": "1d92823132ec6b61e51a9be77ea4e1fe8a0e690f5a629f5bd34d7b31a3074f79",
+    "operation_id": "pub08-eval:T1:checklist:C6",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 13245,
+     "latency_ms": 11916,
+     "writer_execution_id": "model-exec-1fde43ca01aa",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "judged",
+    "verdict": "pass",
+    "quote": "**Not yet run.** The model-backed arms fill",
+    "quote_verbatim": true,
+    "rationale": "The page keeps its status markers. The arms table labels the predicate **OBSERVED** and the three generation arms and the decide stub **NOT_OBSERVED**. A 'Not yet run' block states that the model-backed arms have not been executed. Figure 1.1's caption ('four of five arms never ran') matches the four NOT_OBSERVED rows. The Limitations section repeats that the model-backed arms are NOT_OBSERVED. The predicate's post-correction results are disclosed, with the original measurements said to remain in results/ch01.jsonl. One minor point: the decide-stub row shows the value 0 in the Tokens-out and latency columns where the other NOT_OBSERVED rows show NOT_OBSERVED. The row's status marker is still present, and the 0 values match the stub's code, so I do not treat this as a dropped marker."
+   },
+   "C7": {
+    "item_id": "T1:checklist:C7",
+    "label": "T1",
+    "criterion_id": "C7",
+    "prompt_sha256": "39110eff70d37694d6456529cbac2361494c8fd9735ab62d2e8c75073f854c48",
+    "operation_id": "pub08-eval:T1:checklist:C7",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 12632,
+     "latency_ms": 6317,
+     "writer_execution_id": "model-exec-c30c6727c394",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "judged",
+    "verdict": "flag",
+    "quote": "That is the whole claim so far: generation and decision are not the same act; the programming-construct question is [Chapter 16](/books/jev/16-chapter/), and the model-category question is [Chapter 2](/books/jev/02-chapter/).",
+    "quote_verbatim": true,
+    "rationale": "The passage immediately before this line already states the claim (\"Obtaining a decision that way does not make generation and decision the same act\" and \"That is the whole claim so far.\") and already names the Chapter 16 and Chapter 2 pointers in the two lines just above it. The quoted restatement repeats both points without adding anything new, which is the redundant synthesis C7 targets. The later closing summaries (\"Until then, the honest summary of Chapter 1 is one line long\" and \"What Chapter 1 leaves standing is...\") repeat the same pattern, but the quoted line is the clearest single instance."
+   },
+   "C8": {
+    "item_id": "T1:checklist:C8",
+    "label": "T1",
+    "criterion_id": "C8",
+    "prompt_sha256": "c09498ce031479dec033b85d49242a01aa6350b69993328a0e661d419bbff464",
+    "operation_id": "pub08-eval:T1:checklist:C8",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 11822,
+     "latency_ms": 4645,
+     "writer_execution_id": "model-exec-8be2b4271006",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "abstain",
+    "verdict": "abstain",
+    "quote": "",
+    "quote_verbatim": false,
+    "rationale": "C8 asks whether edits added obscurity, which requires comparing a pre-edit and post-edit version. T1 is a single final text with no revision history or marked changes, so there is no edit to evaluate on the page. The criterion is also model-judgement only and requires a live call, which is not available in this blinded setting, so I abstain rather than judge clarity from one snapshot."
+   }
+  },
+  "T2": {
+   "C1": {
+    "item_id": "T2:checklist:C1",
+    "label": "T2",
+    "criterion_id": "C1",
+    "prompt_sha256": "5eb6e7d0cf6cdc61c66f1480aab017c0979652aac90e3c4fd195d47da033d5f8",
+    "operation_id": "pub08-eval:T2:checklist:C1",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 12797,
+     "latency_ms": 8754,
+     "writer_execution_id": "model-exec-56f4f4eb90cc",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "judged",
+    "verdict": "flag",
+    "quote": "a second, reason-first variant was added and both are run",
+    "quote_verbatim": true,
+    "rationale": "The page marks every model-backed arm as NOT_OBSERVED and says the model-backed arms did not run. The sentence describes the reason-first arm as already added and run, so the ordering 'becomes a measured factor.' That presents unobserved model-backed work as established. The same page's 'Not yet run' section contradicts it."
+   },
+   "C2": {
+    "item_id": "T2:checklist:C2",
+    "label": "T2",
+    "criterion_id": "C2",
+    "prompt_sha256": "00a02c5dbf4a2568b0c5e3d9c366ae1938704161e6cd0275183a83533ed16602",
+    "operation_id": "pub08-eval:T2:checklist:C2",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 15687,
+     "latency_ms": 20724,
+     "writer_execution_id": "model-exec-329db585835e",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "abstain",
+    "verdict": "abstain",
+    "quote": "",
+    "quote_verbatim": false,
+    "rationale": "The page contains no clear numeric or unit violation. Internal checks are consistent: the 25-character payload matches the literal `{\"refund_approved\": true}`, '< 4e-06 s' matches 'under 4 microseconds', and '8 of 10' matches the 10 answered cases. The page also says the correction left the original measurements in results/ch01.jsonl, and the walkthrough output reproduces the same 10/10/8 figures. However, 'unchanged' requires comparison against an original version that is not on the page, and the page itself references a pre-correction implementation whose figures this text does not restate in full. Judging from the page alone, I cannot confirm the numbers are unchanged from their source, so I abstain rather than pass or flag."
+   },
+   "C3": {
+    "item_id": "T2:checklist:C3",
+    "label": "T2",
+    "criterion_id": "C3",
+    "prompt_sha256": "9aabe0b45aed30b1baf98106cc062f8a62adaa880f1f5c54d1d6c820800113b8",
+    "operation_id": "pub08-eval:T2:checklist:C3",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 14460,
+     "latency_ms": 15323,
+     "writer_execution_id": "model-exec-20f9643d079d",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "judged",
+    "verdict": "flag",
+    "quote": "Their \u00a75.3 kills the prediction this chapter made.",
+    "quote_verbatim": true,
+    "rationale": "The chapter's own description of the source is that its \u00a75.3 found the preregistered hypothesis 'is not the main factor' and that near-zero parse failures occurred for some models (Gemini 1.5 Flash, GPT-3.5 Turbo, and LLaMA 3 8B on one task). That is a narrower finding than 'kills.' The chapter also states that its own prediction is untested on its own arms ('The prediction stands untested on the arms that matter'; the model-backed arms are NOT_OBSERVED). The word 'kills' therefore upgrades a partial, cross-model result into a refutation of an untested local prediction, which is a strengthened certainty. Other strong statements, such as 'greater than 1 by construction,' are tied to an explicit derivation from the 25-character payload and the schema text, so I did not flag them."
+   },
+   "C4": {
+    "item_id": "T2:checklist:C4",
+    "label": "T2",
+    "criterion_id": "C4",
+    "prompt_sha256": "e656866d8717a26dd2e434c67c6e60d4b9b770d28c7b4d83b3d4c8b4c577ae90",
+    "operation_id": "pub08-eval:T2:checklist:C4",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 11990,
+     "latency_ms": 5038,
+     "writer_execution_id": "model-exec-612a8a3af908",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "abstain",
+    "verdict": "abstain",
+    "quote": "",
+    "quote_verbatim": false,
+    "rationale": "T2 contains four arXiv IDs (2307.09702, 2408.02442, 2212.06094, 2406.08660). In each case the link text and the href carry the same ID, so the page is internally consistent. However, the page does not mark which citations are NO_CHANGE, and it contains no reference copy or original text to compare against. Byte-intactness relative to a NO_CHANGE baseline therefore cannot be confirmed from the page alone, so the criterion can be neither passed nor flagged."
+   },
+   "C5": {
+    "item_id": "T2:checklist:C5",
+    "label": "T2",
+    "criterion_id": "C5",
+    "prompt_sha256": "8357a366698ca6b2605db71fe9bd040396dc4545773e49c5b3b7ea5bf3081e51",
+    "operation_id": "pub08-eval:T2:checklist:C5",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 11711,
+     "latency_ms": 4067,
+     "writer_execution_id": "model-exec-9e3ea6ea2b96",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "abstain",
+    "verdict": "abstain",
+    "quote": "",
+    "quote_verbatim": false,
+    "rationale": "C5 requires code, table, or figure blocks to be byte-identical to a reference where the block is marked NO_CHANGE. T2 contains no reference version and no NO_CHANGE marker, so byte-identity cannot be checked from the page. The text also does not show an edited block that a verbatim quote could demonstrate as a violation. Its internal inconsistencies, such as the correction note about the predicate, concern content rather than whether blocks match a reference, so they do not support a flag under C5."
+   },
+   "C6": {
+    "item_id": "T2:checklist:C6",
+    "label": "T2",
+    "criterion_id": "C6",
+    "prompt_sha256": "46c33a1c65a295c5b8577bebfafc0cee609155b58bb0f41f49d0129a599db739",
+    "operation_id": "pub08-eval:T2:checklist:C6",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 12855,
+     "latency_ms": 11138,
+     "writer_execution_id": "model-exec-83340e3006a9",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "judged",
+    "verdict": "pass",
+    "quote": "| `generate-freeform` | **NOT_OBSERVED** | NOT_OBSERVED | NOT_OBSERVED | NOT_OBSERVED | NOT_OBSERVED |",
+    "quote_verbatim": true,
+    "rationale": "The OBSERVED, NOT_OBSERVED and not-yet-run markers are all present. The evidence table keeps a status column for each of the five arms: the predicate is marked OBSERVED and the three generation arms and the decide stub are marked NOT_OBSERVED. A separate '> **Not yet run.**' block explains that the model-backed arms have no rows yet. The figure caption also states that four of five arms never ran. The text does not drop or relabel these markers to make the record look more complete. One minor point: the decide-stub row shows numeric 0 values for tokens and latency beside its NOT_OBSERVED status, without a per-cell marker. That is a presentation weakness, not a dropped marker, so it does not change the verdict."
+   },
+   "C7": {
+    "item_id": "T2:checklist:C7",
+    "label": "T2",
+    "criterion_id": "C7",
+    "prompt_sha256": "1bf7333e75f3fdb08fd6f077a849cfd92821467e279c36fd3ff513b7abb5816d",
+    "operation_id": "pub08-eval:T2:checklist:C7",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 12449,
+     "latency_ms": 9231,
+     "writer_execution_id": "model-exec-ecb4ab5df84b",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "judged",
+    "verdict": "flag",
+    "quote": "The floor is established for one arm and left open for three.",
+    "quote_verbatim": true,
+    "rationale": "This line opens the 'Where this leaves the argument' section as a recap of status that the reader has just been shown. The measured-versus-unmeasured split it summarises is already stated in the 'What we measured, and what we did not' section and in the arms table, so the sentence restates existing content without adding to it. A similar closer, 'That is the whole claim so far.', also appears after the 'Four words we keep apart' section, but the flagged line is the clearer instance."
+   },
+   "C8": {
+    "item_id": "T2:checklist:C8",
+    "label": "T2",
+    "criterion_id": "C8",
+    "prompt_sha256": "1770d6769cc1c178964c02201546fe4b5e49499542cc551e30667ad9d764019c",
+    "operation_id": "pub08-eval:T2:checklist:C8",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 11550,
+     "latency_ms": 4327,
+     "writer_execution_id": "model-exec-6dc7e2e6add1",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "abstain",
+    "verdict": "abstain",
+    "quote": "",
+    "quote_verbatim": false,
+    "rationale": "C8 asks whether edits add obscurity, which requires a pre-edit version to compare against. Only T2 is provided, with no original text or edit trail, so the page cannot show what changed. The criterion also specifies model judgement only with abstention when no live call is made, and no live call is available here. Judging the text's standalone clarity would be a different criterion, so I abstain."
+   }
+  },
+  "T3": {
+   "C1": {
+    "item_id": "T3:checklist:C1",
+    "label": "T3",
+    "criterion_id": "C1",
+    "prompt_sha256": "fb697552f67bad2c83219c6f3dee9e3df9a7a23a8f9281fe7960ba40f449ec72",
+    "operation_id": "pub08-eval:T3:checklist:C1",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 13933,
+     "latency_ms": 10845,
+     "writer_execution_id": "model-exec-4467b126e7b2",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "coerced_abstain",
+    "verdict": "abstain",
+    "quote": "",
+    "quote_verbatim": false,
+    "rationale": "judge returned 'pass' without a verbatim quote from the text: coerced to abstain (quote-or-abstain rule), never retried; original rationale: Every model-backed arm is explicitly marked NOT_OBSERVED in the results table, and the text repeatedly states that no model run occurred: \"The model-backed arms have not been run, so no token, latency, or failure comparison exists.\" The predicted overhead is "
+   },
+   "C2": {
+    "item_id": "T3:checklist:C2",
+    "label": "T3",
+    "criterion_id": "C2",
+    "prompt_sha256": "7f7e752fc096357214cab894d0d70eafdfc13aff72250d887e5b104943d09551",
+    "operation_id": "pub08-eval:T3:checklist:C2",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 16692,
+     "latency_ms": 23164,
+     "writer_execution_id": "model-exec-7356aaa9f268",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "coerced_abstain",
+    "verdict": "abstain",
+    "quote": "",
+    "quote_verbatim": false,
+    "rationale": "judge returned 'pass' without a verbatim quote from the text: coerced to abstain (quote-or-abstain rule), never retried; original rationale: Within the page, the measurement figures are consistent wherever they recur. The policy threshold is 50.00 in the runbook text and in the code (`ticket.amount <= 50.00`). The 30-day limit matches across the text and code. The test split is 20 cases, answered "
+   },
+   "C3": {
+    "item_id": "T3:checklist:C3",
+    "label": "T3",
+    "criterion_id": "C3",
+    "prompt_sha256": "7c0e44f77e689930aadac3c8eadf79aa20219c78a7fa1eb0771bceed5cbd0c36",
+    "operation_id": "pub08-eval:T3:checklist:C3",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 17772,
+     "latency_ms": 25783,
+     "writer_execution_id": "model-exec-643c2e81ec17",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "judged",
+    "verdict": "pass",
+    "quote": "Their result does not transfer to our setup automatically",
+    "quote_verbatim": true,
+    "rationale": "The page keeps its hedges and provenance labels intact. Third-party and secondary claims are marked as such: the Jev contract is labelled \"a third-party claim, not DOCUMENTED\", and LMQL is labelled \"DOCUMENTED, from its framing and that headline figure\" with its runtime and evaluation sections explicitly not relied on. The Bucher transfer limit is stated as a limit, and the failure-mode predictions are kept as untested. The chapter says of its own errors that they \"look policy-shaped\" and that whether a model would share that shape \"is not yet known\". Unobserved arms are kept as NOT_OBSERVED. I found no place where a hedge is strengthened or a non-observed claim is promoted to observed. One sentence is less hedged than the surrounding text: \"The predicate's abstentions were not gaps in the code; they were gaps in the rulebook\". It is an unqualified causal claim, and it sits uneasily with the earlier account of t21 and t30 as policy-correct declines. It is a consistency problem rather than a certainty upgrade, so I do not flag it under C3."
+   },
+   "C4": {
+    "item_id": "T3:checklist:C4",
+    "label": "T3",
+    "criterion_id": "C4",
+    "prompt_sha256": "446eeceaa2b2092bb814ba2ef6e0e3f98f2b22ff929857ce3835f6978c66dfb6",
+    "operation_id": "pub08-eval:T3:checklist:C4",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 13181,
+     "latency_ms": 5887,
+     "writer_execution_id": "model-exec-b4857d003517",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "abstain",
+    "verdict": "abstain",
+    "quote": "",
+    "quote_verbatim": false,
+    "rationale": "The page cites four arXiv papers (2307.09702, 2408.02442, 2212.06094, 2406.08660), and each link target matches its displayed ID. However, C4 applies where a citation is marked NO_CHANGE, and the page contains no NO_CHANGE marker or original reference text to compare against. Internal consistency does not establish byte-intactness relative to a source, so the criterion cannot be confirmed or violated from this page alone."
+   },
+   "C5": {
+    "item_id": "T3:checklist:C5",
+    "label": "T3",
+    "criterion_id": "C5",
+    "prompt_sha256": "7966af002a07849213c61ae17d62045c8b0c5961af72f5b6c1e88dea6141847a",
+    "operation_id": "pub08-eval:T3:checklist:C5",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 13028,
+     "latency_ms": 7216,
+     "writer_execution_id": "model-exec-425b02379763",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "abstain",
+    "verdict": "abstain",
+    "quote": "",
+    "quote_verbatim": false,
+    "rationale": "C5 requires code, table, and figure blocks to be byte-identical to a reference where they are marked NO_CHANGE. T3 contains no reference copy or NO_CHANGE marking to compare against, so byte-identity cannot be checked. The page does contain a correction note, and the walkthrough output appears consistent with the displayed code, but that is internal consistency, not the comparison C5 requires."
+   },
+   "C6": {
+    "item_id": "T3:checklist:C6",
+    "label": "T3",
+    "criterion_id": "C6",
+    "prompt_sha256": "9b09c110581ef31b5c2bed93d25101cabdfb688de47ae6d101544ac9cfe02347",
+    "operation_id": "pub08-eval:T3:checklist:C6",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 14579,
+     "latency_ms": 13546,
+     "writer_execution_id": "model-exec-3e5b8ef5d222",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "judged",
+    "verdict": "pass",
+    "quote": "**Not yet run.** The model-backed arms fill",
+    "quote_verbatim": true,
+    "rationale": "The page keeps its status markers. The predicate figures are labelled **OBSERVED**. The model-backed arms are labelled **NOT_OBSERVED** in the table, and the `decide-stub` row stays NOT_OBSERVED. The unrun-arm block is headed by a 'Not yet run' marker, and the Limitations section states that model-backed arms are NOT_OBSERVED and that no number is estimated. Two points were checked and do not amount to a dropped marker. First, the `decide-stub` row lists 0 tokens and 0 latency under a NOT_OBSERVED label, but the marker is still present. Second, the predicate's OBSERVED figures sit beside a correction note, but the OBSERVED label is still attached to them."
+   },
+   "C7": {
+    "item_id": "T3:checklist:C7",
+    "label": "T3",
+    "criterion_id": "C7",
+    "prompt_sha256": "905e4a62e05d3110b2fe049a39baf31ad4841fa4217be356f5bc5c112eab792e",
+    "operation_id": "pub08-eval:T3:checklist:C7",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 13383,
+     "latency_ms": 7388,
+     "writer_execution_id": "model-exec-7994f344cfa4",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "judged",
+    "verdict": "flag",
+    "quote": "Constraint is a memory cost before it is a compute win.",
+    "quote_verbatim": true,
+    "rationale": "This aphoristic line follows the three-row cost table and restates it without adding a finding. The table already reports the roughly 50 MB one-time index memory and the per-token compute figures, so the one-liner is a gloss on evidence the reader has just seen. The text also closes with similar slogans, such as \"Generate less. Measure the rest.\", but the table gloss is the clearest instance of redundant synthesis."
+   },
+   "C8": {
+    "item_id": "T3:checklist:C8",
+    "label": "T3",
+    "criterion_id": "C8",
+    "prompt_sha256": "d58735812fafcc17f752f2928da5211952460b1711780d05760a5335728e2004",
+    "operation_id": "pub08-eval:T3:checklist:C8",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 12617,
+     "latency_ms": 3751,
+     "writer_execution_id": "model-exec-73f4865f3739",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "abstain",
+    "verdict": "abstain",
+    "quote": "",
+    "quote_verbatim": false,
+    "rationale": "C8 asks whether edits add obscurity, which requires a before-and-after comparison. T3 is a single text with no prior version or edit history, so the page cannot show what changed. The instructions also limit this criterion to model judgement without a live call, so I cannot verify edits against a baseline. I am abstaining rather than passing or flagging a single passage."
+   }
+  },
+  "T4": {
+   "C1": {
+    "item_id": "T4:checklist:C1",
+    "label": "T4",
+    "criterion_id": "C1",
+    "prompt_sha256": "a8d4ce5a70e43549bdaf1f142e25e4fe1cf8ced6ea9dc048ef59df323d935215",
+    "operation_id": "pub08-eval:T4:checklist:C1",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 13083,
+     "latency_ms": 10873,
+     "writer_execution_id": "model-exec-e8b7397d09ff",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": "ValidationError: 1 validation error for ChecklistJudgeResponse\n  Invalid JSON: expected `,` or `}` at line 1 column 526 [type=json_invalid, input_value='{\"criterion_id\": \"no_new...e clearest violation.\"}', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/json_invalid",
+    "dispatch_error_kind": "INVALID_TYPED_OUTPUT",
+    "status": "abstain_malformed",
+    "verdict": "abstain",
+    "quote": "",
+    "quote_verbatim": false,
+    "rationale": "malformed/truncated/failed dispatch: INVALID_TYPED_OUTPUT; recorded, never retried"
+   },
+   "C2": {
+    "item_id": "T4:checklist:C2",
+    "label": "T4",
+    "criterion_id": "C2",
+    "prompt_sha256": "7f40190fb96a5a6805bb588442612e6ab2f9e48eabd26c5e3f3ae165c5016014",
+    "operation_id": "pub08-eval:T4:checklist:C2",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 13703,
+     "latency_ms": 12033,
+     "writer_execution_id": "model-exec-11bf5e73778f",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "abstain",
+    "verdict": "abstain",
+    "quote": "",
+    "quote_verbatim": false,
+    "rationale": "The page has no reference version to compare against, so I cannot confirm that any measurement number or unit is unchanged. Internal checks found no contradictions: the 25-character payload matches `{\"refund_approved\": true}`; the 10 answered, 10 declined, and 8 correct counts agree across the prose, walkthrough output, and summary; the 75-case total matches the 20/10/10/20 split plus the 15-case shift split; and 'under 4 microseconds' agrees with '< 4e-06 s' in the table. These consistency checks do not establish that the numbers were unchanged from any original, so the verdict is abstain rather than pass."
+   },
+   "C3": {
+    "item_id": "T4:checklist:C3",
+    "label": "T4",
+    "criterion_id": "C3",
+    "prompt_sha256": "8f56bb9c35dab0e8f8f360cb5614ce9eb98d7d4335b26c07a37916f73a260df7",
+    "operation_id": "pub08-eval:T4:checklist:C3",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 15088,
+     "latency_ms": 17001,
+     "writer_execution_id": "model-exec-b9cf20e64bad",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "coerced_abstain",
+    "verdict": "abstain",
+    "quote": "",
+    "quote_verbatim": false,
+    "rationale": "judge returned 'flag' without a verbatim quote from the text: coerced to abstain (quote-or-abstain rule), never retried; original rationale: The text reports that Bucher et al.'s conclusion says performance begins to saturate after around 200 labels. It then calls this the number that 'says how much annotation a decision actually costs.' That is a stronger claim than the saturation finding support"
+   },
+   "C4": {
+    "item_id": "T4:checklist:C4",
+    "label": "T4",
+    "criterion_id": "C4",
+    "prompt_sha256": "d2930e06d91a37b4bebb5053708c2a583ef477a15d3b14ef8890cd941ce97fd3",
+    "operation_id": "pub08-eval:T4:checklist:C4",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 12305,
+     "latency_ms": 7620,
+     "writer_execution_id": "model-exec-36509e3bf1de",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "abstain",
+    "verdict": "abstain",
+    "quote": "",
+    "quote_verbatim": false,
+    "rationale": "T4 cites four arXiv IDs: 2307.09702, 2408.02442, 2212.06094 and 2406.08660. Each appears in link text and in a matching arxiv.org/abs URL, so the IDs are internally consistent on the page. The criterion, however, asks for byte-intactness where NO_CHANGE applies, and the page contains no NO_CHANGE marker or reference copy to compare against. Byte-intactness relative to a source cannot be confirmed from T4 alone, so I abstain rather than pass or flag."
+   },
+   "C5": {
+    "item_id": "T4:checklist:C5",
+    "label": "T4",
+    "criterion_id": "C5",
+    "prompt_sha256": "6344e16676d2b7f87df10f8f3ae41fff8fc660bd3ce7cc291e2368e1bb26d769",
+    "operation_id": "pub08-eval:T4:checklist:C5",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 11859,
+     "latency_ms": 5342,
+     "writer_execution_id": "model-exec-c59f0c60e346",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "abstain",
+    "verdict": "abstain",
+    "quote": "",
+    "quote_verbatim": false,
+    "rationale": "The page has no NO_CHANGE marking and no reference version of any code, table, or figure block, so byte-identity cannot be checked. The text shows several code and table blocks, but nothing on the page establishes which should match an original or what that original is. Judging from the page alone, I cannot determine whether any block was altered, so I abstain."
+   },
+   "C6": {
+    "item_id": "T4:checklist:C6",
+    "label": "T4",
+    "criterion_id": "C6",
+    "prompt_sha256": "ccad464c172ec937173846401b71bbb3d45363a18b1c92246c5e8b35d0fbb7a5",
+    "operation_id": "pub08-eval:T4:checklist:C6",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 12753,
+     "latency_ms": 8019,
+     "writer_execution_id": "model-exec-d62715bc9bcd",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "judged",
+    "verdict": "pass",
+    "quote": "**Not yet run.** The model-backed arms fill",
+    "quote_verbatim": true,
+    "rationale": "The page keeps its record markers. The predicate arm is tagged OBSERVED, and the three generation arms and the decide-stub are tagged NOT_OBSERVED in the results table, with the OBSERVED and NOT_OBSERVED labels appearing in the surrounding prose. The 'Not yet run' marker appears in a blockquote before the run command. The 25-character payload is tagged OBSERVED, and the Jev contract is labelled as a third-party claim rather than DOCUMENTED. No marker is dropped or upgraded. One minor point is not a violation of C6: the decide-stub row is NOT_OBSERVED but lists 0 for tokens and latency. Those zeros come from the stub's hard-coded return, not from a measurement, and the marker itself is still present."
+   },
+   "C7": {
+    "item_id": "T4:checklist:C7",
+    "label": "T4",
+    "criterion_id": "C7",
+    "prompt_sha256": "dfcef859151c068e19f5a70eaca464796b774db50a4a63cdb214b2cf3aa1fcad",
+    "operation_id": "pub08-eval:T4:checklist:C7",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 13210,
+     "latency_ms": 10217,
+     "writer_execution_id": "model-exec-96d8f3b31d8d",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "coerced_abstain",
+    "verdict": "abstain",
+    "quote": "",
+    "quote_verbatim": false,
+    "rationale": "judge returned 'flag' without a verbatim quote from the text: coerced to abstain (quote-or-abstain rule), never retried; original rationale: The sentence closes the 'Four words we keep apart' section by restating the point the preceding paragraphs already made: generation is how a decision is currently obtained, and conflating the two is expensive. It adds no new claim, evidence, or qualification,"
+   },
+   "C8": {
+    "item_id": "T4:checklist:C8",
+    "label": "T4",
+    "criterion_id": "C8",
+    "prompt_sha256": "63ba708ce0fc17f32c707ae7283c407d49ec2454abb23ddf0127f339414bc0af",
+    "operation_id": "pub08-eval:T4:checklist:C8",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 11817,
+     "latency_ms": 4488,
+     "writer_execution_id": "model-exec-740a3148cf07",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "abstain",
+    "verdict": "abstain",
+    "quote": "",
+    "quote_verbatim": false,
+    "rationale": "C8 asks whether edits added obscurity. T4 shows only the final text, with no earlier version to compare against, so I cannot tell which passages were edited or what they changed. The page does contain an in-text correction note (\"**Correction from Book Quality Lab (CAPSTONE-02B).**\"), but without the pre-edit text I cannot judge whether it made the surrounding prose less clear. Some passages are dense, but that is not evidence that an edit caused it, so I do not flag. Abstaining without a live call, as the criterion specifies."
+   }
+  }
+ },
+ "probes": {
+  "T1": {
+   "F1": {
+    "item_id": "T1:probe:F1",
+    "label": "T1",
+    "probe_id": "F1",
+    "visibility": "public",
+    "prompt_sha256": "d6485954afe94b70b7dc58b8bba7efc2721653f064210f4415f30f440dc69986",
+    "operation_id": "pub08-eval:T1:probe:F1",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 11815,
+     "latency_ms": 4073,
+     "writer_execution_id": "model-exec-6643622a19fe",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": "ValidationError: 1 validation error for ProbeReaderResponse\n  Invalid JSON: expected value at line 1 column 1 [type=json_invalid, input_value='```json\\n{\"probe_id\": \"F...on the other 10.\"}\\n```', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/json_invalid",
+    "dispatch_error_kind": "INVALID_TYPED_OUTPUT",
+    "status": "fail_malformed",
+    "answer": "",
+    "supporting_quote": "",
+    "supporting_quote_verbatim": false,
+    "score": "fail_malformed",
+    "score_reason": "malformed/truncated/failed dispatch: INVALID_TYPED_OUTPUT; recorded, never retried"
+   },
+   "F2": {
+    "item_id": "T1:probe:F2",
+    "label": "T1",
+    "probe_id": "F2",
+    "visibility": "public",
+    "prompt_sha256": "c3fac887506c55933f0a86f970b5ad578fc18fb0354dd0db07907e336076286d",
+    "operation_id": "pub08-eval:T1:probe:F2",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 11547,
+     "latency_ms": 3037,
+     "writer_execution_id": "model-exec-d7e0f9f0b178",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "scored",
+    "answer": "8 of the 10 answered test cases matched the label.",
+    "supporting_quote": "On the 10 it answered it was correct 8 times.",
+    "supporting_quote_verbatim": true,
+    "score": "incorrect",
+    "score_method": "frozen-key containment (norm expected in norm answer)",
+    "score_reason": "frozen-key containment vs key F2"
+   },
+   "F3": {
+    "item_id": "T1:probe:F3",
+    "label": "T1",
+    "probe_id": "F3",
+    "visibility": "public",
+    "prompt_sha256": "813f263a0ff1379c9cc0b16d393b73ef81a122cc7445e4dce6c53f3be764defe",
+    "operation_id": "pub08-eval:T1:probe:F3",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 11991,
+     "latency_ms": 4683,
+     "writer_execution_id": "model-exec-3b0c14dd59f1",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "scored",
+    "answer": "{\"refund_approved\": true} (stated in the text as 25 characters).",
+    "supporting_quote": "The value the caller consumes, written out, is 25 characters: `{\"refund_approved\": true}`.",
+    "supporting_quote_verbatim": false,
+    "score": "correct",
+    "score_method": "frozen-key containment (norm expected in norm answer)",
+    "score_reason": "frozen-key containment vs key F3"
+   },
+   "F4": {
+    "item_id": "T1:probe:F4",
+    "label": "T1",
+    "probe_id": "F4",
+    "visibility": "public",
+    "prompt_sha256": "8fbf8044a9bc71003addcf318f93d6937253cdaaa4648801c07c9b23ad8789cc",
+    "operation_id": "pub08-eval:T1:probe:F4",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 11813,
+     "latency_ms": 6050,
+     "writer_execution_id": "model-exec-e2fc3786dde3",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "scored",
+    "answer": "The predicate generated zero tokens, and every call took under 4 microseconds.",
+    "supporting_quote": "It generated zero tokens and every call took under 4 microseconds",
+    "supporting_quote_verbatim": false,
+    "score": "incorrect",
+    "score_method": "frozen-key containment (norm expected in norm answer)",
+    "score_reason": "frozen-key containment vs key F4"
+   },
+   "F5": {
+    "item_id": "T1:probe:F5",
+    "label": "T1",
+    "probe_id": "F5",
+    "visibility": "public",
+    "prompt_sha256": "e6fd33ea784748b17b72334954ab2db7c074935798689b8b934a34063c20cae6",
+    "operation_id": "pub08-eval:T1:probe:F5",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 11755,
+     "latency_ms": 3929,
+     "writer_execution_id": "model-exec-2660d8ec9580",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "scored",
+    "answer": "Per the text, Willard et al.'s abstract says constrained decoding guarantees the structure of the generated text, not its correctness.",
+    "supporting_quote": "reliable interfaces by guaranteeing the structure of the generated text",
+    "supporting_quote_verbatim": false,
+    "score": "incorrect",
+    "score_method": "frozen-key containment (norm expected in norm answer)",
+    "score_reason": "frozen-key containment vs key F5"
+   },
+   "F6": {
+    "item_id": "T1:probe:F6",
+    "label": "T1",
+    "probe_id": "F6",
+    "visibility": "public",
+    "prompt_sha256": "c4da7f6e8f10117e47ab3a235b5ffb3bd2c9f8c1dcb7ecedcbda6704569510b2",
+    "operation_id": "pub08-eval:T1:probe:F6",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 11700,
+     "latency_ms": 5303,
+     "writer_execution_id": "model-exec-db856d0cb700",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "scored",
+    "answer": "0.148% (the JSON parse-error rate for LLaMA 3 8B on one task, as reported in the text's account of Tam et al.)",
+    "supporting_quote": "on LLaMA 3 8B the JSON parse-error rate on one task was 0.148% against a 38.15-point performance gap",
+    "supporting_quote_verbatim": false,
+    "score": "correct",
+    "score_method": "frozen-key containment (norm expected in norm answer)",
+    "score_reason": "frozen-key containment vs key F6"
+   },
+   "F7": {
+    "item_id": "T1:probe:F7",
+    "label": "T1",
+    "probe_id": "F7",
+    "visibility": "heldout",
+    "prompt_sha256": "d4614fccd5fab3e06cace37048b3e135336dcde956ade0ac67181d464df17f4b",
+    "operation_id": "pub08-eval:T1:probe:F7",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 11778,
+     "latency_ms": 5494,
+     "writer_execution_id": "model-exec-192d1178f0c0",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "scored",
+    "answer": "LMQL's evaluation reportedly cuts inference cost and latency by 26-80%, per the text's framing and headline figure, which the chapter does not verify.",
+    "supporting_quote": "its evaluation reports cutting inference cost and latency by 26-80% while retaining or slightly improving accuracy",
+    "supporting_quote_verbatim": false,
+    "score": "correct",
+    "score_method": "frozen-key containment (norm expected in norm answer)",
+    "score_reason": "frozen-key containment vs key F7"
+   },
+   "F8": {
+    "item_id": "T1:probe:F8",
+    "label": "T1",
+    "probe_id": "F8",
+    "visibility": "heldout",
+    "prompt_sha256": "6dea33da15cd867e7b765c4edf7d5ef738525f340eb2a738b5693f5110d80a2f",
+    "operation_id": "pub08-eval:T1:probe:F8",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 11632,
+     "latency_ms": 3641,
+     "writer_execution_id": "model-exec-584df8980744",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "scored",
+    "answer": "Around 200 labels.",
+    "supporting_quote": "First, their conclusion reports that performance begins to saturate after **around 200 labels**, which is the most useful number in this chapter's source set",
+    "supporting_quote_verbatim": false,
+    "score": "correct",
+    "score_method": "frozen-key containment (norm expected in norm answer)",
+    "score_reason": "frozen-key containment vs key F8"
+   },
+   "F9": {
+    "item_id": "T1:probe:F9",
+    "label": "T1",
+    "probe_id": "F9",
+    "visibility": "heldout",
+    "prompt_sha256": "13ae2c5ffd4e17956868c17b3f2bb38db1f9de793da97bc14e530f1f17e72193",
+    "operation_id": "pub08-eval:T1:probe:F9",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 11719,
+     "latency_ms": 5726,
+     "writer_execution_id": "model-exec-5edd9d889dd2",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "scored",
+    "answer": "Around 50 MB, as reported by Willard et al. (the Outlines paper).",
+    "supporting_quote": "even naively built for an augmented Python grammar, they report it at \"around 50 MB\"",
+    "supporting_quote_verbatim": true,
+    "score": "correct",
+    "score_method": "frozen-key containment (norm expected in norm answer)",
+    "score_reason": "frozen-key containment vs key F9"
+   },
+   "F10": {
+    "item_id": "T1:probe:F10",
+    "label": "T1",
+    "probe_id": "F10",
+    "visibility": "heldout",
+    "prompt_sha256": "0824f0dc7d7dcaba7b20a3611d654fd0b74de67ac2db4202309b8180ae4ab5b8",
+    "operation_id": "pub08-eval:T1:probe:F10",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 11645,
+     "latency_ms": 5268,
+     "writer_execution_id": "model-exec-aeeaab9c91ff",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "scored",
+    "answer": "Plain natural language still beat the CFG-constrained format on 2 of 3 reasoning datasets.",
+    "supporting_quote": "With a CFG-constrained output guaranteeing 100% adherence, plain natural language still beat the constrained format on 2 of 3 reasoning datasets.",
+    "supporting_quote_verbatim": false,
+    "score": "correct",
+    "score_method": "frozen-key containment (norm expected in norm answer)",
+    "score_reason": "frozen-key containment vs key F10"
+   },
+   "F11": {
+    "item_id": "T1:probe:F11",
+    "label": "T1",
+    "probe_id": "F11",
+    "visibility": "heldout",
+    "prompt_sha256": "576e498d8a074f1caf313cb3e984e58b2f5b3d8929eeb1a0bad59eaf00090f4b",
+    "operation_id": "pub08-eval:T1:probe:F11",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 11714,
+     "latency_ms": 3580,
+     "writer_execution_id": "model-exec-7ae6b92d1af4",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "scored",
+    "answer": "Tickets t11 ('Saw it cheaper yesterday') and t60 ('Not asking for anything, but if you did, I would take it') were inside the written policy but labelled decline.",
+    "supporting_quote": "Both are inside the written policy and both are labelled \"decline\" in this case set",
+    "supporting_quote_verbatim": false,
+    "score": "incorrect",
+    "score_method": "frozen-key containment (norm expected in norm answer)",
+    "score_reason": "frozen-key containment vs key F11"
+   },
+   "F12": {
+    "item_id": "T1:probe:F12",
+    "label": "T1",
+    "probe_id": "F12",
+    "visibility": "heldout",
+    "prompt_sha256": "236c4ef37e5813801a7a6690d9ca35f6515924ce16b1ec70a89923042bd13b47",
+    "operation_id": "pub08-eval:T1:probe:F12",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 11733,
+     "latency_ms": 4310,
+     "writer_execution_id": "model-exec-f14f3757859e",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "scored",
+    "answer": "The preregistered schema uses answer-first ordering: refund_approved first, then reason.",
+    "supporting_quote": "Our preregistered schema asks for `refund_approved` first and `reason` second \u2014 the exact ordering they identify as harmful.",
+    "supporting_quote_verbatim": false,
+    "score": "incorrect",
+    "score_method": "frozen-key containment (norm expected in norm answer)",
+    "score_reason": "frozen-key containment vs key F12"
+   },
+   "E1": {
+    "item_id": "T1:probe:E1",
+    "label": "T1",
+    "probe_id": "E1",
+    "visibility": "public",
+    "prompt_sha256": "cda9a5a9096ed267dbd1fb3c2776d1ed65e2704cda6af73c698b0f35a521461b",
+    "operation_id": "pub08-eval:T1:probe:E1",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 11723,
+     "latency_ms": 3541,
+     "writer_execution_id": "model-exec-1b9ae3a042ab",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "scored",
+    "answer": "No, the model-backed arms did not run, because the machine had no local model weights and a CPU-only build of torch.",
+    "supporting_quote": "The machine this chapter ran on had no local model weights and a CPU-only build of torch, so the model-backed arms did not run.",
+    "supporting_quote_verbatim": false,
+    "score": "incorrect",
+    "score_method": "frozen-key containment (norm expected in norm answer)",
+    "score_reason": "frozen-key containment vs key E1"
+   },
+   "E2": {
+    "item_id": "T1:probe:E2",
+    "label": "T1",
+    "probe_id": "E2",
+    "visibility": "public",
+    "prompt_sha256": "f58cdf480871834ac6882829b8e4ec800ea593fdec1505ee8a56ef0bcb0ebeac",
+    "operation_id": "pub08-eval:T1:probe:E2",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 11803,
+     "latency_ms": 4345,
+     "writer_execution_id": "model-exec-eec2bb4a0e7f",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "scored",
+    "answer": "No. The text labels the Jev contract a third-party claim, not documented fact.",
+    "supporting_quote": "That is a **third-party claim, not DOCUMENTED**: the page describing it is an independent guide, not TypeSafe's own documentation, and this book will treat the contract as a claim to be tested rather than a specification to be trusted.",
+    "supporting_quote_verbatim": true,
+    "score": "incorrect",
+    "score_method": "frozen-key containment (norm expected in norm answer)",
+    "score_reason": "frozen-key containment vs key E2"
+   },
+   "E3": {
+    "item_id": "T1:probe:E3",
+    "label": "T1",
+    "probe_id": "E3",
+    "visibility": "public",
+    "prompt_sha256": "3c4eda7db528dffc488cd97edf8c25047ce60db4b04ac658a1f0bed0a436cdf8",
+    "operation_id": "pub08-eval:T1:probe:E3",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 12143,
+     "latency_ms": 5274,
+     "writer_execution_id": "model-exec-65f75a776e0f",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "scored",
+    "answer": "No: the model-backed generation arms are NOT_OBSERVED, so generation overhead is not measured. Only the predicate's zero-token cost and the 25-character payload size are observed.",
+    "supporting_quote": "Until those rows exist in `results/ch01.jsonl`, no claim about how large generation overhead is should be repeated, by this book or by anyone quoting it.",
+    "supporting_quote_verbatim": false,
+    "score": "incorrect",
+    "score_method": "frozen-key containment (norm expected in norm answer)",
+    "score_reason": "frozen-key containment vs key E3"
+   }
+  },
+  "T2": {
+   "F1": {
+    "item_id": "T2:probe:F1",
+    "label": "T2",
+    "probe_id": "F1",
+    "visibility": "public",
+    "prompt_sha256": "0c1fd679ca9ffd3e18991dc876664d7c76ab017fea216d644433691e6c0e5c63",
+    "operation_id": "pub08-eval:T2:probe:F1",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 11496,
+     "latency_ms": 3804,
+     "writer_execution_id": "model-exec-cbc847b2a94f",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": "ValidationError: 1 validation error for ProbeReaderResponse\n  Invalid JSON: expected value at line 1 column 1 [type=json_invalid, input_value='```json\\n{\"probe_id\": \"F...on the other 10.\"}\\n```', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/json_invalid",
+    "dispatch_error_kind": "INVALID_TYPED_OUTPUT",
+    "status": "fail_malformed",
+    "answer": "",
+    "supporting_quote": "",
+    "supporting_quote_verbatim": false,
+    "score": "fail_malformed",
+    "score_reason": "malformed/truncated/failed dispatch: INVALID_TYPED_OUTPUT; recorded, never retried"
+   },
+   "F2": {
+    "item_id": "T2:probe:F2",
+    "label": "T2",
+    "probe_id": "F2",
+    "visibility": "public",
+    "prompt_sha256": "259e7ec34f7c8fa5dcc3143ad30aab9c46f5fe18b90d18415cab87aa131eaa94",
+    "operation_id": "pub08-eval:T2:probe:F2",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 11733,
+     "latency_ms": 6762,
+     "writer_execution_id": "model-exec-635122a11d37",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "scored",
+    "answer": "8 of the 10 answered test cases matched the label.",
+    "supporting_quote": "On the 10 it answered it was correct 8 times.",
+    "supporting_quote_verbatim": true,
+    "score": "incorrect",
+    "score_method": "frozen-key containment (norm expected in norm answer)",
+    "score_reason": "frozen-key containment vs key F2"
+   },
+   "F3": {
+    "item_id": "T2:probe:F3",
+    "label": "T2",
+    "probe_id": "F3",
+    "visibility": "public",
+    "prompt_sha256": "b3661ba05e1f684679e056a0e253b27cea3f6cacce7abfddfef305c6c052c82e",
+    "operation_id": "pub08-eval:T2:probe:F3",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 11734,
+     "latency_ms": 4644,
+     "writer_execution_id": "model-exec-1e354fcca964",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": "ValidationError: 1 validation error for ProbeReaderResponse\n  Invalid JSON: expected value at line 1 column 1 [type=json_invalid, input_value='```json\\n{\"probe_id\": \"F...oved\\\\\": true}`.\"}\\n```', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/json_invalid",
+    "dispatch_error_kind": "INVALID_TYPED_OUTPUT",
+    "status": "fail_malformed",
+    "answer": "",
+    "supporting_quote": "",
+    "supporting_quote_verbatim": false,
+    "score": "fail_malformed",
+    "score_reason": "malformed/truncated/failed dispatch: INVALID_TYPED_OUTPUT; recorded, never retried"
+   },
+   "F4": {
+    "item_id": "T2:probe:F4",
+    "label": "T2",
+    "probe_id": "F4",
+    "visibility": "public",
+    "prompt_sha256": "8bf63a333551b49cc80f5d6fc7b6d312287e45bd96e6cebd0885b7df08d8f9a9",
+    "operation_id": "pub08-eval:T2:probe:F4",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 11472,
+     "latency_ms": 5171,
+     "writer_execution_id": "model-exec-741401d04b07",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "scored",
+    "answer": "The predicate generated zero tokens, and every call took under 4 microseconds.",
+    "supporting_quote": "It generated zero tokens and every call took under 4 microseconds (`results/ch01.jsonl`, seed 0).",
+    "supporting_quote_verbatim": true,
+    "score": "incorrect",
+    "score_method": "frozen-key containment (norm expected in norm answer)",
+    "score_reason": "frozen-key containment vs key F4"
+   },
+   "F5": {
+    "item_id": "T2:probe:F5",
+    "label": "T2",
+    "probe_id": "F5",
+    "visibility": "public",
+    "prompt_sha256": "46bf5e7e2769cd9bf4a020a8761e7d1b552598d14a32bc5a4d1d0c179be58d0c",
+    "operation_id": "pub08-eval:T2:probe:F5",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 11692,
+     "latency_ms": 4636,
+     "writer_execution_id": "model-exec-07bd46090918",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "scored",
+    "answer": "Per Willard et al.'s abstract as quoted in the text, constrained decoding guarantees the structure of the generated text, which enables reliable interfaces.",
+    "supporting_quote": "reliable interfaces by guaranteeing the structure of the generated text",
+    "supporting_quote_verbatim": true,
+    "score": "incorrect",
+    "score_method": "frozen-key containment (norm expected in norm answer)",
+    "score_reason": "frozen-key containment vs key F5"
+   },
+   "F6": {
+    "item_id": "T2:probe:F6",
+    "label": "T2",
+    "probe_id": "F6",
+    "visibility": "public",
+    "prompt_sha256": "59fdaf597b97cf0ea52d1d3af6d83ee3bc763dfabfc7a333ce633b967b0447b8",
+    "operation_id": "pub08-eval:T2:probe:F6",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 11364,
+     "latency_ms": 3092,
+     "writer_execution_id": "model-exec-7e2b7c8eddbe",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "scored",
+    "answer": "0.148% JSON parse-error rate for LLaMA 3 8B on one task.",
+    "supporting_quote": "on LLaMA 3 8B the JSON parse-error rate on one task was 0.148% against a 38.15-point performance gap",
+    "supporting_quote_verbatim": true,
+    "score": "correct",
+    "score_method": "frozen-key containment (norm expected in norm answer)",
+    "score_reason": "frozen-key containment vs key F6"
+   },
+   "F7": {
+    "item_id": "T2:probe:F7",
+    "label": "T2",
+    "probe_id": "F7",
+    "visibility": "heldout",
+    "prompt_sha256": "bf3fa9f72f9f36d324cffea3862bee54f507f009c05feead36fc439ba8faae5d",
+    "operation_id": "pub08-eval:T2:probe:F7",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 11451,
+     "latency_ms": 3767,
+     "writer_execution_id": "model-exec-da72c1095c3d",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "scored",
+    "answer": "LMQL's evaluation reports cutting inference cost and latency by 26-80%.",
+    "supporting_quote": "its evaluation reports cutting inference cost and latency by 26-80% while retaining or slightly improving accuracy",
+    "supporting_quote_verbatim": true,
+    "score": "correct",
+    "score_method": "frozen-key containment (norm expected in norm answer)",
+    "score_reason": "frozen-key containment vs key F7"
+   },
+   "F8": {
+    "item_id": "T2:probe:F8",
+    "label": "T2",
+    "probe_id": "F8",
+    "visibility": "heldout",
+    "prompt_sha256": "a3527e95667e7e9109c1e321c9154b10d92204abcb5f659eb10ab25717e8d850",
+    "operation_id": "pub08-eval:T2:probe:F8",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 11441,
+     "latency_ms": 3697,
+     "writer_execution_id": "model-exec-7b0de823b080",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "scored",
+    "answer": "Around 200 labels.",
+    "supporting_quote": "First, their conclusion reports that performance begins to saturate after **around 200 labels**, which is the most useful number in this chapter's source set",
+    "supporting_quote_verbatim": true,
+    "score": "correct",
+    "score_method": "frozen-key containment (norm expected in norm answer)",
+    "score_reason": "frozen-key containment vs key F8"
+   },
+   "F9": {
+    "item_id": "T2:probe:F9",
+    "label": "T2",
+    "probe_id": "F9",
+    "visibility": "heldout",
+    "prompt_sha256": "2228f486d749c5b6905e5fb2ecf208af11a75ee7ccfde0b0b0efe9316304387f",
+    "operation_id": "pub08-eval:T2:probe:F9",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 11325,
+     "latency_ms": 3054,
+     "writer_execution_id": "model-exec-dabe07de9d7b",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "scored",
+    "answer": "Around 50 MB.",
+    "supporting_quote": "And the index is not free: even naively built for an augmented Python grammar, they report it at \"around 50 MB\".",
+    "supporting_quote_verbatim": true,
+    "score": "correct",
+    "score_method": "frozen-key containment (norm expected in norm answer)",
+    "score_reason": "frozen-key containment vs key F9"
+   },
+   "F10": {
+    "item_id": "T2:probe:F10",
+    "label": "T2",
+    "probe_id": "F10",
+    "visibility": "heldout",
+    "prompt_sha256": "03314c8bd3d8e5c53cfd22c75d3505185d55dc3ad715b1e6dc45b4775863b7ba",
+    "operation_id": "pub08-eval:T2:probe:F10",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 11420,
+     "latency_ms": 5720,
+     "writer_execution_id": "model-exec-ff99821447fc",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "scored",
+    "answer": "Plain natural language still beat the CFG-constrained output on 2 of 3 reasoning datasets.",
+    "supporting_quote": "With a CFG-constrained output guaranteeing 100% adherence, plain natural language still beat the constrained format on 2 of 3 reasoning datasets.",
+    "supporting_quote_verbatim": true,
+    "score": "correct",
+    "score_method": "frozen-key containment (norm expected in norm answer)",
+    "score_reason": "frozen-key containment vs key F10"
+   },
+   "F11": {
+    "item_id": "T2:probe:F11",
+    "label": "T2",
+    "probe_id": "F11",
+    "visibility": "heldout",
+    "prompt_sha256": "79dc264d5c97bc38c8636eef3a5d47a0062611a5c102780a21e862e71ffa7ac0",
+    "operation_id": "pub08-eval:T2:probe:F11",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 11907,
+     "latency_ms": 5475,
+     "writer_execution_id": "model-exec-078832fdd75e",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": "ValidationError: 1 validation error for ProbeReaderResponse\n  Invalid JSON: expected value at line 1 column 1 [type=json_invalid, input_value='```json\\n{\"probe_id\": \"F...uld take it\\\\\").\"}\\n```', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/json_invalid",
+    "dispatch_error_kind": "INVALID_TYPED_OUTPUT",
+    "status": "fail_malformed",
+    "answer": "",
+    "supporting_quote": "",
+    "supporting_quote_verbatim": false,
+    "score": "fail_malformed",
+    "score_reason": "malformed/truncated/failed dispatch: INVALID_TYPED_OUTPUT; recorded, never retried"
+   },
+   "F12": {
+    "item_id": "T2:probe:F12",
+    "label": "T2",
+    "probe_id": "F12",
+    "visibility": "heldout",
+    "prompt_sha256": "1ac18c2204402b694328b4a8396ca87e70c5b658ddfb6026a620f288e4c651d6",
+    "operation_id": "pub08-eval:T2:probe:F12",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 11446,
+     "latency_ms": 3271,
+     "writer_execution_id": "model-exec-9bd261b903ea",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "scored",
+    "answer": "The preregistered schema asks for `refund_approved` first and `reason` second (answer-first ordering).",
+    "supporting_quote": "Our preregistered schema asks for `refund_approved` first and `reason` second \u2014 the exact ordering they identify as harmful.",
+    "supporting_quote_verbatim": true,
+    "score": "incorrect",
+    "score_method": "frozen-key containment (norm expected in norm answer)",
+    "score_reason": "frozen-key containment vs key F12"
+   },
+   "E1": {
+    "item_id": "T2:probe:E1",
+    "label": "T2",
+    "probe_id": "E1",
+    "visibility": "public",
+    "prompt_sha256": "bd4feb17a3514b4be91bd9ef8c0f0d47163d36e0bf83b8d8fe691856b9a3b70f",
+    "operation_id": "pub08-eval:T2:probe:E1",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 11436,
+     "latency_ms": 5280,
+     "writer_execution_id": "model-exec-1857b4ccb646",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": "ValidationError: 1 validation error for ProbeReaderResponse\n  Invalid JSON: expected value at line 1 column 1 [type=json_invalid, input_value='```json\\n{\"probe_id\": \"E...rms did not run.\"}\\n```', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/json_invalid",
+    "dispatch_error_kind": "INVALID_TYPED_OUTPUT",
+    "status": "fail_malformed",
+    "answer": "",
+    "supporting_quote": "",
+    "supporting_quote_verbatim": false,
+    "score": "fail_malformed",
+    "score_reason": "malformed/truncated/failed dispatch: INVALID_TYPED_OUTPUT; recorded, never retried"
+   },
+   "E2": {
+    "item_id": "T2:probe:E2",
+    "label": "T2",
+    "probe_id": "E2",
+    "visibility": "public",
+    "prompt_sha256": "a17e01dc9e8a81464e89cae3a3ee0da4eb161fe7c8e6abd6457c96b534dac455",
+    "operation_id": "pub08-eval:T2:probe:E2",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 11535,
+     "latency_ms": 3717,
+     "writer_execution_id": "model-exec-58524efb331e",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "scored",
+    "answer": "No. The text labels the Jev contract a third-party claim, not documented fact.",
+    "supporting_quote": "That is a **third-party claim, not DOCUMENTED**: the page describing it is an independent guide, not TypeSafe's own documentation, and this book will treat the contract as a claim to be tested rather than a specification to be trusted.",
+    "supporting_quote_verbatim": true,
+    "score": "incorrect",
+    "score_method": "frozen-key containment (norm expected in norm answer)",
+    "score_reason": "frozen-key containment vs key E2"
+   },
+   "E3": {
+    "item_id": "T2:probe:E3",
+    "label": "T2",
+    "probe_id": "E3",
+    "visibility": "public",
+    "prompt_sha256": "e5ef9292781826e8fa9f5fec7b163bc219ee48f2d35e597297a39e77179961da",
+    "operation_id": "pub08-eval:T2:probe:E3",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 11580,
+     "latency_ms": 4528,
+     "writer_execution_id": "model-exec-63507d23de65",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "scored",
+    "answer": "No. Generation overhead is not measured in this text; the model-backed arms were NOT_OBSERVED, and only the predicate arm (zero tokens) and a 25-character payload size were observed.",
+    "supporting_quote": "The machine this chapter ran on had no local model weights and a CPU-only build of torch, so the model-backed arms did not run.",
+    "supporting_quote_verbatim": true,
+    "score": "incorrect",
+    "score_method": "frozen-key containment (norm expected in norm answer)",
+    "score_reason": "frozen-key containment vs key E3"
+   }
+  },
+  "T3": {
+   "F1": {
+    "item_id": "T3:probe:F1",
+    "label": "T3",
+    "probe_id": "F1",
+    "visibility": "public",
+    "prompt_sha256": "842c06199f1f1e81df235467e4290a0091b595e95c0ae8b2ea62eecb60ae2453",
+    "operation_id": "pub08-eval:T3:probe:F1",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 12462,
+     "latency_ms": 6053,
+     "writer_execution_id": "model-exec-aa521817f02c",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "scored",
+    "answer": "On the test split (20 cases), the predicate answered 10 tickets and returned None (declined) on the other 10.",
+    "supporting_quote": "On the `test` split (20 cases), the predicate answered 10 and returned `None` on the other 10.",
+    "supporting_quote_verbatim": false,
+    "score": "incorrect",
+    "score_method": "frozen-key containment (norm expected in norm answer)",
+    "score_reason": "frozen-key containment vs key F1"
+   },
+   "F2": {
+    "item_id": "T3:probe:F2",
+    "label": "T3",
+    "probe_id": "F2",
+    "visibility": "public",
+    "prompt_sha256": "a66ebcada717d9eb229d2254d0c25c23cabc71e0e16d33320a530c0157b9c6d1",
+    "operation_id": "pub08-eval:T3:probe:F2",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 12435,
+     "latency_ms": 4054,
+     "writer_execution_id": "model-exec-ccfc755c94a3",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": "ValidationError: 1 validation error for ProbeReaderResponse\n  Invalid JSON: expected value at line 1 column 1 [type=json_invalid, input_value='```json\\n{\"probe_id\": \"F...correct 8 times.\"}\\n```', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/json_invalid",
+    "dispatch_error_kind": "INVALID_TYPED_OUTPUT",
+    "status": "fail_malformed",
+    "answer": "",
+    "supporting_quote": "",
+    "supporting_quote_verbatim": false,
+    "score": "fail_malformed",
+    "score_reason": "malformed/truncated/failed dispatch: INVALID_TYPED_OUTPUT; recorded, never retried"
+   },
+   "F3": {
+    "item_id": "T3:probe:F3",
+    "label": "T3",
+    "probe_id": "F3",
+    "visibility": "public",
+    "prompt_sha256": "81985d084c9c34a793c1257410102e7a366ec9301bbae34448fa0ac15c4242ae",
+    "operation_id": "pub08-eval:T3:probe:F3",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 12659,
+     "latency_ms": 5854,
+     "writer_execution_id": "model-exec-7f61e9a4c8da",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "scored",
+    "answer": "The caller reads the 25-character payload `{\"refund_approved\": true}`.",
+    "supporting_quote": "The value the caller consumes, written out, is 25 characters: `{\"refund_approved\": true}`.",
+    "supporting_quote_verbatim": false,
+    "score": "correct",
+    "score_method": "frozen-key containment (norm expected in norm answer)",
+    "score_reason": "frozen-key containment vs key F3"
+   },
+   "F4": {
+    "item_id": "T3:probe:F4",
+    "label": "T3",
+    "probe_id": "F4",
+    "visibility": "public",
+    "prompt_sha256": "387ac10eb4d6ecb6fc9712f67eeffb88b972e9d34b9ea3b7176d2ec3e63e7f6e",
+    "operation_id": "pub08-eval:T3:probe:F4",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 12530,
+     "latency_ms": 4060,
+     "writer_execution_id": "model-exec-136d0583a42b",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "scored",
+    "answer": "The predicate generated zero tokens, and every call took under 4 microseconds.",
+    "supporting_quote": "It generated zero tokens and every call took under 4 microseconds",
+    "supporting_quote_verbatim": false,
+    "score": "incorrect",
+    "score_method": "frozen-key containment (norm expected in norm answer)",
+    "score_reason": "frozen-key containment vs key F4"
+   },
+   "F5": {
+    "item_id": "T3:probe:F5",
+    "label": "T3",
+    "probe_id": "F5",
+    "visibility": "public",
+    "prompt_sha256": "d6363095ec0b888520a1fe54a0b4c302da6c8d2ee246d89ea8376cfd37a3b0b8",
+    "operation_id": "pub08-eval:T3:probe:F5",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 12545,
+     "latency_ms": 4206,
+     "writer_execution_id": "model-exec-b3ffae79c127",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "scored",
+    "answer": "Per the Willard et al. abstract as quoted in the text, constrained decoding guarantees the structure of the generated text, not whether it is the right answer.",
+    "supporting_quote": "Their abstract says constrained decoding enables \"reliable interfaces by guaranteeing the structure of the generated text\".",
+    "supporting_quote_verbatim": false,
+    "score": "incorrect",
+    "score_method": "frozen-key containment (norm expected in norm answer)",
+    "score_reason": "frozen-key containment vs key F5"
+   },
+   "F6": {
+    "item_id": "T3:probe:F6",
+    "label": "T3",
+    "probe_id": "F6",
+    "visibility": "public",
+    "prompt_sha256": "78b9e7405cebeee73cfa4efc1eedff26db25da077508bac63830b45e54ada7c6",
+    "operation_id": "pub08-eval:T3:probe:F6",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 12511,
+     "latency_ms": 3428,
+     "writer_execution_id": "model-exec-ee215bd1bdbd",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "scored",
+    "answer": "0.148%",
+    "supporting_quote": "on LLaMA 3 8B the JSON parse-error rate on one task was 0.148% against a 38.15-point performance gap",
+    "supporting_quote_verbatim": false,
+    "score": "correct",
+    "score_method": "frozen-key containment (norm expected in norm answer)",
+    "score_reason": "frozen-key containment vs key F6"
+   },
+   "F7": {
+    "item_id": "T3:probe:F7",
+    "label": "T3",
+    "probe_id": "F7",
+    "visibility": "heldout",
+    "prompt_sha256": "1131aadabcb187e1cbbc97515a68a984b6f770762c9ce7afef19a389661dcf2c",
+    "operation_id": "pub08-eval:T3:probe:F7",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 12552,
+     "latency_ms": 4140,
+     "writer_execution_id": "model-exec-08df06f95c5b",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "scored",
+    "answer": "LMQL's evaluation reports cutting inference cost and latency by 26-80%, while retaining or slightly improving accuracy.",
+    "supporting_quote": "its evaluation reports cutting inference cost and latency by 26-80% while retaining or slightly improving accuracy",
+    "supporting_quote_verbatim": false,
+    "score": "correct",
+    "score_method": "frozen-key containment (norm expected in norm answer)",
+    "score_reason": "frozen-key containment vs key F7"
+   },
+   "F8": {
+    "item_id": "T3:probe:F8",
+    "label": "T3",
+    "probe_id": "F8",
+    "visibility": "heldout",
+    "prompt_sha256": "7fef711cdc96bba38e8a36ff2e67a2e4e39af58d7a1df41d53ef695cb9259593",
+    "operation_id": "pub08-eval:T3:probe:F8",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 12360,
+     "latency_ms": 5061,
+     "writer_execution_id": "model-exec-df7f1aa8c099",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "scored",
+    "answer": "Around 200 labels.",
+    "supporting_quote": "their conclusion reports that performance begins to saturate after **around 200 labels**",
+    "supporting_quote_verbatim": false,
+    "score": "correct",
+    "score_method": "frozen-key containment (norm expected in norm answer)",
+    "score_reason": "frozen-key containment vs key F8"
+   },
+   "F9": {
+    "item_id": "T3:probe:F9",
+    "label": "T3",
+    "probe_id": "F9",
+    "visibility": "heldout",
+    "prompt_sha256": "f3d4d6b281d41e4be8d181fdff1a978505b50b87100bd1da8d78f3163660f58c",
+    "operation_id": "pub08-eval:T3:probe:F9",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 12407,
+     "latency_ms": 3990,
+     "writer_execution_id": "model-exec-540794e804d6",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "scored",
+    "answer": "Around 50 MB of memory, one-time, according to the chapter's table citing \u00a75 of Willard et al.",
+    "supporting_quote": "Naively built index (augmented Python grammar) | Around 50 MB of memory, one-time | \u00a75",
+    "supporting_quote_verbatim": true,
+    "score": "correct",
+    "score_method": "frozen-key containment (norm expected in norm answer)",
+    "score_reason": "frozen-key containment vs key F9"
+   },
+   "F10": {
+    "item_id": "T3:probe:F10",
+    "label": "T3",
+    "probe_id": "F10",
+    "visibility": "heldout",
+    "prompt_sha256": "22d84af2e2831abc8dc3a85e47bf96cc060f1f157e7315359a0b94074c056264",
+    "operation_id": "pub08-eval:T3:probe:F10",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 12438,
+     "latency_ms": 3603,
+     "writer_execution_id": "model-exec-198cb3394363",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "scored",
+    "answer": "Plain natural language beat the CFG-constrained output on 2 of 3 reasoning datasets.",
+    "supporting_quote": "With a CFG-constrained output guaranteeing 100% adherence, plain natural language still beat the constrained format on 2 of 3 reasoning datasets.",
+    "supporting_quote_verbatim": false,
+    "score": "correct",
+    "score_method": "frozen-key containment (norm expected in norm answer)",
+    "score_reason": "frozen-key containment vs key F10"
+   },
+   "F11": {
+    "item_id": "T3:probe:F11",
+    "label": "T3",
+    "probe_id": "F11",
+    "visibility": "heldout",
+    "prompt_sha256": "ef18c4a067080237dad8ffa7d29e091cdc9f686e306ce5b1e0a56dc672bb2e45",
+    "operation_id": "pub08-eval:T3:probe:F11",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 12379,
+     "latency_ms": 3159,
+     "writer_execution_id": "model-exec-42eca20f49bc",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "scored",
+    "answer": "Tickets t11 ('Saw it cheaper yesterday') and t60 ('Not asking for anything, but if you did, I would take it') were inside the written policy but labelled 'decline'.",
+    "supporting_quote": "Both are inside the written policy and both are labelled \"decline\" in this case set, which was written by hand",
+    "supporting_quote_verbatim": false,
+    "score": "incorrect",
+    "score_method": "frozen-key containment (norm expected in norm answer)",
+    "score_reason": "frozen-key containment vs key F11"
+   },
+   "F12": {
+    "item_id": "T3:probe:F12",
+    "label": "T3",
+    "probe_id": "F12",
+    "visibility": "heldout",
+    "prompt_sha256": "198a1d29734993f1048f7a47f75affd26dfdd507678af4c9c849ca9f0970a3ba",
+    "operation_id": "pub08-eval:T3:probe:F12",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 12477,
+     "latency_ms": 3555,
+     "writer_execution_id": "model-exec-7afec2c7ed29",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "scored",
+    "answer": "The preregistered schema puts `refund_approved` first and `reason` second (answer-first), which the text identifies as the harmful ordering.",
+    "supporting_quote": "Our preregistered schema asks for `refund_approved` first and `reason` second \u2014 the exact ordering they identify as harmful.",
+    "supporting_quote_verbatim": false,
+    "score": "incorrect",
+    "score_method": "frozen-key containment (norm expected in norm answer)",
+    "score_reason": "frozen-key containment vs key F12"
+   },
+   "E1": {
+    "item_id": "T3:probe:E1",
+    "label": "T3",
+    "probe_id": "E1",
+    "visibility": "public",
+    "prompt_sha256": "9a9b6612478722fda8d29f598d8b601720b213913b6b74f6bfe1c97ec0dcf8a5",
+    "operation_id": "pub08-eval:T3:probe:E1",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 12557,
+     "latency_ms": 3942,
+     "writer_execution_id": "model-exec-946335b24703",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "scored",
+    "answer": "No. The text states that the model-backed arms did not run because the machine had no local model weights and a CPU-only build of torch.",
+    "supporting_quote": "The machine this chapter ran on had no local model weights and a CPU-only build of torch, so the model-backed arms did not run.",
+    "supporting_quote_verbatim": false,
+    "score": "incorrect",
+    "score_method": "frozen-key containment (norm expected in norm answer)",
+    "score_reason": "frozen-key containment vs key E1"
+   },
+   "E2": {
+    "item_id": "T3:probe:E2",
+    "label": "T3",
+    "probe_id": "E2",
+    "visibility": "public",
+    "prompt_sha256": "d63364d49e7b6262ce45a8e04cd5189b0e9385b948adae4da2dcf6f0ab6896ab",
+    "operation_id": "pub08-eval:T3:probe:E2",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 12547,
+     "latency_ms": 6122,
+     "writer_execution_id": "model-exec-cb3287637569",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "scored",
+    "answer": "No. The text labels the Jev contract a third-party claim, not documented fact.",
+    "supporting_quote": "That is a **third-party claim, not DOCUMENTED**",
+    "supporting_quote_verbatim": true,
+    "score": "incorrect",
+    "score_method": "frozen-key containment (norm expected in norm answer)",
+    "score_reason": "frozen-key containment vs key E2"
+   },
+   "E3": {
+    "item_id": "T3:probe:E3",
+    "label": "T3",
+    "probe_id": "E3",
+    "visibility": "public",
+    "prompt_sha256": "9df019e6f8be7a9ea16581b04c83dd9a1603cdf3d6f7e040e28a6e7db576ea80",
+    "operation_id": "pub08-eval:T3:probe:E3",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 12674,
+     "latency_ms": 6754,
+     "writer_execution_id": "model-exec-6c9c68c6273f",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": "ValidationError: 1 validation error for ProbeReaderResponse\n  Invalid JSON: expected value at line 1 column 1 [type=json_invalid, input_value='```json\\n{\"probe_id\": \"E...omparison exists\"}\\n```', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/json_invalid",
+    "dispatch_error_kind": "INVALID_TYPED_OUTPUT",
+    "status": "fail_malformed",
+    "answer": "",
+    "supporting_quote": "",
+    "supporting_quote_verbatim": false,
+    "score": "fail_malformed",
+    "score_reason": "malformed/truncated/failed dispatch: INVALID_TYPED_OUTPUT; recorded, never retried"
+   }
+  },
+  "T4": {
+   "F1": {
+    "item_id": "T4:probe:F1",
+    "label": "T4",
+    "probe_id": "F1",
+    "visibility": "public",
+    "prompt_sha256": "c98a884c065295bd638d7a9c507bf3328ee3ca6f7e569e0158e9f310c00a43f9",
+    "operation_id": "pub08-eval:T4:probe:F1",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 11577,
+     "latency_ms": 3630,
+     "writer_execution_id": "model-exec-e9cfb556e75e",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": "ValidationError: 1 validation error for ProbeReaderResponse\n  Invalid JSON: expected value at line 1 column 1 [type=json_invalid, input_value='```json\\n{\"probe_id\": \"F...on the other 10.\"}\\n```', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/json_invalid",
+    "dispatch_error_kind": "INVALID_TYPED_OUTPUT",
+    "status": "fail_malformed",
+    "answer": "",
+    "supporting_quote": "",
+    "supporting_quote_verbatim": false,
+    "score": "fail_malformed",
+    "score_reason": "malformed/truncated/failed dispatch: INVALID_TYPED_OUTPUT; recorded, never retried"
+   },
+   "F2": {
+    "item_id": "T4:probe:F2",
+    "label": "T4",
+    "probe_id": "F2",
+    "visibility": "public",
+    "prompt_sha256": "542df4966852f2ba932f652b83657b53e4a1fcea98094128c5b9b189b6891fa9",
+    "operation_id": "pub08-eval:T4:probe:F2",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 11511,
+     "latency_ms": 4617,
+     "writer_execution_id": "model-exec-8d1d6a523b73",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "scored",
+    "answer": "8 of the 10 answered test cases matched the label.",
+    "supporting_quote": "On the 10 it answered it was correct 8 times.",
+    "supporting_quote_verbatim": true,
+    "score": "incorrect",
+    "score_method": "frozen-key containment (norm expected in norm answer)",
+    "score_reason": "frozen-key containment vs key F2"
+   },
+   "F3": {
+    "item_id": "T4:probe:F3",
+    "label": "T4",
+    "probe_id": "F3",
+    "visibility": "public",
+    "prompt_sha256": "355a46bb8096f6b5a2e8f4da5583501e41c798c87d7e0dfbaebbda4b67a3dd1f",
+    "operation_id": "pub08-eval:T4:probe:F3",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 11688,
+     "latency_ms": 4761,
+     "writer_execution_id": "model-exec-75bfb752e463",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": "ValidationError: 1 validation error for ProbeReaderResponse\n  Invalid JSON: expected value at line 1 column 1 [type=json_invalid, input_value='```json\\n{\"probe_id\": \"F...oved\\\\\": true}`.\"}\\n```', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/json_invalid",
+    "dispatch_error_kind": "INVALID_TYPED_OUTPUT",
+    "status": "fail_malformed",
+    "answer": "",
+    "supporting_quote": "",
+    "supporting_quote_verbatim": false,
+    "score": "fail_malformed",
+    "score_reason": "malformed/truncated/failed dispatch: INVALID_TYPED_OUTPUT; recorded, never retried"
+   },
+   "F4": {
+    "item_id": "T4:probe:F4",
+    "label": "T4",
+    "probe_id": "F4",
+    "visibility": "public",
+    "prompt_sha256": "f3cd43efdd435345a51db9f74b222d99d9e402c47fee5143edf6844da1deac38",
+    "operation_id": "pub08-eval:T4:probe:F4",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 11592,
+     "latency_ms": 4686,
+     "writer_execution_id": "model-exec-41b8bf61137d",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": "ValidationError: 1 validation error for ProbeReaderResponse\n  Invalid JSON: expected value at line 1 column 1 [type=json_invalid, input_value='```json\\n{\"probe_id\": \"F...r 4 microseconds\"}\\n```', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/json_invalid",
+    "dispatch_error_kind": "INVALID_TYPED_OUTPUT",
+    "status": "fail_malformed",
+    "answer": "",
+    "supporting_quote": "",
+    "supporting_quote_verbatim": false,
+    "score": "fail_malformed",
+    "score_reason": "malformed/truncated/failed dispatch: INVALID_TYPED_OUTPUT; recorded, never retried"
+   },
+   "F5": {
+    "item_id": "T4:probe:F5",
+    "label": "T4",
+    "probe_id": "F5",
+    "visibility": "public",
+    "prompt_sha256": "5a88fd7c0ac106ba2586212e415a9f9ebd3886f365ea9b04a3681f9be71959f4",
+    "operation_id": "pub08-eval:T4:probe:F5",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 11643,
+     "latency_ms": 3557,
+     "writer_execution_id": "model-exec-255cf2f116dd",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": "ValidationError: 1 validation error for ProbeReaderResponse\n  Invalid JSON: expected value at line 1 column 1 [type=json_invalid, input_value='```json\\n{\"probe_id\": \"F...e generated text\"}\\n```', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/json_invalid",
+    "dispatch_error_kind": "INVALID_TYPED_OUTPUT",
+    "status": "fail_malformed",
+    "answer": "",
+    "supporting_quote": "",
+    "supporting_quote_verbatim": false,
+    "score": "fail_malformed",
+    "score_reason": "malformed/truncated/failed dispatch: INVALID_TYPED_OUTPUT; recorded, never retried"
+   },
+   "F6": {
+    "item_id": "T4:probe:F6",
+    "label": "T4",
+    "probe_id": "F6",
+    "visibility": "public",
+    "prompt_sha256": "033205677b2e18bba7297fd0f7d08579a628910d6c4ad48197d56a9a495950f8",
+    "operation_id": "pub08-eval:T4:probe:F6",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 11561,
+     "latency_ms": 3583,
+     "writer_execution_id": "model-exec-ea2c39ee56cf",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "scored",
+    "answer": "Tam et al. report a JSON parse-error rate of 0.148% for LLaMA 3 8B on one task.",
+    "supporting_quote": "on LLaMA 3 8B the JSON parse-error rate on one task was 0.148% against a 38.15-point performance gap",
+    "supporting_quote_verbatim": false,
+    "score": "correct",
+    "score_method": "frozen-key containment (norm expected in norm answer)",
+    "score_reason": "frozen-key containment vs key F6"
+   },
+   "F7": {
+    "item_id": "T4:probe:F7",
+    "label": "T4",
+    "probe_id": "F7",
+    "visibility": "heldout",
+    "prompt_sha256": "769ab44a3c1e0e50b29e8945f4a04ff2902571f9c9012bc9a58562abb1844c6b",
+    "operation_id": "pub08-eval:T4:probe:F7",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 11734,
+     "latency_ms": 4108,
+     "writer_execution_id": "model-exec-059607a73840",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "scored",
+    "answer": "LMQL reports cutting inference cost and latency by 26-80%.",
+    "supporting_quote": "its evaluation reports cutting inference cost and latency by 26-80% while retaining or slightly improving accuracy.",
+    "supporting_quote_verbatim": false,
+    "score": "correct",
+    "score_method": "frozen-key containment (norm expected in norm answer)",
+    "score_reason": "frozen-key containment vs key F7"
+   },
+   "F8": {
+    "item_id": "T4:probe:F8",
+    "label": "T4",
+    "probe_id": "F8",
+    "visibility": "heldout",
+    "prompt_sha256": "0df242d4715963f0d8f7253b5786cf32831e4c134efa6c00e6a388c41603a32b",
+    "operation_id": "pub08-eval:T4:probe:F8",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 11460,
+     "latency_ms": 3691,
+     "writer_execution_id": "model-exec-bbbed0a8d10e",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "scored",
+    "answer": "Around 200 labels.",
+    "supporting_quote": "their conclusion reports that performance begins to saturate after **around 200 labels**",
+    "supporting_quote_verbatim": false,
+    "score": "correct",
+    "score_method": "frozen-key containment (norm expected in norm answer)",
+    "score_reason": "frozen-key containment vs key F8"
+   },
+   "F9": {
+    "item_id": "T4:probe:F9",
+    "label": "T4",
+    "probe_id": "F9",
+    "visibility": "heldout",
+    "prompt_sha256": "97a6c9e24874fb5aa7f37b6ea8857bfdf4f3f186bcb3f95f403df381756f8d49",
+    "operation_id": "pub08-eval:T4:probe:F9",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 11442,
+     "latency_ms": 4898,
+     "writer_execution_id": "model-exec-1eadd6ef9168",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "scored",
+    "answer": "Around 50 MB.",
+    "supporting_quote": "even naively built for an augmented Python grammar, they report it at \"around 50 MB\"",
+    "supporting_quote_verbatim": true,
+    "score": "correct",
+    "score_method": "frozen-key containment (norm expected in norm answer)",
+    "score_reason": "frozen-key containment vs key F9"
+   },
+   "F10": {
+    "item_id": "T4:probe:F10",
+    "label": "T4",
+    "probe_id": "F10",
+    "visibility": "heldout",
+    "prompt_sha256": "9937b6d45443e021509e7c1cb97318ec32ea7d99445309e380cba1994ea01645",
+    "operation_id": "pub08-eval:T4:probe:F10",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 11678,
+     "latency_ms": 3833,
+     "writer_execution_id": "model-exec-5de36c3cfc71",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": "ValidationError: 1 validation error for ProbeReaderResponse\n  Invalid JSON: expected value at line 1 column 1 [type=json_invalid, input_value='```json\\n{\"probe_id\": \"F...soning datasets.\"}\\n```', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/json_invalid",
+    "dispatch_error_kind": "INVALID_TYPED_OUTPUT",
+    "status": "fail_malformed",
+    "answer": "",
+    "supporting_quote": "",
+    "supporting_quote_verbatim": false,
+    "score": "fail_malformed",
+    "score_reason": "malformed/truncated/failed dispatch: INVALID_TYPED_OUTPUT; recorded, never retried"
+   },
+   "F11": {
+    "item_id": "T4:probe:F11",
+    "label": "T4",
+    "probe_id": "F11",
+    "visibility": "heldout",
+    "prompt_sha256": "e1cc85de957e92359242d79f787223fff0ff836b1ff13beaf2228f2ac0d2b3a4",
+    "operation_id": "pub08-eval:T4:probe:F11",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 11929,
+     "latency_ms": 4857,
+     "writer_execution_id": "model-exec-cc3163150f02",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": "ValidationError: 1 validation error for ProbeReaderResponse\n  Invalid JSON: expected value at line 1 column 1 [type=json_invalid, input_value='```json\\n{\"probe_id\": \"F...in this case set\"}\\n```', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/json_invalid",
+    "dispatch_error_kind": "INVALID_TYPED_OUTPUT",
+    "status": "fail_malformed",
+    "answer": "",
+    "supporting_quote": "",
+    "supporting_quote_verbatim": false,
+    "score": "fail_malformed",
+    "score_reason": "malformed/truncated/failed dispatch: INVALID_TYPED_OUTPUT; recorded, never retried"
+   },
+   "F12": {
+    "item_id": "T4:probe:F12",
+    "label": "T4",
+    "probe_id": "F12",
+    "visibility": "heldout",
+    "prompt_sha256": "29f7ddab09754f922cdf0e552596b0f1819e05da794afd5198e978d086d51b14",
+    "operation_id": "pub08-eval:T4:probe:F12",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 11501,
+     "latency_ms": 3847,
+     "writer_execution_id": "model-exec-97966794e409",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "scored",
+    "answer": "The preregistered schema uses answer-first ordering: `refund_approved` comes before `reason`.",
+    "supporting_quote": "Our preregistered schema asks for `refund_approved` first and `reason` second \u2014 the exact ordering they identify as harmful.",
+    "supporting_quote_verbatim": false,
+    "score": "incorrect",
+    "score_method": "frozen-key containment (norm expected in norm answer)",
+    "score_reason": "frozen-key containment vs key F12"
+   },
+   "E1": {
+    "item_id": "T4:probe:E1",
+    "label": "T4",
+    "probe_id": "E1",
+    "visibility": "public",
+    "prompt_sha256": "551f58dac00aa564c531e72909a5223952a8a73d6df8bf9f6371d60e5fe79575",
+    "operation_id": "pub08-eval:T4:probe:E1",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 11550,
+     "latency_ms": 3830,
+     "writer_execution_id": "model-exec-f61a28bfd5b3",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "scored",
+    "answer": "No. The model-backed arms did not run, because the machine had no local model weights and a CPU-only build of torch.",
+    "supporting_quote": "The machine this chapter ran on had no local model weights and a CPU-only build of torch, so the model-backed arms did not run.",
+    "supporting_quote_verbatim": false,
+    "score": "incorrect",
+    "score_method": "frozen-key containment (norm expected in norm answer)",
+    "score_reason": "frozen-key containment vs key E1"
+   },
+   "E2": {
+    "item_id": "T4:probe:E2",
+    "label": "T4",
+    "probe_id": "E2",
+    "visibility": "public",
+    "prompt_sha256": "8f666a9f7638e6fb35b948c56aa3ebaff2c1ad43d2ff6e9f1e838a9e145b1ca8",
+    "operation_id": "pub08-eval:T4:probe:E2",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 11545,
+     "latency_ms": 3851,
+     "writer_execution_id": "model-exec-12ef7601d136",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": "ValidationError: 1 validation error for ProbeReaderResponse\n  Invalid JSON: expected value at line 1 column 1 [type=json_invalid, input_value='```json\\n{\"probe_id\": \"E...describing it is\"}\\n```', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/json_invalid",
+    "dispatch_error_kind": "INVALID_TYPED_OUTPUT",
+    "status": "fail_malformed",
+    "answer": "",
+    "supporting_quote": "",
+    "supporting_quote_verbatim": false,
+    "score": "fail_malformed",
+    "score_reason": "malformed/truncated/failed dispatch: INVALID_TYPED_OUTPUT; recorded, never retried"
+   },
+   "E3": {
+    "item_id": "T4:probe:E3",
+    "label": "T4",
+    "probe_id": "E3",
+    "visibility": "public",
+    "prompt_sha256": "dc0b9f15b7ed3c30aaed896ed7feb217687a29fb8d288dec01bfedcef2bc0fd3",
+    "operation_id": "pub08-eval:T4:probe:E3",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 11899,
+     "latency_ms": 4946,
+     "writer_execution_id": "model-exec-fdd23ea37488",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "scored",
+    "answer": "No. The generation arms are marked NOT_OBSERVED, so generation overhead is not measured in this text.",
+    "supporting_quote": "Until those rows exist in `results/ch01.jsonl`, no claim about how large generation overhead is should be repeated, by this book or by anyone quoting it.",
+    "supporting_quote_verbatim": false,
+    "score": "incorrect",
+    "score_method": "frozen-key containment (norm expected in norm answer)",
+    "score_reason": "frozen-key containment vs key E3"
+   }
+  }
+ },
+ "controls": {
+  "T1": {
+   "NC2": {
+    "item_id": "T1:control:NC2",
+    "label": "T1",
+    "control_id": "NC2",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 12450,
+     "latency_ms": 5574,
+     "writer_execution_id": "model-exec-3adc3db1bd73",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "prompt_sha256": "ca080c1265e49d08c8541a009956129829b08a92e776c1ad19c9561133210045",
+    "operation_id": "pub08-eval:T1:control:NC2",
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "judged",
+    "setup": "constructed",
+    "kind": "new_text",
+    "dispatches": 1,
+    "disposition": "introduced",
+    "reason": "judge verdict introduced",
+    "evidence": {
+     "in_original": false,
+     "in_candidate": true
+    },
+    "judge": {
+     "called": true,
+     "verdict": "introduced",
+     "rationale": "The quoted passage asserts a new measured result: an A100 GPU sweep completing in 41 seconds at a cost of $0.004. No such figure, sweep, or GPU run appears elsewhere in T1. The text states the opposite: the chapter's machine had a CPU-only torch build, the model-backed arms are NOT_OBSERVED, and 'any GPU number would need the wheel pinned and re-measured.' The passage therefore adds a factual claim not present in the rest of the labeled text, and it conflicts with the limitations stated there.",
+     "judge": "live"
+    }
+   },
+   "NC3": {
+    "item_id": "T1:control:NC3",
+    "label": "T1",
+    "control_id": "NC3",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 12412,
+     "latency_ms": 6293,
+     "writer_execution_id": "model-exec-bb071a72e87c",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "prompt_sha256": "29890366c8bc17a121478260cb1bd1d100632cfccc06027e8a8b685120446795",
+    "operation_id": "pub08-eval:T1:control:NC3",
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "judged",
+    "setup": "constructed",
+    "kind": "paired_wording",
+    "dispatches": 1,
+    "disposition": "strengthened",
+    "reason": "judge verdict strengthened",
+    "evidence": {
+     "in_original": false,
+     "in_candidate": true
+    },
+    "judge": {
+     "called": true,
+     "verdict": "strengthened",
+     "rationale": "The candidate wording upgrades the status of the Jev contract. The reference treats it as a claim to be tested rather than a specification to be trusted, but the candidate treats it as documented fact that can be trusted. The same passage labels the contract a third-party claim that is 'NOT DOCUMENTED', so the candidate hardens an unverified claim into established evidence. This is a change in evidential force, not a restatement.",
+     "judge": "live"
+    }
+   },
+   "NC7a": {
+    "item_id": "T1:control:NC7a",
+    "label": "T1",
+    "control_id": "NC7a",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 12838,
+     "latency_ms": 7386,
+     "writer_execution_id": "model-exec-797a0e5283dc",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "prompt_sha256": "8cd5467d44b64bc35c1ada78b71f861927cc3aa964c4534588eedb34e3c07216",
+    "operation_id": "pub08-eval:T1:control:NC7a",
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "judged",
+    "setup": "constructed",
+    "kind": "new_text",
+    "dispatches": 1,
+    "disposition": "strengthened",
+    "reason": "judge verdict strengthened",
+    "evidence": {
+     "in_original": false,
+     "in_candidate": true
+    },
+    "judge": {
+     "called": true,
+     "verdict": "strengthened",
+     "rationale": "The text explicitly treats the vendor's zero-billing contract as a third-party claim, not DOCUMENTED, and says it will be tested rather than trusted. The quoted passage turns that claim into 'the billing floor is real, not rhetorical,' which hardens it. The text does establish zero output tokens for the local predicate, but that is a compute observation, not a billing fact for a model provider, so the passage is not a mere restatement.",
+     "judge": "live"
+    }
+   }
+  },
+  "T2": {
+   "NC2": {
+    "item_id": "T2:control:NC2",
+    "label": "T2",
+    "control_id": "NC2",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 12579,
+     "latency_ms": 8139,
+     "writer_execution_id": "model-exec-08efaf28eb64",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "prompt_sha256": "c1f62bf8d122d3ecd93a78ab6abf2f4931dd3cc972daac8007d581db4984cc4c",
+    "operation_id": "pub08-eval:T2:control:NC2",
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "judged",
+    "setup": "constructed",
+    "kind": "new_text",
+    "dispatches": 1,
+    "disposition": "introduced",
+    "reason": "judge verdict introduced",
+    "evidence": {
+     "in_original": false,
+     "in_candidate": true
+    },
+    "judge": {
+     "called": true,
+     "verdict": "introduced",
+     "rationale": "The passage asserts a specific new measurement (A100 GPUs, 41 seconds, $0.004 cost) that appears nowhere else in T2. The chapter reports that no model-backed arm ran, that the machine was CPU-only, and that no GPU number exists or should be quoted. The passage therefore adds a factual claim that the rest of the text does not support and that conflicts with its Limitations section.",
+     "judge": "live"
+    }
+   },
+   "NC3": {
+    "item_id": "T2:control:NC3",
+    "label": "T2",
+    "control_id": "NC3",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 12160,
+     "latency_ms": 6196,
+     "writer_execution_id": "model-exec-a5c65aeb6845",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "prompt_sha256": "992052f869cb309967322c305846e233f3530e536276c312ffdb31645de80232",
+    "operation_id": "pub08-eval:T2:control:NC3",
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "judged",
+    "setup": "constructed",
+    "kind": "paired_wording",
+    "dispatches": 1,
+    "disposition": "strengthened",
+    "reason": "judge verdict strengthened",
+    "evidence": {
+     "in_original": false,
+     "in_candidate": true
+    },
+    "judge": {
+     "called": true,
+     "verdict": "strengthened",
+     "rationale": "The reference wording frames the contract as a claim to be tested, not a specification to be trusted. The candidate wording upgrades the contract to documented fact that can be trusted. That raises its evidentiary status, which the same passage has just classed as a third-party claim, not DOCUMENTED. The passage therefore hardens the status of the contract.",
+     "judge": "live"
+    }
+   },
+   "NC7a": {
+    "item_id": "T2:control:NC7a",
+    "label": "T2",
+    "control_id": "NC7a",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 12517,
+     "latency_ms": 9530,
+     "writer_execution_id": "model-exec-de8827c60497",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "prompt_sha256": "0b759287b070d7da25ba84eefcd5a5728bc87bf3b2c9acd769eb18672cbd6877",
+    "operation_id": "pub08-eval:T2:control:NC7a",
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "judged",
+    "setup": "constructed",
+    "kind": "new_text",
+    "dispatches": 1,
+    "disposition": "introduced",
+    "reason": "judge verdict redundant_synthesis (introduced-text subclass)",
+    "evidence": {
+     "in_original": false,
+     "in_candidate": true,
+     "semantic_class": "redundant_synthesis"
+    },
+    "judge": {
+     "called": true,
+     "verdict": "redundant_synthesis",
+     "rationale": "The passage restates content already in T2. The predicate's zero-token output is OBSERVED in the results table, and the Jev zero-billing claim appears earlier. 'Real, not rhetorical' adds only a certainty gloss. It cites no new evidence, though it could be read as hardening the third-party billing claim, which the text itself labels not DOCUMENTED.",
+     "judge": "live"
+    }
+   }
+  },
+  "T3": {
+   "NC2": {
+    "item_id": "T3:control:NC2",
+    "label": "T3",
+    "control_id": "NC2",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 12990,
+     "latency_ms": 4529,
+     "writer_execution_id": "model-exec-9ba11b579fb5",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "prompt_sha256": "4d88acb6348999785904db56a2d0fdbbf34657059bf2a94779b3e0b8189ea2f6",
+    "operation_id": "pub08-eval:T3:control:NC2",
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "judged",
+    "setup": "constructed",
+    "kind": "new_text",
+    "dispatches": 1,
+    "disposition": "introduced",
+    "reason": "judge verdict introduced",
+    "evidence": {
+     "in_original": false,
+     "in_candidate": true
+    },
+    "judge": {
+     "called": true,
+     "verdict": "introduced",
+     "rationale": "The quoted passage states a new factual claim, that A100 GPUs complete the sweep in 41 seconds at a measured cost of $0.004. No such figure, GPU hardware, sweep, or cost appears elsewhere in T3. The text instead says the model-backed arms were NOT_OBSERVED, that no numbers are estimated, and that any GPU number would need the wheel pinned and re-measured. The passage therefore adds an unsupported measurement that contradicts the text's stated limitations.",
+     "judge": "live"
+    }
+   },
+   "NC3": {
+    "item_id": "T3:control:NC3",
+    "label": "T3",
+    "control_id": "NC3",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 13119,
+     "latency_ms": 5018,
+     "writer_execution_id": "model-exec-59ac23ff9a6f",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "prompt_sha256": "9b47649d399e6ad438ace09ea9b7dc9c878b79699a9ee7ea46bd9df0d1f740e0",
+    "operation_id": "pub08-eval:T3:control:NC3",
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "judged",
+    "setup": "constructed",
+    "kind": "paired_wording",
+    "dispatches": 1,
+    "disposition": "strengthened",
+    "reason": "judge verdict strengthened",
+    "evidence": {
+     "in_original": false,
+     "in_candidate": true
+    },
+    "judge": {
+     "called": true,
+     "verdict": "strengthened",
+     "rationale": "The reference wording frames the contract as a claim to be tested, not a specification to be trusted. The candidate wording recasts it as documented fact that can be trusted, which upgrades its evidentiary status. The passage itself says the contract is a third-party claim, not DOCUMENTED, and defers primary-source verification to Chapter 2, so the candidate hardens a status the text does not support.",
+     "judge": "live"
+    }
+   },
+   "NC7a": {
+    "item_id": "T3:control:NC7a",
+    "label": "T3",
+    "control_id": "NC7a",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 13702,
+     "latency_ms": 7551,
+     "writer_execution_id": "model-exec-b776f7268d62",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "prompt_sha256": "8dad2df31c18428797a34f659bae989482be98071d16db46949ddc14a96a6d99",
+    "operation_id": "pub08-eval:T3:control:NC7a",
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "judged",
+    "setup": "constructed",
+    "kind": "new_text",
+    "dispatches": 1,
+    "disposition": "introduced",
+    "reason": "judge verdict redundant_synthesis (introduced-text subclass)",
+    "evidence": {
+     "in_original": false,
+     "in_candidate": true,
+     "semantic_class": "redundant_synthesis"
+    },
+    "judge": {
+     "called": true,
+     "verdict": "redundant_synthesis",
+     "rationale": "The passage adds no new factual claim. Its substance, that output costs nothing because no text is generated, restates the earlier observation that the predicate generated zero tokens (OBSERVED, tokens_out 0) and the earlier description of output billed at zero because there is no generated text to bill for. 'Real, not rhetorical' is a certainty gloss on that restated point. It does not strengthen the evidence: the model-backed arms are NOT_OBSERVED, and the passage does not extend the zero-output result to them.",
+     "judge": "live"
+    }
+   }
+  },
+  "T4": {
+   "NC2": {
+    "item_id": "T4:control:NC2",
+    "label": "T4",
+    "control_id": "NC2",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 12199,
+     "latency_ms": 4634,
+     "writer_execution_id": "model-exec-68ec10e7442a",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "prompt_sha256": "93ceb6f3479ee31cdd171990b9bd18acb79c9ed17e9d738a1e5ef76194cb491d",
+    "operation_id": "pub08-eval:T4:control:NC2",
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "judged",
+    "setup": "constructed",
+    "kind": "new_text",
+    "dispatches": 1,
+    "disposition": "introduced",
+    "reason": "judge verdict introduced",
+    "evidence": {
+     "in_original": false,
+     "in_candidate": true
+    },
+    "judge": {
+     "called": true,
+     "verdict": "introduced",
+     "rationale": "The quoted passage asserts a new measured fact: A100 GPUs finish the sweep in 41 seconds at a cost of $0.004. Nothing else in T4 states these figures or mentions A100 GPUs or a sweep. The surrounding text says the machine was CPU-only, the model-backed arms were NOT_OBSERVED, and 'Any GPU number would need the wheel pinned and re-measured.' The passage therefore adds a new quantitative claim that conflicts with the text's own limitations.",
+     "judge": "live"
+    }
+   },
+   "NC3": {
+    "item_id": "T4:control:NC3",
+    "label": "T4",
+    "control_id": "NC3",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 12453,
+     "latency_ms": 8030,
+     "writer_execution_id": "model-exec-959c22bb616c",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "prompt_sha256": "f37d2cce26542ec0f8d7c6f317f86b67c52ada666f88da8077b4602b555eb38f",
+    "operation_id": "pub08-eval:T4:control:NC3",
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "judged",
+    "setup": "constructed",
+    "kind": "paired_wording",
+    "dispatches": 1,
+    "disposition": "strengthened",
+    "reason": "judge verdict strengthened",
+    "evidence": {
+     "in_original": false,
+     "in_candidate": true
+    },
+    "judge": {
+     "called": true,
+     "verdict": "strengthened",
+     "rationale": "The candidate wording appears in T4 nearly verbatim and upgrades the evidentiary status of the Jev contract. Immediately before it, the text labels the contract a 'third-party claim, not DOCUMENTED' and notes that Chapter 2 has not yet checked the primary sources. The candidate then asserts the book will treat the contract as 'documented fact that can be trusted', which hardens a claim the surrounding text itself says is unverified. The reference wording ('a claim to be tested rather than a specification to be trusted') does not appear in T4, so the comparison is with the reference's stance. The candidate reverses that stance by replacing testing with trust.",
+     "judge": "live"
+    }
+   },
+   "NC7a": {
+    "item_id": "T4:control:NC7a",
+    "label": "T4",
+    "control_id": "NC7a",
+    "meter": {
+     "cost_usd": 0.0,
+     "total_tokens": 12419,
+     "latency_ms": 7949,
+     "writer_execution_id": "model-exec-542c5eea399e",
+     "route": "default_haiku_go",
+     "model": "opencode-go/claude-haiku-5-5",
+     "cost_status": "metered_zero"
+    },
+    "prompt_sha256": "7a747398c90b1c4d503827bf30aa7080cce7c69cfab3227c026d61128b8d05ef",
+    "operation_id": "pub08-eval:T4:control:NC7a",
+    "dispatch_error": null,
+    "dispatch_error_kind": null,
+    "status": "judged",
+    "setup": "constructed",
+    "kind": "new_text",
+    "dispatches": 1,
+    "disposition": "strengthened",
+    "reason": "judge verdict strengthened",
+    "evidence": {
+     "in_original": false,
+     "in_candidate": true
+    },
+    "judge": {
+     "called": true,
+     "verdict": "strengthened",
+     "rationale": "The passage hardens the status of a claim the text explicitly marks as unverified. Earlier, the text describes Jev's billing at zero as 'a third-party claim, not DOCUMENTED' and says the book 'will treat the contract as a claim to be tested rather than a specification to be trusted.' The quoted sentence restates the zero-output-cost idea but asserts it as 'real, not rhetorical,' which upgrades that claim's evidentiary standing. The only observed zero-token figure is for the predicate arm, which does not establish the vendor billing floor.",
+     "judge": "live"
+    }
+   }
+  }
+ },
+ "adjudication_assists": [
+  {
+   "item_id": "T1vT2:assist:Q1",
+   "pair": "T1vT2",
+   "question_id": "Q1",
+   "prompt_sha256": "102fe78c28f21922dac4ae6dccdb85fdba9358da9d46656f3677f4e03af94556",
+   "operation_id": "pub08-eval:T1vT2:assist:Q1",
+   "meter": {
+    "cost_usd": 0.0,
+    "total_tokens": 23957,
+    "latency_ms": 10836,
+    "writer_execution_id": "model-exec-467354d62c06",
+    "route": "default_haiku_go",
+    "model": "opencode-go/claude-haiku-5-5",
+    "cost_status": "metered_zero"
+   },
+   "dispatch_error": null,
+   "dispatch_error_kind": null,
+   "status": "assisted",
+   "preferred": "tie",
+   "preferred_labels": {
+    "A": "T1",
+    "B": "T2",
+    "tie": null,
+    "abstain": null
+   },
+   "rationale": "I compared every measurement number, quantity and unit in both texts: the 50.00 threshold, 30 days, 25 characters, under 4 microseconds, 0.148% and 38.15 points, around 50 MB, 10^4, 26-80%, around 200 labels, 1.7B, 20/10/10/20 splits, 75 and 15 cases, 53 checks, 8-of-10, the per-ticket amounts and day counts, and the output tables. All match in value and unit. The only differences are line wrapping and paragraph breaks, which do not change any figure.",
+   "quotes": [
+    "even naively built for an augmented Python grammar, they report it at \"around 50 MB\".",
+    "the JSON parse-error rate on one task was 0.148% against a 38.15-point performance gap",
+    "is 25 characters: `{\"refund_approved\": true}`.",
+    "predicate answered 10 and declined 10"
+   ],
+   "quotes_verbatim": [
+    true,
+    true,
+    true,
+    true
+   ]
+  },
+  {
+   "item_id": "T1vT2:assist:Q2",
+   "pair": "T1vT2",
+   "question_id": "Q2",
+   "prompt_sha256": "e6db20f76360da287a2a79069125283dca45a40e216e516529903040adef91e4",
+   "operation_id": "pub08-eval:T1vT2:assist:Q2",
+   "meter": {
+    "cost_usd": 0.0,
+    "total_tokens": 25301,
+    "latency_ms": 15500,
+    "writer_execution_id": "model-exec-84abe7ee2b1c",
+    "route": "default_haiku_go",
+    "model": "opencode-go/claude-haiku-5-5",
+    "cost_status": "metered_zero"
+   },
+   "dispatch_error": null,
+   "dispatch_error_kind": null,
+   "status": "assisted",
+   "preferred": "tie",
+   "preferred_labels": {
+    "A": "T1",
+    "B": "T2",
+    "tie": null,
+    "abstain": null
+   },
+   "rationale": "The two texts carry the same hedges and evidential markers in the same places: OBSERVED/DOCUMENTED/NOT_OBSERVED tags, the third-party-claim label on the Jev contract, the 'Not yet run' block, the limits on generalising the 8-of-10 figure, and the 'structure, not correctness' caveat. Differences are formatting (line wrapping) and T1's extra closing restatement paragraphs, which repeat the existing third-party hedge without adding or removing any certainty qualifier. Neither text strengthens or weakens a claim, so neither preserves certainty better.",
+   "quotes": [
+    "The prediction stands untested on the arms that matter.",
+    "That is a **third-party claim, not DOCUMENTED**:",
+    "Their result does not transfer to our setup automatically, and this chapter does not get"
+   ],
+   "quotes_verbatim": [
+    true,
+    true,
+    true
+   ]
+  },
+  {
+   "item_id": "T1vT2:assist:Q3",
+   "pair": "T1vT2",
+   "question_id": "Q3",
+   "prompt_sha256": "b6a871efd2edfc4b0e2e58db765782ab3256a9324b0c816f884e0c784d59aeb2",
+   "operation_id": "pub08-eval:T1vT2:assist:Q3",
+   "meter": {
+    "cost_usd": 0.0,
+    "total_tokens": 24144,
+    "latency_ms": 9401,
+    "writer_execution_id": "model-exec-7c6c4155a30a",
+    "route": "default_haiku_go",
+    "model": "opencode-go/claude-haiku-5-5",
+    "cost_status": "metered_zero"
+   },
+   "dispatch_error": null,
+   "dispatch_error_kind": null,
+   "status": "assisted",
+   "preferred": "B",
+   "preferred_labels": {
+    "A": "T1",
+    "B": "T2",
+    "tie": null,
+    "abstain": null
+   },
+   "rationale": "The two texts have the same content, but T1 repeats its closing claim, restating 'That is the whole claim so far' and then the summary again in a second paragraph, which is redundant gloss. T1 also ends by restating the one-line summary with a second 'What Chapter 1 leaves standing' sentence. T2 states the same points once and ends cleanly. T2's sentence-per-line layout is choppier, but it adds no obscurity, so it reads more clearly overall.",
+   "quotes": [
+    "That is the whole claim so far: generation and decision are not the same act;",
+    "What Chapter 1 leaves standing is an open question handed to Chapter 2,",
+    "It is not the same act, and the measurements in this chapter are the evidence that conflating them is expensive."
+   ],
+   "quotes_verbatim": [
+    true,
+    true,
+    true
+   ]
+  },
+  {
+   "item_id": "T1vT2:assist:Q4",
+   "pair": "T1vT2",
+   "question_id": "Q4",
+   "prompt_sha256": "8337958a61fb313044e4db04e3130a09a8d2f3283c3ce508e66445b0a6cf043c",
+   "operation_id": "pub08-eval:T1vT2:assist:Q4",
+   "meter": {
+    "cost_usd": 0.0,
+    "total_tokens": 25166,
+    "latency_ms": 14711,
+    "writer_execution_id": "model-exec-1048b32994d2",
+    "route": "default_haiku_go",
+    "model": "opencode-go/claude-haiku-5-5",
+    "cost_status": "metered_zero"
+   },
+   "dispatch_error": null,
+   "dispatch_error_kind": null,
+   "status": "assisted",
+   "preferred": "tie",
+   "preferred_labels": {
+    "A": "T1",
+    "B": "T2",
+    "tie": null,
+    "abstain": null
+   },
+   "rationale": "Both texts report the same measurements with the same figures: 75 cases, a 20-case test split, 10 answered and 10 declined, 8 of 10 correct, under 4 microseconds per call, and a 25-character payload. Neither text gives a conflicting number, so neither supports correct answers to factual reading questions better than the other. T1 hard-wraps its lines and repeats one sentence, while T2 is cleaner in layout, but neither difference changes a figure.",
+   "quotes": [
+    "On the 10 it answered it was correct 8 times.",
+    "every call took under 4 microseconds",
+    "The value the caller consumes, written out, is 25 characters"
+   ],
+   "quotes_verbatim": [
+    true,
+    true,
+    true
+   ]
+  },
+  {
+   "item_id": "T1vT2:assist:Q5",
+   "pair": "T1vT2",
+   "question_id": "Q5",
+   "prompt_sha256": "501e070513e56543f6fd88fa83a03431c6c98235907b5206e63098495b7879f5",
+   "operation_id": "pub08-eval:T1vT2:assist:Q5",
+   "meter": {
+    "cost_usd": 0.0,
+    "total_tokens": 24793,
+    "latency_ms": 13823,
+    "writer_execution_id": "model-exec-0a26fd191163",
+    "route": "default_haiku_go",
+    "model": "opencode-go/claude-haiku-5-5",
+    "cost_status": "metered_zero"
+   },
+   "dispatch_error": null,
+   "dispatch_error_kind": null,
+   "status": "assisted",
+   "preferred": "tie",
+   "preferred_labels": {
+    "A": "T1",
+    "B": "T2",
+    "tie": null,
+    "abstain": null
+   },
+   "rationale": "Both texts share the same hard-gate content: identical numbers, citations, code, measurement table, and limitations. T1 is not better on any hard gate, and T2 is not clearly better on two dimensions. The differences are stylistic and redundancy-related. T1 repeats its thesis in its closing (\"That is the whole claim so far\" appears twice) and adds a further summary paragraph, while T2 states the point once. That is one concrete difference, but it does not meet the dominance rule of being better on at least two dimensions, so the result is a tie.",
+   "quotes": [
+    "That is the whole claim so far: generation and decision are not the same act; the programming-construct question is [Chapter 16](/books/jev/16-chapter/), and the model-category question is [Chapter 2](/books/jev/02-chapter/).",
+    "What Chapter 1 leaves standing is an open question handed to Chapter 2",
+    "It is not the same act, and the measurements in this chapter are the evidence that conflating them is expensive."
+   ],
+   "quotes_verbatim": [
+    true,
+    true,
+    true
+   ]
+  },
+  {
+   "item_id": "T1vT3:assist:Q1",
+   "pair": "T1vT3",
+   "question_id": "Q1",
+   "prompt_sha256": "4aede324931e6b14ca7feb3a4148ddd626f56f2911ad550931227a627343ebba",
+   "operation_id": "pub08-eval:T1vT3:assist:Q1",
+   "meter": {
+    "cost_usd": 0.0,
+    "total_tokens": 27186,
+    "latency_ms": 20346,
+    "writer_execution_id": "model-exec-463a123d69dc",
+    "route": "default_haiku_go",
+    "model": "opencode-go/claude-haiku-5-5",
+    "cost_status": "metered_zero"
+   },
+   "dispatch_error": null,
+   "dispatch_error_kind": null,
+   "status": "assisted",
+   "preferred": "tie",
+   "preferred_labels": {
+    "A": "T1",
+    "B": "T3",
+    "tie": null,
+    "abstain": null
+   },
+   "rationale": "Every headline measurement number is preserved identically in both texts: 25-character payload, 75 cases, 20/10/10/20 split, 10 answered / 10 declined / 8 correct, 4 microseconds, 53 checks, 0.148% and 38.15 points, around 200 labels, 26-80%, 10^4 and around 50 MB, and 1.7B model size. The differences are qualitative. T1 asserts the overhead ratio is greater than 1 by construction, while T3 restates the same fact as a schema-length fact and not a measured ratio. T3 adds a CPU timer-resolution caveat to the latency figures and adds 'one-time' to the 50 MB entry, which the source does not state. Neither change alters a preserved number, so no text is more faithful on numbers.",
+   "quotes": [
+    "is 25 characters:",
+    "greater than 1 by construction",
+    "not a measured overhead ratio",
+    "CPU timer resolution was not characterised",
+    "Around 50 MB of memory, one-time",
+    "around 50 MB",
+    "10 answered, 10 declined, 8 correct"
+   ],
+   "quotes_verbatim": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ]
+  },
+  {
+   "item_id": "T1vT3:assist:Q2",
+   "pair": "T1vT3",
+   "question_id": "Q2",
+   "prompt_sha256": "df4a3e8d33a327c6d4bc6cdbf66227ca8b22676e664f0bb17733b7e4c9690c10",
+   "operation_id": "pub08-eval:T1vT3:assist:Q2",
+   "meter": {
+    "cost_usd": 0.0,
+    "total_tokens": 26136,
+    "latency_ms": 14831,
+    "writer_execution_id": "model-exec-c7caa4a476c0",
+    "route": "default_haiku_go",
+    "model": "opencode-go/claude-haiku-5-5",
+    "cost_status": "metered_zero"
+   },
+   "dispatch_error": null,
+   "dispatch_error_kind": null,
+   "status": "assisted",
+   "preferred": "B",
+   "preferred_labels": {
+    "A": "T1",
+    "B": "T3",
+    "tie": null,
+    "abstain": null
+   },
+   "rationale": "Both texts keep most hedges, but T1 overstates certainty in two places that T3 corrects. T1 labels the overhead as a measured fact ('OBSERVED') and calls it 'greater than 1 by construction', even though no model arm ran. T3 states the same 25-character point as a schema-length fact, explicitly not a measured overhead ratio, and says no comparison exists. T1 also attributes the 'Generate less. Measure the rest.' line to LMQL as an unhedged assertion. T3 presents it as the book's own rule, not anyone's slogan. T3 adds calibrating hedges that T1 lacks: the latency figures are 'meaningful only as an upper bound' because timer resolution was not characterised, and the error pattern is 'not yet known' to be shared by a model. T3 also hedges the classification point symmetrically ('may help, or it may cost'), where T1 leans toward 'We may find constraint helps.'",
+   "quotes": [
+    "is therefore **greater than 1 by construction**, independent of what any model does",
+    "schema-length fact about this interface, not a measured overhead ratio",
+    "Generate less. Measure the rest. \u2014 which LMQL said first, years ago",
+    "the book's own rule for itself, not anyone's",
+    "meaningful only as an upper bound.",
+    "Constraint may help, or it may cost; we will"
+   ],
+   "quotes_verbatim": [
+    false,
+    true,
+    true,
+    true,
+    true,
+    true
+   ]
+  },
+  {
+   "item_id": "T1vT3:assist:Q3",
+   "pair": "T1vT3",
+   "question_id": "Q3",
+   "prompt_sha256": "a69785cefaacdabbf3bdefaf84505a09fb1c8c42c761d3b86d9657f3666371fe",
+   "operation_id": "pub08-eval:T1vT3:assist:Q3",
+   "meter": {
+    "cost_usd": 0.0,
+    "total_tokens": 25026,
+    "latency_ms": 9067,
+    "writer_execution_id": "model-exec-1862da139618",
+    "route": "default_haiku_go",
+    "model": "opencode-go/claude-haiku-5-5",
+    "cost_status": "metered_zero"
+   },
+   "dispatch_error": null,
+   "dispatch_error_kind": null,
+   "status": "assisted",
+   "preferred": "B",
+   "preferred_labels": {
+    "A": "T1",
+    "B": "T3",
+    "tie": null,
+    "abstain": null
+   },
+   "rationale": "T3 reads more clearly. T1 repeats its closing claim: it says \"That is the whole claim so far.\" and then restates the same point at length, with its own cross-references. T3 states the claim once, in a single sentence that says what the measurement is for. T3 also replaces the prose cost figures for the Willard et al. paper with a small table, which is easier to scan. T3 is not free of gloss. Its added roadmap paragraph and the \"recovery step is the tax made visible\" line are redundant, so the preference is moderate rather than decisive.",
+   "quotes": [
+    "That is the whole claim so far: generation and decision are not the same act; the programming-construct question is [Chapter 16](/books/jev/16-chapter/), and the model-category question is [Chapter 2](/books/jev/02-chapter/).",
+    "That is the whole claim so far.",
+    "The shape of the chapter is simple. It opens with one concrete refund decision, a predicate",
+    "The recovery step is the tax made visible: every codebase that reads values out of"
+   ],
+   "quotes_verbatim": [
+    true,
+    true,
+    true,
+    true
+   ]
+  },
+  {
+   "item_id": "T1vT3:assist:Q4",
+   "pair": "T1vT3",
+   "question_id": "Q4",
+   "prompt_sha256": "650f21c036df562eaa692f8ba742c2f26acd9e555771679699079017a623ac7c",
+   "operation_id": "pub08-eval:T1vT3:assist:Q4",
+   "meter": {
+    "cost_usd": 0.0,
+    "total_tokens": 25273,
+    "latency_ms": 11576,
+    "writer_execution_id": "model-exec-4ab65104b678",
+    "route": "default_haiku_go",
+    "model": "opencode-go/claude-haiku-5-5",
+    "cost_status": "metered_zero"
+   },
+   "dispatch_error": null,
+   "dispatch_error_kind": null,
+   "status": "assisted",
+   "preferred": "B",
+   "preferred_labels": {
+    "A": "T1",
+    "B": "T3",
+    "tie": null,
+    "abstain": null
+   },
+   "rationale": "Both texts report the same core measurements: 10 of 20 test tickets answered, 8 of 10 correct, errors t11 and t60, zero tokens, and the 25-character payload. T3 states the scope of those figures more precisely. It calls the 25-character payload a schema-length fact rather than a measured overhead ratio, and it notes that the model-backed arms did not run. T1 instead asserts an overhead ratio 'greater than 1 by construction', which a reader could misreport as a measured result. T3 also adds a limitation that the predicate latency figures are only an upper bound, which T1 omits. For factual questions about what was measured, T3 gives the more reliable support.",
+   "quotes": [
+    "That is a schema-length fact about this interface, not a measured overhead ratio: the model-backed arms have not been run, so no token, latency, or failure comparison exists.",
+    "greater than 1 by construction",
+    "CPU timer resolution was not characterised, so the predicate latency figures are meaningful only as an upper bound.",
+    "On the 10 it answered it was correct 8 times."
+   ],
+   "quotes_verbatim": [
+    false,
+    true,
+    false,
+    true
+   ]
+  },
+  {
+   "item_id": "T1vT3:assist:Q5",
+   "pair": "T1vT3",
+   "question_id": "Q5",
+   "prompt_sha256": "d1e8211af9a466eb98c54357a65555b32c74778699c4af5e419e0743f816c7c1",
+   "operation_id": "pub08-eval:T1vT3:assist:Q5",
+   "meter": {
+    "cost_usd": 0.0,
+    "total_tokens": 25853,
+    "latency_ms": 14747,
+    "writer_execution_id": "model-exec-c053d035f9da",
+    "route": "default_haiku_go",
+    "model": "opencode-go/claude-haiku-5-5",
+    "cost_status": "metered_zero"
+   },
+   "dispatch_error": null,
+   "dispatch_error_kind": null,
+   "status": "assisted",
+   "preferred": "B",
+   "preferred_labels": {
+    "A": "T1",
+    "B": "T3",
+    "tie": null,
+    "abstain": null
+   },
+   "rationale": "No hard-gate difference was found between the texts. On the dimensions where they differ, T3 is better on two. (1) Calibration of the overhead claim: T1 states the 25-character interface payload makes the overhead ratio 'greater than 1 by construction', which is a measured-looking claim with no model run behind it. T3 restates the same fact as a schema-length property and explicitly says it is not a measured overhead ratio. (2) Attribution: T1 closes with 'which LMQL said first, years ago', an unsupported attribution. T3 presents the closing line as the book's own rule and does not attribute it. T1 also repeats its 'whole claim so far' closing passage, which T3 does not. T3 adds a CPU timer-resolution limitation that T1 omits. The preference is for T3 under the dominance rule because the differences are concrete and quotable.",
+   "quotes": [
+    "greater than 1 by construction",
+    "not a measured overhead ratio",
+    "which LMQL said first, years ago",
+    "the book's own rule for itself, not anyone's"
+   ],
+   "quotes_verbatim": [
+    true,
+    true,
+    true,
+    true
+   ]
+  },
+  {
+   "item_id": "T1vT4:assist:Q1",
+   "pair": "T1vT4",
+   "question_id": "Q1",
+   "prompt_sha256": "1d7a23d54cd8f19ce29e7b12fc577f54e61992c29f56aac2b77b3d89ed2bf7ec",
+   "operation_id": "pub08-eval:T1vT4:assist:Q1",
+   "meter": {
+    "cost_usd": 0.0,
+    "total_tokens": 24537,
+    "latency_ms": 13845,
+    "writer_execution_id": "model-exec-d81767de3f9f",
+    "route": "default_haiku_go",
+    "model": "opencode-go/claude-haiku-5-5",
+    "cost_status": "metered_zero"
+   },
+   "dispatch_error": null,
+   "dispatch_error_kind": null,
+   "status": "assisted",
+   "preferred": "tie",
+   "preferred_labels": {
+    "A": "T1",
+    "B": "T4",
+    "tie": null,
+    "abstain": null
+   },
+   "rationale": "I compared every measurement number, quantity and unit in both texts, including the sample sizes, token counts, latency bounds, percentages, parameter counts, section and label counts, and the 25-character payload. All match. The texts differ only in line wrapping and in T1's repeated closing summary paragraph, which contains no numbers or units. Neither text preserves numbers more faithfully than the other.",
+   "quotes": [
+    "**OBSERVED.** The value the caller consumes, written out, is 25 characters:",
+    "every call took under 4 microseconds (`results/ch01.jsonl`, seed 0).",
+    "parse-error rate on one task was 0.148% against a 38.15-point performance gap."
+   ],
+   "quotes_verbatim": [
+    true,
+    true,
+    true
+   ]
+  },
+  {
+   "item_id": "T1vT4:assist:Q2",
+   "pair": "T1vT4",
+   "question_id": "Q2",
+   "prompt_sha256": "a4af9a20487179d29da41c2b40a22ed0c4c9fda0cd2af6086a02bd891a4e6362",
+   "operation_id": "pub08-eval:T1vT4:assist:Q2",
+   "meter": {
+    "cost_usd": 0.0,
+    "total_tokens": 25036,
+    "latency_ms": 12515,
+    "writer_execution_id": "model-exec-120e79424790",
+    "route": "default_haiku_go",
+    "model": "opencode-go/claude-haiku-5-5",
+    "cost_status": "metered_zero"
+   },
+   "dispatch_error": null,
+   "dispatch_error_kind": null,
+   "status": "assisted",
+   "preferred": "tie",
+   "preferred_labels": {
+    "A": "T1",
+    "B": "T4",
+    "tie": null,
+    "abstain": null
+   },
+   "rationale": "Both texts carry the same hedges and evidential markers at the same points and with the same strength: the third-party label on the Jev contract, the 'may/will not know' framing of constraint helping, the untested prediction, and the one-sample limitation. The differences are structural rather than epistemic. T1 restates 'That is the whole claim so far' and adds a closing summary paragraph, while T4 condenses the same assertions. Neither text strengthens or weakens a hedge, so certainty fidelity is equivalent.",
+   "quotes": [
+    "We may find constraint helps. We will not know until we run it.",
+    "That is a **third-party claim, not DOCUMENTED**",
+    "The prediction stands untested on the arms that matter.",
+    "Until then, the honest summary of Chapter 1 is one line long."
+   ],
+   "quotes_verbatim": [
+    true,
+    true,
+    true,
+    true
+   ]
+  },
+  {
+   "item_id": "T1vT4:assist:Q3",
+   "pair": "T1vT4",
+   "question_id": "Q3",
+   "prompt_sha256": "7902ef13bf5cd35d22d5b652944ada5bb7e289036590c067660f49d585d583b7",
+   "operation_id": "pub08-eval:T1vT4:assist:Q3",
+   "meter": {
+    "cost_usd": 0.0,
+    "total_tokens": 24959,
+    "latency_ms": 11492,
+    "writer_execution_id": "model-exec-c3f974e886b0",
+    "route": "default_haiku_go",
+    "model": "opencode-go/claude-haiku-5-5",
+    "cost_status": "metered_zero"
+   },
+   "dispatch_error": null,
+   "dispatch_error_kind": null,
+   "status": "assisted",
+   "preferred": "B",
+   "preferred_labels": {
+    "A": "T1",
+    "B": "T4",
+    "tie": null,
+    "abstain": null
+   },
+   "rationale": "The two texts are nearly identical except in the closing sections. T1 restates the same point several times: it repeats 'That is the whole claim so far' as a standalone line, then re-summarises it with the chapter pointers in a second sentence. It also adds a closing paragraph that repeats the one-line-summary idea already stated just before it. T4 states the claim once, in a single compact paragraph, and ends at 'Generate less. Measure the rest.' Both texts use the same obscure-free prose elsewhere, so the redundant gloss in T1 is the decisive difference, and T4 reads more clearly without adding obscurity.",
+   "quotes": [
+    "That is the whole claim so far: generation and decision are not the same act; the programming-construct question is [Chapter 16](/books/jev/16-chapter/), and the model-category question is [Chapter 2](/books/jev/02-chapter/).",
+    "What Chapter 1 leaves standing is an open question handed to Chapter 2, a vendor contract recorded as a third-party claim rather than a specification to be trusted, and a summary held to one line until the primary sources are read.",
+    "Generation is how you currently obtain a decision."
+   ],
+   "quotes_verbatim": [
+    true,
+    true,
+    true
+   ]
+  },
+  {
+   "item_id": "T1vT4:assist:Q4",
+   "pair": "T1vT4",
+   "question_id": "Q4",
+   "prompt_sha256": "61726ba334830985838a825fac3ff8f0d43caea6ce8df48327fdb37c0ae49ac6",
+   "operation_id": "pub08-eval:T1vT4:assist:Q4",
+   "meter": {
+    "cost_usd": 0.0,
+    "total_tokens": 24369,
+    "latency_ms": 9990,
+    "writer_execution_id": "model-exec-7783e9d1de0d",
+    "route": "default_haiku_go",
+    "model": "opencode-go/claude-haiku-5-5",
+    "cost_status": "metered_zero"
+   },
+   "dispatch_error": "ValidationError: 1 validation error for AdjudicationAssistResponse\n  Invalid JSON: expected value at line 1 column 1 [type=json_invalid, input_value='```json\\n{\"pair\": \"T1 vs...match the label\"]}\\n```', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/json_invalid",
+   "dispatch_error_kind": "INVALID_TYPED_OUTPUT",
+   "status": "abstain_malformed",
+   "preferred": "abstain",
+   "rationale": "malformed/truncated/failed dispatch: INVALID_TYPED_OUTPUT; recorded, never retried",
+   "quotes": [],
+   "quotes_verbatim": []
+  },
+  {
+   "item_id": "T1vT4:assist:Q5",
+   "pair": "T1vT4",
+   "question_id": "Q5",
+   "prompt_sha256": "d3c9232fbf52ea753bda1a87fdb2118099a33afacc1a94dd97f95999f64aa717",
+   "operation_id": "pub08-eval:T1vT4:assist:Q5",
+   "meter": {
+    "cost_usd": 0.0,
+    "total_tokens": 24653,
+    "latency_ms": 11383,
+    "writer_execution_id": "model-exec-de32c4d049c4",
+    "route": "default_haiku_go",
+    "model": "opencode-go/claude-haiku-5-5",
+    "cost_status": "metered_zero"
+   },
+   "dispatch_error": "ValidationError: 1 validation error for AdjudicationAssistResponse\n  Invalid JSON: expected value at line 1 column 1 [type=json_invalid, input_value='```json\\n{\"pair\": \"T1 vs...urces are read.\"]}\\n```', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/json_invalid",
+   "dispatch_error_kind": "INVALID_TYPED_OUTPUT",
+   "status": "abstain_malformed",
+   "preferred": "abstain",
+   "rationale": "malformed/truncated/failed dispatch: INVALID_TYPED_OUTPUT; recorded, never retried",
+   "quotes": [],
+   "quotes_verbatim": []
+  },
+  {
+   "item_id": "T2vT3:assist:Q1",
+   "pair": "T2vT3",
+   "question_id": "Q1",
+   "prompt_sha256": "7358eddfb90b153db7931b2f5a31c6046c116f61b0e1241fb1a2145aa557a5ef",
+   "operation_id": "pub08-eval:T2vT3:assist:Q1",
+   "meter": {
+    "cost_usd": 0.0,
+    "total_tokens": 26013,
+    "latency_ms": 14708,
+    "writer_execution_id": "model-exec-11a9a97962f3",
+    "route": "default_haiku_go",
+    "model": "opencode-go/claude-haiku-5-5",
+    "cost_status": "metered_zero"
+   },
+   "dispatch_error": null,
+   "dispatch_error_kind": null,
+   "status": "assisted",
+   "preferred": "tie",
+   "preferred_labels": {
+    "A": "T2",
+    "B": "T3",
+    "tie": null,
+    "abstain": null
+   },
+   "rationale": "Both texts preserve the measurement numbers, quantities and units identically in substance: 75 cases, the 20/10/10/20 split plus the 15-case shift split, 8 of 10 correct, the 25-character payload, 0.148% and 38.15 points from Tam et al., the 26-80% LMQL range, the 200-label figure from Bucher et al., the 10^4 vocabulary size, and the 4-microsecond predicate latency. The only number-adjacent difference is that T3 adds the qualifier 'one-time' to the around-50-MB index figure, which T2 does not state. That qualifier is a small addition rather than a changed number, so the difference does not favour either text.",
+   "quotes": [
+    "On the 10 it answered it was correct 8 times.",
+    "they report it at \"around 50 MB\".",
+    "Around 50 MB of memory, one-time"
+   ],
+   "quotes_verbatim": [
+    true,
+    true,
+    true
+   ]
+  },
+  {
+   "item_id": "T2vT3:assist:Q2",
+   "pair": "T2vT3",
+   "question_id": "Q2",
+   "prompt_sha256": "3cacc7435881d32958516d6cfce538812b122854c4789d8a6526b32599ec0da7",
+   "operation_id": "pub08-eval:T2vT3:assist:Q2",
+   "meter": {
+    "cost_usd": 0.0,
+    "total_tokens": 26539,
+    "latency_ms": 17277,
+    "writer_execution_id": "model-exec-09c32dc0cc97",
+    "route": "default_haiku_go",
+    "model": "opencode-go/claude-haiku-5-5",
+    "cost_status": "metered_zero"
+   },
+   "dispatch_error": "ValidationError: 1 validation error for AdjudicationAssistResponse\n  Invalid JSON: expected value at line 1 column 1 [type=json_invalid, input_value='```json\\n{\"pair\": \"T2 vs...to hold you to.\"]}\\n```', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/json_invalid",
+   "dispatch_error_kind": "INVALID_TYPED_OUTPUT",
+   "status": "abstain_malformed",
+   "preferred": "abstain",
+   "rationale": "malformed/truncated/failed dispatch: INVALID_TYPED_OUTPUT; recorded, never retried",
+   "quotes": [],
+   "quotes_verbatim": []
+  },
+  {
+   "item_id": "T2vT3:assist:Q3",
+   "pair": "T2vT3",
+   "question_id": "Q3",
+   "prompt_sha256": "e4c3bde6c03ee0a9d9617330d09c815426b79e8674c3f4963d344be7751d9cc9",
+   "operation_id": "pub08-eval:T2vT3:assist:Q3",
+   "meter": {
+    "cost_usd": 0.0,
+    "total_tokens": 25552,
+    "latency_ms": 12970,
+    "writer_execution_id": "model-exec-47830c594726",
+    "route": "default_haiku_go",
+    "model": "opencode-go/claude-haiku-5-5",
+    "cost_status": "metered_zero"
+   },
+   "dispatch_error": null,
+   "dispatch_error_kind": null,
+   "status": "assisted",
+   "preferred": "A",
+   "preferred_labels": {
+    "A": "T2",
+    "B": "T3",
+    "tie": null,
+    "abstain": null
+   },
+   "rationale": "Both texts share most of their wording. T3 adds roadmap and recap sentences that restate what the reader has just read, and it adds glosses such as 'The recovery step is the tax made visible', which do not add information. T2 states the same points more directly and without these additions. T3's table for the Willard et al. costs is a clarity gain, but it does not outweigh the added redundancy. T2 has its own rhetorical flourishes, so the preference is moderate.",
+   "quotes": [
+    "The shape of the chapter is simple.",
+    "The recovery step is the tax made visible",
+    "Generate less. Measure the rest. \u2014 which LMQL said first, years ago, and which this chapter exists to hold you to."
+   ],
+   "quotes_verbatim": [
+    true,
+    true,
+    true
+   ]
+  },
+  {
+   "item_id": "T2vT3:assist:Q4",
+   "pair": "T2vT3",
+   "question_id": "Q4",
+   "prompt_sha256": "44a4551d0c621b5f8c80558c2873e5434d0434a6c48df4a5bc423258933fd80d",
+   "operation_id": "pub08-eval:T2vT3:assist:Q4",
+   "meter": {
+    "cost_usd": 0.0,
+    "total_tokens": 26029,
+    "latency_ms": 13978,
+    "writer_execution_id": "model-exec-d24339e90a68",
+    "route": "default_haiku_go",
+    "model": "opencode-go/claude-haiku-5-5",
+    "cost_status": "metered_zero"
+   },
+   "dispatch_error": null,
+   "dispatch_error_kind": null,
+   "status": "assisted",
+   "preferred": "B",
+   "preferred_labels": {
+    "A": "T2",
+    "B": "T3",
+    "tie": null,
+    "abstain": null
+   },
+   "rationale": "Both texts report the same core figures: 10 answered, 10 declined, 8 of 10 correct, zero tokens, and the 25-character payload. T3 states the scope of those measurements more precisely. It labels the 25-character figure a schema-length fact rather than a measured overhead ratio, and it caveats that the CPU timer makes the latency figures only an upper bound. T2 asserts the overhead ratio as a derived result and omits the timer caveat, so T3 better supports correct answers about what was and was not measured.",
+   "quotes": [
+    "schema-length fact about this interface, not a measured overhead ratio",
+    "**CPU timer resolution was not characterised**, so the predicate latency figures are",
+    "On the 10 it answered it was correct 8 times."
+   ],
+   "quotes_verbatim": [
+    true,
+    true,
+    true
+   ]
+  },
+  {
+   "item_id": "T2vT3:assist:Q5",
+   "pair": "T2vT3",
+   "question_id": "Q5",
+   "prompt_sha256": "2ec9df818d29be1eac475ce9481b97a2b5ce856c87435bc5ca165a717120dc2b",
+   "operation_id": "pub08-eval:T2vT3:assist:Q5",
+   "meter": {
+    "cost_usd": 0.0,
+    "total_tokens": 26111,
+    "latency_ms": 16694,
+    "writer_execution_id": "model-exec-43379b026e26",
+    "route": "default_haiku_go",
+    "model": "opencode-go/claude-haiku-5-5",
+    "cost_status": "metered_zero"
+   },
+   "dispatch_error": null,
+   "dispatch_error_kind": null,
+   "status": "assisted",
+   "preferred": "B",
+   "preferred_labels": {
+    "A": "T2",
+    "B": "T3",
+    "tie": null,
+    "abstain": null
+   },
+   "rationale": "The texts are nearly identical in structure and claims, but T3 is better on two concrete dimensions and not worse on any. (1) Calibration: T2 presents the 25-character payload as an OBSERVED overhead result, stating the ratio is 'greater than 1 by construction'. T3 reclassifies this as a schema-length fact and says it is not a measured overhead ratio, which matches the fact that no model-backed arm ran. (2) Attribution: T2 credits LMQL with the 'Generate less. Measure the rest.' line, which the source does not support. T3 presents the line as the book's own rule. (3) Limitations: T3 adds a limitation that CPU timer resolution was not characterised, which T2 omits. No hard gate is defined in the prompt, so this preference rests on these concrete differences rather than on a formal gate check.",
+   "quotes": [
+    "greater than 1 by construction",
+    "not a measured overhead ratio",
+    "which LMQL said first, years ago",
+    "the book's own rule for itself, not anyone's",
+    "CPU timer resolution was not characterised"
+   ],
+   "quotes_verbatim": [
+    true,
+    true,
+    true,
+    true,
+    true
+   ]
+  },
+  {
+   "item_id": "T2vT4:assist:Q1",
+   "pair": "T2vT4",
+   "question_id": "Q1",
+   "prompt_sha256": "50c1ec244d7aaca959c61a90b9ffa349524572cc51f61a9102f401d6a1a39dd4",
+   "operation_id": "pub08-eval:T2vT4:assist:Q1",
+   "meter": {
+    "cost_usd": 0.0,
+    "total_tokens": 23937,
+    "latency_ms": 9413,
+    "writer_execution_id": "model-exec-346c59bc7f6c",
+    "route": "default_haiku_go",
+    "model": "opencode-go/claude-haiku-5-5",
+    "cost_status": "metered_zero"
+   },
+   "dispatch_error": null,
+   "dispatch_error_kind": null,
+   "status": "assisted",
+   "preferred": "tie",
+   "preferred_labels": {
+    "A": "T2",
+    "B": "T4",
+    "tie": null,
+    "abstain": null
+   },
+   "rationale": "Both texts carry the same measurement numbers, quantities and units. Checked and identical in both: the 50.00 threshold, 30-day window, 480.00 and 3000.00 ticket amounts, 10 answered / 10 declined / 8 correct, 20/10/10/20 split, 75 cases, 15-case shift split, 53 selftest checks, 0.148% parse-error rate, 38.15-point gap, 10^4 vocabulary size, ~50 MB index, 26-80% LMQL reduction, ~200 labels, under 4 microseconds, 25-character payload, 0 tokens, and the 'Qwen/Qwen3-1.7B' and 'Figure 1.1' references. The only differences are line wrapping and paragraph reflow, which do not alter any number or unit.",
+   "quotes": [
+    "On the 10 it answered it was correct 8 times.",
+    "every call took under 4 microseconds",
+    "around 50 MB"
+   ],
+   "quotes_verbatim": [
+    true,
+    true,
+    true
+   ]
+  },
+  {
+   "item_id": "T2vT4:assist:Q2",
+   "pair": "T2vT4",
+   "question_id": "Q2",
+   "prompt_sha256": "f0854bcadad0bde8ce5485e6aeb31d913276460f01daefc73ae21476f1d0a9fa",
+   "operation_id": "pub08-eval:T2vT4:assist:Q2",
+   "meter": {
+    "cost_usd": 0.0,
+    "total_tokens": 23913,
+    "latency_ms": 11265,
+    "writer_execution_id": "model-exec-fcdcc38a98a2",
+    "route": "default_haiku_go",
+    "model": "opencode-go/claude-haiku-5-5",
+    "cost_status": "metered_zero"
+   },
+   "dispatch_error": null,
+   "dispatch_error_kind": null,
+   "status": "assisted",
+   "preferred": "tie",
+   "preferred_labels": {
+    "A": "T2",
+    "B": "T4",
+    "tie": null,
+    "abstain": null
+   },
+   "rationale": "The two texts carry the same hedges and evidential-certainty markers. Their differences are line wrapping and whitespace only: the OBSERVED, DOCUMENTED, NOT_OBSERVED and third-party labels, the 'may'/'will not know' hedges, and the 'untested' prediction statement all appear in both. Neither text adds, drops or strengthens a hedge, so neither preserves certainty better.",
+   "quotes": [
+    "We may find constraint helps.",
+    "The prediction stands untested on the arms that matter.",
+    "That is a **third-party claim, not DOCUMENTED**:"
+   ],
+   "quotes_verbatim": [
+    true,
+    true,
+    true
+   ]
+  },
+  {
+   "item_id": "T2vT4:assist:Q3",
+   "pair": "T2vT4",
+   "question_id": "Q3",
+   "prompt_sha256": "3d2c0c835194729b7bfdd99eb104f95f9721bf4e078ac76ce20ba373357555b1",
+   "operation_id": "pub08-eval:T2vT4:assist:Q3",
+   "meter": {
+    "cost_usd": 0.0,
+    "total_tokens": 23882,
+    "latency_ms": 11811,
+    "writer_execution_id": "model-exec-b20a6a132a36",
+    "route": "default_haiku_go",
+    "model": "opencode-go/claude-haiku-5-5",
+    "cost_status": "metered_zero"
+   },
+   "dispatch_error": null,
+   "dispatch_error_kind": null,
+   "status": "assisted",
+   "preferred": "B",
+   "preferred_labels": {
+    "A": "T2",
+    "B": "T4",
+    "tie": null,
+    "abstain": null
+   },
+   "rationale": "The two texts are nearly identical in wording. T4 differs mainly in line wrapping, which is formatting and does not affect clarity. The substantive difference is that T4 introduces the runbook policy blockquote with a signpost sentence, 'The policy, written out as a human would write it in a runbook:', which tells the reader what the quoted block is. T2 drops directly from the explanation that the reason string is kept in the schema into the blockquote with no lead-in, which reads slightly more abruptly. The signpost is not redundant or obscuring, so T4 reads marginally more clearly. The margin is small.",
+   "quotes": [
+    "The policy, written out as a human would write it in a runbook:",
+    "Keeping it in our schema is deliberate: we want to charge the application for output it does not read."
+   ],
+   "quotes_verbatim": [
+    true,
+    true
+   ]
+  },
+  {
+   "item_id": "T2vT4:assist:Q4",
+   "pair": "T2vT4",
+   "question_id": "Q4",
+   "prompt_sha256": "a8b3b11aa93173938da2af9e8af5d55acf7c8fabe2ae9af6fcc11bd5703b2fe1",
+   "operation_id": "pub08-eval:T2vT4:assist:Q4",
+   "meter": {
+    "cost_usd": 0.0,
+    "total_tokens": 24243,
+    "latency_ms": 13569,
+    "writer_execution_id": "model-exec-78da1f9e20e7",
+    "route": "default_haiku_go",
+    "model": "opencode-go/claude-haiku-5-5",
+    "cost_status": "metered_zero"
+   },
+   "dispatch_error": null,
+   "dispatch_error_kind": null,
+   "status": "assisted",
+   "preferred": "tie",
+   "preferred_labels": {
+    "A": "T2",
+    "B": "T4",
+    "tie": null,
+    "abstain": null
+   },
+   "rationale": "Both texts carry the same measurement figures: the test split of 20 cases with 10 answered and 10 declined, 8 of 10 answered correct, the 25-character payload, and the 'under 4 microseconds' timing. Both also contain the same CAPSTONE-02B correction and the same four-arm status table. The visible differences are line wrapping, not content, so neither text gives a factual reader an advantage.",
+   "quotes": [
+    "On the 10 it answered it was correct 8 times.",
+    "The predicate above now approves every eligible ticket and escalates",
+    "predicate answered 10 and declined 10",
+    "The value the caller consumes, written out, is 25 characters"
+   ],
+   "quotes_verbatim": [
+    true,
+    true,
+    true,
+    true
+   ]
+  },
+  {
+   "item_id": "T2vT4:assist:Q5",
+   "pair": "T2vT4",
+   "question_id": "Q5",
+   "prompt_sha256": "25020a45d35c06c1b3d21a9caff845b30b668d287e707d7d1cece43a41a2e063",
+   "operation_id": "pub08-eval:T2vT4:assist:Q5",
+   "meter": {
+    "cost_usd": 0.0,
+    "total_tokens": 23696,
+    "latency_ms": 10605,
+    "writer_execution_id": "model-exec-d7c215c065c0",
+    "route": "default_haiku_go",
+    "model": "opencode-go/claude-haiku-5-5",
+    "cost_status": "metered_zero"
+   },
+   "dispatch_error": null,
+   "dispatch_error_kind": null,
+   "status": "assisted",
+   "preferred": "tie",
+   "preferred_labels": {
+    "A": "T2",
+    "B": "T4",
+    "tie": null,
+    "abstain": null
+   },
+   "rationale": "The two texts have the same title, metadata, code, figures, tables, correction note, limitations and closing sections. The only differences are line wrapping and paragraph layout, so neither text is at least as good on every hard gate and better on two dimensions. No concrete, quotable difference supports a preference, so the dominance rule gives a tie.",
+   "quotes": [
+    "The predicate is faithfully executing a rulebook that has a hole in it."
+   ],
+   "quotes_verbatim": [
+    true
+   ]
+  },
+  {
+   "item_id": "T3vT4:assist:Q1",
+   "pair": "T3vT4",
+   "question_id": "Q1",
+   "prompt_sha256": "34814aa22ecbd41123046cff016202e721da95c1635faf9064da863800fdc9c8",
+   "operation_id": "pub08-eval:T3vT4:assist:Q1",
+   "meter": {
+    "cost_usd": 0.0,
+    "total_tokens": 26531,
+    "latency_ms": 18022,
+    "writer_execution_id": "model-exec-5c066e3cca19",
+    "route": "default_haiku_go",
+    "model": "opencode-go/claude-haiku-5-5",
+    "cost_status": "metered_zero"
+   },
+   "dispatch_error": null,
+   "dispatch_error_kind": null,
+   "status": "assisted",
+   "preferred": "A",
+   "preferred_labels": {
+    "A": "T3",
+    "B": "T4",
+    "tie": null,
+    "abstain": null
+   },
+   "rationale": "Both texts preserve the same measurement numbers: 25 characters, 53 checks, 75 cases, the 20/10/10/20 split, 8-of-10 accuracy, under 4 microseconds, 0.148% and 38.15 points, 26-80%, around 200 labels, around 50 MB, and 10^4. The one substantive quantitative divergence is in how the 25-character payload is characterised. T3 explicitly states it is a schema-length fact, not a measured overhead ratio. T4 converts it into a ratio claim, 'greater than 1 by construction'. T3 keeps the quantity within what was actually measured and does not add a new ratio assertion, so it is marginally more faithful. The difference is small, and the other numbers are identical.",
+   "quotes": [
+    "That is a schema-length fact about this interface, not a measured overhead ratio:",
+    "is therefore **greater than 1 by construction**, independent of what any",
+    "The value the caller consumes, written out, is 25 characters:"
+   ],
+   "quotes_verbatim": [
+    false,
+    true,
+    true
+   ]
+  },
+  {
+   "item_id": "T3vT4:assist:Q2",
+   "pair": "T3vT4",
+   "question_id": "Q2",
+   "prompt_sha256": "a18ba9d7b304b9be96d79cbffe5ce480db80c9dd69ad81fe0cffd2a31b103c90",
+   "operation_id": "pub08-eval:T3vT4:assist:Q2",
+   "meter": {
+    "cost_usd": 0.0,
+    "total_tokens": 26703,
+    "latency_ms": 17781,
+    "writer_execution_id": "model-exec-fca9d6057f77",
+    "route": "default_haiku_go",
+    "model": "opencode-go/claude-haiku-5-5",
+    "cost_status": "metered_zero"
+   },
+   "dispatch_error": null,
+   "dispatch_error_kind": null,
+   "status": "assisted",
+   "preferred": "A",
+   "preferred_labels": {
+    "A": "T3",
+    "B": "T4",
+    "tie": null,
+    "abstain": null
+   },
+   "rationale": "Both texts keep the core caveat that the model-backed arms have not run. T3 preserves more of the hedging and withholds certainty where the evidence is missing. It frames the overhead question as open, says the interface size is 'not a measured overhead ratio', and adds a hedge on whether a model would share the error shape. T4 converts several hedged claims into asserted ones. It states the overhead ratio is 'greater than 1 by construction' and calls the chapter's measurements 'the evidence' that conflating generation with decision is expensive. T4 also drops T3's hedge that the error shape is 'not yet known'.",
+   "quotes": [
+    "**greater than 1 by construction**",
+    "the measurements in this chapter are the evidence that conflating them is expensive.",
+    "the floor below is one arm, and the model-backed arms will tell us",
+    "not know until we run it \u2014 pricing that trade-off is what the arms are for.",
+    "We may find constraint helps."
+   ],
+   "quotes_verbatim": [
+    true,
+    false,
+    true,
+    true,
+    true
+   ]
+  },
+  {
+   "item_id": "T3vT4:assist:Q3",
+   "pair": "T3vT4",
+   "question_id": "Q3",
+   "prompt_sha256": "27998825fd1c031177790e53ff79c8ab0691f1fe7112c2e090f1cba0c85e2da6",
+   "operation_id": "pub08-eval:T3vT4:assist:Q3",
+   "meter": {
+    "cost_usd": 0.0,
+    "total_tokens": 26029,
+    "latency_ms": 14023,
+    "writer_execution_id": "model-exec-d53ac29b3896",
+    "route": "default_haiku_go",
+    "model": "opencode-go/claude-haiku-5-5",
+    "cost_status": "metered_zero"
+   },
+   "dispatch_error": null,
+   "dispatch_error_kind": null,
+   "status": "assisted",
+   "preferred": "B",
+   "preferred_labels": {
+    "A": "T3",
+    "B": "T4",
+    "tie": null,
+    "abstain": null
+   },
+   "rationale": "Both texts share the same content and structure. T3 adds a roadmap paragraph ('The shape of the chapter is simple...') that T4 omits, and it restates the prompt-identity point in a way that repeats itself. T3 also hedges its closing claims more heavily, with phrasings such as 'not a measured overhead ratio' and 'whether conflating them is expensive is what the measurement programme exists to test', which add complexity without adding information. T4 states the same points directly, for example 'The prompt is identical for both model-backed paths, which matters' and 'the measurements in this chapter are the evidence that conflating them is expensive', so it reads more clearly without losing substance.",
+   "quotes": [
+    "The shape of the chapter is simple.",
+    "Paths 2 and 3 share everything before the decoding step, including the prompt.",
+    "schema-length fact about this interface, not a measured overhead ratio: the model-backed",
+    "The prompt is identical for both model-backed paths, which matters: any difference",
+    "measurements in this chapter are the evidence that conflating them is expensive."
+   ],
+   "quotes_verbatim": [
+    true,
+    true,
+    true,
+    true,
+    true
+   ]
+  },
+  {
+   "item_id": "T3vT4:assist:Q4",
+   "pair": "T3vT4",
+   "question_id": "Q4",
+   "prompt_sha256": "53db217141cb2ffdf52489f1cc8d4a53642b1797f1d5f371ed3c0f050ed61c81",
+   "operation_id": "pub08-eval:T3vT4:assist:Q4",
+   "meter": {
+    "cost_usd": 0.0,
+    "total_tokens": 26103,
+    "latency_ms": 16261,
+    "writer_execution_id": "model-exec-44f76ec83f9f",
+    "route": "default_haiku_go",
+    "model": "opencode-go/claude-haiku-5-5",
+    "cost_status": "metered_zero"
+   },
+   "dispatch_error": null,
+   "dispatch_error_kind": null,
+   "status": "assisted",
+   "preferred": "A",
+   "preferred_labels": {
+    "A": "T3",
+    "B": "T4",
+    "tie": null,
+    "abstain": null
+   },
+   "rationale": "Both texts give the same headline numbers (20 test tickets, 10 answered, 8 correct, 25-character payload, under 4 microseconds). They differ on the unrun model arms. T4 states an overhead ratio as fact (\"greater than 1 by construction\") and says the measurements are evidence that conflating generation and decision is expensive, though no model-backed arm ran. T3 explicitly says the 25-character fact is not a measured overhead ratio and that whether conflation is expensive is what the programme exists to test. A reader answering factual questions about the measurements is better served by T3.",
+   "quotes": [
+    "schema-length fact about this interface, not a measured overhead ratio",
+    "is therefore **greater than 1 by construction**",
+    "measurements in this chapter are the evidence that conflating them is expensive",
+    "to test: the floor below is one arm, and the model-backed arms will tell us"
+   ],
+   "quotes_verbatim": [
+    true,
+    true,
+    true,
+    true
+   ]
+  },
+  {
+   "item_id": "T3vT4:assist:Q5",
+   "pair": "T3vT4",
+   "question_id": "Q5",
+   "prompt_sha256": "3328e6ae9d9d21528b8f092a6ce04132fee441ae0e084165a5ec8a6d27d2c0f4",
+   "operation_id": "pub08-eval:T3vT4:assist:Q5",
+   "meter": {
+    "cost_usd": 0.0,
+    "total_tokens": 25668,
+    "latency_ms": 14237,
+    "writer_execution_id": "model-exec-3d5ce2608ee9",
+    "route": "default_haiku_go",
+    "model": "opencode-go/claude-haiku-5-5",
+    "cost_status": "metered_zero"
+   },
+   "dispatch_error": null,
+   "dispatch_error_kind": null,
+   "status": "assisted",
+   "preferred": "A",
+   "preferred_labels": {
+    "A": "T3",
+    "B": "T4",
+    "tie": null,
+    "abstain": null
+   },
+   "rationale": "The texts are nearly identical in structure, code, figures and hard numbers (10 answered, 8 correct, 25-character payload, arms marked NOT_OBSERVED). The concrete difference is in how each text handles claims about unrun experiments. T4 states that the chapter's measurements are evidence that conflating generation with decision is expensive, and that the overhead ratio is greater than 1 by construction. Neither is measured, since the model-backed arms were not run. T3 limits the same points to what was observed: the 25-character figure is a schema-length fact, not a measured overhead ratio, and whether conflation is expensive is what the measurement programme exists to test. T3 is therefore at least as good on the other dimensions and better on evidence fidelity and claim calibration. T4 also attributes 'Generate less. Measure the rest.' to LMQL, which the text does not support. Preference for A is based on these concrete, quotable differences.",
+   "quotes": [
+    "measurements in this chapter are the evidence that conflating them is expensive",
+    "greater than 1 by construction",
+    "whether conflating them is expensive is what the measurement programme exists",
+    "schema-length fact about this interface, not a measured overhead ratio",
+    "which LMQL said first"
+   ],
+   "quotes_verbatim": [
+    true,
+    true,
+    true,
+    true,
+    true
+   ]
+  }
+ ],
+ "totals": {
+  "calls": 134,
+  "succeeded": 97,
+  "abstained": 19,
+  "failed": 18,
+  "total_cost_usd": 0.0,
+  "total_tokens": 2047294
+ },
+ "failures": [],
+ "verdict": "GO_MODEL_JUDGED"
+}

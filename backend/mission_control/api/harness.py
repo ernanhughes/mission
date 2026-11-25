@@ -79,6 +79,15 @@ def _envelope_service(request: Request):
     return service
 
 
+def _canonical_project_key(value: str | None) -> str:
+    """Shared basename identity for project comparison (W9 F10 reuse).
+
+    ``Projects/ai`` and ``ai`` share a canonical key; distinct basenames
+    never match (no fuzzy association — exact basename equality only).
+    """
+    return (value or "").replace("\\", "/").rstrip("/").rsplit("/", 1)[-1].strip().lower()
+
+
 def _correlate_rows(request: Request, rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Verify Worker-supplied identity against Mission's pre-dispatch envelope."""
     database = getattr(request.app.state, "database", None)
@@ -148,18 +157,39 @@ async def executions(request: Request, episode_id: str | None = None,
         raise HTTPException(422, detail="limit must be from 1 to 100")
     base = _worker_base(request)
     timeout = httpx.Timeout(5.0, connect=1.0)
-    async with httpx.AsyncClient(timeout=timeout, trust_env=False) as client:
-        payload = await _get(client, base, "/v1/executions")
+    try:
+        async with httpx.AsyncClient(timeout=timeout, trust_env=False) as client:
+            payload = await _get(client, base, "/v1/executions")
+    except HTTPException as exc:
+        if exc.status_code == 404:
+            # Worker is reachable but its execution ledger has no readable
+            # window (ledger not configured on this Worker process). This is
+            # NOT zero executions: report unavailability explicitly so the
+            # UI never renders it as an empty history.
+            return {"schema_version": "mission.harness-executions.v1", "executions": [],
+                    "coverage": {"source": "worker_h3_execution_ledger", "read_window": 0,
+                                 "truncated": False, "unavailable_is_not_zero": True,
+                                 "ledger": {"available": False, "worker_http_status": 404,
+                                            "reason": "Worker execution ledger has no readable window on this Worker process"}},
+                    "worker": {"reachable": True, "ledger": "unavailable"}}
+        raise
     rows = payload.get("executions") if isinstance(payload, dict) else None
     if not isinstance(rows, list):
         raise HTTPException(502, detail="Worker execution ledger contract is incomplete")
     rows = _correlate_rows(request, [row for row in rows if isinstance(row, dict)])
     if project_key:
-        episode_service = getattr(request.app.state, "episode_service", None)
-        if episode_service is None:
-            raise HTTPException(503, detail="Work Outcome episode service is unavailable")
-        rows = [row for row in rows if row.get("mission_correlation", {}).get("status") == "verified"
-                and row.get("mission_correlation", {}).get("project_key") == project_key]
+        database = getattr(request.app.state, "database", None)
+        if database is None:
+            raise HTTPException(503, detail="Project registry is unavailable")
+        with database.session() as session:
+            known = {p.id for p in session.query(orm.Project).all()}
+        if project_key not in known and _canonical_project_key(project_key) not in {
+                _canonical_project_key(k) for k in known}:
+            raise HTTPException(404, detail=f"Unknown project '{project_key}': no such project in the Mission registry")
+        wanted = _canonical_project_key(project_key)
+        rows = [row for row in rows
+                if row.get("mission_correlation", {}).get("status") == "verified"
+                and _canonical_project_key(row.get("mission_correlation", {}).get("project_key")) == wanted]
     if episode_id:
         rows = [row for row in rows if row.get("mission_correlation", {}).get("status") == "verified"
                 and row.get("mission_correlation", {}).get("episode_id") == episode_id]
@@ -167,7 +197,9 @@ async def executions(request: Request, episode_id: str | None = None,
         rows = [row for row in rows if ((row.get("strategy_execution") or {}).get("strategy") or {}).get("key") == strategy_id]
     return {"schema_version": "mission.harness-executions.v1", "executions": rows[-limit:],
             "coverage": {"source": "worker_h3_execution_ledger", "read_window": len(payload.get("executions", [])),
-                         "truncated": bool(payload.get("more_in_read_window")), "unavailable_is_not_zero": False}}
+                         "truncated": bool(payload.get("more_in_read_window")), "unavailable_is_not_zero": False,
+                         "ledger": {"available": True}},
+            "worker": {"reachable": True, "ledger": "readable"}}
 
 
 @router.get("/executions/{request_id}")

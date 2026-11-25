@@ -1,0 +1,112 @@
+{
+ "runner": "pub08/experiment/run_arm_b1.py",
+ "batch": "pub08-arm-b1-v0.1",
+ "merge_sha256": "6bc4a86d1357c368fd5cbfcdf951f9307e25ee2c1cca762f4beca6b6ee8854d9",
+ "n_lines": 571,
+ "canonical_form": "LF + single trailing newline",
+ "per_package": [
+  {
+   "package_id": "passage:What we measured, and what we did not",
+   "outcome": "verify_failed",
+   "hull_span": {
+    "start_line": 405,
+    "end_line": 420
+   },
+   "prompt_sha256": "b6cb5aa634b08507adc8a0ae276024ea7ed4cca0620690793377e3cf6953e6dc",
+   "passage_sha256": "d9c756cb225aa787aef25df631d1e60c6344a269e91b24893c4773dc815b3139",
+   "obligations_sha256": "9dfb6263fb433faf7e9f586d0d92d64d3fad83b1082470a6f320d8ddefe68941",
+   "region_sha256": null,
+   "ledger_cost_usd": 0.0096165,
+   "ledger_dispatches": 2
+  },
+  {
+   "package_id": "passage:Four words we keep apart",
+   "outcome": "review_accepted",
+   "hull_span": {
+    "start_line": 392,
+    "end_line": 396
+   },
+   "prompt_sha256": "befcc135c260a3c3026870b7d74f626a07fc81b89b054ed47a25a10260789eb6",
+   "passage_sha256": "7698b7df36c32314e18995a6c4c22c608976f438daf9dd0d36b0b4eebed89a6c",
+   "obligations_sha256": "a3bf349f2f2275e436da09f8eb82bf06eede9e7c120ea250e577dadf1f133973",
+   "region_sha256": "015a1f71d6341da2d81db346925235c11ee4fab6fc44630e23b6432dce6fc7f5",
+   "ledger_cost_usd": 0.0044301,
+   "ledger_dispatches": 3
+  },
+  {
+   "package_id": "passage:Where this leaves the argument",
+   "outcome": "review_accepted",
+   "hull_span": {
+    "start_line": 509,
+    "end_line": 518
+   },
+   "prompt_sha256": "5fd12ec07d7dd69f97d4a29027a928d9b9029ac357292560cd86667b2ad3aabc",
+   "passage_sha256": "46e08ffd266ae419f918ecd8a66d6a43838edd0727fea7bee08150654779e6a2",
+   "obligations_sha256": "a3bf349f2f2275e436da09f8eb82bf06eede9e7c120ea250e577dadf1f133973",
+   "region_sha256": "1b51eb163197bb99204191286cdb33b69d5b939995cc1b8ce3ff8be304ef8b7d",
+   "ledger_cost_usd": 0.0034982999999999998,
+   "ledger_dispatches": 4
+  }
+ ],
+ "lineage_report": {
+  "detector": "publication-hull-merge-v0.1",
+  "n_lines": 571,
+  "n_source_lines": 547,
+  "n_dispatch_lines": 24,
+  "per_package_lines": {
+   "passage:Four words we keep apart": 13,
+   "passage:Where this leaves the argument": 11
+  },
+  "merge_sha256": "6bc4a86d1357c368fd5cbfcdf951f9307e25ee2c1cca762f4beca6b6ee8854d9",
+  "canonical_form": "LF + single trailing newline"
+ },
+ "stood_down_by_decision": [
+  {
+   "package_id": "passage:Path 1: the predicate",
+   "decision": {
+    "decision": "stand_failed",
+    "by": "coordinator",
+    "at": "2026-11-25",
+    "why": "Two attempts each (initial + failure-driven correction) failed the same quote-discipline class: attempt 1 reworded byte-true spans / non-verbatim quote; attempt 2 invented new non-verbatim quotes instead of repairing. 4/4 attempts quote/byte-true violations on these passages. Further corrections would test the model's luck, not the workflow. Recorded failed; never redriven.",
+    "segment": "B1 segment 2",
+    "spend_note": "attempt costs kept in per-package ledgers; no further dispatch for this package"
+   }
+  },
+  {
+   "package_id": "passage:Paths 2 and 3: generate, then parse",
+   "decision": {
+    "decision": "stand_failed",
+    "by": "coordinator",
+    "at": "2026-11-25",
+    "why": "Two attempts each (initial + failure-driven correction) failed the same quote-discipline class: attempt 1 non-verbatim quote; attempt 2 invented a new non-verbatim quote instead of repairing. 4/4 attempts quote violations on this passage. Further corrections would test the model's luck, not the workflow. Recorded failed; never redriven.",
+    "segment": "B1 segment 2",
+    "spend_note": "attempt costs kept in per-package ledgers; no further dispatch for this package"
+   }
+  }
+ ],
+ "ledger_actuals_usd": {
+  "prior_A1": 0.0227055,
+  "b1_packages": 0.0175449,
+  "total": 0.0402504
+ },
+ "prompt_sha_drift_vs_dry_run": {},
+ "aggregate_guard": {
+  "allowed": true,
+  "total_cost_usd": 0.040250400000000006,
+  "projected_cost_usd": 0.0,
+  "remaining_usd": 0.9597496,
+  "hard_cap_usd": 1.0,
+  "aggregate_actuals_usd": 0.040250400000000006
+ },
+ "failures": [],
+ "verdict": "GO_B1_MERGED",
+ "ledger_actuals_usd_corrected": {
+  "note": "2026-11-25 coordinator correction: b1_packages above counts only the final resume segment (in-memory completed_ledgers). Disk sum across all 5 package ledger.json files is authoritative and includes stood-down/failed attempts from prior segments. Original block preserved unmodified.",
+  "prior_A1": 0.0227055,
+  "b1_packages_disk_sum": 0.047636,
+  "b1_dispatches_disk_sum": 13,
+  "total": 0.0703415,
+  "cap_usd": 1.0,
+  "within_cap": true
+ }
+}

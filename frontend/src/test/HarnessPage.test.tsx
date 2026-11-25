@@ -2,7 +2,7 @@ import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { Route, Routes } from "react-router-dom";
-import { HarnessPage } from "../features/harness/HarnessPage";
+import { HarnessPage, ProjectHarnessPanel } from "../features/harness/HarnessPage";
 import { apiError, json, mockFetch, renderRoute } from "./helpers";
 
 const strategyRows = ["direct.v1", "structured.v1", "corrective.v1", "adaptive.v1"].map((key) => ({
@@ -14,10 +14,13 @@ const strategyRows = ["direct.v1", "structured.v1", "corrective.v1", "adaptive.v
 const episodes = [{ id: "ep:synthetic:1", title: "Synthetic bounded task", project_key: "synthetic", status: "established" }];
 const catalogue = { schema_version: "mission.harness-catalogue.v1", worker: { reachable: true, status: "ok", version: "test", base_url: "http://127.0.0.1:7317" }, strategies: strategyRows, models: [{ id: "local-free", model: "local-model", economic_tier: "free", data_policy: "local_only", health: "unknown" }], policies: { local: { routes: ["local-free"], required_data_policy: "local_only", attempts_per_route: 1 } }, limits: {}, qualification_note: "Catalogue listing is not qualification." };
 
-function mocks({ submit = true, disconnected = false, executionRows = [] }: { submit?: boolean; disconnected?: boolean; executionRows?: Array<Record<string, any>> } = {}) {
+function mocks({ submit = true, disconnected = false, executionRows = [], executionsError = null as null | { status: number; message: string }, ledgerUnavailable = false }: { submit?: boolean; disconnected?: boolean; executionRows?: Array<Record<string, any>>; executionsError?: null | { status: number; message: string }; ledgerUnavailable?: boolean } = {}) {
   return mockFetch(({ path, method, body }) => {
     if (path === "/api/harness/catalogue") return disconnected ? apiError(503, "Worker unavailable") : json(catalogue);
-    if (path === "/api/harness/executions" && method === "GET") return json({ executions: executionRows, coverage: { source: "worker_h3_execution_ledger", read_window: executionRows.length, truncated: false } });
+    if (path === "/api/harness/executions" && method === "GET") {
+      if (executionsError) return apiError(executionsError.status, executionsError.message);
+      return json({ executions: executionRows, coverage: { source: "worker_h3_execution_ledger", read_window: executionRows.length, truncated: false, unavailable_is_not_zero: ledgerUnavailable, ...(ledgerUnavailable ? { ledger: { available: false, worker_http_status: 404, reason: "Worker execution ledger has no readable window on this Worker process" } } : { ledger: { available: true } }) } });
+    }
     if (path === "/api/harness/jobs") return json({ jobs: [], cancellation: "unsupported" });
     if (path === "/api/work-episodes") return json({ episodes });
     if (path === "/api/work-intent/objectives") return json({ objectives: [{ id: "obj:synthetic:1", episode_id: episodes[0].id, text: "Return a JSON object with the answer to 19 + 23.", status: "confirmed", version: 1 }] });
@@ -94,5 +97,25 @@ describe("Mission Harness", () => {
     expect(await screen.findByText(/Worker unavailable/)).toBeInTheDocument();
     expect(screen.getByRole("tab", { name: "Strategies" })).toBeEnabled();
     expect(screen.getByRole("tab", { name: "Execute" })).toBeEnabled();
+  });
+
+  it("shows an empty project history with counts instead of an error", async () => {
+    mocks();
+    renderRoute(<Routes><Route path="/projects/:id" element={<ProjectHarnessPanel projectKey="jev" />} /></Routes>, "/projects/jev");
+    expect(await screen.findByText("No Harness executions recorded")).toBeInTheDocument();
+    expect(screen.getByText("Open project Harness history")).toBeInTheDocument();
+  });
+
+  it("shows Worker unavailability instead of zero executions when the ledger is unreadable", async () => {
+    mocks({ ledgerUnavailable: true });
+    renderRoute(<Routes><Route path="/projects/:id" element={<ProjectHarnessPanel projectKey="jev" />} /></Routes>, "/projects/jev");
+    expect(await screen.findByText(/Worker is currently unavailable/)).toBeInTheDocument();
+    expect(screen.queryByText("No Harness executions recorded")).not.toBeInTheDocument();
+  });
+
+  it("shows unknown projects as unknown instead of an empty history", async () => {
+    mocks({ executionsError: { status: 404, message: "Unknown project 'nope': no such project in the Mission registry" } });
+    renderRoute(<Routes><Route path="/projects/:id" element={<ProjectHarnessPanel projectKey="nope" />} /></Routes>, "/projects/nope");
+    expect(await screen.findByText(/Unknown project/)).toBeInTheDocument();
   });
 });

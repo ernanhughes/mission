@@ -1,0 +1,21 @@
+{
+ "package_id": "passage:Where this leaves the argument",
+ "span": {
+  "start_line": 509,
+  "end_line": 518
+ },
+ "replacement_lines": [
+  "So the closing question, which is Chapter 2's, is not \"can a model handle the cases the predicate cannot?\" It is \"what is the thing that handles them?\"",
+  "",
+  "The vendor answer is a model that returns typed values instead of prose \u2014 Jev's published contract, per its own site, is a choice from a declared label set, a score on an ordered rubric, or a yes/no probability, with output billed at zero because there is no generated text to bill for.",
+  "",
+  "That is a **third-party claim, not DOCUMENTED**: the page describing it is an independent guide, not TypeSafe's own documentation, and this book will treat the contract as a claim to be tested rather than a specification to be trusted.",
+  "",
+  "Chapter 2 reads the primary sources and fixes the vocabulary.",
+  "",
+  "Until then, the honest summary of Chapter 1 is one line long.",
+  "",
+  "What Chapter 1 leaves standing is an open question handed to Chapter 2, a vendor contract recorded as a third-party claim rather than a specification to be trusted, and a summary held to one line until the primary sources are read."
+ ],
+ "replacement_sha256": "1b51eb163197bb99204191286cdb33b69d5b939995cc1b8ce3ff8be304ef8b7d"
+}

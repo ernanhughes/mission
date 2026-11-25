@@ -1,0 +1,103 @@
+{
+  "probes": [
+    {
+      "id": "F1",
+      "visibility": "public",
+      "question": "On the test split, how many tickets did the predicate answer vs decline?",
+      "expected": "answered 10 and declined 10"
+    },
+    {
+      "id": "F2",
+      "visibility": "public",
+      "question": "Of the answered test cases, how many matched the label?",
+      "expected": "8 match the label"
+    },
+    {
+      "id": "F3",
+      "visibility": "public",
+      "question": "What exact 25-character payload does the caller read?",
+      "expected": "{\"refund_approved\": true}"
+    },
+    {
+      "id": "F4",
+      "visibility": "public",
+      "question": "What did the predicate cost in tokens and latency?",
+      "expected": "generated zero tokens and every call took under 4 microseconds"
+    },
+    {
+      "id": "F5",
+      "visibility": "public",
+      "question": "What does constrained decoding guarantee, per Willard et al. as quoted?",
+      "expected": "Structure, not correctness",
+      "note": "paraphrase proxy: O has Structure + not correctness in adjacent sentences"
+    },
+    {
+      "id": "F6",
+      "visibility": "public",
+      "question": "What JSON parse-error rate does Tam et al. report for LLaMA 3 8B on one task?",
+      "expected": "0.148%"
+    },
+    {
+      "id": "F7",
+      "visibility": "heldout",
+      "question": "What inference cost/latency reduction does LMQL report?",
+      "expected": "26-80%"
+    },
+    {
+      "id": "F8",
+      "visibility": "heldout",
+      "question": "After how many labels does fine-tuning performance begin to saturate (Bucher et al.)?",
+      "expected": "around 200 labels"
+    },
+    {
+      "id": "F9",
+      "visibility": "heldout",
+      "question": "How large is the naively built Outlines index for an augmented Python grammar?",
+      "expected": "around 50 MB",
+      "note": "H carries Around 50 MB (capital A) — case-variant proxy break recorded"
+    },
+    {
+      "id": "F10",
+      "visibility": "heldout",
+      "question": "On how many reasoning datasets did plain natural language still beat CFG-constrained output?",
+      "expected": "2 of 3 reasoning datasets"
+    },
+    {
+      "id": "F11",
+      "visibility": "heldout",
+      "question": "Which two tickets were inside the policy but labelled decline?",
+      "expected": "t11 and t60",
+      "note": "grounded as both tokens present (backticked in source)"
+    },
+    {
+      "id": "F12",
+      "visibility": "heldout",
+      "question": "Which key ordering does the preregistered schema use (harmful per Tam et al. s4.1)?",
+      "expected": "refund_approved first and reason second",
+      "note": "grounded as both keys present; ordering stated in prose"
+    },
+    {
+      "id": "E1",
+      "visibility": "public",
+      "question": "Did the model-backed arms run in this chapter?",
+      "expected": "No — NOT_OBSERVED"
+    },
+    {
+      "id": "E2",
+      "visibility": "public",
+      "question": "Is the Jev contract stated as documented fact?",
+      "expected": "No — third-party claim, not DOCUMENTED"
+    },
+    {
+      "id": "E3",
+      "visibility": "public",
+      "question": "Is generation overhead measured here?",
+      "expected": "No — prediction stands untested"
+    }
+  ],
+  "consumption": {
+    "deterministic_runs": 1,
+    "model_reader_runs": 1,
+    "heldout_model_budget": "0/1 (do not exceed 1 total model run)"
+  }
+}

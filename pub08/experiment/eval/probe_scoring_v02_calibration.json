@@ -1,0 +1,844 @@
+{
+ "instrument": "probe-scoring-v0.2",
+ "calibration": {
+  "passed": 86,
+  "total": 86,
+  "results": [
+   {
+    "probe": "F1",
+    "class": "positive:exact-key",
+    "answer": "answered 10 and declined 10",
+    "expected_correct": true,
+    "got_correct": true,
+    "pass": true,
+    "rule": "F1:counts-pair"
+   },
+   {
+    "probe": "F1",
+    "class": "positive:paraphrase+punct (dev incident)",
+    "answer": "On the test split (20 cases), the predicate answered 10 tickets and returned None (declined) on the other 10.",
+    "expected_correct": true,
+    "got_correct": true,
+    "pass": true,
+    "rule": "F1:counts-pair"
+   },
+   {
+    "probe": "F1",
+    "class": "positive:number-words",
+    "answer": "the predicate answered ten and declined ten",
+    "expected_correct": true,
+    "got_correct": true,
+    "pass": true,
+    "rule": "F1:counts-pair"
+   },
+   {
+    "probe": "F1",
+    "class": "negative:wrong-number",
+    "answer": "answered 9 and declined 11",
+    "expected_correct": false,
+    "got_correct": false,
+    "pass": true,
+    "rule": "F1:counts-pair-missing"
+   },
+   {
+    "probe": "F1",
+    "class": "negative:missing-concept (declined clause)",
+    "answer": "answered 10",
+    "expected_correct": false,
+    "got_correct": false,
+    "pass": true,
+    "rule": "F1:counts-pair-missing"
+   },
+   {
+    "probe": "F1",
+    "class": "negative:missing-concept (no verbs)",
+    "answer": "10 and 10",
+    "expected_correct": false,
+    "got_correct": false,
+    "pass": true,
+    "rule": "F1:counts-pair-missing"
+   },
+   {
+    "probe": "F2",
+    "class": "positive:exact-key",
+    "answer": "8 match the label",
+    "expected_correct": true,
+    "got_correct": true,
+    "pass": true,
+    "rule": "F2:number+match-stem"
+   },
+   {
+    "probe": "F2",
+    "class": "positive:morphological-variant (dev incident)",
+    "answer": "8 of the 10 answered test cases matched the label.",
+    "expected_correct": true,
+    "got_correct": true,
+    "pass": true,
+    "rule": "F2:number+match-stem"
+   },
+   {
+    "probe": "F2",
+    "class": "positive:correct-paraphrase",
+    "answer": "On the 10 it answered it was correct 8 times.",
+    "expected_correct": true,
+    "got_correct": true,
+    "pass": true,
+    "rule": "F2:number+match-stem"
+   },
+   {
+    "probe": "F2",
+    "class": "negative:wrong-number",
+    "answer": "7 matched the label",
+    "expected_correct": false,
+    "got_correct": false,
+    "pass": true,
+    "rule": "F2:number+match-stem-missing"
+   },
+   {
+    "probe": "F2",
+    "class": "negative:match-concept-absent",
+    "answer": "8 declined the label",
+    "expected_correct": false,
+    "got_correct": false,
+    "pass": true,
+    "rule": "F2:number+match-stem-missing"
+   },
+   {
+    "probe": "F2",
+    "class": "negative:missing-number",
+    "answer": "many matched the label",
+    "expected_correct": false,
+    "got_correct": false,
+    "pass": true,
+    "rule": "F2:number+match-stem-missing"
+   },
+   {
+    "probe": "F3",
+    "class": "positive:exact-key",
+    "answer": "{\"refund_approved\": true}",
+    "expected_correct": true,
+    "got_correct": true,
+    "pass": true,
+    "rule": "F3:exact-payload"
+   },
+   {
+    "probe": "F3",
+    "class": "positive:markdown-delimiters",
+    "answer": "The caller reads the 25-character payload `{\"refund_approved\": true}`.",
+    "expected_correct": true,
+    "got_correct": true,
+    "pass": true,
+    "rule": "F3:exact-payload"
+   },
+   {
+    "probe": "F3",
+    "class": "positive:fenced-framing",
+    "answer": "```json\n{\"refund_approved\": true}\n```",
+    "expected_correct": true,
+    "got_correct": true,
+    "pass": true,
+    "rule": "F3:exact-payload"
+   },
+   {
+    "probe": "F3",
+    "class": "negative:wrong-value",
+    "answer": "{\"refund_approved\": false}",
+    "expected_correct": false,
+    "got_correct": false,
+    "pass": true,
+    "rule": "F3:exact-payload-missing"
+   },
+   {
+    "probe": "F3",
+    "class": "negative:invalid-json-quotes",
+    "answer": "{'refund_approved': true}",
+    "expected_correct": false,
+    "got_correct": false,
+    "pass": true,
+    "rule": "F3:exact-payload-missing"
+   },
+   {
+    "probe": "F3",
+    "class": "negative:case-sensitive-mismatch",
+    "answer": "{\"Refund_Approved\": true}",
+    "expected_correct": false,
+    "got_correct": false,
+    "pass": true,
+    "rule": "F3:exact-payload-missing"
+   },
+   {
+    "probe": "F3",
+    "class": "negative:misordered-sequence",
+    "answer": "{\"reason\": \"x\", \"refund_approved\": true}",
+    "expected_correct": false,
+    "got_correct": false,
+    "pass": true,
+    "rule": "F3:exact-payload-missing"
+   },
+   {
+    "probe": "F4",
+    "class": "positive:exact-key",
+    "answer": "generated zero tokens and every call took under 4 microseconds",
+    "expected_correct": true,
+    "got_correct": true,
+    "pass": true,
+    "rule": "F4:zero-tokens+latency"
+   },
+   {
+    "probe": "F4",
+    "class": "positive:punct-variant (dev incident)",
+    "answer": "The predicate generated zero tokens, and every call took under 4 microseconds.",
+    "expected_correct": true,
+    "got_correct": true,
+    "pass": true,
+    "rule": "F4:zero-tokens+latency"
+   },
+   {
+    "probe": "F4",
+    "class": "positive:unit-conversion",
+    "answer": "zero tokens; < 4e-06 s per call",
+    "expected_correct": true,
+    "got_correct": true,
+    "pass": true,
+    "rule": "F4:zero-tokens+latency"
+   },
+   {
+    "probe": "F4",
+    "class": "negative:wrong-number",
+    "answer": "generated 10 tokens and every call took under 4 microseconds",
+    "expected_correct": false,
+    "got_correct": false,
+    "pass": true,
+    "rule": "F4:clause-missing"
+   },
+   {
+    "probe": "F4",
+    "class": "negative:wrong-unit",
+    "answer": "generated zero tokens and every call took under 4 milliseconds",
+    "expected_correct": false,
+    "got_correct": false,
+    "pass": true,
+    "rule": "F4:clause-missing"
+   },
+   {
+    "probe": "F4",
+    "class": "negative:missing-concept (latency)",
+    "answer": "generated zero tokens",
+    "expected_correct": false,
+    "got_correct": false,
+    "pass": true,
+    "rule": "F4:clause-missing"
+   },
+   {
+    "probe": "F5",
+    "class": "positive:exact-key",
+    "answer": "Structure, not correctness",
+    "expected_correct": true,
+    "got_correct": true,
+    "pass": true,
+    "rule": "F5:structure+negated-correctness"
+   },
+   {
+    "probe": "F5",
+    "class": "positive:elaboration-paraphrase",
+    "answer": "constrained decoding guarantees the structure of the generated text, not its correctness",
+    "expected_correct": true,
+    "got_correct": true,
+    "pass": true,
+    "rule": "F5:structure+negated-correctness"
+   },
+   {
+    "probe": "F5",
+    "class": "positive:right-synonym-paraphrase",
+    "answer": "guarantees structure, not whether it is the right answer",
+    "expected_correct": true,
+    "got_correct": true,
+    "pass": true,
+    "rule": "F5:structure+negated-correctness"
+   },
+   {
+    "probe": "F5",
+    "class": "positive:accuracy-synonym-paraphrase",
+    "answer": "guarantees the structure but not the accuracy of the output",
+    "expected_correct": true,
+    "got_correct": true,
+    "pass": true,
+    "rule": "F5:structure+negated-correctness"
+   },
+   {
+    "probe": "F5",
+    "class": "negative:lost-negation-with-synonym",
+    "answer": "guarantees structure and accuracy",
+    "expected_correct": false,
+    "got_correct": false,
+    "pass": true,
+    "rule": "F5:concept-or-negation-missing"
+   },
+   {
+    "probe": "F5",
+    "class": "negative:missing-structure-with-synonym",
+    "answer": "guarantees speed, not accuracy",
+    "expected_correct": false,
+    "got_correct": false,
+    "pass": true,
+    "rule": "F5:concept-or-negation-missing"
+   },
+   {
+    "probe": "F5",
+    "class": "negative:lost-negation+missing-structure",
+    "answer": "guarantees correctness",
+    "expected_correct": false,
+    "got_correct": false,
+    "pass": true,
+    "rule": "F5:concept-or-negation-missing"
+   },
+   {
+    "probe": "F5",
+    "class": "negative:lost-negation",
+    "answer": "guarantees structure and correctness",
+    "expected_correct": false,
+    "got_correct": false,
+    "pass": true,
+    "rule": "F5:concept-or-negation-missing"
+   },
+   {
+    "probe": "F5",
+    "class": "negative:missing-concept (structure)",
+    "answer": "guarantees speed, not correctness",
+    "expected_correct": false,
+    "got_correct": false,
+    "pass": true,
+    "rule": "F5:concept-or-negation-missing"
+   },
+   {
+    "probe": "F6",
+    "class": "positive:exact-key",
+    "answer": "0.148%",
+    "expected_correct": true,
+    "got_correct": true,
+    "pass": true,
+    "rule": "F6:rate+unit"
+   },
+   {
+    "probe": "F6",
+    "class": "positive:unit-word-form",
+    "answer": "a rate of 0.148 percent",
+    "expected_correct": true,
+    "got_correct": true,
+    "pass": true,
+    "rule": "F6:rate+unit"
+   },
+   {
+    "probe": "F6",
+    "class": "negative:wrong-number",
+    "answer": "1.48%",
+    "expected_correct": false,
+    "got_correct": false,
+    "pass": true,
+    "rule": "F6:rate+unit-missing"
+   },
+   {
+    "probe": "F6",
+    "class": "negative:missing-unit",
+    "answer": "0.148",
+    "expected_correct": false,
+    "got_correct": false,
+    "pass": true,
+    "rule": "F6:rate+unit-missing"
+   },
+   {
+    "probe": "F8",
+    "class": "positive:exact-key",
+    "answer": "around 200 labels",
+    "expected_correct": true,
+    "got_correct": true,
+    "pass": true,
+    "rule": "F8:number+unit"
+   },
+   {
+    "probe": "F8",
+    "class": "positive:sentence-case",
+    "answer": "Around 200 labels.",
+    "expected_correct": true,
+    "got_correct": true,
+    "pass": true,
+    "rule": "F8:number+unit"
+   },
+   {
+    "probe": "F8",
+    "class": "positive:hedge-variant",
+    "answer": "performance saturates after approximately 200 labels",
+    "expected_correct": true,
+    "got_correct": true,
+    "pass": true,
+    "rule": "F8:number+unit"
+   },
+   {
+    "probe": "F8",
+    "class": "negative:wrong-number",
+    "answer": "300 labels",
+    "expected_correct": false,
+    "got_correct": false,
+    "pass": true,
+    "rule": "F8:number+unit-missing"
+   },
+   {
+    "probe": "F8",
+    "class": "negative:wrong-unit-concept",
+    "answer": "200 tickets",
+    "expected_correct": false,
+    "got_correct": false,
+    "pass": true,
+    "rule": "F8:number+unit-missing"
+   },
+   {
+    "probe": "F9",
+    "class": "positive:exact-key",
+    "answer": "around 50 MB",
+    "expected_correct": true,
+    "got_correct": true,
+    "pass": true,
+    "rule": "F9:number+case-sensitive-unit"
+   },
+   {
+    "probe": "F9",
+    "class": "positive:sentence-case (H variant)",
+    "answer": "Around 50 MB of memory, one-time",
+    "expected_correct": true,
+    "got_correct": true,
+    "pass": true,
+    "rule": "F9:number+case-sensitive-unit"
+   },
+   {
+    "probe": "F9",
+    "class": "positive:hedge-dropped",
+    "answer": "50 MB",
+    "expected_correct": true,
+    "got_correct": true,
+    "pass": true,
+    "rule": "F9:number+case-sensitive-unit"
+   },
+   {
+    "probe": "F9",
+    "class": "negative:case-sensitive-unit-mismatch",
+    "answer": "around 50 mb",
+    "expected_correct": false,
+    "got_correct": false,
+    "pass": true,
+    "rule": "F9:number+unit-missing"
+   },
+   {
+    "probe": "F9",
+    "class": "negative:wrong-unit",
+    "answer": "around 50 GB",
+    "expected_correct": false,
+    "got_correct": false,
+    "pass": true,
+    "rule": "F9:number+unit-missing"
+   },
+   {
+    "probe": "F9",
+    "class": "negative:wrong-number",
+    "answer": "around 60 MB",
+    "expected_correct": false,
+    "got_correct": false,
+    "pass": true,
+    "rule": "F9:number+unit-missing"
+   },
+   {
+    "probe": "F7",
+    "class": "positive:exact-key",
+    "answer": "26-80%",
+    "expected_correct": true,
+    "got_correct": true,
+    "pass": true,
+    "rule": "F7:range+bounds+unit"
+   },
+   {
+    "probe": "F7",
+    "class": "positive:range-words",
+    "answer": "cutting cost and latency by 26 to 80 percent",
+    "expected_correct": true,
+    "got_correct": true,
+    "pass": true,
+    "rule": "F7:range+bounds+unit"
+   },
+   {
+    "probe": "F7",
+    "class": "positive:endash-separator",
+    "answer": "26\u201380%",
+    "expected_correct": true,
+    "got_correct": true,
+    "pass": true,
+    "rule": "F7:range+bounds+unit"
+   },
+   {
+    "probe": "F7",
+    "class": "negative:changed-bound",
+    "answer": "26-70%",
+    "expected_correct": false,
+    "got_correct": false,
+    "pass": true,
+    "rule": "F7:range-missing"
+   },
+   {
+    "probe": "F7",
+    "class": "negative:missing-bound",
+    "answer": "80%",
+    "expected_correct": false,
+    "got_correct": false,
+    "pass": true,
+    "rule": "F7:range-missing"
+   },
+   {
+    "probe": "F10",
+    "class": "positive:exact-key",
+    "answer": "2 of 3 reasoning datasets",
+    "expected_correct": true,
+    "got_correct": true,
+    "pass": true,
+    "rule": "F10:numbers+concept"
+   },
+   {
+    "probe": "F10",
+    "class": "positive:paraphrase",
+    "answer": "plain natural language still beat the constrained format on 2 of 3 reasoning datasets",
+    "expected_correct": true,
+    "got_correct": true,
+    "pass": true,
+    "rule": "F10:numbers+concept"
+   },
+   {
+    "probe": "F10",
+    "class": "negative:changed-number",
+    "answer": "2 of 4 reasoning datasets",
+    "expected_correct": false,
+    "got_correct": false,
+    "pass": true,
+    "rule": "F10:numbers+concept-missing"
+   },
+   {
+    "probe": "F10",
+    "class": "negative:missing-concept (dataset)",
+    "answer": "2 of 3 tasks",
+    "expected_correct": false,
+    "got_correct": false,
+    "pass": true,
+    "rule": "F10:numbers+concept-missing"
+   },
+   {
+    "probe": "F11",
+    "class": "positive:exact-key",
+    "answer": "t11 and t60",
+    "expected_correct": true,
+    "got_correct": true,
+    "pass": true,
+    "rule": "F11:ordered-identifiers"
+   },
+   {
+    "probe": "F11",
+    "class": "positive:glossed-paraphrase",
+    "answer": "tickets t11 ('saw it cheaper') and t60 ('would take it')",
+    "expected_correct": true,
+    "got_correct": true,
+    "pass": true,
+    "rule": "F11:ordered-identifiers"
+   },
+   {
+    "probe": "F11",
+    "class": "negative:case-sensitive-mismatch",
+    "answer": "T11 and T60",
+    "expected_correct": false,
+    "got_correct": false,
+    "pass": true,
+    "rule": "F11:case-mismatch"
+   },
+   {
+    "probe": "F11",
+    "class": "negative:misordered-sequence",
+    "answer": "t60 and t11",
+    "expected_correct": false,
+    "got_correct": false,
+    "pass": true,
+    "rule": "F11:identifiers-or-order-missing"
+   },
+   {
+    "probe": "F11",
+    "class": "negative:missing-concept",
+    "answer": "t11",
+    "expected_correct": false,
+    "got_correct": false,
+    "pass": true,
+    "rule": "F11:identifiers-or-order-missing"
+   },
+   {
+    "probe": "F12",
+    "class": "positive:exact-key",
+    "answer": "refund_approved first and reason second",
+    "expected_correct": true,
+    "got_correct": true,
+    "pass": true,
+    "rule": "F12:ordered-keys"
+   },
+   {
+    "probe": "F12",
+    "class": "positive:paraphrase",
+    "answer": "answer-first ordering: `refund_approved` comes before `reason`",
+    "expected_correct": true,
+    "got_correct": true,
+    "pass": true,
+    "rule": "F12:ordered-keys"
+   },
+   {
+    "probe": "F12",
+    "class": "negative:misordered-sequence",
+    "answer": "reason first and refund_approved second",
+    "expected_correct": false,
+    "got_correct": false,
+    "pass": true,
+    "rule": "F12:keys-or-order-missing"
+   },
+   {
+    "probe": "F12",
+    "class": "negative:case-sensitive-mismatch",
+    "answer": "Refund_approved first and Reason second",
+    "expected_correct": false,
+    "got_correct": false,
+    "pass": true,
+    "rule": "F12:case-mismatch"
+   },
+   {
+    "probe": "E1",
+    "class": "positive:exact-key",
+    "answer": "No \u2014 NOT_OBSERVED",
+    "expected_correct": true,
+    "got_correct": true,
+    "pass": true,
+    "rule": "E1:negated-run"
+   },
+   {
+    "probe": "E1",
+    "class": "positive:paraphrase",
+    "answer": "No, the model-backed arms did not run.",
+    "expected_correct": true,
+    "got_correct": true,
+    "pass": true,
+    "rule": "E1:negated-run"
+   },
+   {
+    "probe": "E1",
+    "class": "negative:affirmed-denied-claim",
+    "answer": "Yes, the model-backed arms ran and produced results.",
+    "expected_correct": false,
+    "got_correct": false,
+    "pass": true,
+    "rule": "E1:negated-run-affirmed"
+   },
+   {
+    "probe": "E1",
+    "class": "negative:lost-negation",
+    "answer": "The model-backed arms ran.",
+    "expected_correct": false,
+    "got_correct": false,
+    "pass": true,
+    "rule": "E1:negated-run-affirmed"
+   },
+   {
+    "probe": "E1",
+    "class": "negative:removed-limitation-affirmed",
+    "answer": "The arms ran and settled the question.",
+    "expected_correct": false,
+    "got_correct": false,
+    "pass": true,
+    "rule": "E1:negated-run-affirmed"
+   },
+   {
+    "probe": "E2",
+    "class": "positive:exact-key",
+    "answer": "No \u2014 third-party claim, not DOCUMENTED",
+    "expected_correct": true,
+    "got_correct": true,
+    "pass": true,
+    "rule": "E2:negated-documented"
+   },
+   {
+    "probe": "E2",
+    "class": "positive:case-presentation",
+    "answer": "No. A third-party claim, not documented fact.",
+    "expected_correct": true,
+    "got_correct": true,
+    "pass": true,
+    "rule": "E2:negated-documented"
+   },
+   {
+    "probe": "E2",
+    "class": "negative:affirmed-denied-claim",
+    "answer": "Yes, stated as documented fact.",
+    "expected_correct": false,
+    "got_correct": false,
+    "pass": true,
+    "rule": "E2:negated-documented-affirmed"
+   },
+   {
+    "probe": "E2",
+    "class": "negative:lost-negation-affirmed",
+    "answer": "The contract is documented fact.",
+    "expected_correct": false,
+    "got_correct": false,
+    "pass": true,
+    "rule": "E2:negated-documented-affirmed"
+   },
+   {
+    "probe": "E3",
+    "class": "positive:exact-key",
+    "answer": "No \u2014 prediction stands untested",
+    "expected_correct": true,
+    "got_correct": true,
+    "pass": true,
+    "rule": "E3:negated-measured"
+   },
+   {
+    "probe": "E3",
+    "class": "positive:paraphrase",
+    "answer": "No: overhead is not measured; the arms are NOT_OBSERVED.",
+    "expected_correct": true,
+    "got_correct": true,
+    "pass": true,
+    "rule": "E3:negated-measured"
+   },
+   {
+    "probe": "E3",
+    "class": "positive:other-facts-observed",
+    "answer": "No: overhead is not measured. Only the predicate cost and payload size are observed.",
+    "expected_correct": true,
+    "got_correct": true,
+    "pass": true,
+    "rule": "E3:negated-measured"
+   },
+   {
+    "probe": "E3",
+    "class": "negative:unsupported-conclusion",
+    "answer": "Yes, overhead was measured at 2x.",
+    "expected_correct": false,
+    "got_correct": false,
+    "pass": true,
+    "rule": "E3:negated-measured-affirmed"
+   },
+   {
+    "probe": "F4",
+    "class": "sec9:missing-concept",
+    "answer": "It generated zero tokens.",
+    "expected_correct": false,
+    "got_correct": false,
+    "pass": true,
+    "rule": "F4:clause-missing",
+    "note": "latency clause removed: must fail"
+   },
+   {
+    "probe": "F1",
+    "class": "sec9:changed-number",
+    "answer": "The predicate answered 9 and declined 11.",
+    "expected_correct": false,
+    "got_correct": false,
+    "pass": true,
+    "rule": "F1:counts-pair-missing",
+    "note": "counts changed: must fail"
+   },
+   {
+    "probe": "E3",
+    "class": "sec9:unsupported-conclusion",
+    "answer": "Yes, generation overhead was measured at 2x.",
+    "expected_correct": false,
+    "got_correct": false,
+    "pass": true,
+    "rule": "E3:negated-measured-affirmed",
+    "note": "untested prediction stated as measured: must fail"
+   },
+   {
+    "probe": "E1",
+    "class": "sec9:removed-limitation",
+    "answer": "The model-backed arms ran and settled the question.",
+    "expected_correct": false,
+    "got_correct": false,
+    "pass": true,
+    "rule": "E1:negated-run-affirmed",
+    "note": "did-not-run limitation removed: must fail"
+   },
+   {
+    "probe": "F2",
+    "class": "sec9:correct-paraphrase",
+    "answer": "8 of the 10 answered test cases matched the label.",
+    "expected_correct": true,
+    "got_correct": true,
+    "pass": true,
+    "rule": "F2:number+match-stem",
+    "note": "morphological paraphrase: must pass"
+   },
+   {
+    "probe": "F3",
+    "class": "sec9:equivalent-reformatting",
+    "answer": "payload is ```{\"refund_approved\": true}``` (25 chars)",
+    "expected_correct": true,
+    "got_correct": true,
+    "pass": true,
+    "rule": "F3:exact-payload",
+    "note": "fence/backtick reformatting only: must pass"
+   }
+  ]
+ },
+ "recovery_calibration": {
+  "passed": 6,
+  "total": 6,
+  "results": [
+   {
+    "case": "fenced-valid-probe",
+    "expected_ok": true,
+    "got_ok": true,
+    "pass": true,
+    "reason": "recovered: fenced/bare JSON parsed"
+   },
+   {
+    "case": "bare-valid-probe",
+    "expected_ok": true,
+    "got_ok": true,
+    "pass": true,
+    "reason": "recovered: fenced/bare JSON parsed"
+   },
+   {
+    "case": "truncated-fenced",
+    "expected_ok": false,
+    "got_ok": false,
+    "pass": true,
+    "reason": "refused: truncation marker '...' \u2014 bytes incomplete"
+   },
+   {
+    "case": "truncated-bare-checklist",
+    "expected_ok": false,
+    "got_ok": false,
+    "pass": true,
+    "reason": "refused: truncation marker '...' \u2014 bytes incomplete"
+   },
+   {
+    "case": "fenced-invalid-json",
+    "expected_ok": false,
+    "got_ok": false,
+    "pass": true,
+    "reason": "refused: JSON parse failed (JSONDecodeError)"
+   },
+   {
+    "case": "fenced-missing-keys",
+    "expected_ok": false,
+    "got_ok": false,
+    "pass": true,
+    "reason": "refused: missing keys ['answer']"
+   }
+  ]
+ },
+ "writer_equivalence": {
+  "MB_vs_mb_distinct_writer_or_fallback": true,
+  "MB_value": "MB",
+  "mb_value": "mb"
+ },
+ "sec9_fixtures": "6/6 in calibration results (class sec9:*)",
+ "heldout_note": "F7-F12 calibration cases above are SYNTHETIC (not recorded answers); recorded held-out answers replay once below with frozen rules."
+}

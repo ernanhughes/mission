@@ -1,0 +1,663 @@
+{
+  "stack": "publication-c1-verification-v0.1",
+  "classifier": "publication-attribution-v0.1",
+  "classifier_schema": "writer.attribution.record.v1",
+  "preservation": [
+    {
+      "span": {
+        "start_line": 101,
+        "end_line": 109
+      },
+      "strict_present": false,
+      "reflow_present": true,
+      "vacuous": false,
+      "verdict": "pass"
+    },
+    {
+      "span": {
+        "start_line": 115,
+        "end_line": 122
+      },
+      "strict_present": false,
+      "reflow_present": true,
+      "vacuous": false,
+      "verdict": "pass"
+    },
+    {
+      "span": {
+        "start_line": 359,
+        "end_line": 364
+      },
+      "strict_present": true,
+      "reflow_present": true,
+      "vacuous": false,
+      "verdict": "pass"
+    },
+    {
+      "span": {
+        "start_line": 405,
+        "end_line": 406
+      },
+      "strict_present": false,
+      "reflow_present": true,
+      "vacuous": false,
+      "verdict": "pass"
+    },
+    {
+      "span": {
+        "start_line": 408,
+        "end_line": 414
+      },
+      "strict_present": true,
+      "reflow_present": true,
+      "vacuous": false,
+      "verdict": "pass"
+    },
+    {
+      "span": {
+        "start_line": 430,
+        "end_line": 430
+      },
+      "strict_present": true,
+      "reflow_present": true,
+      "vacuous": false,
+      "verdict": "pass"
+    },
+    {
+      "span": {
+        "start_line": 432,
+        "end_line": 433
+      },
+      "strict_present": false,
+      "reflow_present": true,
+      "vacuous": false,
+      "verdict": "pass"
+    },
+    {
+      "span": {
+        "start_line": 523,
+        "end_line": 523
+      },
+      "strict_present": true,
+      "reflow_present": true,
+      "vacuous": false,
+      "verdict": "pass"
+    },
+    {
+      "span": {
+        "start_line": 524,
+        "end_line": 524
+      },
+      "strict_present": true,
+      "reflow_present": true,
+      "vacuous": true,
+      "verdict": "pass"
+    },
+    {
+      "span": {
+        "start_line": 525,
+        "end_line": 543
+      },
+      "strict_present": true,
+      "reflow_present": true,
+      "vacuous": false,
+      "verdict": "pass"
+    },
+    {
+      "span": {
+        "start_line": 544,
+        "end_line": 544
+      },
+      "strict_present": true,
+      "reflow_present": true,
+      "vacuous": true,
+      "verdict": "pass"
+    },
+    {
+      "span": {
+        "start_line": 12,
+        "end_line": 18
+      },
+      "strict_present": false,
+      "reflow_present": true,
+      "vacuous": false,
+      "verdict": "pass"
+    },
+    {
+      "span": {
+        "start_line": 454,
+        "end_line": 468
+      },
+      "strict_present": true,
+      "reflow_present": true,
+      "vacuous": false,
+      "verdict": "pass"
+    },
+    {
+      "span": {
+        "start_line": 470,
+        "end_line": 476
+      },
+      "strict_present": false,
+      "reflow_present": true,
+      "vacuous": false,
+      "verdict": "pass"
+    },
+    {
+      "span": {
+        "start_line": 111,
+        "end_line": 113
+      },
+      "strict_present": false,
+      "reflow_present": true,
+      "vacuous": false,
+      "verdict": "pass"
+    },
+    {
+      "span": {
+        "start_line": 95,
+        "end_line": 99
+      },
+      "strict_present": false,
+      "reflow_present": true,
+      "vacuous": false,
+      "verdict": "pass"
+    },
+    {
+      "span": {
+        "start_line": 359,
+        "end_line": 364
+      },
+      "strict_present": true,
+      "reflow_present": true,
+      "vacuous": false,
+      "verdict": "pass"
+    },
+    {
+      "span": {
+        "start_line": 283,
+        "end_line": 289
+      },
+      "strict_present": false,
+      "reflow_present": true,
+      "vacuous": false,
+      "verdict": "pass"
+    },
+    {
+      "span": {
+        "start_line": 159,
+        "end_line": 159
+      },
+      "strict_present": false,
+      "reflow_present": true,
+      "vacuous": false,
+      "verdict": "pass"
+    },
+    {
+      "span": {
+        "start_line": 435,
+        "end_line": 442
+      },
+      "strict_present": true,
+      "reflow_present": true,
+      "vacuous": false,
+      "verdict": "pass"
+    }
+  ],
+  "preservation_failures": 0,
+  "numbers_altered": [],
+  "sentences": {
+    "new_in_candidate": [
+      "> Approve automatically if the customer asks for no more than 50.00, the purchase is at most 30 days old, and this is their first refund in the last year.",
+      "Anything else goes to a human. ## Path 1: the predicate Write that policy as ordinary code first.",
+      "> **Not yet run.** The model-backed arms fill `results/ch01.jsonl`, one row per case per arm, tagged with `schema_variant`."
+    ],
+    "dropped_from_candidate": [
+      "The policy, written out as a human would write it in a runbook: > Approve automatically if the customer asks for no more than 50.00, the purchase is at > most 30 days old, and this is their first refund in the last year.",
+      "Anything else goes > to a human. ## Path 1: the predicate Write that policy as ordinary code first.",
+      "> **Not yet run.** The model-backed arms fill `results/ch01.jsonl`, one row per case per > arm, tagged with `schema_variant`."
+    ]
+  },
+  "hedges_altered": [],
+  "ledger": [
+    {
+      "id": "1.1",
+      "key_phrase": "transitions between the states of a finite-state machine",
+      "status_original": "present",
+      "status_candidate": "present",
+      "parity": true
+    },
+    {
+      "id": "1.2",
+      "key_phrase": "often 10^4 or larger",
+      "status_original": "present",
+      "status_candidate": "present",
+      "parity": true
+    },
+    {
+      "id": "1.3",
+      "key_phrase": "guaranteeing the structure of the generated text",
+      "status_original": "present",
+      "status_candidate": "present",
+      "parity": true
+    },
+    {
+      "id": "1.4",
+      "key_phrase": "around 50 MB",
+      "status_original": "present",
+      "status_candidate": "present",
+      "parity": true
+    },
+    {
+      "id": "1.5",
+      "key_phrase": "Impact of Format Restrictions on Performance of Large Language Models",
+      "status_original": "present",
+      "status_candidate": "present",
+      "parity": true
+    },
+    {
+      "id": "1.6",
+      "key_phrase": "100% of GPT-3.5-turbo JSON-mode responses",
+      "status_original": "present",
+      "status_candidate": "present",
+      "parity": true
+    },
+    {
+      "id": "1.7",
+      "key_phrase": "0.148%",
+      "status_original": "present",
+      "status_candidate": "present",
+      "parity": true
+    },
+    {
+      "id": "1.8",
+      "key_phrase": "2 of 3 reasoning datasets",
+      "status_original": "present",
+      "status_candidate": "present",
+      "parity": true
+    },
+    {
+      "id": "1.9",
+      "key_phrase": "constraint can help",
+      "status_original": "present",
+      "status_candidate": "present",
+      "parity": true
+    },
+    {
+      "id": "1.10",
+      "key_phrase": "Significantly Outperform Zero-Shot",
+      "status_original": "present",
+      "status_candidate": "present",
+      "parity": true
+    },
+    {
+      "id": "1.11",
+      "key_phrase": "around 200 labels",
+      "status_original": "present",
+      "status_candidate": "present",
+      "parity": true
+    },
+    {
+      "id": "1.12",
+      "key_phrase": "26-80%",
+      "status_original": "present",
+      "status_candidate": "present",
+      "parity": true
+    },
+    {
+      "id": "1.13",
+      "key_phrase": "typed value rather than a paragraph is not new",
+      "status_original": "present",
+      "status_candidate": "present",
+      "parity": true
+    },
+    {
+      "id": "1.14",
+      "key_phrase": "answered 10 and declined 10",
+      "status_original": "present",
+      "status_candidate": "present",
+      "parity": true
+    },
+    {
+      "id": "1.15",
+      "key_phrase": "8 match the label",
+      "status_original": "present",
+      "status_candidate": "present",
+      "parity": true
+    },
+    {
+      "id": "1.16",
+      "key_phrase": "every call took under 4 microseconds",
+      "status_original": "present",
+      "status_candidate": "present",
+      "parity": true
+    },
+    {
+      "id": "1.17",
+      "key_phrase": "25 characters",
+      "status_original": "present",
+      "status_candidate": "present",
+      "parity": true
+    },
+    {
+      "id": "1.18",
+      "key_phrase": "Saw it cheaper yesterday",
+      "status_original": "present",
+      "status_candidate": "present",
+      "parity": true
+    },
+    {
+      "id": "1.19",
+      "key_phrase": "underspecified interface",
+      "status_original": "present",
+      "status_candidate": "present",
+      "parity": true
+    },
+    {
+      "id": "1.20",
+      "key_phrase": "Four words we keep apart",
+      "status_original": "present",
+      "status_candidate": "present",
+      "parity": true
+    },
+    {
+      "id": "1.21",
+      "key_phrase": "as good as the question it is asked",
+      "status_original": "present",
+      "status_candidate": "present",
+      "parity": true
+    },
+    {
+      "id": "1.22",
+      "key_phrase": "pre-registered",
+      "status_original": "present",
+      "status_candidate": "present",
+      "parity": true
+    },
+    {
+      "id": "1.23",
+      "key_phrase": "jevmodel.org",
+      "status_original": "present",
+      "status_candidate": "present",
+      "parity": true
+    },
+    {
+      "id": "1.24",
+      "key_phrase": "193.6x",
+      "status_original": "absent",
+      "status_candidate": "absent",
+      "parity": true
+    },
+    {
+      "id": "1.25",
+      "key_phrase": "Primary-source verification is",
+      "status_original": "present",
+      "status_candidate": "present",
+      "parity": true
+    }
+  ],
+  "ledger_breaks": 0,
+  "quotes": [
+    {
+      "quote": "The value is what the application wanted. The prose is packaging.",
+      "byte_in_original": false,
+      "sentence_in_original": true,
+      "byte_in_candidate": true,
+      "sentence_in_candidate": true
+    },
+    {
+      "quote": "The answer is a number, and the number is the whole basis for everything the rest of this book tries to build.",
+      "byte_in_original": false,
+      "sentence_in_original": true,
+      "byte_in_candidate": true,
+      "sentence_in_candidate": true
+    },
+    {
+      "quote": "The value the caller consumes, written out, is 25 characters:",
+      "byte_in_original": true,
+      "sentence_in_original": true,
+      "byte_in_candidate": true,
+      "sentence_in_candidate": true
+    },
+    {
+      "quote": "**OBSERVED**: all 53 pass.",
+      "byte_in_original": true,
+      "sentence_in_original": true,
+      "byte_in_candidate": true,
+      "sentence_in_candidate": true
+    },
+    {
+      "quote": "Generate less. Measure the rest.",
+      "byte_in_original": true,
+      "sentence_in_original": true,
+      "byte_in_candidate": true,
+      "sentence_in_candidate": true
+    }
+  ],
+  "controls": {
+    "NC1": {
+      "disposition": "preserved_unresolved",
+      "reason": "byte-identical unresolved claim carried from original into candidate: inherited unresolved finding",
+      "evidence": {
+        "in_original": true,
+        "in_candidate": true
+      },
+      "judge": {
+        "called": false
+      }
+    },
+    "NC4": {
+      "disposition": "unresolved_attribution",
+      "reason": "quote absent from original and candidate but present in an out-of-scope text: scope/attribution investigation (OUT_OF_SCOPE_CITATION class)",
+      "evidence": {
+        "in_original": false,
+        "in_candidate": false,
+        "scope": "out_of_scope_citation"
+      },
+      "judge": {
+        "called": false
+      }
+    },
+    "NC5": {
+      "disposition": "invalid_review_evidence",
+      "reason": "quote absent from both original and candidate bytes: invalid review evidence",
+      "evidence": {
+        "in_original": false,
+        "in_candidate": false
+      },
+      "judge": {
+        "called": false
+      }
+    },
+    "NC6": {
+      "disposition": "authorized_correction",
+      "reason": "quoted text is a reconcile-allow-listed correction present in the candidate",
+      "evidence": {
+        "in_original": true,
+        "in_candidate": true,
+        "allow_listed": true
+      },
+      "judge": {
+        "called": false
+      }
+    },
+    "NC2": {
+      "disposition": "introduced",
+      "reason": "judge verdict introduced",
+      "evidence": {
+        "in_original": false,
+        "in_candidate": true
+      },
+      "judge": {
+        "called": true,
+        "verdict": "introduced",
+        "rationale": "stub:introduced",
+        "judge": "fake"
+      }
+    },
+    "NC3": {
+      "disposition": "strengthened",
+      "reason": "judge verdict strengthened",
+      "evidence": {
+        "in_original": false,
+        "in_candidate": true
+      },
+      "judge": {
+        "called": true,
+        "verdict": "strengthened",
+        "rationale": "stub:strengthened",
+        "judge": "fake"
+      }
+    },
+    "NC7a": {
+      "disposition": "introduced",
+      "reason": "judge verdict redundant_synthesis (introduced-text subclass)",
+      "evidence": {
+        "in_original": false,
+        "in_candidate": true,
+        "semantic_class": "redundant_synthesis"
+      },
+      "judge": {
+        "called": true,
+        "verdict": "redundant_synthesis",
+        "rationale": "stub:redundant_synthesis",
+        "judge": "fake"
+      }
+    }
+  },
+  "semantic_loss": {
+    "owner": "writer_runtime...revision.semantic_loss.check_semantic_loss",
+    "available": true,
+    "passed": false,
+    "risk_level": "high",
+    "reason": "Semantic-loss gate: BLOCKED (8 high-risk finding(s)): enumeration high: which; taxonomy high: ) ```; number high: 2; number high: 3; number high: 3",
+    "finding_count": 14,
+    "findings": [
+      {
+        "kind": "enumeration",
+        "severity": "medium",
+        "original_text": "how good is it already? If generation is already cheap",
+        "line": 28,
+        "explanation": "enumeration member weakened/rebound (no exact match, words survive): check whether the independent distinction is preserved."
+      },
+      {
+        "kind": "enumeration",
+        "severity": "high",
+        "original_text": "which",
+        "line": 117,
+        "explanation": "enumeration member removed from the candidate."
+      },
+      {
+        "kind": "enumeration",
+        "severity": "medium",
+        "original_text": "which this",
+        "line": 520,
+        "explanation": "enumeration member weakened/rebound (no exact match, words survive): check whether the independent distinction is preserved."
+      },
+      {
+        "kind": "taxonomy",
+        "severity": "medium",
+        "original_text": "how good is it already? If generation is already cheap enough",
+        "line": 27,
+        "explanation": "taxonomy member weakened/rebound (no exact match, words survive): check whether the independent distinction is preserved."
+      },
+      {
+        "kind": "taxonomy",
+        "severity": "medium",
+        "original_text": "which is the honest     state of the art in this repository. It is not a baseline",
+        "line": 334,
+        "explanation": "taxonomy member weakened/rebound (no exact match, words survive): check whether the independent distinction is preserved."
+      },
+      {
+        "kind": "taxonomy",
+        "severity": "high",
+        "original_text": ") ```",
+        "line": 350,
+        "explanation": "taxonomy member removed from the candidate."
+      },
+      {
+        "kind": "taxonomy",
+        "severity": "medium",
+        "original_text": "which is the most useful number in this chapter's source set: it says how much annotation a decision actually costs. Second",
+        "line": 478,
+        "explanation": "taxonomy member weakened/rebound (no exact match, words survive): check whether the independent distinction is preserved."
+      },
+      {
+        "kind": "taxonomy",
+        "severity": "medium",
+        "original_text": "which never learns how   the answer was produced. - `examples/ch01-generate-vs-decide/run_ch01.py` — the runner that writes   `results/ch01.jsonl`",
+        "line": 549,
+        "explanation": "taxonomy member weakened/rebound (no exact match, words survive): check whether the independent distinction is preserved."
+      },
+      {
+        "kind": "number",
+        "severity": "high",
+        "original_text": "2",
+        "line": null,
+        "explanation": "Number/quantity present originally is missing or changed in the candidate."
+      },
+      {
+        "kind": "number",
+        "severity": "high",
+        "original_text": "3",
+        "line": null,
+        "explanation": "Number/quantity present originally is missing or changed in the candidate."
+      },
+      {
+        "kind": "number",
+        "severity": "high",
+        "original_text": "3",
+        "line": null,
+        "explanation": "Number/quantity present originally is missing or changed in the candidate."
+      },
+      {
+        "kind": "number",
+        "severity": "high",
+        "original_text": "3.5",
+        "line": null,
+        "explanation": "Number/quantity present originally is missing or changed in the candidate."
+      },
+      {
+        "kind": "number",
+        "severity": "high",
+        "original_text": "4",
+        "line": null,
+        "explanation": "Number/quantity present originally is missing or changed in the candidate."
+      },
+      {
+        "kind": "subject",
+        "severity": "high",
+        "original_text": "exactly this kind",
+        "line": null,
+        "explanation": "Parallel-sentence subject dropped (shared verb 'this')."
+      }
+    ]
+  },
+  "claim_extraction": {
+    "owner": "writer_runtime...evidence.claim_extractor.EvidenceClaimExtractor",
+    "available": true,
+    "original_claims": 227,
+    "candidate_claims": 227,
+    "new_claim_texts": [
+      "Approve automatically if the customer asks for no more than 50.00, the purchase is at most 30 days old, and this is their first refund in the last year."
+    ],
+    "dropped_claim_texts": [
+      "The policy, written out as a human would write it in a runbook: Approve automatically if the customer asks for no more than 50.00, the purchase is at most 30 days old, and this is their first refund in the last year."
+    ]
+  },
+  "dispatches": 0,
+  "spend_usd": 0.0,
+  "controls_gate": {
+    "expected": {
+      "NC1": "preserved_unresolved",
+      "NC2": "introduced",
+      "NC3": "strengthened",
+      "NC4": "unresolved_attribution",
+      "NC5": "invalid_review_evidence",
+      "NC6": "authorized_correction",
+      "NC7a": "introduced"
+    },
+    "misattributed": {},
+    "gate": "PASS"
+  }
+}

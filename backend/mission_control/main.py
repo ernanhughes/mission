@@ -30,6 +30,7 @@ from mission_control.api import (
     health,
     harness as harness_api,
     integrations as integrations_api,
+    improvement as improvement_api,
     inspect as inspect_api,
     inspect_proposals as inspect_proposals_api,
     inspect_ops as inspect_ops_api,
@@ -442,6 +443,7 @@ def create_app(runtime: RuntimeSettings | None = None) -> FastAPI:
     app.include_router(praxis_proposals_api.router)
     app.include_router(worker_runtime_api.router)
     app.include_router(harness_api.router)
+    app.include_router(improvement_api.router)
     app.include_router(research_api.router)
     app.include_router(workflows_api.router)
     app.include_router(writer_api.router)

@@ -1,0 +1,794 @@
+{
+ "program_schema": "writer.automation.b1_program.v1",
+ "batch": "pub08-arm-b1-v0.1",
+ "package_id": "passage:What we measured, and what we did not",
+ "hull_span": {
+  "start_line": 405,
+  "end_line": 420
+ },
+ "passage_sha256": "d9c756cb225aa787aef25df631d1e60c6344a269e91b24893c4773dc815b3139",
+ "obligations_sha256": "9dfb6263fb433faf7e9f586d0d92d64d3fad83b1082470a6f320d8ddefe68941",
+ "iterations": [
+  {
+   "attempt": 1,
+   "dispatch": {
+    "role": "editorial",
+    "task_kind": "publication_editorial",
+    "package_id": "passage:What we measured, and what we did not",
+    "attempt": 1,
+    "status": "succeeded",
+    "succeeded": true,
+    "typed": {
+     "operation_ids": [
+      "op:43597470:029"
+     ],
+     "replacement_lines": [
+      "The machine this chapter ran on had no local model weights and a CPU-only build of torch, so the model-backed arms did not run. Here is exactly what that leaves open:",
+      "| Arm | Status | Tokens out | p50 / p95 latency | Parse-failure rate | Schema-violation rate |\n|---|---|---|---|---|---|\n| `predicate` | **OBSERVED** | 0 | < 4e-06 s / < 4e-06 s | 0.0 | 0.0 |\n| `generate-freeform` | **NOT_OBSERVED** | NOT_OBSERVED | NOT_OBSERVED | NOT_OBSERVED | NOT_OBSERVED |\n| `generate-schema/answer-first` | **NOT_OBSERVED** | NOT_OBSERVED | NOT_OBSERVED | NOT_OBSERVED | NOT_OBSERVED |\n| `generate-schema/reason-first` | **NOT_OBSERVED** | NOT_OBSERVED | NOT_OBSERVED | NOT_OBSERVED | NOT_OBSERVED |\n| `decide-stub` | **NOT_OBSERVED** | 0 | 0 | n/a | n/a |",
+      "Read the table by its Status column: `predicate` is OBSERVED, and each model-backed generate arm is NOT_OBSERVED.",
+      "The other columns for a NOT_OBSERVED model-backed row therefore do not supply model measurements.",
+      "Five arms, not four: the schema ordering split adds one.",
+      "It is there because of Tam et al. \u00a74.1, and it is the arm most likely to show that constraint is not free.",
+      "That leaves the model-side quantities open. One quantity *is* observed and needs no model, because it is a property of the interface rather than of any model: the payload the application actually reads.",
+      "The passage therefore records one observed interface quantity beside a table whose model-backed arms are NOT_OBSERVED, and it marks the five-arm schema-ordering split as the arm most likely to show that constraint is not free."
+     ],
+     "rationale": "Adds an explanatory bridge for reading OBSERVED versus NOT_OBSERVED and for why the interface payload is the one observed no-model quantity, while keeping the table, statuses, values, citation, and source claims unchanged.",
+     "quotes_used": [
+      "The machine this chapter ran on had no local model weights and a CPU-only build of torch,",
+      "so the model-backed arms did not run.",
+      "Here is exactly what that leaves open:",
+      "| Arm | Status | Tokens out | p50 / p95 latency | Parse-failure rate | Schema-violation rate |",
+      "| `predicate` | **OBSERVED** | 0 | < 4e-06 s / < 4e-06 s | 0.0 | 0.0 |",
+      "Five arms, not four: the schema ordering split adds one.",
+      "\u00a74.1, and it is the arm most likely to show that constraint is not free.",
+      "One quantity *is* observed and needs no model, because it is a property of the interface",
+      "rather than of any model: the payload the application actually reads."
+     ],
+     "preservation_notes": [
+      "Kept the opening honest record: no local model weights, CPU-only torch, and model-backed arms did not run.",
+      "Kept the arm table and all statuses, token values, latency values, and parse/schema values exactly.",
+      "Kept the five-arm count and the Tam et al. \u00a74.1 citation exactly.",
+      "Kept the interface-payload observation attached to the no-model-needed point.",
+      "Added only an explanatory bridge for reading OBSERVED versus NOT_OBSERVED; no new numbers, citations, model sizes, or section readings.",
+      "No proposed claim was introduced or presented as established."
+     ],
+     "no_new_claims": true
+    },
+    "error": null,
+    "error_kind": null,
+    "provenance": {
+     "task": "publication.editorial",
+     "operation_version": "v0.1",
+     "schema_identity": "EditorialCandidateResponse",
+     "schema_version": "v0.1",
+     "prompt_sha256": "b6cb5aa634b08507adc8a0ae276024ea7ed4cca0620690793377e3cf6953e6dc",
+     "context_sha256": null,
+     "schema_sha256": "a6a3308a87446adea13b699d5b4acf1f9c6207bd3f193612ff8770d1ba2c65ae",
+     "writer_execution_id": "model-exec-dc1f772c4cc3",
+     "attempts": 1,
+     "latency_ms": 64802,
+     "usage": {
+      "input_tokens": 2636,
+      "cached_input_tokens": 0,
+      "output_tokens": 7862,
+      "reasoning_tokens": 0,
+      "total_tokens": 10498,
+      "cached_write_tokens": null,
+      "_subject_hash": null,
+      "_candidate_hash": null,
+      "_protocol_version": null,
+      "_evaluator_role": null,
+      "_blindness": null,
+      "_parent_experiment_id": null
+     },
+     "cost_usd": 0.005112599999999999
+    },
+    "raw_response": {
+     "writer_execution_id": "model-exec-dc1f772c4cc3",
+     "worker_request_id": "wrq_ef41bc3b81093bf3ac7cf42a89f81853",
+     "worker_work_id": "wk_6b84a33a1ea9974406c5dc8af5ae48db",
+     "worker_run_id": "wr_f76f2934dcce2dc49479eee7e7fe19ae",
+     "worker_acceptance_id": "ac_a4570a904e62cf6771e4663bf6b9aac7",
+     "worker_status": "ACCEPTED",
+     "worker_backend": "opencode-work",
+     "worker_provenance": {
+      "project_id": "writer",
+      "work_id": "wk_6b84a33a1ea9974406c5dc8af5ae48db",
+      "worker_request_id": "wrq_ef41bc3b81093bf3ac7cf42a89f81853",
+      "application": "writer",
+      "ledger_dir": "C:\\Projects\\writer\\.opencode\\vfs",
+      "edge_record_ids": [
+       "8ff9315ae2729582b929fa26cc51e4b246d81593886ed322d04b70c1d3867067",
+       "1de0dba6147351ed9c7de53205e64cabb0bdf3ebc5a8fe5dbfe270390329f158",
+       "d76c6423b9e77a5d31b9dcf3dbb71c255c3706314e2969ab8d7f3ee3475db481",
+       "ba4122a7ec907ecf6b94f94045da3ff60a2651bce01b46e20a8fa6483e435137",
+       "4fcadb01f0fe0afdc3770a5e1186c8e386813a64de394291607ab6c86550ce04",
+       "3948e48200904e7ba24c60cd43f1807b356be05a25d763ec622828078bf23a3f",
+       "3f25c4fe6a4e9c46dcde16fcf4f70848f1edd83a7ec3f47b87163cc2715ab493",
+       "6e7e39c5a6c75bdceb37dbebf57c847a0e167f3caf41ef3d804fbaf98af940ac",
+       "081ba5c4e3e28f2931471ed971f6c9db6ac1c3926ca475cb1b0cfd27febacdea",
+       "c899bf5a32052796186a72fc8991b0636362d08693d8f085d353bd0121c405c1",
+       "a507dc6525e1b44b4d3cd0d7188da51b7f550d7e31343f94d347ab928ea7320b"
+      ]
+     },
+     "worker_model_execution": {
+      "requested": {
+       "route": "default_deepseek_go",
+       "provider": "pi",
+       "model": "opencode-go/deepseek-v4.1-flash",
+       "policy": "default"
+      },
+      "observed": {
+       "provider": "opencode-go",
+       "model": "deepseek-v4.1-flash",
+       "id": "opencode-go/deepseek-v4.1-flash",
+       "family": "deepseek",
+       "family_source": "verified_mapping",
+       "mapping_version": "worker-families/2026-10-13-longcat",
+       "matches_request": true
+      },
+      "execution_id": "a25dd2d9-5c6b-467c-ba44-4971bfdeab39",
+      "status": "SUCCEEDED",
+      "provider": "pi",
+      "model": "opencode-go/deepseek-v4.1-flash",
+      "failure_domain": "pi",
+      "usage": {
+       "input_tokens": 2636,
+       "output_tokens": 7862,
+       "cached_read_tokens": 0,
+       "cache_write_tokens": 0,
+       "total_tokens": 10498,
+       "raw": {
+        "input": 2636,
+        "output": 7862,
+        "cacheRead": 0,
+        "cacheWrite": 0,
+        "reasoning": 7008,
+        "totalTokens": 10498,
+        "cost": {
+         "input": 0.00039539999999999996,
+         "output": 0.0047171999999999995,
+         "cacheRead": 0,
+         "cacheWrite": 0,
+         "total": 0.005112599999999999,
+         "totalFromProvider": false
+        }
+       }
+      },
+      "cost": {
+       "amount": 0.005112599999999999,
+       "currency": "USD",
+       "economic_tier": "subscription",
+       "kind": "estimated",
+       "status": "known",
+       "amount_known": true,
+       "low_usd": 0.005112599999999999,
+       "high_usd": 0.005112599999999999,
+       "basis": "flat",
+       "schedule": "opencode-go-catalogue-2026-11-08",
+       "pricing_schedule": "opencode-go-catalogue-2026-11-08",
+       "source": "OpenCode model catalogue (opencode.ai/docs/console/models)",
+       "observed_at": "2026-11-08",
+       "effective_from": "2026-11-08",
+       "verification": "catalogue_observed",
+       "conditions": [
+        "Published Go accounting rate; not an invoice or billed charge."
+       ]
+      },
+      "latency_ms": 63870,
+      "attempts": [
+       {
+        "requested_model": "opencode-go/deepseek-v4.1-flash",
+        "observed": {
+         "provider": "opencode-go",
+         "model": "deepseek-v4.1-flash",
+         "id": "opencode-go/deepseek-v4.1-flash",
+         "family": "deepseek",
+         "family_source": "verified_mapping",
+         "mapping_version": "worker-families/2026-10-13-longcat",
+         "matches_request": true
+        },
+        "route": "default_deepseek_go",
+        "provider": "pi",
+        "model": "opencode-go/deepseek-v4.1-flash",
+        "transport": "pi-rpc",
+        "failure_domain": "pi",
+        "started_at": "2026-11-25T14:17:22.147Z",
+        "latency_ms": 63870,
+        "status": "SUCCEEDED",
+        "provider_state_ref": "provider-state-fd38e696-b9cd-4008-80e2-3edf8abf1656",
+        "request_dispatched": true,
+        "request_admitted": "YES",
+        "inference_executed": "UNKNOWN",
+        "usage": {
+         "input_tokens": 2636,
+         "output_tokens": 7862,
+         "cached_read_tokens": 0,
+         "cache_write_tokens": 0,
+         "total_tokens": 10498,
+         "raw": {
+          "input": 2636,
+          "output": 7862,
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "reasoning": 7008,
+          "totalTokens": 10498,
+          "cost": {
+           "input": 0.00039539999999999996,
+           "output": 0.0047171999999999995,
+           "cacheRead": 0,
+           "cacheWrite": 0,
+           "total": 0.005112599999999999,
+           "totalFromProvider": false
+          }
+         }
+        },
+        "cost": {
+         "amount": 0.005112599999999999,
+         "currency": "USD",
+         "economic_tier": "subscription",
+         "kind": "estimated",
+         "status": "known",
+         "amount_known": true,
+         "low_usd": 0.005112599999999999,
+         "high_usd": 0.005112599999999999,
+         "basis": "flat",
+         "schedule": "opencode-go-catalogue-2026-11-08",
+         "pricing_schedule": "opencode-go-catalogue-2026-11-08",
+         "source": "OpenCode model catalogue (opencode.ai/docs/console/models)",
+         "observed_at": "2026-11-08",
+         "effective_from": "2026-11-08",
+         "verification": "catalogue_observed",
+         "conditions": [
+          "Published Go accounting rate; not an invoice or billed charge."
+         ]
+        }
+       }
+      ],
+      "fallback_path": [
+       "default_deepseek_go"
+      ],
+      "execution_state": "MODEL_OUTPUT_OBSERVED",
+      "stop_batch": false,
+      "provider_state_ref": "provider-state-fd38e696-b9cd-4008-80e2-3edf8abf1656",
+      "provider_events": [
+       {
+        "schema_version": "provider-event.v1",
+        "event_id": "1d0e8805-9286-4fe2-b78f-48daef7b48c0",
+        "type": "MODEL_PREFLIGHT",
+        "observed_at": "2026-11-25T14:17:22.147Z",
+        "execution_id": "a25dd2d9-5c6b-467c-ba44-4971bfdeab39",
+        "provider_state_ref": "provider-state-6072c783-3674-4e46-a157-ebfbb55be957",
+        "previous": "AVAILABLE",
+        "current": "AVAILABLE",
+        "provider": "pi",
+        "model": "opencode-go/deepseek-v4.1-flash",
+        "failure_domain": "pi",
+        "observed_from": "runtime_response",
+        "quota_state": "UNKNOWN",
+        "retry_at": null
+       },
+       {
+        "schema_version": "provider-event.v1",
+        "event_id": "6336486e-ac46-4f56-955c-4ff34ade41ff",
+        "type": "PROVIDER_STATE_OBSERVED",
+        "observed_at": "2026-11-25T14:18:26.017Z",
+        "execution_id": "a25dd2d9-5c6b-467c-ba44-4971bfdeab39",
+        "provider_state_ref": "provider-state-fd38e696-b9cd-4008-80e2-3edf8abf1656",
+        "previous": "AVAILABLE",
+        "current": "AVAILABLE",
+        "provider": "pi",
+        "model": "opencode-go/deepseek-v4.1-flash",
+        "failure_domain": "pi",
+        "observed_from": "runtime_response",
+        "quota_state": "UNKNOWN",
+        "retry_at": null
+       }
+      ],
+      "provider_states": [
+       {
+        "schema_version": "provider-state.v1",
+        "provider_state_id": "provider-state-6072c783-3674-4e46-a157-ebfbb55be957",
+        "provider": "pi",
+        "model": "opencode-go/deepseek-v4.1-flash",
+        "failure_domain": "pi",
+        "scope": "model",
+        "observed_at": "2026-11-25T14:15:54.569Z",
+        "observed_from": "runtime_response",
+        "status": "AVAILABLE",
+        "authentication": "UNKNOWN",
+        "model_available": "AVAILABLE",
+        "request_admissible": "UNKNOWN",
+        "quota_state": "UNKNOWN",
+        "quota_windows": [],
+        "reset_at": null,
+        "retry_at": null,
+        "retry_source": "NONE",
+        "extra_credit_usd": null,
+        "extra_usage": "UNKNOWN",
+        "last_provider_error": null
+       },
+       {
+        "schema_version": "provider-state.v1",
+        "provider_state_id": "provider-state-fd38e696-b9cd-4008-80e2-3edf8abf1656",
+        "provider": "pi",
+        "model": "opencode-go/deepseek-v4.1-flash",
+        "failure_domain": "pi",
+        "scope": "model",
+        "observed_at": "2026-11-25T14:18:26.017Z",
+        "observed_from": "runtime_response",
+        "status": "AVAILABLE",
+        "authentication": "UNKNOWN",
+        "model_available": "AVAILABLE",
+        "request_admissible": "UNKNOWN",
+        "quota_state": "UNKNOWN",
+        "quota_windows": [],
+        "reset_at": null,
+        "retry_at": null,
+        "retry_source": "NONE",
+        "extra_credit_usd": null,
+        "extra_usage": "UNKNOWN",
+        "last_provider_error": null
+       }
+      ],
+      "provider_warnings": [
+       "Provider quota is not observed; request admissibility remains unknown unless blocked by runtime evidence."
+      ],
+      "selection": {
+       "policy": "default",
+       "prior_families": [],
+       "ordered_routes": [
+        "default_deepseek_go"
+       ],
+       "distinct_route_count": 0,
+       "independence_required": false,
+       "same_family_fallback": false
+      },
+      "independence": {
+       "required": false,
+       "state": "not_required",
+       "prior_families": []
+      }
+     },
+     "model_prompt_sha256": "b6cb5aa634b08507adc8a0ae276024ea7ed4cca0620690793377e3cf6953e6dc",
+     "observed_model": "opencode-go/deepseek-v4.1-flash"
+    },
+    "recorded_at": "2026-11-25T14:18:28.360833+00:00"
+   },
+   "validation_reasons": [
+    "operation_id_mismatch: got ['op:43597470:029'], want ['op:43597470:029', 'op:43597470:030']"
+   ],
+   "outcome": "invalid_typed_output"
+  },
+  {
+   "attempt": 2,
+   "dispatch": {
+    "role": "editorial",
+    "task_kind": "publication_editorial",
+    "package_id": "passage:What we measured, and what we did not",
+    "attempt": 2,
+    "status": "succeeded",
+    "succeeded": true,
+    "typed": {
+     "operation_ids": [
+      "op:43597470:029",
+      "op:43597470:030"
+     ],
+     "replacement_lines": [
+      "The machine this chapter ran on had no local model weights and a CPU-only build of torch, so the model-backed arms did not run. Here is exactly what that leaves open:",
+      "The table records status: it shows which arm has observed numbers and which rows were left open.",
+      "| Arm | Status | Tokens out | p50 / p95 latency | Parse-failure rate | Schema-violation rate |\n|---|---|---|---|---|---|\n| `predicate` | **OBSERVED** | 0 | < 4e-06 s / < 4e-06 s | 0.0 | 0.0 |\n| `generate-freeform` | **NOT_OBSERVED** | NOT_OBSERVED | NOT_OBSERVED | NOT_OBSERVED | NOT_OBSERVED |\n| `generate-schema/answer-first` | **NOT_OBSERVED** | NOT_OBSERVED | NOT_OBSERVED | NOT_OBSERVED | NOT_OBSERVED |\n| `generate-schema/reason-first` | **NOT_OBSERVED** | NOT_OBSERVED | NOT_OBSERVED | NOT_OBSERVED | NOT_OBSERVED |\n| `decide-stub` | **NOT_OBSERVED** | 0 | 0 | n/a | n/a |",
+      "Five arms, not four: the schema ordering split adds one.",
+      "It is there because of Tam et al. \u00a74.1, and it is the arm most likely to show that constraint is not free.",
+      "One quantity *is* observed and needs no model, because it is a property of the interface rather than of any model: the payload the application actually reads.",
+      "So the passage records one observed arm, four arms left NOT_OBSERVED, and one interface quantity observed without a model."
+     ],
+     "rationale": "Added a bridge that reads the table as a status boundary between observed and left-open rows, split the arm-count and interface-point sentences into separate paragraphs, and ended with a synthesis that only restates the table status and the interface quantity already present.",
+     "quotes_used": [
+      "The machine this chapter ran on had no local model weights and a CPU-only build of torch,",
+      "so the model-backed arms did not run. Here is exactly what that leaves open:",
+      "| `predicate` | **OBSERVED** | 0 | < 4e-06 s / < 4e-06 s | 0.0 | 0.0 |",
+      "Five arms, not four: the schema ordering split adds one.",
+      "One quantity *is* observed and needs no model, because it is a property of the interface",
+      "rather than of any model: the payload the application actually reads."
+     ],
+     "preservation_notes": [
+      "Kept the opening honest-record wording about no local weights and CPU-only torch, with the model-backed arms not running.",
+      "Kept all table rows and values exactly, including predicate 0 tokens and < 4e-06 s latency and every NOT_OBSERVED cell.",
+      "Kept the Tam et al. \u00a74.1 citation and the statement that the schema-ordering split adds one arm and is most likely to show constraint is not free.",
+      "Kept the interface-property observation about payload size/readout without adding model results.",
+      "The added bridge and final synthesis restate only observed/NOT_OBSERVED status and the interface quantity; no new factual claims are introduced."
+     ],
+     "no_new_claims": true
+    },
+    "error": null,
+    "error_kind": null,
+    "provenance": {
+     "task": "publication.editorial",
+     "operation_version": "v0.1",
+     "schema_identity": "EditorialCandidateResponse",
+     "schema_version": "v0.1",
+     "prompt_sha256": "9edd4b185e299a1ebf1475d710c67a332759cbc721add6de3cc2d1891b37f10e",
+     "context_sha256": null,
+     "schema_sha256": "a6a3308a87446adea13b699d5b4acf1f9c6207bd3f193612ff8770d1ba2c65ae",
+     "writer_execution_id": "model-exec-a95cb0dab7d7",
+     "attempts": 1,
+     "latency_ms": 59834,
+     "usage": {
+      "input_tokens": 2698,
+      "cached_input_tokens": 0,
+      "output_tokens": 6832,
+      "reasoning_tokens": 0,
+      "total_tokens": 9530,
+      "cached_write_tokens": null,
+      "_subject_hash": null,
+      "_candidate_hash": null,
+      "_protocol_version": null,
+      "_evaluator_role": null,
+      "_blindness": null,
+      "_parent_experiment_id": null
+     },
+     "cost_usd": 0.0045039
+    },
+    "raw_response": {
+     "writer_execution_id": "model-exec-a95cb0dab7d7",
+     "worker_request_id": "wrq_f54f478f9171dbd12e2a3a21094903b8",
+     "worker_work_id": "wk_e8f81f7f7880e6321b5e725fef702e46",
+     "worker_run_id": "wr_b13fa1484871c1ca2fcdc010907c9d8b",
+     "worker_acceptance_id": "ac_b221e824161fe19732bab8ef80627c4f",
+     "worker_status": "ACCEPTED",
+     "worker_backend": "opencode-work",
+     "worker_provenance": {
+      "project_id": "writer",
+      "work_id": "wk_e8f81f7f7880e6321b5e725fef702e46",
+      "worker_request_id": "wrq_f54f478f9171dbd12e2a3a21094903b8",
+      "application": "writer",
+      "ledger_dir": "C:\\Projects\\writer\\.opencode\\vfs",
+      "edge_record_ids": [
+       "14f1695a0be9d7a7b4782c420abce629b4ca6d92d20f5c02c141057dbe9ffae0",
+       "c4afb1f0fd78a06ed95cceea11ca6410439cbe0e3e681b7d49138273fffc73cb",
+       "c16eaca1bd59d6724f3ba71a08e91066593e0763a9b25960ae28517ff03a46bd",
+       "5ff3c88753822080cc43f6f57b1701c2b4fbe527aae5df4e0a334f1ea68e52c5",
+       "60c48f5055a9fde6ef94c0b0f68cf8931789710aee7fa237ebd1258da61ee58f",
+       "f751f8bbcaf1d7562b30141a2b2839a7be43c9f28111aad4fc1edff8ac15d7a1",
+       "7f146df2158f087ea1766aaad09fcb5b4ce540915a7b4d7a71b31ef75f17211d",
+       "6c9cce20e0dd954794ccb6da54c822821abea1e867dfc27caec11e057ed8596a",
+       "bbe834e60cc89f24d3c8c29d0d2f4f9e8442cfb8b3c822cad0e2895ba2d4c52b",
+       "282fef0b8b1a508451c9d1171f59636f2fb1e5bc3f20fa2c59bdcb67693eaf4f",
+       "53978fb529774a154a9c98759cade45c5b720004ccdfb916f143271540a3e9e4"
+      ]
+     },
+     "worker_model_execution": {
+      "requested": {
+       "route": "default_deepseek_go",
+       "provider": "pi",
+       "model": "opencode-go/deepseek-v4.1-flash",
+       "policy": "default"
+      },
+      "observed": {
+       "provider": "opencode-go",
+       "model": "deepseek-v4.1-flash",
+       "id": "opencode-go/deepseek-v4.1-flash",
+       "family": "deepseek",
+       "family_source": "verified_mapping",
+       "mapping_version": "worker-families/2026-10-13-longcat",
+       "matches_request": true
+      },
+      "execution_id": "71bcde77-cd49-4af2-b55c-9280123aaff7",
+      "status": "SUCCEEDED",
+      "provider": "pi",
+      "model": "opencode-go/deepseek-v4.1-flash",
+      "failure_domain": "pi",
+      "usage": {
+       "input_tokens": 2698,
+       "output_tokens": 6832,
+       "cached_read_tokens": 0,
+       "cache_write_tokens": 0,
+       "total_tokens": 9530,
+       "raw": {
+        "input": 2698,
+        "output": 6832,
+        "cacheRead": 0,
+        "cacheWrite": 0,
+        "reasoning": 6063,
+        "totalTokens": 9530,
+        "cost": {
+         "input": 0.00040469999999999997,
+         "output": 0.0040992,
+         "cacheRead": 0,
+         "cacheWrite": 0,
+         "total": 0.0045039,
+         "totalFromProvider": false
+        }
+       }
+      },
+      "cost": {
+       "amount": 0.0045039,
+       "currency": "USD",
+       "economic_tier": "subscription",
+       "kind": "estimated",
+       "status": "known",
+       "amount_known": true,
+       "low_usd": 0.0045039,
+       "high_usd": 0.0045039,
+       "basis": "flat",
+       "schedule": "opencode-go-catalogue-2026-11-08",
+       "pricing_schedule": "opencode-go-catalogue-2026-11-08",
+       "source": "OpenCode model catalogue (opencode.ai/docs/console/models)",
+       "observed_at": "2026-11-08",
+       "effective_from": "2026-11-08",
+       "verification": "catalogue_observed",
+       "conditions": [
+        "Published Go accounting rate; not an invoice or billed charge."
+       ]
+      },
+      "latency_ms": 58744,
+      "attempts": [
+       {
+        "requested_model": "opencode-go/deepseek-v4.1-flash",
+        "observed": {
+         "provider": "opencode-go",
+         "model": "deepseek-v4.1-flash",
+         "id": "opencode-go/deepseek-v4.1-flash",
+         "family": "deepseek",
+         "family_source": "verified_mapping",
+         "mapping_version": "worker-families/2026-10-13-longcat",
+         "matches_request": true
+        },
+        "route": "default_deepseek_go",
+        "provider": "pi",
+        "model": "opencode-go/deepseek-v4.1-flash",
+        "transport": "pi-rpc",
+        "failure_domain": "pi",
+        "started_at": "2026-11-25T14:18:28.712Z",
+        "latency_ms": 58744,
+        "status": "SUCCEEDED",
+        "provider_state_ref": "provider-state-31df4342-1bb5-4554-a0a7-a6b0d58eea60",
+        "request_dispatched": true,
+        "request_admitted": "YES",
+        "inference_executed": "UNKNOWN",
+        "usage": {
+         "input_tokens": 2698,
+         "output_tokens": 6832,
+         "cached_read_tokens": 0,
+         "cache_write_tokens": 0,
+         "total_tokens": 9530,
+         "raw": {
+          "input": 2698,
+          "output": 6832,
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "reasoning": 6063,
+          "totalTokens": 9530,
+          "cost": {
+           "input": 0.00040469999999999997,
+           "output": 0.0040992,
+           "cacheRead": 0,
+           "cacheWrite": 0,
+           "total": 0.0045039,
+           "totalFromProvider": false
+          }
+         }
+        },
+        "cost": {
+         "amount": 0.0045039,
+         "currency": "USD",
+         "economic_tier": "subscription",
+         "kind": "estimated",
+         "status": "known",
+         "amount_known": true,
+         "low_usd": 0.0045039,
+         "high_usd": 0.0045039,
+         "basis": "flat",
+         "schedule": "opencode-go-catalogue-2026-11-08",
+         "pricing_schedule": "opencode-go-catalogue-2026-11-08",
+         "source": "OpenCode model catalogue (opencode.ai/docs/console/models)",
+         "observed_at": "2026-11-08",
+         "effective_from": "2026-11-08",
+         "verification": "catalogue_observed",
+         "conditions": [
+          "Published Go accounting rate; not an invoice or billed charge."
+         ]
+        }
+       }
+      ],
+      "fallback_path": [
+       "default_deepseek_go"
+      ],
+      "execution_state": "MODEL_OUTPUT_OBSERVED",
+      "stop_batch": false,
+      "provider_state_ref": "provider-state-31df4342-1bb5-4554-a0a7-a6b0d58eea60",
+      "provider_events": [
+       {
+        "schema_version": "provider-event.v1",
+        "event_id": "3cc31032-3e58-437d-b403-cbeab700201e",
+        "type": "MODEL_PREFLIGHT",
+        "observed_at": "2026-11-25T14:18:28.712Z",
+        "execution_id": "71bcde77-cd49-4af2-b55c-9280123aaff7",
+        "provider_state_ref": "provider-state-fd38e696-b9cd-4008-80e2-3edf8abf1656",
+        "previous": "AVAILABLE",
+        "current": "AVAILABLE",
+        "provider": "pi",
+        "model": "opencode-go/deepseek-v4.1-flash",
+        "failure_domain": "pi",
+        "observed_from": "runtime_response",
+        "quota_state": "UNKNOWN",
+        "retry_at": null
+       },
+       {
+        "schema_version": "provider-event.v1",
+        "event_id": "3b123d70-673d-4c04-a5f1-d97888aa47a9",
+        "type": "PROVIDER_STATE_OBSERVED",
+        "observed_at": "2026-11-25T14:19:27.456Z",
+        "execution_id": "71bcde77-cd49-4af2-b55c-9280123aaff7",
+        "provider_state_ref": "provider-state-31df4342-1bb5-4554-a0a7-a6b0d58eea60",
+        "previous": "AVAILABLE",
+        "current": "AVAILABLE",
+        "provider": "pi",
+        "model": "opencode-go/deepseek-v4.1-flash",
+        "failure_domain": "pi",
+        "observed_from": "runtime_response",
+        "quota_state": "UNKNOWN",
+        "retry_at": null
+       }
+      ],
+      "provider_states": [
+       {
+        "schema_version": "provider-state.v1",
+        "provider_state_id": "provider-state-fd38e696-b9cd-4008-80e2-3edf8abf1656",
+        "provider": "pi",
+        "model": "opencode-go/deepseek-v4.1-flash",
+        "failure_domain": "pi",
+        "scope": "model",
+        "observed_at": "2026-11-25T14:18:26.017Z",
+        "observed_from": "runtime_response",
+        "status": "AVAILABLE",
+        "authentication": "UNKNOWN",
+        "model_available": "AVAILABLE",
+        "request_admissible": "UNKNOWN",
+        "quota_state": "UNKNOWN",
+        "quota_windows": [],
+        "reset_at": null,
+        "retry_at": null,
+        "retry_source": "NONE",
+        "extra_credit_usd": null,
+        "extra_usage": "UNKNOWN",
+        "last_provider_error": null
+       },
+       {
+        "schema_version": "provider-state.v1",
+        "provider_state_id": "provider-state-31df4342-1bb5-4554-a0a7-a6b0d58eea60",
+        "provider": "pi",
+        "model": "opencode-go/deepseek-v4.1-flash",
+        "failure_domain": "pi",
+        "scope": "model",
+        "observed_at": "2026-11-25T14:19:27.456Z",
+        "observed_from": "runtime_response",
+        "status": "AVAILABLE",
+        "authentication": "UNKNOWN",
+        "model_available": "AVAILABLE",
+        "request_admissible": "UNKNOWN",
+        "quota_state": "UNKNOWN",
+        "quota_windows": [],
+        "reset_at": null,
+        "retry_at": null,
+        "retry_source": "NONE",
+        "extra_credit_usd": null,
+        "extra_usage": "UNKNOWN",
+        "last_provider_error": null
+       }
+      ],
+      "provider_warnings": [
+       "Provider quota is not observed; request admissibility remains unknown unless blocked by runtime evidence."
+      ],
+      "selection": {
+       "policy": "default",
+       "prior_families": [],
+       "ordered_routes": [
+        "default_deepseek_go"
+       ],
+       "distinct_route_count": 0,
+       "independence_required": false,
+       "same_family_fallback": false
+      },
+      "independence": {
+       "required": false,
+       "state": "not_required",
+       "prior_families": []
+      }
+     },
+     "model_prompt_sha256": "9edd4b185e299a1ebf1475d710c67a332759cbc721add6de3cc2d1891b37f10e",
+     "observed_model": "opencode-go/deepseek-v4.1-flash"
+    },
+    "recorded_at": "2026-11-25T14:19:28.284548+00:00"
+   },
+   "validation_reasons": [],
+   "assembled_lines": 559,
+   "verify_verdict": "fail",
+   "verify_failed": 1,
+   "verify_failed_checks": [
+    "byte_true_present:405-406:missing/reworded lines: ['The machine this chapter ran on had no local model weights and a CPU-only build of torch,', 'so the model-backed arms did not run. Here is exactly what that leaves open:']"
+   ],
+   "outcome": "verify_failed"
+  }
+ ],
+ "review_rounds": [],
+ "corrections": 1,
+ "outcome": "verify_failed",
+ "ledger": {
+  "ledger_schema": "writer.automation.ledger.v1",
+  "detector": "publication-automation-v0.1",
+  "dispatch_count": 2,
+  "total_cost_usd": 0.0096165,
+  "total_tokens": 20028,
+  "by_role": {
+   "editorial": {
+    "dispatches": 2,
+    "cost_usd": 0.0096165,
+    "tokens": 20028
+   }
+  },
+  "by_model": {
+   "opencode-go/deepseek-v4.1-flash": {
+    "dispatches": 2,
+    "cost_usd": 0.0096165,
+    "tokens": 20028
+   }
+  },
+  "entries": [
+   {
+    "role": "editorial",
+    "task_kind": "publication_editorial",
+    "package_id": "passage:What we measured, and what we did not",
+    "attempt": 1,
+    "writer_execution_id": "model-exec-dc1f772c4cc3",
+    "provider": "pi",
+    "model": "opencode-go/deepseek-v4.1-flash",
+    "route": "default_deepseek_go",
+    "economic_tier": "subscription",
+    "input_tokens": 2636,
+    "output_tokens": 7862,
+    "total_tokens": 10498,
+    "cost_usd": 0.005112599999999999,
+    "latency_ms": 64802,
+    "prompt_sha256": "b6cb5aa634b08507adc8a0ae276024ea7ed4cca0620690793377e3cf6953e6dc",
+    "schema_sha256": "a6a3308a87446adea13b699d5b4acf1f9c6207bd3f193612ff8770d1ba2c65ae",
+    "status": "succeeded",
+    "error_kind": null,
+    "replacement_sha256": "a035d9b4ec2612e685bc7ad762b8e9f29d395a777b8e165a8b4994b89e6715f2"
+   },
+   {
+    "role": "editorial",
+    "task_kind": "publication_editorial",
+    "package_id": "passage:What we measured, and what we did not",
+    "attempt": 2,
+    "writer_execution_id": "model-exec-a95cb0dab7d7",
+    "provider": "pi",
+    "model": "opencode-go/deepseek-v4.1-flash",
+    "route": "default_deepseek_go",
+    "economic_tier": "subscription",
+    "input_tokens": 2698,
+    "output_tokens": 6832,
+    "total_tokens": 9530,
+    "cost_usd": 0.0045039,
+    "latency_ms": 59834,
+    "prompt_sha256": "9edd4b185e299a1ebf1475d710c67a332759cbc721add6de3cc2d1891b37f10e",
+    "schema_sha256": "a6a3308a87446adea13b699d5b4acf1f9c6207bd3f193612ff8770d1ba2c65ae",
+    "status": "succeeded",
+    "error_kind": null,
+    "replacement_sha256": "14df377125aabbd9666213fe9c23178cdc437aa4efb92bbecc54bec872fb2f27"
+   }
+  ]
+ },
+ "prompt_sha256": "b6cb5aa634b08507adc8a0ae276024ea7ed4cca0620690793377e3cf6953e6dc",
+ "correction_prompt_shas": [
+  "9edd4b185e299a1ebf1475d710c67a332759cbc721add6de3cc2d1891b37f10e"
+ ],
+ "review_corrections": [
+  {
+   "attempt": 2,
+   "driven_by": "validation",
+   "outcome": "verify_failed"
+  }
+ ]
+}

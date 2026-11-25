@@ -1,0 +1,95 @@
+{
+ "ledger_schema": "writer.automation.ledger.v1",
+ "detector": "publication-automation-v0.1",
+ "dispatch_count": 3,
+ "total_cost_usd": 0.0044301,
+ "total_tokens": 14428,
+ "by_role": {
+  "editorial": {
+   "dispatches": 2,
+   "cost_usd": 0.0044301,
+   "tokens": 10895
+  },
+  "verification": {
+   "dispatches": 1,
+   "cost_usd": 0.0,
+   "tokens": 3533
+  }
+ },
+ "by_model": {
+  "opencode-go/deepseek-v4.1-flash": {
+   "dispatches": 2,
+   "cost_usd": 0.0044301,
+   "tokens": 10895
+  },
+  "opencode-go/claude-haiku-5-5": {
+   "dispatches": 1,
+   "cost_usd": 0.0,
+   "tokens": 3533
+  }
+ },
+ "entries": [
+  {
+   "role": "editorial",
+   "task_kind": "publication_editorial",
+   "package_id": "passage:Four words we keep apart",
+   "attempt": 1,
+   "writer_execution_id": "model-exec-e89b36cd69c8",
+   "provider": "pi",
+   "model": "opencode-go/deepseek-v4.1-flash",
+   "route": "default_deepseek_go",
+   "economic_tier": "subscription",
+   "input_tokens": 2316,
+   "output_tokens": 2676,
+   "total_tokens": 4992,
+   "cost_usd": 0.001953,
+   "latency_ms": 26863,
+   "prompt_sha256": "befcc135c260a3c3026870b7d74f626a07fc81b89b054ed47a25a10260789eb6",
+   "schema_sha256": "a6a3308a87446adea13b699d5b4acf1f9c6207bd3f193612ff8770d1ba2c65ae",
+   "status": "succeeded",
+   "error_kind": null,
+   "replacement_sha256": "9b0ccd77af486fd8f981ae8276e69976150840745c891a8983ac6ec9bb7cdd68"
+  },
+  {
+   "role": "editorial",
+   "task_kind": "publication_editorial",
+   "package_id": "passage:Four words we keep apart",
+   "attempt": 2,
+   "writer_execution_id": "model-exec-c64650b8995c",
+   "provider": "pi",
+   "model": "opencode-go/deepseek-v4.1-flash",
+   "route": "default_deepseek_go",
+   "economic_tier": "subscription",
+   "input_tokens": 2366,
+   "output_tokens": 3537,
+   "total_tokens": 5903,
+   "cost_usd": 0.0024771,
+   "latency_ms": 31806,
+   "prompt_sha256": "505d355bba10a6fa2707abcb7a13122e881f01896a168552553b1126e3c8f209",
+   "schema_sha256": "a6a3308a87446adea13b699d5b4acf1f9c6207bd3f193612ff8770d1ba2c65ae",
+   "status": "succeeded",
+   "error_kind": null,
+   "replacement_sha256": "dac681cc7e541ef905ea9012e13cf0b40caf571bcc8edebdfa9281ec3376e8ee"
+  },
+  {
+   "role": "verification",
+   "task_kind": "publication_review",
+   "package_id": "passage:Four words we keep apart",
+   "attempt": 1,
+   "writer_execution_id": "model-exec-af0521065611",
+   "provider": "pi",
+   "model": "opencode-go/claude-haiku-5-5",
+   "route": "default_haiku_go",
+   "economic_tier": "subscription",
+   "input_tokens": 4,
+   "output_tokens": 1301,
+   "total_tokens": 3533,
+   "cost_usd": 0,
+   "latency_ms": 8777,
+   "prompt_sha256": "2f1f10df838a5d413fbd68745fb537e83fb427d28c9c89d56f03a87042a0b478",
+   "schema_sha256": "7eacde2741c8dae909ffc842ff3513a7e30515c42be7ee4de16c0e209b061d03",
+   "status": "succeeded",
+   "error_kind": null
+  }
+ ]
+}

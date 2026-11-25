@@ -25,6 +25,7 @@ import {
   Sprout,
   Sun,
   Telescope,
+  TrendingUp,
   Wallet,
   X,
 } from "lucide-react";
@@ -55,6 +56,7 @@ const navigation = [
       { to: "/projects", label: "Projects", icon: Crosshair },
       { to: "/websites", label: "Websites", icon: Globe },
       { to: "/activity", label: "Activity", icon: Activity },
+      { to: "/improvement", label: "Improvement", icon: TrendingUp },
       { to: "/harness", label: "Harness", icon: ActivityIcon },
       { to: "/tests", label: "Tests", icon: FlaskConical },
       { to: "/cultivation", label: "Cultivation", icon: Sprout },

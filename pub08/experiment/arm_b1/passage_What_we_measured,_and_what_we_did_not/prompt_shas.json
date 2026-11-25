@@ -1,0 +1,9 @@
+{
+ "prompt_sha256": "b6cb5aa634b08507adc8a0ae276024ea7ed4cca0620690793377e3cf6953e6dc",
+ "correction_prompt_shas": [
+  "9edd4b185e299a1ebf1475d710c67a332759cbc721add6de3cc2d1891b37f10e"
+ ],
+ "review_prompt_shas": [],
+ "passage_sha256": "d9c756cb225aa787aef25df631d1e60c6344a269e91b24893c4773dc815b3139",
+ "obligations_sha256": "9dfb6263fb433faf7e9f586d0d92d64d3fad83b1082470a6f320d8ddefe68941"
+}
