@@ -35,3 +35,14 @@ Thumbs.db
 
 # aitest local evidence and runtime state
 .aitest/
+
+# Programme fixture run artifacts (generated, regenerable)
+docs/programmes/*/*fixtures*/
+*.sqlite
+*.sqlite3
+*.sqlite3-wal
+*.sqlite3-shm
+*.db-wal
+*.db-shm
+*.pyc
+docs/programmes/*/**/*.log
