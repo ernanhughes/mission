@@ -452,3 +452,134 @@ describe("InspectPanel on ProjectPage", () => {
     });
   });
 });
+
+const opsInventory = {
+  available: true,
+  stale_refresh: false,
+  total: 2,
+  counts: { total: 2, never_inspected: 1, stale: 1, running: 0, current: 1, needs_enrichment: 1, unmapped: 0 },
+  projects: [
+    {
+      inspect_id: "writer",
+      name: "Writer",
+      mission_application_id: "writer",
+      mapped: true,
+      repository_path: "C:\\Projects\\writer",
+      reachable: true,
+      execution: "complete",
+      freshness: "current",
+      enrichment: "missing",
+      evidence: "tested-not-demonstrated",
+      capabilities: 58,
+      usages: 0,
+      last_run_id: "inspect-abc",
+      last_run_status: "completed",
+      last_run_at: "2026-11-25T00:00:00Z",
+      inspected_head_sha: "abc123",
+      stale_reason: "",
+      primary_action: "enrich",
+      available_actions: ["inspect", "full", "enrich", "stamp", "view"],
+    },
+    {
+      inspect_id: "verity",
+      name: "Verity",
+      mission_application_id: "verity",
+      mapped: true,
+      repository_path: "C:\\Projects\\verity",
+      reachable: true,
+      execution: "never-inspected",
+      freshness: "unknown",
+      enrichment: "unknown",
+      evidence: "unknown",
+      capabilities: 0,
+      usages: 0,
+      last_run_id: null,
+      last_run_status: null,
+      last_run_at: null,
+      inspected_head_sha: null,
+      stale_reason: "",
+      primary_action: "inspect",
+      available_actions: ["inspect", "full", "enrich", "stamp", "view"],
+    },
+  ],
+  unmapped: [],
+};
+
+const opsJobs = {
+  total: 1,
+  runs: [
+    {
+      run_id: "inspect-live",
+      repository_id: "worker",
+      mission_application_id: "worker",
+      operation: "inspect",
+      scope: "full",
+      status: "running",
+      pid: 1234,
+      requested_at: "2026-11-25T00:00:00Z",
+      started_at: "2026-11-25T00:00:01Z",
+      finished_at: "",
+      exit_code: null,
+      validation_status: "",
+      result_summary: {},
+      error: "",
+      cancellable: true,
+    },
+  ],
+};
+
+function mockInspectOps() {
+  return mockFetch(({ path, method }) => {
+    if (method !== "GET" && method !== "POST") return apiError(404, `Unhandled ${method} ${path}`);
+    if (path === "/api/inspect/manifest") return json(manifest);
+    if (path === "/api/inspect/projects") return json(projects);
+    if (path === "/api/inspect/capabilities") return json(capabilities);
+    if (path.startsWith("/api/inspect/usage/"))
+      return json({ ...usage, capability_id: path.split("/").pop(), total: 0, usages: [] });
+    if (path === "/api/inspect/opportunities") return json(opportunities);
+    if (path.startsWith("/api/inspect/coverage/")) return apiError(404, "not found", "not_found");
+    if (path === "/api/inspect/compositions") return json(compositions);
+    if (path === "/api/inspect/ops/inventory") return json(opsInventory);
+    if (path === "/api/inspect/ops/runs") {
+      if (method === "POST") return json({ run: opsJobs.runs[0], duplicate: false });
+      return json(opsJobs);
+    }
+    if (path === "/api/inspect/ops/runs/inspect-live/cancel" && method === "POST")
+      return json({ run: { ...opsJobs.runs[0], status: "cancelled", cancellable: false }, cancelled: true });
+    return apiError(404, `Unhandled ${method} ${path}`);
+  });
+}
+
+describe("InspectPage operational panel", () => {
+  it("lists every inventory project with filters and starts the primary action", async () => {
+    const calls = mockInspectOps();
+    const user = userEvent.setup();
+    renderInspect();
+
+    expect(await screen.findByRole("heading", { name: "Projects — operational control" })).toBeInTheDocument();
+    expect(await screen.findByText("Writer")).toBeInTheDocument();
+    expect(screen.getByText("Verity")).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Never inspected" }));
+    expect(screen.queryByText("Writer")).not.toBeInTheDocument();
+    expect(screen.getByText("Verity")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "All" }));
+
+    const inspectButtons = screen.getAllByRole("button", { name: "Inspect" });
+    expect(inspectButtons.length).toBeGreaterThanOrEqual(1);
+    await user.click(inspectButtons[0]);
+    await waitFor(() => {
+      expect(calls.some((c) => c.path === "/api/inspect/ops/runs" && c.method === "POST")).toBe(true);
+    });
+    const started = calls.find((c) => c.path === "/api/inspect/ops/runs" && c.method === "POST");
+    expect(started?.body).toMatchObject({ operation: "inspect" });
+  });
+
+  it("shows running jobs with cancel", async () => {
+    mockInspectOps();
+    renderInspect();
+
+    expect(await screen.findByText("inspect-live")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Cancel" })).toBeInTheDocument();
+  });
+});
