@@ -2245,3 +2245,45 @@ class InspectRun(Base):
     validation_status: Mapped[str] = mapped_column(String, default="", nullable=False)
     result_json: Mapped[str] = mapped_column(Text, default="{}", nullable=False)
     error: Mapped[str] = mapped_column(Text, default="", nullable=False)
+
+
+class AitestQuality(Base):
+    """AITEST-03: latest per-project quality assessment summary."""
+
+    __tablename__ = "aitest_quality"
+
+    project_id: Mapped[str] = mapped_column(String, primary_key=True)
+    mode: Mapped[str] = mapped_column(String, default="", nullable=False)
+    snapshot: Mapped[str] = mapped_column(String, default="", nullable=False)
+    tests_evaluated: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    findings_json: Mapped[str] = mapped_column(Text, default="{}", nullable=False)
+    recommendations_json: Mapped[str] = mapped_column(Text, default="{}", nullable=False)
+    verification_gaps: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    redundancy_candidates: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    coverage_percent: Mapped[float | None] = mapped_column(Float)
+    mutations_attempted: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    mutations_killed: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    latest_at: Mapped[str] = mapped_column(String, default="", nullable=False)
+    cost_ms: Mapped[float] = mapped_column(Float, default=0, nullable=False)
+
+
+class AitestRun(Base):
+    """AITEST-02D-UI: one UI-requested testing execution (durable, cancellable)."""
+
+    __tablename__ = "aitest_runs"
+
+    run_id: Mapped[str] = mapped_column(String, primary_key=True)
+    project_id: Mapped[str] = mapped_column(String, nullable=False)
+    operation: Mapped[str] = mapped_column(String, nullable=False)
+    status: Mapped[str] = mapped_column(String, default="queued", nullable=False)
+    pid: Mapped[int | None] = mapped_column(Integer)
+    command: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    requested_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+    started_at: Mapped[str] = mapped_column(String, default="", nullable=False)
+    finished_at: Mapped[str] = mapped_column(String, default="", nullable=False)
+    exit_code: Mapped[int | None] = mapped_column(Integer)
+    receipt_execution_id: Mapped[str] = mapped_column(String, default="", nullable=False)
+    verification_status: Mapped[str] = mapped_column(String, default="", nullable=False)
+    counts_json: Mapped[str] = mapped_column(Text, default="{}", nullable=False)
+    error: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    log_path: Mapped[str] = mapped_column(String, default="", nullable=False)

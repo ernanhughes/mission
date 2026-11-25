@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { EmptyState, Section } from "../../components/ui";
-import { apiPath, errorMessage } from "../../api/client";
+import { apiPath, errorMessage, api } from "../../api/client";
 import { useApi } from "../../api/useApi";
 import type {
   AitestIssue,
@@ -11,11 +11,24 @@ import type {
 
 const BANDS = ["INSTANT", "FAST", "STANDARD", "MODERATE", "SLOW", "VERY_SLOW", "EXPENSIVE", "UNASSESSED"];
 
+type ProjectQuality = {
+  mode: string;
+  tests_evaluated: number;
+  findings: Record<string, number>;
+  recommendations: Record<string, number>;
+  verification_gaps: number;
+  redundancy_candidates: number;
+  coverage_percent: number | null;
+  latest_at: string;
+};
+
 export function TestsTab({ mcProjectId }: { mcProjectId: string }) {
   const [projectId, setProjectId] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [band, setBand] = useState("ALL");
   const [lifecycle, setLifecycle] = useState("ALL");
+  const [busy, setBusy] = useState("");
+  const [notice, setNotice] = useState("");
 
   const projects = useApi<AitestProject[]>("/api/tests/projects");
   const candidates = useMemo(() => projects.data ?? [], [projects.data]);
@@ -29,6 +42,9 @@ export function TestsTab({ mcProjectId }: { mcProjectId: string }) {
   );
   const issues = useApi<AitestIssue[]>(
     effective ? `/api/tests/projects/${effective}/issues` : null,
+  );
+  const quality = useApi<ProjectQuality>(
+    effective ? `/api/tests/projects/${effective}/quality` : null,
   );
 
   const tests = useMemo(() => {
@@ -48,7 +64,32 @@ export function TestsTab({ mcProjectId }: { mcProjectId: string }) {
   }, [inventory.data]);
 
   const latest = receipts.data?.[0];
-  const openIssues = (issues.data ?? []).filter((i) => i.status === "open");
+
+  async function run(operation: string) {
+    if (!effective) return;
+    setBusy(operation);
+    setNotice("");
+    try {
+      await api.post(`/api/tests/projects/${effective}/run`, { operation });
+      setNotice("Execution queued - see the Tests command centre for live status.");
+      receipts.reload();
+      inventory.reload();
+      quality.reload();
+    } catch (err) {
+      setNotice(errorMessage(err));
+    } finally {
+      setBusy("");
+    }
+  }  const openIssues = (issues.data ?? []).filter((i) => i.status === "open");
+  const qualityData = quality.data;
+  const qualityFindings = qualityData
+    ? Object.values(qualityData.findings || {}).reduce((a, b) => a + b, 0)
+    : 0;
+  const qualityReviews = qualityData
+    ? Object.entries(qualityData.recommendations || {})
+        .filter(([kind]) => kind !== "KEEP" && kind !== "KEEP_ESSENTIAL")
+        .reduce((a, [, count]) => a + Number(count), 0)
+    : 0;
 
   if (projects.error) {
     return <EmptyState title="Testing data unavailable" description={errorMessage(projects.error)} />;
@@ -64,6 +105,51 @@ export function TestsTab({ mcProjectId }: { mcProjectId: string }) {
 
   return (
     <div>
+      <Section title="Test execution" description="Runs use the AI Test supervisor and produce receipts.">
+        <div className="inline-form testing-toolbar">
+          {([
+            ["intelligent", "Test project"],
+            ["fast", "Fast tests"],
+            ["failed", "Failed only"],
+            ["full", "Full verification"],
+            ["discover", "Discover"],
+            ["profile", "Profile"],
+            ["diagnose", "Diagnose"],
+          ] as Array<[string, string]>).map(([op, label]) => (
+            <button key={op} className="button button-secondary button-small"
+                    disabled={!effective || !!busy}
+                    onClick={() => void run(op)}>
+              {busy === op ? "…" : label}
+            </button>
+          ))}
+        </div>
+        {notice ? <p className="small muted">{notice}</p> : null}
+      </Section>
+      <Section title="Test quality" description="Deterministic structural evidence and review candidates. Never a deletion decision.">
+        {qualityData ? (
+          <dl className="stat-grid" aria-label="Latest quality assessment">
+            <div className="stat"><dt>Tests evaluated</dt><dd>{qualityData.tests_evaluated}</dd></div>
+            <div className="stat"><dt>Mode</dt><dd>{qualityData.mode || "—"}</dd></div>
+            <div className="stat"><dt>Structural candidates</dt><dd>{qualityFindings}</dd></div>
+            <div className="stat"><dt>Review candidates</dt><dd>{qualityReviews}</dd></div>
+            <div className="stat"><dt>Verification gaps</dt><dd>{qualityData.verification_gaps}</dd></div>
+            <div className="stat"><dt>Redundancy</dt><dd>{qualityData.redundancy_candidates}</dd></div>
+            <div className="stat"><dt>Coverage</dt><dd>{qualityData.coverage_percent == null ? "—" : `${qualityData.coverage_percent.toFixed(1)}%`}</dd></div>
+          </dl>
+        ) : (
+          <p className="muted small">No quality assessment yet for this project.</p>
+        )}
+        <div className="inline-form testing-toolbar">
+          <button className="button button-secondary button-small"
+                  disabled={!effective || !!busy}
+                  onClick={() => void run("quality")}>
+            {busy === "quality" ? "." : "Evaluate quality"}
+          </button>
+        </div>
+        {quality.error && !qualityData ? (
+          <p className="small muted">{errorMessage(quality.error)}</p>
+        ) : null}
+      </Section>
       <Section title="Test summary" description="Measured evidence, not estimates.">
         <label className="muted small">
           Testing project{" "}

@@ -7871,3 +7871,61 @@ button.pipe-cell:focus-visible { outline: 2px solid var(--warn); outline-offset:
   flex-wrap: wrap;
   margin-bottom: 12px;
 }
+
+/* AITEST-02D-UI: testing command centre */
+.page-header-inline { display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+.stat-grid-tight { gap: .5rem; }
+.stat-grid-tight .stat { padding: .5rem .75rem; }
+.testing-toolbar { flex-wrap: wrap; gap: .5rem; margin: .75rem 0; }
+.tests-table td, .tests-table th { white-space: nowrap; }
+.tests-table .actions-cell { position: relative; display: flex; gap: .25rem; align-items: center; }
+.status-pill { display: inline-flex; align-items: center; gap: .35rem; padding: .1rem .5rem;
+  border-radius: 999px; font-size: .78rem; border: 1px solid var(--border, #333); }
+.status-pill.is-ok { color: #7ee2a8; border-color: #2c6b46; }
+.status-pill.is-warn { color: #e8c46a; border-color: #6b5a2c; }
+.status-pill.is-bad { color: #ff8b8b; border-color: #6b2c2c; }
+.status-dot { width: .5rem; height: .5rem; border-radius: 50%; background: currentColor; }
+.action-menu { position: absolute; right: 0; top: 100%; z-index: 20; min-width: 12rem;
+  background: var(--surface, #1b1b1f); border: 1px solid var(--border, #333);
+  border-radius: 6px; padding: .25rem; box-shadow: 0 8px 24px rgba(0,0,0,.35); display: grid; }
+.action-menu-item { text-align: left; background: none; border: 0; color: inherit;
+  padding: .4rem .6rem; border-radius: 4px; cursor: pointer; }
+.action-menu-item:hover { background: rgba(255,255,255,.08); }
+.stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(7.5rem, 1fr)); gap: .75rem; }
+.stat-grid .stat { border: 1px solid var(--border, #2a2a30); border-radius: 8px; padding: .6rem .8rem; }
+.stat-grid .stat dt { font-size: .72rem; letter-spacing: .04em; text-transform: uppercase; opacity: .7; }
+.stat-grid .stat dd { margin: .15rem 0 0; font-size: 1.25rem; font-weight: 600; }
+.testing-stats { display: flex; flex-wrap: wrap; gap: 1.5rem; padding: .75rem 0 1rem; border-bottom: 1px solid var(--border, #2a2a30); }
+.testing-stat { display: flex; flex-direction: column; gap: .1rem; min-width: 4.5rem; }
+.testing-stat-label { font-size: .7rem; letter-spacing: .05em; text-transform: uppercase; opacity: .65; }
+.testing-stat strong { font-size: 1.15rem; }
+.testing-stats { display: flex; flex-wrap: wrap; gap: 1.5rem; padding: .75rem 0 1rem; border-bottom: 1px solid var(--border, #2a2a30); }
+.testing-stat { display: flex; flex-direction: column; gap: .1rem; min-width: 4.5rem; }
+.testing-stat-label { font-size: .7rem; letter-spacing: .05em; text-transform: uppercase; opacity: .65; }
+.testing-stat strong { font-size: 1.15rem; }
+/* H6 Worker Harness area */
+.harness-page { max-width: 1280px; }
+.harness-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin: 0 0 18px; }
+.harness-connectivity { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; color: var(--muted); font-size: .86rem; }
+.harness-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin: 16px 0; }
+.harness-stats > div, .harness-card, .harness-decision { border: 1px solid var(--line); border-radius: 10px; background: var(--panel); padding: 14px; }
+.harness-stats span, .harness-stats strong { display: block; }
+.harness-stats span { color: var(--muted); font-size: .78rem; }
+.harness-stats strong { margin-top: 7px; font-size: 1.05rem; }
+.harness-card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+.harness-card-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.harness-card-head h2, .harness-card-head h3 { margin: 0; }
+.harness-card dl, .harness-decision dl { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 9px 16px; }
+.harness-card dl div, .harness-decision dl div { min-width: 0; }
+.harness-card dt, .harness-decision dt { color: var(--muted); font-size: .76rem; }
+.harness-card dd, .harness-decision dd { margin: 3px 0 0; overflow-wrap: anywhere; }
+.harness-preview { border: 1px solid var(--line); border-left: 3px solid var(--accent); border-radius: 8px; padding: 12px; background: var(--panel-2); }
+.harness-output, .harness-detail pre { max-height: 340px; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; padding: 12px; border-radius: 8px; background: var(--panel-2); }
+.harness-detail-overlay { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: 20px; background: rgb(0 0 0 / .55); }
+.harness-detail { width: min(100%, 1100px); max-height: 90vh; overflow: auto; padding: 20px; border: 1px solid var(--line); border-radius: 12px; background: var(--bg); box-shadow: 0 18px 70px rgb(0 0 0 / .3); }
+.harness-detail-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 10px; }
+.harness-detail-grid section { min-width: 0; }
+.harness-detail-grid pre { max-height: 280px; font-size: .76rem; }
+.harness-decision { margin: 10px 0; }
+.harness-decision h3 { display: flex; gap: 8px; align-items: center; }
+@media (max-width: 700px) { .harness-connectivity { align-items: flex-start; flex-direction: column; } .harness-detail-overlay { padding: 8px; } .harness-detail { padding: 12px; max-height: 94vh; } .harness-detail-grid { grid-template-columns: 1fr; } }

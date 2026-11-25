@@ -13,7 +13,7 @@ import json
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
-from sqlalchemy import desc, func, select
+from sqlalchemy import case, desc, func, select
 from sqlalchemy.orm import Session
 
 from mission_control.api.deps import get_session
@@ -21,6 +21,7 @@ from mission_control.models import (
     AitestEventSeen,
     AitestIssue,
     AitestProject,
+    AitestQuality,
     AitestReceipt,
     AitestTest,
 )
@@ -49,22 +50,27 @@ def _project_read(p: AitestProject) -> AitestProjectRead:
 
 @router.get("/summary", response_model=AitestSummaryRead)
 def tests_summary(session: Session = Depends(get_session)) -> AitestSummaryRead:
+    # RETIRED tests are history (tombstones), never part of the live
+    # population or its pass/fail totals.
+    live = AitestTest.lifecycle != "RETIRED"
     projects = session.scalar(select(func.count(AitestProject.project_id))) or 0
-    total = session.scalar(select(func.count(AitestTest.logical_id))) or 0
+    total = session.scalar(select(func.count(AitestTest.logical_id)).where(live)) or 0
     assessed = session.scalar(
-        select(func.count(AitestTest.logical_id)).where(AitestTest.band != "UNASSESSED")) or 0
+        select(func.count(AitestTest.logical_id)).where(
+            live, AitestTest.band != "UNASSESSED")) or 0
     healthy = session.scalar(
         select(func.count(AitestTest.logical_id)).where(
-            AitestTest.lifecycle == "ACTIVE", AitestTest.last_outcome == "passed")) or 0
+            live, AitestTest.lifecycle == "ACTIVE",
+            AitestTest.last_outcome == "passed")) or 0
     failing = session.scalar(
         select(func.count(AitestTest.logical_id)).where(
-            AitestTest.last_outcome == "failed")) or 0
+            live, AitestTest.last_outcome == "failed")) or 0
     quarantined = session.scalar(
         select(func.count(AitestTest.logical_id)).where(
-            AitestTest.lifecycle == "QUARANTINED")) or 0
+            live, AitestTest.lifecycle == "QUARANTINED")) or 0
     deferred = session.scalar(
         select(func.count(AitestTest.logical_id)).where(
-            AitestTest.lifecycle.in_(["DEFERRED", "CANDIDATE"]))) or 0
+            live, AitestTest.lifecycle.in_(["DEFERRED", "CANDIDATE"]))) or 0
     repair = session.scalar(
         select(func.count(AitestIssue.id)).where(AitestIssue.status == "open")) or 0
     return AitestSummaryRead(
@@ -145,11 +151,213 @@ def tests_issues(project_id: str,
             for i in rows]
 
 
+@router.post("/rebuild")
+def rebuild_registry(session: Session = Depends(get_session)) -> dict:
+    """Drop derived test rows so the registry can be re-synced cleanly.
+
+    Source of truth is each project's local AI Test ledger; this endpoint only
+    clears MI-derived cache tables (tests/receipts/issues), never projects and
+    never any operational application data.  Caller re-syncs afterwards.
+    """
+    from sqlalchemy import delete as _delete
+
+    tests = session.execute(_delete(AitestTest)).rowcount or 0
+    receipts = session.execute(_delete(AitestReceipt)).rowcount or 0
+    issues = session.execute(_delete(AitestIssue)).rowcount or 0
+    session.flush()
+    return {"cleared_tests": tests, "cleared_receipts": receipts,
+            "cleared_issues": issues,
+            "note": "re-sync projects to repopulate from local ledgers"}
+
+
+@router.post("/reconcile")
+def reconcile_projects(session: Session = Depends(get_session)) -> dict:
+    """Merge testing projects that describe the same checkout.
+
+    Keeps the identity with the most registered tests, moves unique test rows
+    onto it, and drops the now-empty duplicate.  Only AI Test's own registry
+    tables are touched.
+    """
+    rows = session.scalars(select(AitestProject)).all()
+    groups: dict[str, list[AitestProject]] = {}
+    for p in rows:
+        # Same checkout, or same registered testing name: one identity.
+        key = (p.name or "").strip().lower() or (p.root or "").rstrip("\\/").lower()
+        groups.setdefault(key, []).append(p)
+    merged = []
+    for key, group in groups.items():
+        if len(group) < 2:
+            continue
+        counts = {
+            p.project_id: session.scalar(
+                select(func.count(AitestTest.logical_id)).where(
+                    AitestTest.project_id == p.project_id)) or 0
+            for p in group
+        }
+        keep = max(group, key=lambda p: counts[p.project_id])
+        keep_ids = {
+            r[0] for r in session.execute(
+                select(AitestTest.logical_id).where(
+                    AitestTest.project_id == keep.project_id)).all()
+        }
+        for dup in group:
+            if dup.project_id == keep.project_id:
+                continue
+            for t in session.scalars(
+                    select(AitestTest).where(
+                        AitestTest.project_id == dup.project_id)).all():
+                if t.logical_id in keep_ids:
+                    session.delete(t)
+                else:
+                    t.project_id = keep.project_id
+            session.delete(dup)
+            merged.append({"dropped": dup.project_id, "kept": keep.project_id,
+                           "root": keep.root})
+    session.flush()
+    return {"merged": merged, "projects": session.scalar(
+        select(func.count(AitestProject.project_id)))}
+
+
+@router.get("/worker")
+def tests_worker() -> dict:
+    """Heartbeat from the AI Test assessment worker (local file; untrusted data)."""
+    from pathlib import Path
+
+    path = Path.home() / ".aitest" / "worker-status.json"
+    try:
+        import json as _json
+
+        doc = _json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {"available": False,
+                "reason": "no worker heartbeat yet (start AI Test Worker)"}
+    doc["available"] = True
+    return doc
+
+
+@router.get("/project-summaries")
+def tests_project_summaries(session: Session = Depends(get_session)) -> list[dict]:
+    """Per-project aggregate counts for the global Tests table."""
+    rows = session.execute(
+        select(
+            AitestTest.project_id,
+            func.count(AitestTest.logical_id),
+            func.sum(case((AitestTest.band == "UNASSESSED", 1), else_=0)),
+            func.sum(case((AitestTest.band.in_(["INSTANT", "FAST"]), 1), else_=0)),
+            func.sum(case((AitestTest.band.in_(["SLOW", "VERY_SLOW", "EXPENSIVE"]), 1), else_=0)),
+            func.sum(case((AitestTest.last_outcome == "failed", 1), else_=0)),
+            func.sum(case((AitestTest.lifecycle == "QUARANTINED", 1), else_=0)),
+            func.max(AitestTest.last_seen_at),
+        ).where(AitestTest.lifecycle != "RETIRED").group_by(AitestTest.project_id)
+    ).all()
+    out = []
+    for pid, total, unassessed, fast, slow, failing, quarantined, last_seen in rows:
+        proj = session.get(AitestProject, pid)
+        out.append({
+            "project_id": pid,
+            "name": proj.name if proj else pid,
+            "mc_project_id": proj.mc_project_id if proj else "",
+            "policy": proj.policy if proj else "",
+            "integration_state": proj.integration_state if proj else "",
+            "last_status": proj.last_status if proj else "",
+            "total": int(total or 0),
+            "unassessed": int(unassessed or 0),
+            "assessed": int((total or 0) - (unassessed or 0)),
+            "fast": int(fast or 0),
+            "slow": int(slow or 0),
+            "failing": int(failing or 0),
+            "quarantined": int(quarantined or 0),
+            "last_seen_at": last_seen or "",
+        })
+    out.sort(key=lambda r: r["name"].lower())
+    return out
+
+
+@router.get("/quality/projects")
+def quality_projects(session: Session = Depends(get_session)) -> list[dict]:
+    """Latest quality assessment per project (AITEST-03)."""
+    out = []
+    for q in session.scalars(select(AitestQuality).order_by(AitestQuality.project_id)).all():
+        proj = session.get(AitestProject, q.project_id)
+        try:
+            findings = json.loads(q.findings_json or "{}")
+        except ValueError:
+            findings = {}
+        try:
+            recommendations = json.loads(q.recommendations_json or "{}")
+        except ValueError:
+            recommendations = {}
+        out.append({
+            "project_id": q.project_id,
+            "name": proj.name if proj else q.project_id,
+            "mode": q.mode,
+            "tests_evaluated": q.tests_evaluated,
+            "findings": findings,
+            "recommendations": recommendations,
+            "verification_gaps": q.verification_gaps,
+            "redundancy_candidates": q.redundancy_candidates,
+            "coverage_percent": q.coverage_percent,
+            "mutations_attempted": q.mutations_attempted,
+            "mutations_killed": q.mutations_killed,
+            "latest_at": q.latest_at,
+            "cost_ms": q.cost_ms,
+        })
+    return out
+
+
+@router.get("/projects/{project_id}/quality")
+def project_quality(project_id: str,
+                    session: Session = Depends(get_session)) -> dict:
+    q = session.get(AitestQuality, project_id)
+    if q is None:
+        raise HTTPException(status_code=404, detail="no quality assessment yet")
+    try:
+        findings = json.loads(q.findings_json or "{}")
+    except ValueError:
+        findings = {}
+    try:
+        recommendations = json.loads(q.recommendations_json or "{}")
+    except ValueError:
+        recommendations = {}
+    return {
+        "project_id": project_id, "mode": q.mode, "snapshot": q.snapshot,
+        "tests_evaluated": q.tests_evaluated, "findings": findings,
+        "recommendations": recommendations,
+        "verification_gaps": q.verification_gaps,
+        "redundancy_candidates": q.redundancy_candidates,
+        "coverage_percent": q.coverage_percent,
+        "mutations_attempted": q.mutations_attempted,
+        "mutations_killed": q.mutations_killed,
+        "latest_at": q.latest_at, "cost_ms": q.cost_ms,
+    }
+
+
+def _upsert_quality(session: Session, project_id: str, payload: dict) -> None:
+    row = session.get(AitestQuality, project_id)
+    if row is None:
+        row = AitestQuality(project_id=project_id)
+        session.add(row)
+    row.mode = payload.get("mode", row.mode or "")
+    row.snapshot = payload.get("snapshot", row.snapshot or "")
+    row.tests_evaluated = int(payload.get("tests_evaluated") or 0)
+    row.findings_json = json.dumps(payload.get("findings") or {})
+    row.recommendations_json = json.dumps(payload.get("recommendations") or {})
+    row.verification_gaps = int(payload.get("verification_gaps") or 0)
+    row.redundancy_candidates = int(payload.get("redundancy_candidates") or 0)
+    if payload.get("coverage_percent") is not None:
+        row.coverage_percent = float(payload["coverage_percent"])
+    row.mutations_attempted = int(payload.get("mutations_attempted") or 0)
+    row.mutations_killed = int(payload.get("mutations_killed") or 0)
+    row.latest_at = now_iso()
+    row.cost_ms = float(payload.get("cost_ms") or 0)
+
+
 class SyncDocument(BaseModel):
     project: dict
     tests: list[dict] = []
     receipt: dict | None = None
     issues: list[dict] = []
+    quality: dict | None = None
 
 
 @router.post("/events")
@@ -171,18 +379,45 @@ def ingest_sync(doc: SyncDocument,
                 session: Session = Depends(get_session)) -> dict:
     """Bulk sync from `aitest mission sync` (same idempotency semantics)."""
     p = doc.project
-    _upsert_project(session, p.get("project_id", ""), p)
+    # Identity reconciliation may adopt an existing row; every child record
+    # must use the effective id, never the inbound one.
+    pid = _upsert_project(session, p.get("project_id", ""), p)
     for t in doc.tests:
-        _upsert_test(session, p.get("project_id", ""), t)
+        _upsert_test(session, pid, t)
     if doc.receipt:
-        _upsert_receipt(session, p.get("project_id", ""), doc.receipt)
+        _upsert_receipt(session, pid, doc.receipt)
     for issue in doc.issues:
-        _upsert_issue(session, p.get("project_id", ""), issue)
+        _upsert_issue(session, pid, issue)
+    if doc.quality:
+        _upsert_quality(session, pid, doc.quality)
     session.commit()
     return {"ok": True, "tests": len(doc.tests), "issues": len(doc.issues)}
 
 
-def _upsert_project(session: Session, project_id: str, p: dict) -> None:
+def _upsert_project(session: Session, project_id: str, p: dict) -> str:
+    root = (p.get("root") or "").rstrip("\\/").lower()
+    # Identity reconciliation: the same checkout must never appear twice.
+    # If another row already owns this root, adopt its id and merge.
+    if root:
+        for other in session.scalars(select(AitestProject)).all():
+            if other.project_id != project_id and (other.root or "").rstrip("\\/").lower() == root:
+                existing_ids = {
+                    row[0] for row in session.execute(
+                        select(AitestTest.logical_id).where(
+                            AitestTest.project_id == other.project_id)).all()
+                }
+                for t in session.scalars(
+                        select(AitestTest).where(AitestTest.project_id == project_id)).all():
+                    if t.logical_id in existing_ids:
+                        session.delete(t)
+                    else:
+                        t.project_id = other.project_id
+                dup = session.get(AitestProject, project_id)
+                if dup is not None:
+                    session.delete(dup)
+                    session.flush()
+                project_id = other.project_id
+                break
     row = session.get(AitestProject, project_id)
     now = now_iso()
     if row is None:
@@ -195,12 +430,20 @@ def _upsert_project(session: Session, project_id: str, p: dict) -> None:
             last_seen_at=now, created_at=now, updated_at=now))
         session.flush()
     else:
+        # A second checkout of the same repository must not rename or block
+        # the primary registered project; it is recorded as a blocked
+        # checkout on its own sync only when the names match.
+        same_project = (row.name or "").strip().lower() == (p.get("name") or "").strip().lower()
         for k in ("name", "root", "remote_url", "mc_project_id", "integration_state",
                   "policy", "aitest_version", "last_receipt_id", "last_status"):
-            if p.get(k) not in (None, ""):
-                setattr(row, k, p[k])
+            if p.get(k) in (None, ""):
+                continue
+            if not same_project and k in ("name", "integration_state", "policy"):
+                continue
+            setattr(row, k, p[k])
         row.last_seen_at = now
         row.updated_at = now
+    return project_id
 
 
 def _upsert_test(session: Session, project_id: str, t: dict) -> None:
