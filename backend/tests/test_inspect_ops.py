@@ -253,6 +253,52 @@ def test_concurrency_limit(tmp_path, ops_env, monkeypatch) -> None:
             client.post(f"/api/inspect/ops/runs/{run_id}/cancel")
 
 
+def test_snapshot_known_repo_resolves_to_live_path(tmp_path, ops_env) -> None:
+    """Snapshot-known but undiscovered repos must launch by path, not bare id.
+
+    The Inspect CLI only resolves ids present in its discovery registry; an
+    explicit existing path always resolves. The stub CLI fails loudly when it
+    receives the bare id.
+    """
+    snap, checkout = ops_env
+    repo = _git_repo(tmp_path / "repos" / "ghost")
+    (checkout / "inspect.py").write_text(
+        "import json, sys\n"
+        "target = sys.argv[2] if len(sys.argv) > 2 else ''\n"
+        "import os\n"
+        "if not os.path.isdir(target):\n"
+        "    print(json.dumps({'result': 'failed', "
+        "'errors': ['unknown repository: ' + target]}))\n"
+        "else:\n"
+        "    print(json.dumps({'result': 'complete'}))\n",
+        encoding="utf-8",
+    )
+    projects = [
+        {"id": "ghost", "name": "ghost", "path": str(repo), "branch": "main",
+         "head_sha": "abc", "inspection_status": "complete",
+         "capabilities_count": 1, "stale": False},
+    ]
+    sources = [
+        {"repository": "ghost", "head_sha": "abc", "inspection_status": "complete",
+         "stale": False, "stale_reason": ""},
+    ]
+    _write_snapshot(snap, projects=projects, sources=sources)
+    with open_client(_runtime(tmp_path)) as client:
+        started = client.post(
+            "/api/inspect/ops/runs", json={"repository_id": "ghost", "operation": "inspect"}
+        )
+        assert started.status_code == 200, started.text
+        run_id = started.json()["run"]["run_id"]
+        status = ""
+        for _ in range(100):
+            job = client.get(f"/api/inspect/ops/runs/{run_id}").json()
+            status = job["status"]
+            if status not in ("queued", "running"):
+                break
+            time.sleep(0.1)
+        assert status == "completed", job
+
+
 def test_history_filters_by_repository(tmp_path, ops_env) -> None:
     with open_client(_runtime(tmp_path)) as client:
         client.post("/api/inspect/ops/runs", json={"repository_id": "", "operation": "refresh"})

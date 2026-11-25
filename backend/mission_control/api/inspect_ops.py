@@ -132,10 +132,17 @@ def _resolve_repo_target(
     """
     if not _ID_RE.match(repository_id):
         raise HTTPException(status_code=404, detail="unknown repository")
-    snapshot_ids, _ = _known_snapshot_ids(settings)
+    snapshot_ids, snapshot_by_id = _known_snapshot_ids(settings)
     if repository_id in snapshot_ids:
         apps = _registry_apps(session)
         mission_id, _ = map_inspect_project(repository_id, None, apps)
+        # Prefer the live path pinned in the snapshot record: the Inspect CLI
+        # can only resolve ids present in its discovery registry, while an
+        # explicit existing path always resolves.
+        record = snapshot_by_id.get(repository_id, {})
+        live_path = (record.get("path") or "").strip()
+        if live_path and Path(live_path).is_dir():
+            return live_path, mission_id, live_path
         return repository_id, mission_id, None
     # Registry application never inspected: use its stored path (server-side).
     app = session.get(Application, repository_id)
@@ -158,17 +165,22 @@ def _active_runs(session: Session) -> list[InspectRun]:
 
 
 def _parse_log_result(run: InspectRun) -> dict:
-    """Read the CLI's own reported result from the job log tail."""
+    """Read the CLI's own reported result from the job log tail.
+
+    The CLI prints its result with ``json.dumps(..., indent=2)``, so the
+    object may span several lines. Try decoding progressively larger tails
+    (last line, last two lines, ...) and return the first object that carries
+    a ``result`` key.
+    """
     try:
-        text = Path(run.log_path).read_text(encoding="utf-8", errors="replace")
+        lines = Path(run.log_path).read_text(encoding="utf-8", errors="replace").splitlines()
     except OSError:
         return {}
-    for line in reversed(text.splitlines()[-25:]):
-        line = line.strip()
-        if not (line.startswith("{") and '"result"' in line):
-            continue
+    tail = [line for line in lines if line.strip()][-25:]
+    for width in range(1, len(tail) + 1):
+        candidate = "\n".join(tail[-width:])
         try:
-            doc = json.loads(line)
+            doc = json.loads(candidate)
         except ValueError:
             continue
         if isinstance(doc, dict) and doc.get("result"):
