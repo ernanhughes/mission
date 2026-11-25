@@ -532,6 +532,12 @@ class EvaluationService:
         known_refs = {f"{e.kind}:{e.ref}" for evs in links.values() for e in evs}
         known_resolved = {f"{e.kind}:{e.ref}" for evs in links.values() for e in evs
                           if e.resolved and e.kind in ("git_commit", "review", "test_report")}
+        # W4-v2: remote_ref is resolved-by-citation for assessment, but it may
+        # corroborate ONLY a relational requirement together with a bound
+        # git_commit. It never verifies a non-relational requirement alone.
+        known_resolved_relational = {
+            f"{e.kind}:{e.ref}" for evs in links.values() for e in evs
+            if e.resolved and e.kind in ("git_commit", "remote_ref")}
         for v in verdicts:
             if not isinstance(v, dict):
                 problems.append("assessment must be an object")
@@ -547,9 +553,26 @@ class EvaluationService:
                     "verdict") not in ("insufficient_evidence",):
                 problems.append("ambiguous requirement must not be upgraded")
             # F4: satisfied_verified needs resolved corroborating evidence.
-            if v.get("verdict") == "satisfied_verified" and not (
-                    set(v.get("evidence_refs", []) or []) & known_resolved):
-                problems.append("satisfied_verified requires resolved evidence")
+            # W4-v2: relational requirements need bound git_commit + remote_ref;
+            # all other kinds keep the pre-v2 rule (remote_ref alone never verifies).
+            if v.get("verdict") == "satisfied_verified":
+                from mission_control.work_observation.verify import (
+                    _is_relational_requirement as _is_rel,
+                )
+                _req = by_index[idx]
+                _is_rel_req = (getattr(_req, "kind", "") == "relational"
+                               or _is_rel(str(getattr(_req, "text", "") or "")))
+                _refs = set(v.get("evidence_refs", []) or [])
+                if _is_rel_req:
+                    _has_git = bool(_refs & {r for r in known_resolved_relational
+                                             if r.startswith("git_commit:")})
+                    _has_remote = bool(_refs & {r for r in known_resolved_relational
+                                                if r.startswith("remote_ref:")})
+                    if not (_has_git and _has_remote):
+                        problems.append("satisfied_verified relational requires "
+                                        "bound git_commit + remote_ref")
+                elif not (_refs & known_resolved):
+                    problems.append("satisfied_verified requires resolved evidence")
             for ref in v.get("evidence_refs", []) or []:
                 if ref not in known_refs:
                     problems.append(f"unknown evidence ref: {str(ref)[:80]}")

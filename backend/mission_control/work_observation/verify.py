@@ -12,7 +12,7 @@ import hashlib
 import re
 from dataclasses import dataclass, field
 
-RUBRIC_VERSION = "w4-v1"
+RUBRIC_VERSION = "w4-v2"
 
 _SHA_RE = re.compile(r"\b[0-9a-f]{7,40}\b")
 
@@ -38,7 +38,7 @@ C_UNVERIFIED = "unverified"
 
 @dataclass
 class EvidenceItem:
-    kind: str  # git_commit | file | review | test_report | manifest | other
+    kind: str  # git_commit | file | review | test_report | manifest | remote_ref | other
     ref: str
     resolved: bool = False
     detail: str = ""
@@ -106,6 +106,21 @@ def assess_requirement_deterministic(requirement: dict, evidence: list[EvidenceI
             return RequirementAssessment(rid, V_SATISFIED_VERIFIED,
                                          "existence evidenced in resolved source state",
                                          refs, "strong")
+    # W4-v2 narrow amendment (closure commission, 2026-11-25): bound git
+    # relationships are mechanical facts, not judgement. A relational
+    # requirement (ancestor/contains/remote-URL) may verify ONLY when a
+    # resolved git_commit AND a resolved remote_ref bind the SAME sha
+    # (prefix-tolerant, case-insensitive). Reproduction independence is
+    # procedural (recorded execution links + digests, see W9C/W9G), not
+    # inferred here; unsupported reviewer assertions never verify.
+    if kind in ("relational",) or _is_relational_requirement(requirement.get("text", "")):
+        git = [e for e in resolved if e.kind == "git_commit"]
+        remote = [e for e in resolved if e.kind == "remote_ref"]
+        if git and remote and _bound_git_remote(git, remote):
+            return RequirementAssessment(rid, V_SATISFIED_VERIFIED,
+                                         "relational git fact independently reproduced "
+                                         "and bound to repo+revision",
+                                         refs, "strong")
     return RequirementAssessment(rid, V_SATISFIED_REPORTED,
                                  "evidence linked but correctness not "
                                  "independently judged", refs, "moderate",
@@ -116,9 +131,48 @@ _EXISTENCE_HINTS = ("file exists", "add file", "create file", "manifest",
                     "endpoint exists", "page exists")
 
 
+_RELATIONAL_HINTS = ("is ancestor", "ancestor of", "contains", "present on remote",
+                     "remote url", "branch -r", "merge-base", "reachable from",
+                     "present on the remote", "remote-ref", "remote ref")
+
+
 def _is_existence_requirement(text: str) -> bool:
     t = _norm_text(text)
     return any(h in t for h in _EXISTENCE_HINTS)
+
+
+def _is_relational_requirement(text: str) -> bool:
+    t = _norm_text(text)
+    return any(h in t for h in _RELATIONAL_HINTS)
+
+
+def _sha_tokens(ref: str) -> set[str]:
+    return {m.lower() for m in _SHA_RE.findall(ref or "") if len(set(m)) >= 4}
+
+
+def _bound_git_remote(git: list[EvidenceItem], remote: list[EvidenceItem]) -> bool:
+    """Same-sha binding between git_commit and remote_ref evidence.
+
+    Prefix-tolerant (7-char short sha binds full 40-char), case-insensitive.
+    A remote_ref that names no sha never binds — citation alone is reported,
+    never verified.
+    """
+    g_tokens: set[str] = set()
+    for e in git:
+        g_tokens |= _sha_tokens(e.ref)
+        # uid:sha form — also accept the trailing component explicitly
+        tail = (e.ref or "").split(":")[-1].lower()
+        if len(tail) >= 7 and all(c in "0123456789abcdef" for c in tail[:40]):
+            g_tokens.add(tail)
+    if not g_tokens:
+        return False
+    for e in remote:
+        r_tokens = _sha_tokens(e.ref)
+        for r in r_tokens:
+            for g in g_tokens:
+                if r == g or r.startswith(g) or g.startswith(r):
+                    return True
+    return False
 
 
 def verify_claim_deterministic(claim: dict, episode_commits: list[str],

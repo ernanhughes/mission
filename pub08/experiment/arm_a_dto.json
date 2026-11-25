@@ -1,0 +1,51 @@
+{
+ "description": "One whole-chapter editorial proposal (Arm A only).\n\nDefined here, used here, registered nowhere. Production code must\nnever import this class; Arm C consumes A's *bytes*, not this type.",
+ "properties": {
+  "chapter_lines": {
+   "description": "COMPLETE rewritten chapter, one entry per line",
+   "items": {
+    "type": "string"
+   },
+   "title": "Chapter Lines",
+   "type": "array"
+  },
+  "rationale": {
+   "minLength": 1,
+   "title": "Rationale",
+   "type": "string"
+  },
+  "quotes_used": {
+   "items": {
+    "type": "string"
+   },
+   "title": "Quotes Used",
+   "type": "array"
+  },
+  "preservation_notes": {
+   "items": {
+    "type": "string"
+   },
+   "title": "Preservation Notes",
+   "type": "array"
+  },
+  "no_new_claims": {
+   "title": "No New Claims",
+   "type": "boolean"
+  },
+  "synthesis_index": {
+   "description": "0-based line numbers of added synthesis lines, so the one-per-section cap stays auditable",
+   "items": {
+    "type": "integer"
+   },
+   "title": "Synthesis Index",
+   "type": "array"
+  }
+ },
+ "required": [
+  "chapter_lines",
+  "rationale",
+  "no_new_claims"
+ ],
+ "title": "WholeChapterCandidateResponse (PUB-08 Arm A experiment-local; NOT a production contract; NOT catalog-registered)",
+ "type": "object"
+}

@@ -1,4 +1,4 @@
-<!-- inspect-stamp v1.0.0 repository=mission head=e98884497fd3c34fbb4a89604a9aca587a00bf5c generated=2026-11-25T13:28:08Z -->
+<!-- inspect-stamp v1.0.0 repository=mission head=e98884497fd3c34fbb4a89604a9aca587a00bf5c generated=2026-11-25T13:28:21Z -->
 
 # mission — Project Intelligence
 
@@ -166,7 +166,7 @@ _Deterministic recipes from usage.json; never executed during inspection._
 ## Freshness and limits
 
 - Inspected revision: `e98884497fd3c34fbb4a89604a9aca587a00bf5c` (dirty at inspection: True)
-- Stamp generated: `2026-11-25T13:28:08Z` (inspect prompt v1.1.1)
+- Stamp generated: `2026-11-25T13:28:21Z` (inspect prompt v1.1.1)
 - Full evidence: `output/repositories/mission/capabilities.json`, `inspection.json`, `report.md` in Inspect (`C:\Projects\inspect\output`).
 - Inspection status: `complete`.
 - Known gaps (first 5):

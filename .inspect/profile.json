@@ -908,7 +908,7 @@
       "React SPA served by FastAPI from frontend/dist (Vite dev server on 5173 proxies /api)"
     ]
   },
-  "generated_at": "2026-11-25T13:28:08Z",
+  "generated_at": "2026-11-25T13:28:21Z",
   "identity": {
     "classification": "application",
     "id": "mission",

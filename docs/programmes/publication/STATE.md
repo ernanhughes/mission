@@ -1,9 +1,18 @@
 # PUBLICATION State
 
-**Updated:** 2026-11-25 (PUB-07 fix batch + coordinator close-out verified in-session; rerun executed. 7/12 accepted; PUB-07 in review — Codex delta confirm outstanding.)
+**Updated:** 2026-11-25 (PUB-07 ACCEPTED 8/12; PUB-08 authorized and active — reuse research + experimental design. No PUB-08 paid inference authorized yet.)
 
 ## 1. Current position
 
+PUB-07 ACCEPTED 2026-11-25 on three rerun-bound deltas (Codex ACCEPT;
+DeepSeek CONDITIONAL doc residual fixed in-session; Claude accept with
+optional line-155 style polish carried to promotion). Demonstration
+candidate: `pub07/ch02-rerun/candidate.md` (`9f36c9ba…`, 355 lines,
+verify 15/15, review_accepted, $0.0039864). Run-1 preserved as
+history. Full gate 592+1xf/593, catalog 167, Jev `c7aaad7` clean.
+PUB-08 (semantic verification, calibration, reader comprehension)
+authorized by the author; primary implementation agent Muse; paid
+experimental arms BLOCKED pending an explicit inference budget.
 PUB-00 ACCEPTED. PUB-01 ACCEPTED 2026-11-24 on independent verdicts:
 Codex (architecture/integration) CONDITIONAL — validation-invocation
 reproducibility + D-PUB-08 schema/retry wording, both fixed docs-only in
@@ -794,13 +803,61 @@ characterization or modified in PUB-01.
 book id in the Writer registry). Review format `Current Text / Recommended
 Change` verified in `C:\books\jev\scripts\apply_edits.py`.
 
-## 6. Exact next action — PUB-07 final gate: author instructions received; three rerun-bound deltas to execute
+## 6. Exact next action — PUB-08 active: reuse research + experimental design ($1.00 inference cap)
+
+**PUB-08 authorized 2026-11-25 (author direction; primary implementation
+agent Muse; 8/12 accepted). Reuse-matrix first pass recorded
+(`pub08/reuse-matrix-survey.md`, $0, read-only): most PUB-08 needs are
+LIB/CALLABLE (Manuscript IR, Compiler, Argument, Knowledge State,
+Evidence claim extract/verify, QC pilot, Writer-owned semantic-loss,
+Mediated Read, Evaluation Fabric, revise blind trials, Worker typed
+tasks); genuine gaps are (1) calibrated human-comprehension evidence
+(explicitly missing), (2) D-PUB-84 defect-attribution contract,
+(3) composed semantic-preservation interface across 3 repos,
+(4) blind assessment as a callable capability, (5) Praxis owns no
+manuscript semantics (cite Writer ownership; no parallel build).
+Accepted-candidate ambiguity resolved (ch02-rerun is the demonstration
+candidate). Costed design received 2026-11-25
+(`pub08/costed-experiment-design.md`, $0): n=2 central ≈ $0.10
+actual (≈$0.23 if haiku meters; worst ≈ $0.42; 2.4× headroom) —
+FITS the $1.00 cap. Arm A₁ EXECUTED 2026-11-25 (single paid
+dispatch, one shot, prompt SHA == freeze, aggregate check
+$0.00+$0.015 ≤ $1.00 passed pre-dispatch): deepseek-v4.1-flash,
+8,270 in / 35,775 out, **actual $0.0227** (1.5× band top — estimator
+was reasoning-light; under the 2× hard stop, no trip), 590-line
+candidate + dispatch record in `pub08/experiment/arm_a_r1/`
+(no_new_claims declared true, synthesis_index empty; verified as
+recorded, not as true). Spend to date $0.0227 / $1.00; Worker
+stopped after use. Fail-closed order: freeze → controls on O/H
+($0) → 7/7 gate → A₁ → C₁ (verification of A₁ + ≤2 bounded repairs)
+→ B₁ (B-hull + merge code + gates) → evaluation → replicate 2.
+($0, 5 new files, 0 tracked modified): D-PUB-84 attribution builder
+(all 9 dispositions pinned) + 7 fixtures + O/H controls gate 7/7 +
+aggregate spend wrapper (cap $1.00) — 34 focused + 123 neighbours
+green, ruff clean. Vocab note: design §3.5 names mapped to the 9
+mandated tokens in the module docstring (`OUT_OF_SCOPE_CITATION` →
+`UNRESOLVED_ATTRIBUTION`+scope; `TRANSFORMATION_REDUNDANT_SYNTHESIS`
+→ `INTRODUCED`+semantic_class; `RESOLVED` vs `AUTHORIZED_CORRECTION`
+distinguished). Next: batch 2 (freeze manifest + Arm A DTO/prompt +
+fake-dispatch gate), then paid A₁ (≈$0.01) under manual aggregate
+check (wrapper CLI wiring is PUB-09).
+Paid inference budget: $1.00 hard cap authorized 2026-11-25 (covers
+all PUB-08 Worker/model dispatches; pre-dispatch enforcement + ledger
+actuals as in PUB-07; if the costed design exceeds $1, report blocked
+and request an increase — never silently exceed). No authoritative
+mutation, no PUB-09, no commits/pushes.**
 
 **PUB-07 fix batch 2026-11-25 (D-PUB-81) + coordinator close-out (D-PUB-64 fail-closed spend incl. non-finite rejection, D-PUB-65/66/67 trust roots, D-PUB-68 chain digest + canonicalisation scoping, R1 numbers, R4 handoff, R5 blind spots). VERIFIED in-session on the final tree: transformation 83 + CLI 9 + automation 40 collected = 132 passed (combined run); full delta gate 592 passed + 1 strict xfailed (held-cx15) / 0 failed, independently reproduced by coordinator AND DeepSeek; ruff clean; catalog 167; Jev clean ($0 new spend on verification); worker probe server stopped after use.**
 
 Bounded re-run EXECUTED by coordinator in a credential-bearing shell (fix batch is code-only, zero live dispatches by design): `transform automate jev 02-chapter` (same package/inputs): outcome **review_accepted** (no correction loop needed -- reviewer accepted), **2 dispatches, $0.0039864** (1 editorial deepseek-v4.1-flash 8246 tok + 1 review haiku $0/5678 tok), spend cap enforced pre-dispatch, verify **15/15 pass**, candidate fp **`9f36c9ba…`** (355 lines, LF-normalised bytes), chain after==candidate asserted and independently recomputed MATCH. The re-run exposed + resolved one real defect: the interim "new CX10 HIGH" was a cross-table false-positive join (prose on both sides of the Willard table glued into one "run"), removed by the PUB-04 structural-break fix (verified gone; final book-wide book scan unchanged at the pre-existing baseline). Temp evidence cleaned; probe Worker stopped after the gate closed.
 
-**Returned verdicts on the final tree / bytes: DeepSeek CONDITIONAL (all deterministic checks pass; R1 numbers corrected here: 38→39, CX10 1→1 HIGH gone, neighbours 260+1xf within the 592+1xf gate; R3 chain binding independently recomputed MATCH + canonicalisation narrowed with pins; R4 handoff supersede-noted incl. all [FILL]s filled; R5 blind spots recorded); Claude editorial delta CONFIRMED on the new bytes (BLOCKED cleared → ACCEPT as governed output, pending author release; paragraph split real, gloss gone, rest matches run 1, LLM2Jev paragraph unchanged source). Author final-gate instructions 2026-11-25: run-1 line-138 synthesis DELETED by author direction (D-PUB-82, run-1 artifact unmodified; rerun independently checked — defect absent, no correction proposed); run-1/rerun records stay distinct with promotion deferred (D-PUB-83); PUB-08 attribution mandate recorded (D-PUB-84). Outstanding: DeepSeek delta re-verify (fallback `deepseek-v4.1-flash` after the free variant proved unavailable). RECEIVED since: Codex delta ACCEPT 2026-11-25 (all 4 BLOCKED items CLOSED on the rerun bytes, digests independently recomputed MATCH, focused suites 40+83+9+14 green, $0) and Claude delta re-read (ACCEPT with one style edit: delete rerun line 155; gloss/LLM2Jev-confinement clean). On ACCEPT/CONDITIONAL-minor: record PUB-07 conditionally complete / proceed to author verdict + PUB-08 prep. On substantive BLOCKED: single surgical fix batch, then close. No PUB-08 until the gate closes. Worker auth infra note stands (D-PUB-78 follow-up filed as owning-team work).**
+**Returned verdicts on the final tree / bytes: DeepSeek CONDITIONAL (all deterministic checks pass; R1 numbers corrected here: 38→39, CX10 1→1 HIGH gone, neighbours 260+1xf within the 592+1xf gate; R3 chain binding independently recomputed MATCH + canonicalisation narrowed with pins; R4 handoff supersede-noted incl. all [FILL]s filled; R5 blind spots recorded); Claude editorial delta CONFIRMED on the new bytes (BLOCKED cleared → ACCEPT as governed output, pending author release; paragraph split real, gloss gone, rest matches run 1, LLM2Jev paragraph unchanged source). Author final-gate instructions 2026-11-25: run-1 line-138 synthesis DELETED by author direction (D-PUB-82, run-1 artifact unmodified; rerun independently checked — defect absent, no correction proposed); run-1/rerun records stay distinct with promotion deferred (D-PUB-83); PUB-08 attribution mandate recorded (D-PUB-84). Outstanding: none. GATE CLOSED 2026-11-25 — Codex ACCEPT (4/4 BLOCKED,
+digests recomputed MATCH); DeepSeek CONDITIONAL doc residual fixed
+in-session (op:026+op:039 attribution) and revalidated — closed;
+Claude accept-with-one-style-edit (delete rerun line 155) carried as
+author-side polish at promotion, not applied to verified bytes
+(D-PUB-82/85). No PUB-08 work started. Worker auth infra note stands
+(D-PUB-78 follow-up filed as owning-team work).** On ACCEPT/CONDITIONAL-minor: record PUB-07 conditionally complete / proceed to author verdict + PUB-08 prep. On substantive BLOCKED: single surgical fix batch, then close. No PUB-08 until the gate closes. Worker auth infra note stands (D-PUB-78 follow-up filed as owning-team work).**
 
 ## 11. PUB-05 (closed 2026-11-24, author direction)
 

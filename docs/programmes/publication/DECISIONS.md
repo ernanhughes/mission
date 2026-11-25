@@ -893,8 +893,10 @@ re-confirm + DeepSeek delta re-verify)
 - **R4 handoff refresh.** Review-pack prompts now carry current
   fingerprints, counts, and a note that `before-after.md` WAS
   rewritten (00:03 rebuild) -- correcting the prior "untouched" claim;
-  STATE "0 violations" corrected to 2 isolating (op:039 held,
-  op:042 investigation-only consumed).
+  STATE "0 violations" corrected to 2 isolating (op:b61a63c5:026 and
+  op:b61a63c5:039, both `investigation_only_consumed`; op:042 is
+  `boundary_ok` — corrected 2026-11-25 per DeepSeek delta re-verify
+  against the rerun record).
 - **R5 blind spots (documented, PUB-08 owned).** Derived artifacts are
   not auto-regenerated after detector changes -- re-verify step is
   mandatory (09:xx rebuild proved the point); the record does not bind
@@ -1105,6 +1107,9 @@ recorded by coordinator, pending Codex delta verdict)
   NOT promoted until its delta reviews close. Promotion, when accepted,
   uses the existing candidate-selection/supersession mechanism — never
   an overwrite, never a duplicate candidate lifecycle.
+  (Update 2026-11-25: deltas closed; D-PUB-85 designates the rerun as
+  the accepted demonstration candidate. This bullet is retained as the
+  deferral history.)
 - **D-PUB-84 — PUB-08 must attribute defects to source vs transformation
   (author mandate).** A reviewer must establish its quoted evidence
   exists in the relevant source or candidate, and for every candidate
@@ -1131,6 +1136,24 @@ recorded by coordinator, pending Codex delta verdict)
   issue stays a source-level research obligation in the author-side
   queue — never rewritten to satisfy a misattributed review objection;
   all preceding PUB-06 author-side obligations are preserved.
+- **D-PUB-85 — PUB-07 ACCEPTED 2026-11-25 (8/12); rerun is the
+  demonstration candidate.** All three rerun-bound deltas closed:
+  Codex ACCEPT (4/4 BLOCKED items, digests recomputed MATCH);
+  DeepSeek CONDITIONAL with one doc-only residual (op attribution),
+  corrected in-session and revalidated against the rerun record —
+  closed; Claude accept-with-one-style-edit (delete rerun line 155
+  "In sum, …"), judged optional by the reviewer (as-is defensible) and
+  outside the run-1 defect class (D-PUB-82: no gloss recurs) — carried
+  as an author-side polish decision at promotion, NOT applied to the
+  verified bytes (this run is never reopened; prose changes go through
+  a new bounded program or explicit author edit). Promotion designates
+  `pub07/ch02-rerun/candidate.md` (`9f36c9ba…`, 355 lines, verify
+  15/15, review_accepted, $0.0039864) as the accepted PUB-07
+  demonstration candidate; `pub07/ch02/` + `pub07/ch02-superseded-run1/`
+  remain byte-identical run-1 history. Production gap closed: real
+  dispatched editorial generation + independent review + validated
+  transformation record, $0.0039864 for the bounded passage (no
+  extrapolation to full chapters claimed).
 
 ## Explicitly rejected (appended PUB-03: parallel evidence architecture)
 

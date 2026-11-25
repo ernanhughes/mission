@@ -616,3 +616,42 @@ def test_identical_claim_wording_dedupes_findings(tmp_path, runtime) -> None:
     assert len(gaps) == 1, kinds
     assert not [k for k, _ in kinds if k == "unsupported_claim"]
     database.dispose()
+
+
+# -- W4-v2 relational verification (closure commission, 2026-11-25) -----------
+# Bound git relationships verify; citation alone or wrong kind never does.
+
+def test_w4v2_relational_bound_git_remote_verifies() -> None:
+    req = _req(kind="relational",
+               text="Commit 88b7c04 is ancestor of origin/main (merge-base --is-ancestor)")
+    ev = [_ev("git_commit", "git-ai:88b7c04f38e52374dba41494d88540a9f7d23f1e"),
+          _ev("remote_ref", "origin/main@https://example.invalid/ai.git contains 88b7c04")]
+    a = assess_requirement_deterministic(req, ev, True)
+    assert a.verdict == "satisfied_verified"
+    assert a.confidence == "strong"
+
+
+def test_w4v2_relational_git_only_stays_reported() -> None:
+    req = _req(kind="relational",
+               text="origin/main contains 88b7c04 (branch -r --contains)")
+    a = assess_requirement_deterministic(
+        req, [_ev("git_commit", "git-ai:88b7c04f38e52374dba41494d88540a9f7d23f1e")], True)
+    assert a.verdict == "satisfied_reported"
+
+
+def test_w4v2_relational_unbound_sha_stays_reported() -> None:
+    req = _req(text="Remote URL matches https://example.invalid/ai.git "
+                    "(remote url exact match) for deadbee present on remote")
+    ev = [_ev("git_commit", "git-ai:88b7c04f38e52374dba41494d88540a9f7d23f1e"),
+          _ev("remote_ref", "origin/main@https://example.invalid/ai.git contains deadbee")]
+    a = assess_requirement_deterministic(req, ev, True)
+    assert a.verdict == "satisfied_reported"
+
+
+def test_w4v2_functional_with_git_remote_stays_reported() -> None:
+    # No weakening: functional requirements never enter the relational lane.
+    req = _req(kind="functional", text="Ship the thing")
+    ev = [_ev("git_commit", "git-1:abc1234567890"),
+          _ev("remote_ref", "origin/main@https://example.invalid/r.git contains abc1234")]
+    a = assess_requirement_deterministic(req, ev, True)
+    assert a.verdict == "satisfied_reported"

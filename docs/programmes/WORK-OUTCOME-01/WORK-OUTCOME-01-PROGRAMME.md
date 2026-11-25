@@ -133,3 +133,18 @@ pre-W1 actions closed, no schema writes performed during W0.
   Open: independent verified-complete episode, human cross-family
   commission, Wave 1 activation. No timer, no paid inference, no
   commit/push.
+- 2026-11-25: Bounded closure commission executed (owner-authorized, no
+  commit/push, $0). (1) DeepSeek `deepseek-v4.1-flash-free` attempted
+  twice via Pi, both 429 free-limit, $0, no paid fallback — cross-family
+  stays PARTIAL (Mistral CONDITIONAL; human commission OPEN; see
+  W9G-*). (2) 08C verified-complete ESTABLISHED on isolated scratch under
+  narrow owner-authorized rubric w4-v2 (bound git_commit + remote_ref,
+  3 independent reproductions, digest 6cc6e4d7…, 4 new tests, 92 focused
+  green) — live promotion pending operator restart, NOT claimed on
+  operational. (3) Wave 1 NOT enabled (backend down at execution time, so
+  running version unverifiable; tree contains W9 fixes; dist fresh;
+  operational v54 with 31/9/293 intact): exact restart + bounded
+  enablement payloads in WORK-OUTCOME-01-OPERATIONAL-CLOSURE.md.
+  Self-eval re-run (scratch, 3 obligations): incomplete — verified
+  episode record exists, cross-family reported-not-verified,
+  multi-project not demonstrated. No unconditional acceptance claimed.
