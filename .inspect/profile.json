@@ -1,90 +1,74 @@
 {
   "architecture": {
-    "entry_points": [
-      "pyproject.toml",
-      "pytest"
-    ],
+    "entry_points": [],
     "subsystems": [
-      "Core API and runtime",
+      "Core platform",
       "Dashboard and continuity",
       "Application registry and processes",
-      "Discovery and repository observation",
+      "Discovery and observation",
       "Git activity",
       "Adapters and integrations",
       "Unified workspace",
       "Research assistance",
-      "Governed proposals",
       "Experiment workflows",
-      "Quality",
-      "Technical confidence",
-      "Publication",
+      "Quality and publication",
       "Writer editing",
       "Living Book",
       "Cultivation",
       "Scripts",
-      "Briefing and AI",
-      "Platform settings",
-      "Platform security",
-      "Platform persistence"
+      "Cost analytics",
+      "Inspect integration",
+      "Governance",
+      "Work evaluation",
+      "Testing",
+      "Worker integration"
     ]
   },
   "capabilities": {
-    "count": 56,
+    "count": 61,
     "inventory": [
       {
-        "description": "Defines the adapter contract for capabilities, observations, recommendations, resources and registered actions, and refreshes adapters in isolation with persisted status and source attribution.",
+        "description": "Normalises external evidence from Next, Work, CoCoder, Worker, Writer, Technical and the three priority books into a common observation/resource/action contract, persists adapter status, deduplicates resources and records source attribution and freshness.",
         "evidence": [
           "backend/mission_control/adapters/base.py",
           "backend/mission_control/adapters/service.py",
+          "backend/mission_control/integrations/store.py",
           "backend/tests/test_adapters.py"
         ],
         "id": "adapter-framework",
         "maturity": "implemented",
-        "name": "Evidence adapter framework and refresh isolation",
+        "name": "Read-only adapter framework and status persistence",
         "operational_status": "tested-not-demonstrated",
         "subsystem": "Adapters and integrations"
       },
       {
-        "description": "Reads read-only manuscript chapter counts, planning/status claims and Math01 assessment evidence for the three priority books, producing observations and recommendations without treating file presence as completion.",
-        "evidence": [
-          "backend/mission_control/adapters/book_adapters.py",
-          "backend/tests/test_adapters.py",
-          "docs/MC01-INVENTORY.md"
-        ],
-        "id": "book-adapters",
-        "maturity": "implemented",
-        "name": "Language, Inference and Math book evidence adapters",
-        "operational_status": "tested-not-demonstrated",
-        "subsystem": "Adapters and integrations"
-      },
-      {
-        "description": "Reads CoCoder JSON review artifacts and findings, validates registered repository paths, and launches a bounded `cocoder review` execution with its state redirected into Mission Control's data directory.",
+        "description": "Reads CoCoder JSON review artifacts as repository assessment/finding resources and exposes a registered, confirmation-gated `run_review` action that runs CoCoder's CLI against an allowlisted repository while redirecting engine state under Mission Control's data directory.",
         "evidence": [
           "backend/mission_control/adapters/cocoder.py",
-          "backend/tests/test_adapters.py",
+          "backend/mission_control/integrations/service.py",
           "backend/tests/test_integration_api.py"
         ],
         "id": "cocoder-adapter-action",
         "maturity": "implemented",
-        "name": "CoCoder review ingestion and bounded review action",
+        "name": "CoCoder review artifacts and bounded review action",
         "operational_status": "tested-not-demonstrated",
         "subsystem": "Adapters and integrations"
       },
       {
-        "description": "Queues only registered ActionSpec actions, validates typed parameters and adapter-specific constraints, requires explicit confirmation, prevents concurrent duplicates and records a durable execution lifecycle and history.",
+        "description": "Validates an action id and typed parameters against the adapter's schema, enforces enabled/approval requirements, rejects duplicate running actions, runs the adapter asynchronously and persists a durable execution history with results and errors.",
         "evidence": [
           "backend/mission_control/integrations/service.py",
-          "backend/mission_control/integrations/runner.py",
+          "backend/mission_control/api/integrations.py",
           "backend/tests/test_integration_api.py"
         ],
         "id": "integration-action-execution",
         "maturity": "implemented",
-        "name": "Registered integration action execution",
+        "name": "Registered integration action execution with approval and history",
         "operational_status": "tested-not-demonstrated",
         "subsystem": "Adapters and integrations"
       },
       {
-        "description": "Persists normalised external resources with source/time/evidence attribution, records local-only decisions with allowed decision options, and associates resources with projects without claiming source synchronization.",
+        "description": "Persists normalised external resources (opportunities, repositories, findings, books), lets a human record a local decision with sync_state=local_only, refresh freshness, patch presentation fields and associate resources with projects without transferring ownership.",
         "evidence": [
           "backend/mission_control/integrations/store.py",
           "backend/mission_control/api/integrations.py",
@@ -92,25 +76,25 @@
         ],
         "id": "integration-resources",
         "maturity": "implemented",
-        "name": "Normalised integration resources, local decisions and project association",
+        "name": "Integration resource records, local decisions and project association",
         "operational_status": "tested-not-demonstrated",
         "subsystem": "Adapters and integrations"
       },
       {
-        "description": "Reads Next research opportunities, runs, evidence gaps and experiments from a read-only PostgreSQL transaction or a configured SQLite snapshot and exposes them as integration resources.",
+        "description": "Reads Next research opportunities, runs and evidence through a SELECT-only PostgreSQL session with default_transaction_read_only=on when NEXT_DSN is configured, or a configured SQLite file opened read-only, and materialises them as integration resources.",
         "evidence": [
           "backend/mission_control/adapters/next.py",
-          "backend/tests/test_adapters.py",
-          "docs/MC09-INTEGRATION-AUDIT.md"
+          "backend/mission_control/integrations/service.py",
+          "backend/tests/test_adapters.py"
         ],
         "id": "next-adapter",
         "maturity": "implemented",
-        "name": "Next research adapter",
+        "name": "Next research opportunity integration (read-only)",
         "operational_status": "tested-not-demonstrated",
         "subsystem": "Adapters and integrations"
       },
       {
-        "description": "Exposes a registered `verify_claim` action that validates a frozen proposition against a stored technical claim, re-checks the source revision, runs a small exact-rational verifier and writes a result artifact without changing claim status.",
+        "description": "Exposes a registered action that runs Mission Control's bounded arithmetic verifier against a registered technical claim, records verification evidence with the live source revision, and refuses unregistered or stale claims.",
         "evidence": [
           "backend/mission_control/adapters/technical.py",
           "backend/mission_control/technical/arithmetic_verifier.py",
@@ -119,133 +103,179 @@
         ],
         "id": "technical-adapter-verifier",
         "maturity": "implemented",
-        "name": "Bounded deterministic technical claim verifier",
+        "name": "Bounded technical-claim verification action",
         "operational_status": "tested-not-demonstrated",
         "subsystem": "Adapters and integrations"
       },
       {
-        "description": "Invokes the documented read-only Work CLI (`work opportunities --json`) and normalises opportunities, qualification and buyer/location/compensation context into Mission Control resources.",
+        "description": "Invokes the documented read-only `work opportunities --json` CLI, maps opportunities (buyer, location, compensation, qualification) into integration resources, and keeps decisions local with sync_state=local_only; the write action is disabled.",
         "evidence": [
           "backend/mission_control/adapters/work.py",
-          "backend/tests/test_adapters.py",
-          "README.md"
+          "backend/mission_control/integrations/runner.py",
+          "backend/tests/test_adapters.py"
         ],
         "id": "work-adapter",
         "maturity": "implemented",
-        "name": "Work commercial opportunity adapter",
+        "name": "Work commercial opportunity integration via JSON CLI",
         "operational_status": "tested-not-demonstrated",
         "subsystem": "Adapters and integrations"
       },
       {
-        "description": "Consumes Writer's versioned `editing summary --json` contract, preserves six independent readability subdimensions and findings, reads Writer/Workbench evidence files read-only, and exposes confirmed Writer audit and campaign actions.",
+        "description": "Reads Writer's versioned editing summary/audit JSON (books, chapters, six readability subdimensions, findings with locators, source fingerprints) and exposes registered, confirmation-gated Writer audit/campaign actions that write only Writer-owned report artifacts.",
         "evidence": [
           "backend/mission_control/adapters/writer.py",
-          "backend/mission_control/writer/service.py",
-          "backend/mission_control/writer/queue.py",
-          "backend/tests/test_writer_adapter.py"
+          "backend/mission_control/integrations/service.py",
+          "backend/tests/test_writer_adapter.py",
+          "backend/tests/test_writer_scoped_audit.py"
         ],
         "id": "writer-adapter-action",
         "maturity": "implemented",
-        "name": "Writer editing evidence and read-only audit actions",
+        "name": "Writer editing evidence and governed audit actions",
         "operational_status": "tested-not-demonstrated",
         "subsystem": "Adapters and integrations"
       },
       {
-        "description": "Checks registered HTTP health endpoints, labels external listeners honestly, verifies the Workbench identity marker and starts a service only when needed before returning its stored URL.",
+        "description": "Adds, edits and reorders applications entirely from the UI/API, including structured launch definitions (command, server, URL-only), health checks, monitoring, documentation actions, relationships, verification flags and an ensure-open precondition check before opening an engine ",
         "evidence": [
-          "backend/mission_control/processes/manager.py",
           "backend/mission_control/api/applications.py",
-          "backend/tests/test_workbench_ensure_open.py"
-        ],
-        "id": "app-readiness-ensure-open",
-        "maturity": "implemented",
-        "name": "Application readiness, health probes and start-if-needed",
-        "operational_status": "tested-not-demonstrated",
-        "subsystem": "Application registry and processes"
-      },
-      {
-        "description": "Stores and edits registered applications, including identity, paths, tags, relationships, control policy, launch definitions, monitoring and integration-adapter configuration.",
-        "evidence": [
           "backend/mission_control/registry/service.py",
-          "backend/mission_control/api/applications.py",
-          "config/defaults/applications.yaml",
+          "backend/mission_control/processes/manager.py",
           "backend/tests/test_registry_and_projects.py"
         ],
         "id": "application-registry",
         "maturity": "implemented",
-        "name": "Application registry",
+        "name": "Application registry with launch definitions and capability state",
         "operational_status": "tested-not-demonstrated",
         "subsystem": "Application registry and processes"
       },
       {
-        "description": "Launches a user-configured native editor with a repository or documentation path, refusing shell-script launchers and unconfigured editors.",
+        "description": "Opens a registered repository or documentation path in a user-configured native editor executable, refusing shell launchers and explaining why the action is disabled when no valid editor is configured.",
         "evidence": [
           "backend/mission_control/core/editor.py",
           "backend/mission_control/api/applications.py",
-          "backend/tests/test_processes.py"
+          "backend/mission_control/api/projects.py",
+          "backend/tests/test_registry_and_projects.py"
         ],
         "id": "editor-repository-open",
         "maturity": "implemented",
-        "name": "Open repositories and documentation in a configured editor",
+        "name": "Configured-editor repository and documentation opening",
         "operational_status": "tested-not-demonstrated",
         "subsystem": "Application registry and processes"
       },
       {
-        "description": "Launches stored launch definitions without a shell, detaches managed child processes, records PIDs and creation times, reconciles ownership after backend restart, captures logs and stops only Mission Control-owned process trees.",
+        "description": "Launches stored commands with shell=False, detached Windows process groups, an allowlisted environment, log capture and redaction; stops only Mission Control-owned process trees after PID+creation-time verification; detects port conflicts; reattaches after backend restart; and ru",
         "evidence": [
           "backend/mission_control/processes/manager.py",
-          "backend/mission_control/api/processes.py",
-          "backend/tests/test_processes.py",
-          "backend/tests/test_workbench_ensure_open.py"
+          "backend/mission_control/processes/health.py",
+          "backend/mission_control/api/applications.py",
+          "backend/mission_control/api/processes.py"
         ],
         "id": "managed-process-control",
         "maturity": "implemented",
-        "name": "Managed Windows process launch, stop and logs",
+        "name": "Managed process launch, ownership, logs, reattachment and health monitoring",
         "operational_status": "tested-not-demonstrated",
         "subsystem": "Application registry and processes"
       },
       {
-        "description": "Builds a deterministic ranked briefing from focus, checkpoints, tasks, pending recommendations and adapter state, and optionally adds an OpenAI-compatible or Pi interpretation only after configuration, consent and an explicit request.",
-        "evidence": [
-          "backend/mission_control/briefing/service.py",
-          "backend/mission_control/api/briefing.py",
-          "backend/tests/test_continuity_and_briefing.py"
-        ],
-        "id": "daily-briefing",
-        "maturity": "implemented",
-        "name": "Grounded daily briefing with optional AI interpretation",
-        "operational_status": "tested-not-demonstrated",
-        "subsystem": "Briefing and AI"
-      },
-      {
-        "description": "Serves the Mission Control REST API and SPA on a loopback-only FastAPI application, reports database/schema/AI state through /api/health, republishes OpenAPI documentation at /docs, and can spawn a replacement backend process for a controlled restart.",
+        "description": "Runs Mission Control as a loopback-only FastAPI service that mounts ~40 API routers under /api, serves OpenAPI at /docs and openapi.json, applies database migrations and seeded defaults on startup, and serves the built React SPA with history fallback.",
         "evidence": [
           "backend/mission_control/main.py",
+          "backend/mission_control/__main__.py",
           "backend/mission_control/api/health.py",
-          "README.md"
+          "backend/tests/test_sqlite_lock_health.py"
         ],
-        "id": "api-health-restart",
+        "id": "local-api-runtime",
         "maturity": "implemented",
-        "name": "Local FastAPI service, health check and backend restart",
+        "name": "Local FastAPI runtime, health endpoint and OpenAPI surface",
         "operational_status": "source-inspected-only",
-        "subsystem": "Core API and runtime"
+        "subsystem": "Core platform"
       },
       {
-        "description": "Maintains a gamified progress system where goals have measurable targets, items move through user-defined stages, completion is explicit, measurements/evidence retain provenance and ranks/HUD recompute from stored rows.",
+        "description": "Stores registry, continuity, workflows, books, evaluations and evidence in PostgreSQL addressed by MC_DSN, applies versioned migrations, seeds shipped defaults without overwriting user rows, and provides a one-shot legacy SQLite-to-PostgreSQL migration/verification utility.",
         "evidence": [
-          "backend/mission_control/cultivation/service.py",
-          "backend/mission_control/api/cultivation.py",
-          "backend/tests/test_cultivation.py",
-          "backend/tests/test_cultivation_02.py"
+          "backend/mission_control/persistence/db.py",
+          "backend/mission_control/persistence/migrations.py",
+          "backend/mission_control/persistence/seed.py",
+          "scripts/migrate_sqlite_to_postgres.py"
         ],
-        "id": "cultivation-goals-hud",
+        "id": "postgres-persistence",
         "maturity": "implemented",
-        "name": "Cultivation goals, measurements, items, skills, ranks and cycles",
+        "name": "PostgreSQL operational store with SQLite migration path",
+        "operational_status": "tested-not-demonstrated",
+        "subsystem": "Core platform"
+      },
+      {
+        "description": "Protects mutating HTTP methods with an allowlisted Origin plus the X-Mission-Control-Request: 1 header, adds security response headers, and constrains launch/action payloads so browsers never supply executables, shell commands or arbitrary filesystem paths.",
+        "evidence": [
+          "backend/mission_control/core/security.py",
+          "backend/mission_control/main.py",
+          "backend/mission_control/core/paths.py",
+          "backend/tests/test_security.py"
+        ],
+        "id": "security-boundary",
+        "maturity": "implemented",
+        "name": "Loopback, local-origin and request-header security boundary",
+        "operational_status": "source-inspected-only",
+        "subsystem": "Core platform"
+      },
+      {
+        "description": "Persists user settings (AI configuration, discovery roots, editor path, retention, monitor switches) with validation, and represents secrets only by environment-variable names so key values are never stored, returned or logged.",
+        "evidence": [
+          "backend/mission_control/api/settings.py",
+          "backend/mission_control/settings/service.py",
+          "backend/mission_control/integrations/service.py",
+          "backend/tests/test_migrations_and_seed.py"
+        ],
+        "id": "settings-secret-management",
+        "maturity": "implemented",
+        "name": "Validated settings with environment-named secrets",
+        "operational_status": "tested-not-demonstrated",
+        "subsystem": "Core platform"
+      },
+      {
+        "description": "Reads the OpenCode SQLite database strictly read-only to report cost status, summaries, sessions, spikes, efficiency and attribution with explicit unavailable states for missing/locked/incompatible data, plus an optional model catalogue.",
+        "evidence": [
+          "backend/mission_control/opencode_cost/__init__.py",
+          "backend/mission_control/api/cost.py",
+          "backend/tests/test_opencode_cost.py",
+          "backend/tests/test_opencode_cost2.py"
+        ],
+        "id": "opencode-cost",
+        "maturity": "implemented",
+        "name": "Read-only OpenCode cost and usage analytics",
+        "operational_status": "tested-not-demonstrated",
+        "subsystem": "Cost analytics"
+      },
+      {
+        "description": "Lists posts from a site's content section using the shared Hugo scanner, records append-only editorial evaluations against content hashes with staleness derived at read time, supports reviews, deterministic Writer Artifact observations and optional automatic Writer maintenance wi",
+        "evidence": [
+          "backend/mission_control/websites/posts.py",
+          "backend/mission_control/websites/evaluate.py",
+          "backend/mission_control/websites/maintenance.py",
+          "backend/mission_control/api/website_posts.py"
+        ],
+        "id": "blog-post-evaluation",
+        "maturity": "implemented",
+        "name": "Blog post listing, editorial evaluation and Writer maintenance",
         "operational_status": "tested-not-demonstrated",
         "subsystem": "Cultivation"
       },
       {
-        "description": "Synchronises read-only live sources (Hugo blog, activity projects, numbered/script registry, fiction books, GitHub repositories) and reconciles repository/application qualification while preserving owner decisions across resyncs.",
+        "description": "Maintains cultivation goals, items with stage/qualification membership, measurements, evidence, skills, cycles with focus/rollover, rank status and a HUD, counting only completed artifacts/measurements and labelling user estimates by provenance.",
+        "evidence": [
+          "backend/mission_control/cultivation/service.py",
+          "backend/mission_control/api/cultivation.py",
+          "backend/tests/test_cultivation.py",
+          "backend/tests/test_cultivation_03.py"
+        ],
+        "id": "cultivation-goals-hud",
+        "maturity": "implemented",
+        "name": "Cultivation goals, items, skills, cycles, ranks and HUD",
+        "operational_status": "tested-not-demonstrated",
+        "subsystem": "Cultivation"
+      },
+      {
+        "description": "Scans configured live sources (numbered Script files, Hugo blogs) read-only with explicit publication rules and unknown metadata handling, and inventories GitHub repositories via the authenticated gh CLI or a read-only token REST path, merging remote facts without overwriting own",
         "evidence": [
           "backend/mission_control/cultivation/sources.py",
           "backend/mission_control/cultivation/github.py",
@@ -254,52 +284,81 @@
         ],
         "id": "cultivation-sources-github",
         "maturity": "implemented",
-        "name": "Cultivation live sources and GitHub inventory",
+        "name": "Cultivation source observation and GitHub inventory",
         "operational_status": "tested-not-demonstrated",
         "subsystem": "Cultivation"
       },
       {
-        "description": "Maintains priority book workspaces and detects manuscript trees under configured book roots, creating editable book workspaces without overwriting existing state; also detects the fiction collection.",
+        "description": "Lists detected website workspaces, launches local Hugo preview servers on distinct loopback ports with argument lists and no drafts, reuses an existing managed server, stops only managed previews, and opens paths/URLs.",
+        "evidence": [
+          "backend/mission_control/websites/service.py",
+          "backend/mission_control/api/websites.py",
+          "backend/tests/test_mc_websites_cultivation.py",
+          "frontend/src/test/WebsitesLayout.test.tsx"
+        ],
+        "id": "website-workspaces",
+        "maturity": "implemented",
+        "name": "Website workspaces and managed Hugo previews",
+        "operational_status": "tested-not-demonstrated",
+        "subsystem": "Cultivation"
+      },
+      {
+        "description": "Maintains priority and detected book workspaces, detects content/books and fiction manuscript trees on startup and on demand, deduplicates against aggregator copies, syncs a read-only Writer registry, and supports aliases plus identity-conflict diagnostics.",
         "evidence": [
           "backend/mission_control/discovery/books.py",
           "backend/mission_control/api/projects.py",
-          "backend/tests/test_book_detection.py",
-          "backend/tests/test_fiction_books.py"
+          "backend/mission_control/writer_registry/sync.py",
+          "backend/tests/test_book_detection.py"
         ],
         "id": "book-workspaces",
         "maturity": "implemented",
-        "name": "Book workspaces and manuscript detection",
+        "name": "Book workspaces, detected manuscripts and Writer registry sync",
         "operational_status": "tested-not-demonstrated",
         "subsystem": "Dashboard and continuity"
       },
       {
-        "description": "Saves structured work checkpoints (summary, last completed, next action, blockers, evidence) and exposes a resume view based on the most recent checkpoint across projects.",
+        "description": "Saves structured work checkpoints (summary, last completed, next action, blockers, evidence, optional milestone), makes the project the current focus, and exposes a resume view based on the most recent checkpoint across all projects.",
         "evidence": [
-          "backend/mission_control/projects/service.py",
           "backend/mission_control/api/projects.py",
+          "backend/mission_control/projects/service.py",
           "backend/tests/test_continuity_and_briefing.py"
         ],
         "id": "checkpoints-resume",
         "maturity": "implemented",
-        "name": "Checkpoint and resume",
+        "name": "Checkpoint and resume continuity",
         "operational_status": "tested-not-demonstrated",
         "subsystem": "Dashboard and continuity"
       },
       {
-        "description": "Creates and edits projects with kind, milestone, next action, pinned/priority ordering, repository associations and a project-level aggregate including integration context.",
+        "description": "Creates and edits projects of several kinds with milestone, next action, priority/pin ordering, repository associations, deterministic software-project registration/reconciliation and a reversible identity cutover with preview, apply, auto-register and rollback routes.",
         "evidence": [
           "backend/mission_control/api/projects.py",
           "backend/mission_control/projects/service.py",
-          "backend/tests/test_registry_and_projects.py"
+          "backend/mission_control/projects/registration.py",
+          "backend/mission_control/projects/reconciliation.py"
         ],
         "id": "project-workspace",
         "maturity": "implemented",
-        "name": "Project workspaces, ordering, tasks and decisions",
+        "name": "Project workspaces, ordering and identity cutover",
         "operational_status": "tested-not-demonstrated",
         "subsystem": "Dashboard and continuity"
       },
       {
-        "description": "Assembles the home workspace from persisted focus, latest checkpoint, priority books, applications and runtime states, activity, tasks, recommendations, adapters and the latest briefing.",
+        "description": "Tracks local tasks with status, human decisions, adapter recommendations with review state, supported outcomes and a chronological activity ledger used by the dashboard, briefing and project views.",
+        "evidence": [
+          "backend/mission_control/api/projects.py",
+          "backend/mission_control/activity/service.py",
+          "backend/mission_control/projects/service.py",
+          "backend/tests/test_registry_and_projects.py"
+        ],
+        "id": "tasks-decisions-activity",
+        "maturity": "implemented",
+        "name": "Tasks, decisions, recommendations, outcomes and activity log",
+        "operational_status": "tested-not-demonstrated",
+        "subsystem": "Dashboard and continuity"
+      },
+      {
+        "description": "Assembles the home workspace from persisted focus, latest checkpoint, priority books, pinned applications with live runtime state, tasks, decisions, activity, recommendations, adapters and the latest briefing.",
         "evidence": [
           "backend/mission_control/api/dashboard.py",
           "frontend/src/pages/HomePage.tsx",
@@ -312,26 +371,38 @@
         "subsystem": "Dashboard and continuity"
       },
       {
-        "description": "Scans configured roots with bounded depth, exclusions, timeouts and cancellation, classifies candidate directories with evidence and persists candidates without enabling launches or writing to scanned repositories.",
+        "description": "Runs bounded, cancellable scans over configured roots with exclusions and reparse-point avoidance, classifies repositories from observable markers (software, manuscript, mixed evidence), and persists candidates without writing to scanned repositories or enabling launch commands.",
         "evidence": [
-          "backend/mission_control/discovery/service.py",
           "backend/mission_control/discovery/scanner.py",
           "backend/mission_control/discovery/classifier.py",
-          "backend/tests/test_discovery.py"
+          "backend/mission_control/discovery/service.py",
+          "backend/mission_control/api/discovery.py"
         ],
         "id": "discovery-scan",
         "maturity": "implemented",
-        "name": "Read-only repository discovery and classification",
+        "name": "Read-only repository discovery and advisory classification",
         "operational_status": "tested-not-demonstrated",
-        "subsystem": "Discovery and repository observation"
+        "subsystem": "Discovery and observation"
       },
       {
-        "description": "Runs generated experiment code only in Docker with no network, read-only repository mount, read-only root filesystem, non-root user, dropped capabilities and CPU/memory/PID/time limits; refuses host execution when Docker is unavailable.",
+        "description": "Detects Hugo (and compatible static) site workspaces under configured roots, reads titles/section content to build website entries, and exposes them read-only at detection time without launching anything.",
+        "evidence": [
+          "backend/mission_control/discovery/websites.py",
+          "backend/mission_control/websites/service.py",
+          "backend/tests/test_mc_websites_cultivation.py"
+        ],
+        "id": "website-discovery",
+        "maturity": "implemented",
+        "name": "Hugo website workspace detection",
+        "operational_status": "tested-not-demonstrated",
+        "subsystem": "Discovery and observation"
+      },
+      {
+        "description": "Runs generated experiment commands inside a pinned local Docker image with no network, read-only repository and root filesystem, writable tmpfs /tmp, non-root user, dropped capabilities and explicit CPU/memory/PID/time limits; missing Docker refuses execution rather than falling ",
         "evidence": [
           "backend/mission_control/workflows/sandbox.py",
           "docker/sandbox/Dockerfile",
-          "backend/tests/test_sandbox.py",
-          "README.md"
+          "backend/tests/test_sandbox.py"
         ],
         "id": "docker-sandbox",
         "maturity": "implemented",
@@ -340,83 +411,75 @@
         "subsystem": "Experiment workflows"
       },
       {
-        "description": "Requests a CoCoder review of the actual result commit, records findings and adverse-review state, and accepts reject/investigate/accept decisions with safeguards against accepting failed or high/medium-risk reviews.",
+        "description": "Executes an approved workflow by requesting Worker with the stored prompt/backend/model under budget, accepting only the approved one-file patch, AST-checking generated Python, rejecting forbidden imports/calls and extra paths, running deterministic tests/measurement in the sandb",
         "evidence": [
+          "backend/mission_control/workflows/service.py",
+          "backend/mission_control/api/workflows.py",
+          "backend/mission_control/workflows/sandbox.py",
+          "backend/tests/test_workflow_service.py"
+        ],
+        "id": "experiment-execution",
+        "maturity": "implemented",
+        "name": "Approved experiment execution with patch scope enforcement",
+        "operational_status": "tested-not-demonstrated",
+        "subsystem": "Experiment workflows"
+      },
+      {
+        "description": "Creates a durable TraceLite/brightness experiment from a Next record or fixture manifest with exact file scope, repository, baseline commit, file hash, Worker backend/model, budget, stop conditions and evaluation criteria, then requires a human scope acknowledgement before approv",
+        "evidence": [
+          "backend/mission_control/api/workflows.py",
+          "backend/mission_control/workflows/service.py",
+          "backend/mission_control/workflows/templates.py",
+          "backend/tests/test_workflow_service.py"
+        ],
+        "id": "experiment-proposal-approval",
+        "maturity": "implemented",
+        "name": "Cross-application experiment proposal and hash-bound approval",
+        "operational_status": "tested-not-demonstrated",
+        "subsystem": "Experiment workflows"
+      },
+      {
+        "description": "Requests CoCoder review of the exact result commit, records findings, and records a human decision; high/medium findings block automatic acceptance and require an explicit override with a reason.",
+        "evidence": [
+          "backend/mission_control/api/workflows.py",
           "backend/mission_control/workflows/service.py",
           "backend/tests/test_workflow_service.py"
         ],
         "id": "experiment-review-decision",
         "maturity": "implemented",
-        "name": "CoCoder review of experiment results and human decision",
+        "name": "CoCoder review of the result and human accept/reject/investigate decision",
         "operational_status": "tested-not-demonstrated",
         "subsystem": "Experiment workflows"
       },
       {
-        "description": "Approves a proposed experiment only when confirmation and scope acknowledgement are supplied, storing a hash over objective, exact file scope, repository, baseline commit, file hash, Worker config and prompt.",
+        "description": "Records expected/observed properties, method, evidence, uncertainty and constraint result for an experiment, and can associate observations with projects; the record is evidence-only and cannot rewrite intentions or control execution.",
         "evidence": [
           "backend/mission_control/workflows/service.py",
-          "backend/tests/test_workflow_service.py"
-        ],
-        "id": "experiment-workflow-approval",
-        "maturity": "implemented",
-        "name": "Human approval with immutable scope hash",
-        "operational_status": "tested-not-demonstrated",
-        "subsystem": "Experiment workflows"
-      },
-      {
-        "description": "Creates an experiment proposal from a Next research export or fixture manifest, binds it to a Git sandbox baseline and exact file scope, and records the proposal without executing anything.",
-        "evidence": [
-          "backend/mission_control/workflows/service.py",
-          "backend/mission_control/workflows/templates.py",
-          "backend/tests/test_workflow_service.py"
-        ],
-        "id": "experiment-workflow-create",
-        "maturity": "implemented",
-        "name": "Create bounded experiment workflows from evidence",
-        "operational_status": "tested-not-demonstrated",
-        "subsystem": "Experiment workflows"
-      },
-      {
-        "description": "Executes an approved workflow by calling Worker, parsing a structured patch, rejecting paths outside the approved scope, applying the patch, running deterministic tests/measurement and committing the result.",
-        "evidence": [
-          "backend/mission_control/workflows/service.py",
-          "backend/tests/test_workflow_service.py"
-        ],
-        "id": "experiment-workflow-execution",
-        "maturity": "implemented",
-        "name": "Approved experiment execution and patch application",
-        "operational_status": "tested-not-demonstrated",
-        "subsystem": "Experiment workflows"
-      },
-      {
-        "description": "Records a `language.observation.v1` row from an executed experiment, capturing expected/observed properties, method, evidence, provenance, uncertainty and constraint result without controlling execution or rewriting the intention.",
-        "evidence": [
-          "backend/mission_control/workflows/service.py",
-          "backend/mission_control/persistence/migrations/004_execution_integrity.sql",
+          "backend/mission_control/models.py",
+          "docs/MC11-TEMPLATES-AND-LANGUAGE.md",
           "backend/tests/test_workflow_service.py"
         ],
         "id": "language-observation",
         "maturity": "implemented",
-        "name": "Language observation evidence",
+        "name": "Language Level 1 observation records (language.observation.v1)",
         "operational_status": "tested-not-demonstrated",
         "subsystem": "Experiment workflows"
       },
       {
-        "description": "Maintains explicit workflow states, event history, duplicate-execute rejection, cooperative cancellation at safe boundaries, replay-safe identities and a project evidence timeline linking workflows and Language observations.",
+        "description": "Maintains the truthful workflow state machine (proposed, approved, executing, executed, reviewing, reviewed, decided, failed, cancelled), emits ordered events, supports cooperative cancellation without adopting uncommitted patches, prevents duplicate Worker requests on replay, an",
         "evidence": [
           "backend/mission_control/workflows/service.py",
           "backend/mission_control/api/workflows.py",
-          "backend/tests/test_workflow_service.py",
-          "backend/tests/test_rerun_integrity.py"
+          "backend/tests/test_workflow_service.py"
         ],
         "id": "workflow-lifecycle",
         "maturity": "implemented",
-        "name": "Truthful workflow lifecycle, cancellation, idempotency and project timeline",
+        "name": "Workflow lifecycle, cancellation, replay safety and project evidence timeline",
         "operational_status": "tested-not-demonstrated",
         "subsystem": "Experiment workflows"
       },
       {
-        "description": "Discovers Git repositories under configured roots, indexes commit metadata and diffs incrementally, and exposes repository, commit, timeline and summary views without mutating the scanned repositories.",
+        "description": "Indexes commit history for configured Git roots into repository/commit/branch tables, serves timelines, summaries, commit bodies/diffs and per-project daily activity, and rebuilds incrementally with cancellation.",
         "evidence": [
           "backend/mission_control/activity_git/service.py",
           "backend/mission_control/git/history.py",
@@ -425,26 +488,26 @@
         ],
         "id": "git-activity-index",
         "maturity": "implemented",
-        "name": "Incremental Git activity index and evidence timeline",
+        "name": "Incremental Git activity index and daily summaries",
         "operational_status": "tested-not-demonstrated",
         "subsystem": "Git activity"
       },
       {
-        "description": "Builds bounded review prompts from indexed commit or daily evidence, records a review row with model/route provenance, executes through the configured inference route and accepts structured verdicts, findings and feedback.",
+        "description": "Builds review prompts from indexed commit evidence and optional repository context, records review rows with model provenance and feedback, and supports a daily cross-project review workflow without making the model authoritative.",
         "evidence": [
-          "backend/mission_control/activity_git/service.py",
           "backend/mission_control/api/git_activity.py",
-          "backend/tests/test_git_daily.py",
+          "backend/mission_control/activity_git/service.py",
+          "backend/mission_control/research/pi_backend.py",
           "backend/tests/test_git_activity.py"
         ],
         "id": "git-ai-review",
         "maturity": "implemented",
-        "name": "AI review of commit and daily evidence",
+        "name": "AI-assisted commit and daily Git review",
         "operational_status": "tested-not-demonstrated",
         "subsystem": "Git activity"
       },
       {
-        "description": "Imports versioned Praxis proposals as inert data, computes immutable content/recipe digests and advisory preflight, requires an identified human approval bound to the exact snapshot, and executes through the existing registered integration action boundary.",
+        "description": "Imports an advisory Praxis proposal as inert data, computes preflight from authoritative Mission Control data, requires an identified human to approve an immutable snapshot digest, and executes only through the existing registered integration action with its confirmation requirem",
         "evidence": [
           "backend/mission_control/praxis_proposals/service.py",
           "backend/mission_control/praxis_proposals/preflight.py",
@@ -455,36 +518,50 @@
         "maturity": "implemented",
         "name": "Governed Praxis proposal import, approval and execution",
         "operational_status": "tested-not-demonstrated",
-        "subsystem": "Governed proposals"
+        "subsystem": "Governance"
       },
       {
-        "description": "Persists chapter reading state, adds/removes annotations and builds or reads a living note against the exact chapter revision through ALIVE, including Mission's quality context in note requests.",
+        "description": "Serves Inspect's validated consumer snapshot (manifest, projects, capabilities, usage, opportunities, coverage, compositions) with fail-safe stale behaviour, and runs durable, cancellable allowlisted Inspect CLI jobs plus a governed opportunity-to-Praxis proposal bridge.",
         "evidence": [
+          "backend/mission_control/inspect_snapshots.py",
+          "backend/mission_control/api/inspect.py",
+          "backend/mission_control/api/inspect_ops.py",
+          "backend/mission_control/api/inspect_proposals.py"
+        ],
+        "id": "inspect-integration",
+        "maturity": "implemented",
+        "name": "Inspect snapshot consumption and controlled Inspect job panel",
+        "operational_status": "tested-not-demonstrated",
+        "subsystem": "Inspect integration"
+      },
+      {
+        "description": "Adds/removes retained annotations against an exact chapter revision and builds or regenerates a living note for a chapter, all stored by ALIVE and surfaced through Mission Control with no manuscript writes.",
+        "evidence": [
+          "backend/mission_control/api/living_book.py",
           "backend/mission_control/living_book/service.py",
-          "backend/mission_control/living_book/client.py",
           "backend/tests/test_living_book.py"
         ],
         "id": "living-book-annotations-notes",
         "maturity": "implemented",
-        "name": "Reading position, annotations and living notes",
+        "name": "Living Book annotations, living notes and reading state",
         "operational_status": "tested-not-demonstrated",
         "subsystem": "Living Book"
       },
       {
-        "description": "Proxies bounded ALIVE questions and representation tasks against the open chapter or whole book, attaches quality context, preserves conversations and supports idempotency keys and explicit session revocation.",
+        "description": "Asks ALIVE about a chapter or whole book with bounded scope/selection and idempotency keys, returns citations and model receipts under a visible revocable session, and creates/lists/rejects structured representations (explain, relationships, diagram, compare, assumptions).",
         "evidence": [
+          "backend/mission_control/api/living_book.py",
           "backend/mission_control/living_book/service.py",
-          "backend/mission_control/living_book/client.py",
-          "backend/tests/test_living_book.py"
+          "backend/tests/test_living_book_represent.py"
         ],
         "id": "living-book-ask-representations",
         "maturity": "implemented",
-        "name": "Ask the book, conversations and representations",
+        "name": "Living Book companion questions and representations",
         "operational_status": "tested-not-demonstrated",
         "subsystem": "Living Book"
       },
       {
-        "description": "Connects a book project to a loopback ALIVE backend through an explicit read-only approval, then serves book metadata, chapter content and bounded book-image assets in the Mission Control reading room.",
+        "description": "Maps a project to an explicitly approved ALIVE book through preview/connect consent, proxies fixed ALIVE endpoints for book/chapter content, renders chapter assets from approved manuscript roots, and persists reading position and progress across restarts.",
         "evidence": [
           "backend/mission_control/living_book/service.py",
           "backend/mission_control/living_book/client.py",
@@ -493,12 +570,12 @@
         ],
         "id": "living-book-connect-read",
         "maturity": "implemented",
-        "name": "Living Book source connection and chapter reading",
+        "name": "Living Book connection, chapter reading and asset serving",
         "operational_status": "tested-not-demonstrated",
         "subsystem": "Living Book"
       },
       {
-        "description": "Builds a bounded evidence brief from current prose/quality context, previews an ALIVE improvement plan with blockers and authority boundaries, launches only with confirmation and exact hashes, and records append-only accept/reject decisions.",
+        "description": "Previews a chapter-improvement intent (e.g. economy focus) with evidence and expected effects, launches a run against exact digest-bound intent/plan with confirmation and idempotency, compares runs and records an explicit accepted/rejected decision with version acknowledgement.",
         "evidence": [
           "backend/mission_control/living_book/improvement.py",
           "backend/mission_control/api/living_book.py",
@@ -506,94 +583,25 @@
         ],
         "id": "living-book-improvement",
         "maturity": "implemented",
-        "name": "Governed one-chapter improvement preview and decision",
+        "name": "One-chapter Living Book improvement journey",
         "operational_status": "tested-not-demonstrated",
         "subsystem": "Living Book"
       },
       {
-        "description": "Assembles separate, labelled quality measures (Mission prose, Writer readability, technical verification, publication readiness, Artifact Load) with status, coverage, freshness and limitations, without creating a composite score.",
+        "description": "Supplies separate labelled quality measures for a book/chapter (Mission prose evaluations, Writer readability, technical verification, publication readiness and Artifact Load) with coverage, freshness and limitations, and no invented composite score.",
         "evidence": [
           "backend/mission_control/living_book/quality.py",
-          "backend/mission_control/living_book/service.py",
+          "backend/mission_control/api/living_book.py",
           "backend/tests/test_living_book.py"
         ],
         "id": "living-book-quality",
         "maturity": "implemented",
-        "name": "Living Book quality broker",
+        "name": "Living Book quality measures aggregation",
         "operational_status": "tested-not-demonstrated",
         "subsystem": "Living Book"
       },
       {
-        "description": "Stores Mission Control state in a local SQLite database through SQLAlchemy, applies numbered SQL migrations exactly once, and seeds YAML/default records without overwriting user configuration.",
-        "evidence": [
-          "backend/mission_control/persistence/migrations.py",
-          "backend/mission_control/persistence/db.py",
-          "backend/mission_control/persistence/seed.py",
-          "backend/tests/test_migrations_and_seed.py"
-        ],
-        "id": "sqlite-persistence",
-        "maturity": "implemented",
-        "name": "SQLite persistence, ordered migrations and idempotent seeding",
-        "operational_status": "tested-not-demonstrated",
-        "subsystem": "Platform persistence"
-      },
-      {
-        "description": "Rejects unsafe browser-originated requests from non-allowlisted origins unless they carry the required local request header, and adds CSP, nosniff, frame-denial, referrer and permissions headers.",
-        "evidence": [
-          "backend/mission_control/core/security.py",
-          "backend/mission_control/main.py",
-          "frontend/src/api/client.ts",
-          "backend/tests/test_security.py"
-        ],
-        "id": "security-middleware",
-        "maturity": "implemented",
-        "name": "Loopback origin guard and security headers",
-        "operational_status": "tested-not-demonstrated",
-        "subsystem": "Platform security"
-      },
-      {
-        "description": "Validates and persists discovery, editor, browser, process, adapter, retention and AI settings, rejects stored secrets, and treats only environment-variable names as API-key configuration.",
-        "evidence": [
-          "backend/mission_control/settings/service.py",
-          "backend/mission_control/config.py",
-          "backend/tests/test_security.py"
-        ],
-        "id": "settings-secret-management",
-        "maturity": "implemented",
-        "name": "Settings validation and secret-safe configuration",
-        "operational_status": "tested-not-demonstrated",
-        "subsystem": "Platform settings"
-      },
-      {
-        "description": "Records author release-candidate approvals and revocations, reviews derived release issues with accepted/waived decisions, and records/reads calibration review statistics with Wilson intervals over human reviews only.",
-        "evidence": [
-          "backend/mission_control/publication/service.py",
-          "backend/mission_control/publication/calibration.py",
-          "backend/mission_control/api/publication.py",
-          "backend/tests/test_calibration.py"
-        ],
-        "id": "publication-approval-calibration",
-        "maturity": "implemented",
-        "name": "Publication approvals, issue review and calibration",
-        "operational_status": "tested-not-demonstrated",
-        "subsystem": "Publication"
-      },
-      {
-        "description": "Builds a manuscript snapshot, optional Workbench preflight/Hugo build inputs and deterministic gate results under the versioned publication-readiness-v1 policy, then persists issues, approvals and downloadable dossier artifacts.",
-        "evidence": [
-          "backend/mission_control/publication/policy.py",
-          "backend/mission_control/publication/service.py",
-          "backend/mission_control/api/publication.py",
-          "backend/tests/test_publication.py"
-        ],
-        "id": "publication-readiness",
-        "maturity": "implemented",
-        "name": "Publication readiness assessment, gates and dossier export",
-        "operational_status": "tested-not-demonstrated",
-        "subsystem": "Publication"
-      },
-      {
-        "description": "Records chapter Artifact Load observations with mechanical pressure, confirmed findings, region clustering and semantic coverage, derives assessment state at read time and compares observations without merging burden into prose quality.",
+        "description": "Records independent artifact-load observations: deterministic Layer A mechanical signals, Layer B confirmed source-linked findings with weighted load as the primary metric, and Layer C reader-benefit evidence; weighted load is never a percentage or health score.",
         "evidence": [
           "backend/mission_control/artifact_load/service.py",
           "backend/mission_control/api/artifact_load.py",
@@ -602,275 +610,467 @@
         ],
         "id": "artifact-load",
         "maturity": "implemented",
-        "name": "Artifact Load burden measurement",
+        "name": "Artifact Load measurement (mechanical pressure, confirmed load, reader benefit)",
         "operational_status": "tested-not-demonstrated",
-        "subsystem": "Quality"
+        "subsystem": "Quality and publication"
       },
       {
-        "description": "Stores append-only six-dimension prose evaluations with model/rubric provenance, derived staleness and compatibility, and separate author review decisions.",
+        "description": "Stores append-only prose-quality observations across six dimensions (clarity, argument, precision, economy, voice, structure) with model/rubric provenance, derives staleness/compatibility at read time, and supports evaluation campaigns plus human reviews without inventing missing",
         "evidence": [
           "backend/mission_control/quality/service.py",
           "backend/mission_control/api/quality.py",
-          "backend/tests/test_quality.py"
+          "backend/tests/test_quality.py",
+          "backend/tests/test_quality_campaign.py"
         ],
         "id": "prose-quality",
         "maturity": "implemented",
-        "name": "Manuscript prose evaluations and author reviews",
+        "name": "Manuscript quality evaluations and review campaigns",
         "operational_status": "tested-not-demonstrated",
-        "subsystem": "Quality"
+        "subsystem": "Quality and publication"
       },
       {
-        "description": "Creates and runs chapter-selection campaigns (missing, outdated, full or selected), persists progress per chapter, isolates failures, supports stop/resume and compares recorded findings without rewriting history.",
+        "description": "Runs deterministic release-assurance gates over existing evidence under a versioned policy, records issues and dossier exports, supports release-candidate approval/revocation, and runs calibration samples and review packets; no manuscript writes or deployments.",
         "evidence": [
-          "backend/mission_control/quality/service.py",
-          "backend/mission_control/api/quality.py",
-          "backend/tests/test_quality_campaign.py"
+          "backend/mission_control/publication/service.py",
+          "backend/mission_control/publication/policy.py",
+          "backend/mission_control/api/publication.py",
+          "backend/tests/test_publication.py"
         ],
-        "id": "quality-campaigns",
+        "id": "publication-readiness",
         "maturity": "implemented",
-        "name": "Durable manuscript quality campaigns",
+        "name": "Publication-readiness assessments, gates, approvals and calibration",
         "operational_status": "tested-not-demonstrated",
-        "subsystem": "Quality"
+        "subsystem": "Quality and publication"
       },
       {
-        "description": "Creates persisted conversations grounded in a frozen Next opportunity context, discovers models from the configured local endpoint or Pi catalogue, and executes chat through a loopback OpenAI-compatible endpoint or Pi with explicit provenance.",
+        "description": "Projects stored Writer/quality evidence onto a versioned book-production stage registry per chapter/book, exposes publishing-workbench summaries and evidence contracts, resolves canonical book identity and manuscript fingerprints, and runs deterministic read-only maintenance reco",
+        "evidence": [
+          "backend/mission_control/publication/pipeline.py",
+          "backend/mission_control/publication/publishing.py",
+          "backend/mission_control/publication/identity.py",
+          "backend/mission_control/publication/fingerprint.py"
+        ],
+        "id": "publishing-workbench",
+        "maturity": "implemented",
+        "name": "Publishing workbench, book production pipeline and maintenance",
+        "operational_status": "tested-not-demonstrated",
+        "subsystem": "Quality and publication"
+      },
+      {
+        "description": "Evaluates a software project against a versioned rubric using bounded read-only evidence collection and the configured model layer, with charter confirmation, previews, finding reviews, comparisons and an explicit missing-evidence policy.",
+        "evidence": [
+          "backend/mission_control/quality_software/service.py",
+          "backend/mission_control/quality_software/rubric.py",
+          "backend/mission_control/api/software_quality.py",
+          "backend/tests/test_software_quality.py"
+        ],
+        "id": "software-quality",
+        "maturity": "implemented",
+        "name": "Evidence-backed software quality evaluation",
+        "operational_status": "tested-not-demonstrated",
+        "subsystem": "Quality and publication"
+      },
+      {
+        "description": "Maintains a claim inventory per chapter, links evidence and requirement sources, records verification outcomes and gaps, tracks regions/coverage and objectives, and reports chapter completeness; all assessment is read-only toward manuscripts.",
+        "evidence": [
+          "backend/mission_control/technical/service.py",
+          "backend/mission_control/api/technical.py",
+          "backend/tests/test_technical.py",
+          "backend/tests/test_technical_completeness.py"
+        ],
+        "id": "technical-claims",
+        "maturity": "implemented",
+        "name": "Technical claim inventory, evidence, verification and completeness",
+        "operational_status": "tested-not-demonstrated",
+        "subsystem": "Quality and publication"
+      },
+      {
+        "description": "Generates a deterministic ranked briefing from focus, checkpoints, tasks, recommendations and adapter state, and optionally adds an AI interpretation only after explicit configuration, consent and request; the model never overwrites priorities or creates tasks.",
+        "evidence": [
+          "backend/mission_control/briefing/service.py",
+          "backend/mission_control/api/briefing.py",
+          "backend/tests/test_continuity_and_briefing.py"
+        ],
+        "id": "daily-briefing",
+        "maturity": "implemented",
+        "name": "Grounded daily briefing with optional AI interpretation",
+        "operational_status": "tested-not-demonstrated",
+        "subsystem": "Research assistance"
+      },
+      {
+        "description": "Creates durable chat sessions frozen to a Next opportunity's context, discovers models the loopback OpenAI-compatible endpoint reports, sends grounded messages with bounded history/context, and records provider/model/route per message; remote endpoints are refused.",
         "evidence": [
           "backend/mission_control/research/chat_service.py",
           "backend/mission_control/research/inference.py",
-          "backend/mission_control/research/pi_backend.py",
+          "backend/mission_control/api/research.py",
           "backend/tests/test_research_chat.py"
         ],
         "id": "research-chat",
         "maturity": "implemented",
-        "name": "Contextual research chat",
+        "name": "Persisted local-only contextual research chat",
         "operational_status": "tested-not-demonstrated",
         "subsystem": "Research assistance"
       },
       {
-        "description": "Builds a structured, self-contained Markdown/JSON review package for one Next opportunity, including source items, scores, evidence gaps, experiments and local decisions, with a stable fingerprint.",
+        "description": "Builds one versioned critical-review package from a Next opportunity (claims, sources, scores, evidence, local decision state and freshness) so it can be copied for another AI or reused as frozen chat grounding; the builder never writes to Next.",
         "evidence": [
           "backend/mission_control/research/context.py",
-          "backend/mission_control/research/chat_service.py",
+          "backend/mission_control/api/research.py",
+          "frontend/src/features/research",
           "backend/tests/test_research_chat.py"
         ],
         "id": "research-export",
         "maturity": "implemented",
-        "name": "Next opportunity critical-review export",
+        "name": "Next opportunity research export package",
         "operational_status": "tested-not-demonstrated",
         "subsystem": "Research assistance"
       },
       {
-        "description": "Creates versioned Ascendance script candidates, runs deterministic validation and optional Pi critique, supports bounded revision, and promotes a candidate by allocating the next safe filename and registering a new script without completing it.",
-        "evidence": [
-          "backend/mission_control/scripts/candidates.py",
-          "backend/mission_control/api/scripts.py",
-          "backend/tests/test_scripts_phase_e3.py"
-        ],
-        "id": "scripts-candidates",
-        "maturity": "implemented",
-        "name": "Ascendance script candidates, deterministic critique and promotion",
-        "operational_status": "tested-not-demonstrated",
-        "subsystem": "Scripts"
-      },
-      {
-        "description": "Discovers duplicate/version relationships, previews a deterministic renumbering manifest bound to source fingerprints, requires approval, applies renames atomically with rollback and preserves stable script identities/history.",
-        "evidence": [
-          "backend/mission_control/scripts/organise.py",
-          "backend/mission_control/api/scripts.py",
-          "backend/tests/test_scripts_phase_d.py"
-        ],
-        "id": "scripts-organisation",
-        "maturity": "implemented",
-        "name": "Preview-first script renumbering and migration with rollback",
-        "operational_status": "tested-not-demonstrated",
-        "subsystem": "Scripts"
-      },
-      {
-        "description": "Inventories numbered Markdown scripts with stable database identity, fingerprints content, tracks content changes/renames/missing files, and requires explicit user action for completion, archival, tags and effectiveness.",
+        "description": "Maintains a stable script registry scoped to a library root (identity independent of filenames), tracks statuses/events/links, runs deterministic and model-assisted script reviews, whole-library synthesis and Ascendance candidates, and supports duplicate/relationship discovery, w",
         "evidence": [
           "backend/mission_control/scripts/service.py",
-          "backend/mission_control/api/scripts.py",
-          "backend/tests/test_scripts_registry.py",
-          "backend/tests/test_scripts_phase_c.py"
-        ],
-        "id": "scripts-registry",
-        "maturity": "implemented",
-        "name": "Self-hypnosis script registry and lifecycle",
-        "operational_status": "tested-not-demonstrated",
-        "subsystem": "Scripts"
-      },
-      {
-        "description": "Runs bounded, resumable review batches over scripts with freshness fingerprints, tags and review evidence, then builds staged whole-library synthesis and Ascendance design reports without changing lifecycle or completion.",
-        "evidence": [
-          "backend/mission_control/scripts/batches.py",
           "backend/mission_control/scripts/synthesis.py",
-          "backend/mission_control/scripts/intelligence.py",
-          "backend/tests/test_scripts_phase_e2.py"
+          "backend/mission_control/scripts/organise.py",
+          "backend/mission_control/api/scripts.py"
         ],
-        "id": "scripts-review-synthesis",
+        "id": "scripts-library",
         "maturity": "implemented",
-        "name": "Script review batches and whole-library synthesis",
+        "name": "Script library registry, reviews, synthesis and organisation",
         "operational_status": "tested-not-demonstrated",
         "subsystem": "Scripts"
       },
       {
-        "description": "Runs durable per-chapter technical extraction campaigns with optional reservation-based token/call budgets, records extraction runs and coverage, and tracks regions, requirements, gaps, objectives and completeness reports.",
+        "description": "Ingests versioned aitest.event.v1 envelopes or bulk sync documents idempotently, presents project/test/receipt/issue/quality state and summaries, and orchestrates bounded AI Test CLI runs (intelligent, fast, failed, full, discover, profile, diagnose, quality) as durable cancellab",
         "evidence": [
-          "backend/mission_control/technical/service.py",
-          "backend/mission_control/api/technical.py",
-          "backend/tests/test_technical_completeness.py",
-          "backend/tests/test_budget_enforcement.py"
+          "backend/mission_control/api/testing.py",
+          "backend/mission_control/api/testing_runs.py",
+          "backend/tests/test_aitest_testing.py",
+          "backend/tests/test_aitest_quality.py"
         ],
-        "id": "technical-campaigns",
+        "id": "aitest-testing",
         "maturity": "implemented",
-        "name": "Technical extraction campaigns, completeness and budget enforcement",
+        "name": "AI Test visibility and orchestrated test runs",
         "operational_status": "tested-not-demonstrated",
-        "subsystem": "Technical confidence"
+        "subsystem": "Testing"
       },
       {
-        "description": "Registers deterministic claim identities from chapter excerpts, validates quotes against readable sources, records evidence and verification rows, and derives chapter/book assessments and cross-chapter candidates.",
-        "evidence": [
-          "backend/mission_control/technical/service.py",
-          "backend/mission_control/api/technical.py",
-          "backend/tests/test_technical.py"
-        ],
-        "id": "technical-claims",
-        "maturity": "implemented",
-        "name": "Technical claim, evidence and verification inventory",
-        "operational_status": "tested-not-demonstrated",
-        "subsystem": "Technical confidence"
-      },
-      {
-        "description": "Searches integration resources, projects, repositories, tasks, checkpoints and decisions through one endpoint and exposes navigation, project shortcuts, refresh commands and search results from a Ctrl+K palette.",
-        "evidence": [
-          "backend/mission_control/integrations/store.py",
-          "backend/mission_control/api/integrations.py",
-          "frontend/src/components/CommandPalette.tsx",
-          "frontend/src/test/CommandPalette.test.tsx"
-        ],
-        "id": "federated-search-command-palette",
-        "maturity": "implemented",
-        "name": "Federated search and command palette",
-        "operational_status": "tested-not-demonstrated",
-        "subsystem": "Unified workspace"
-      },
-      {
-        "description": "Combines pending or actionable Next, Work, CoCoder records and Mission Control tasks into one prioritized inbox with source filters and links to functional detail views.",
+        "description": "Combines pending items from Next, Work, CoCoder and Mission Control tasks into one attention queue, and searches application resources, projects, repositories, tasks, checkpoints and decisions while preserving source identity; the frontend exposes the same search through Ctrl+K.",
         "evidence": [
           "backend/mission_control/integrations/store.py",
           "backend/mission_control/api/integrations.py",
           "frontend/src/pages/InboxPage.tsx",
-          "backend/tests/test_integration_api.py"
+          "frontend/src/pages/SearchPage.tsx"
         ],
-        "id": "unified-inbox",
+        "id": "unified-inbox-search",
         "maturity": "implemented",
-        "name": "Unified attention inbox",
+        "name": "Unified inbox, federated search and command palette",
         "operational_status": "tested-not-demonstrated",
         "subsystem": "Unified workspace"
       },
       {
-        "description": "Presents Writer-owned editing reports with independent readability subdimensions, findings and source locators, derives CURRENT/STALE/PARTIAL/NOT_RUN/ERROR states, groups findings into a reading-order decision queue and reads Workbench decisions read-only.",
+        "description": "Registers prospective work envelopes binding authorized intent and requirement versions before execution, models corrective commissions with digest-bound approval and a documented status machine, and stores per-project Work Evaluation operating policies with capability gates.",
         "evidence": [
-          "backend/mission_control/writer/service.py",
+          "backend/mission_control/work_observation/envelopes.py",
+          "backend/mission_control/work_observation/proposals.py",
+          "backend/mission_control/work_observation/policies.py",
+          "backend/mission_control/api/work_envelopes.py"
+        ],
+        "id": "work-envelopes-corrective-policies",
+        "maturity": "implemented",
+        "name": "Work envelopes, corrective proposals and per-project evaluation policies",
+        "operational_status": "tested-not-demonstrated",
+        "subsystem": "Work evaluation"
+      },
+      {
+        "description": "Runs deterministic triage/extraction (claims from CLAIMED signals, evidence candidates, objectives) with an optional gated loopback-model path under a hard call/USD budget, evaluates work outcomes deterministically first, and groups findings with severity/reconciliation and stale",
+        "evidence": [
+          "backend/mission_control/work_observation/extract.py",
+          "backend/mission_control/work_observation/evaluate.py",
+          "backend/mission_control/work_observation/verify.py",
+          "backend/mission_control/work_observation/grouping.py"
+        ],
+        "id": "work-intent-evaluation",
+        "maturity": "implemented",
+        "name": "Work intent extraction, evaluation and finding triage",
+        "operational_status": "tested-not-demonstrated",
+        "subsystem": "Work evaluation"
+      },
+      {
+        "description": "Incrementally observes local OpenCode session/message signals with idempotent cursor checkpoints, reconstructs work episodes deterministically from signals and Git evidence with heuristic confidence labels, and reports coverage, unresolved associations and episode queries.",
+        "evidence": [
+          "backend/mission_control/work_observation/service.py",
+          "backend/mission_control/work_observation/reconstruct.py",
+          "backend/mission_control/api/work_observation.py",
+          "backend/mission_control/api/work_episodes.py"
+        ],
+        "id": "work-observation",
+        "maturity": "implemented",
+        "name": "Read-only Work observation and episode reconstruction",
+        "operational_status": "tested-not-demonstrated",
+        "subsystem": "Work evaluation"
+      },
+      {
+        "description": "Reads Worker's harness catalogue/jobs/executions/artifacts and can launch a bounded strategy execution (direct/structured/corrective/adaptive strategy ids) with validated episode/objective ids, a 60s timeout cap, 2048 output-token cap and a loopback-only Worker URL; Mission Contr",
+        "evidence": [
+          "backend/mission_control/api/harness.py",
+          "backend/mission_control/api/harness.py",
+          "backend/tests/test_harness_api.py",
+          "frontend/src/test/HarnessPage.test.tsx"
+        ],
+        "id": "worker-harness",
+        "maturity": "implemented",
+        "name": "Bounded Worker harness launch and execution inspection",
+        "operational_status": "tested-not-demonstrated",
+        "subsystem": "Worker integration"
+      },
+      {
+        "description": "Polls Worker's /health for availability (never inferring status from a non-200 or malformed payload) and exposes read-only Worker model readiness/usage via GET /health, /v1/models/availability, /v1/models/usage and optional preflight, never calling the probe endpoint.",
+        "evidence": [
+          "backend/mission_control/adapters/worker.py",
+          "backend/mission_control/worker_runtime.py",
+          "backend/mission_control/api/worker_runtime.py",
+          "backend/tests/test_worker_runtime.py"
+        ],
+        "id": "worker-runtime-adapter",
+        "maturity": "implemented",
+        "name": "Worker readiness adapter and read-only model runtime visibility",
+        "operational_status": "tested-not-demonstrated",
+        "subsystem": "Worker integration"
+      },
+      {
+        "description": "Groups Writer findings by code and severity into a prioritised cross-book reading order, joins Workbench-owned Confirm/Dismiss/Defer state read-only, and produces exact-finding deep links that open the passage in Workbench.",
+        "evidence": [
           "backend/mission_control/writer/queue.py",
           "backend/mission_control/writer/decisions.py",
-          "backend/mission_control/writer/self_repair.py"
+          "backend/tests/test_writer_decisions.py"
+        ],
+        "id": "writer-decision-queue",
+        "maturity": "implemented",
+        "name": "Writer finding decision queue with Workbench deep links",
+        "operational_status": "tested-not-demonstrated",
+        "subsystem": "Writer editing"
+      },
+      {
+        "description": "Presents Writer's editing reports per book and chapter with six independent readability subdimensions, source locators, raw metrics, fingerprints and explicit NOT_RUN/CURRENT/STALE/PARTIAL/ERROR states, plus campaign/self-repair/improvement/intel/evolution summaries, without pars",
+        "evidence": [
+          "backend/mission_control/writer/service.py",
+          "backend/mission_control/api/writer.py",
+          "backend/mission_control/writer/campaign_summary.py",
+          "backend/tests/test_writer_api.py"
         ],
         "id": "writer-editing",
         "maturity": "implemented",
-        "name": "Writer editing workspace and decision queue",
+        "name": "Writer editing workspace and read-model",
         "operational_status": "tested-not-demonstrated",
         "subsystem": "Writer editing"
       }
     ],
     "maturity_summary": {
-      "implemented": 56
+      "implemented": 61
     },
     "operational_summary": {
-      "source-inspected-only": 1,
-      "tested-not-demonstrated": 55
+      "source-inspected-only": 2,
+      "tested-not-demonstrated": 59
     }
   },
   "dependencies": {
     "models": [
-      "qwen2.5-coder:latest served by a local Ollama OpenAI-compatible endpoint (MC10 acceptance run)",
-      "Pi models discovered at runtime from the local Pi CLI catalogue (no pinned model id in code)",
-      "Models discovered dynamically from the configured loopback OpenAI-compatible endpoint (/models); ids are user-selected",
-      "MC10_WORKER_MODEL environment default is referenced by workflows/service.py for Worker calls (value not pinned in source)",
-      "Model provenance is recorded per Git review, research chat session and quality evaluation; no model is required for core operation"
+      "qwen2.5-coder:latest via local Ollama (MC10/MC11 acceptance configuration; Worker 'direct' executor)",
+      "Configurable OpenAI-compatible model (ai.base_url + ai.model) used by briefing interpretation, research chat, Git review, software quality and blog evaluation",
+      "Pi/OpenCode model route used by research/pi_backend.py and Work Observation model-backed steps",
+      "Writer editing strategies (deterministic, direct, bounded_judge) recorded as provenance, not executed by Mission Control",
+      "Worker harness strategy ids: direct.v1, structured.v1, corrective.v1, adaptive.v1"
     ],
-    "note": "Static inspection at bd0ceb56e86edffac8682a829419ff92438d1200 (clean tree): no server, container, migration, install, test or model call was executed. Dependency list is derived from pyproject.toml, frontend/package.json, config.py, .env.example, README.md and adapter/service source. All external en",
+    "note": "Dependencies were derived from pyproject.toml, frontend/package.json, README.md, config/runtime settings (backend/mission_control/config.py), adapter/service code and docs. External engines (Next, Work, CoCoder, Worker, Writer, ALIVE, Inspect, AI Test, OpenCode, GitHub, Hugo, Praxis) are outside thi",
     "runtime": [
-      "Python >=3.12 (README tested on 3.13); package 'mission-control' 0.1.0 from pyproject.toml, packages under backend/",
-      "FastAPI >=0.115,<1 with Uvicorn >=0.30,<1 (loopback-only HTTP server)",
-      "Starlette/FastAPI middleware stack (CORS, custom origin guard and security headers)",
-      "Pydantic >=2.9,<3 (request/response models in backend/mission_control/schemas.py)",
-      "SQLAlchemy >=2.0,<3 over SQLite (data/mission_control.db), numbered SQL migrations",
-      "PyYAML >=6.0,<7 (config/defaults/*.yaml seeding and adapter configuration)",
-      "httpx >=0.27,<1 (ALIVE gateway, Worker, health probes, model endpoints)",
-      "psutil >=6.0,<8 (managed process ownership, creation-time identity, log tails)",
-      "psycopg[binary] >=3.2,<4 (read-only Next PostgreSQL compatibility path)",
-      "Python standard library subprocess/sqlite3/ast/fractions (shell-free launches, technical claims, arithmetic verifier)",
-      "Node.js + npm; Vite 8 + TypeScript 5.9 + React 19 + react-router-dom 7 frontend build to frontend/dist",
-      "Frontend runtime libraries bundled into the SPA: katex, mermaid, lucide-react"
+      "Python >= 3.12 (README: tested on 3.13)",
+      "Node.js 24/25 + npm 11 (frontend build and vitest)",
+      "FastAPI >= 0.115,<1",
+      "uvicorn[standard] >= 0.30,<1",
+      "SQLAlchemy >= 2.0,<3",
+      "Pydantic >= 2.9,<3",
+      "PyYAML >= 6.0,<7",
+      "httpx >= 0.27,<1",
+      "psutil >= 6.0,<8",
+      "psycopg[binary] >= 3.2,<4",
+      "React 19 + react-router-dom 7 + Vite 8 + TypeScript 5",
+      "katex, mermaid, lucide-react (chapter/UI rendering)"
     ],
     "services": [
-      "Mission Control backend: uvicorn on http://127.0.0.1:8790 (non-loopback hosts refused)",
-      "Vite dev server on http://127.0.0.1:5173 with /api proxy (development mode)",
-      "ALIVE living-book engine at MISSION_CONTROL_ALIVE_URL (default http://127.0.0.1:8000, loopback enforced)",
-      "Worker execution service (experiments) at http://127.0.0.1:7317",
-      "Local OpenAI-compatible model endpoint (chat/review campaigns); Ollama at http://127.0.0.1:11434/v1 used for acceptance",
-      "Pi CLI invoked non-interactively for model discovery and chat/review execution (MISSION_PI / WORKBENCH_PI / PATH)",
-      "Workbench at http://127.0.0.1:7420 plus its .workbench decision/preference files read read-only",
-      "Next PostgreSQL reached through NEXT_DSN (default_transaction_read_only=on) or a configured SQLite snapshot",
-      "Work CLI (`work opportunities --json`) with WORK_DATABASE_URL in its own environment",
-      "CoCoder CLI plus JSON review artifacts; engine state redirected to data/integrations/cocoder/engine",
-      "Writer CLI (`editing summary --json`) and Writer report artifacts under .writer",
-      "Docker daemon and locally built image mission-control/sandbox-python:3.13 for generated-code execution"
+      "PostgreSQL operational database addressed by MC_DSN (required by production startup; database 'mc')",
+      "Legacy SQLite file data/mission_control.db (migration source/recovery asset only)",
+      "OpenCode SQLite database (opencode_db_path; read-only cost and work-observation source)",
+      "Worker HTTP service at http://127.0.0.1:7317 (experiments, runtime visibility, harness)",
+      "ALIVE living-book backend (default http://127.0.0.1:8000) for reading room, companion and improvement",
+      "Local OpenAI-compatible model endpoint (acceptance used Ollama at http://127.0.0.1:11434/v1)",
+      "Docker Desktop with locally built image mission-control/sandbox-python:3.13",
+      "Git, gh CLI, Hugo, Work CLI, CoCoder CLI, Writer CLI, Inspect CLI, AI Test CLI (all external/local, not bundled)",
+      "React SPA served by FastAPI from frontend/dist (Vite dev server on 5173 proxies /api)"
     ]
   },
-  "generated_at": "2026-11-24T17:13:48Z",
+  "generated_at": "2026-11-25T13:28:08Z",
   "identity": {
     "classification": "application",
     "id": "mission",
     "name": "mission",
     "path": "C:\\Projects\\mission",
     "project_type": "python-app",
-    "purpose": "Mission Control is a **local-first control centre** for a personal ecosystem of applied-AI projects, books, research programmes and commercial work. Its declared purpose is coordination, not replacement: it answers what matters today, where work stopped, which evidence already exists, what can be launched safely, and what should happen next (`README.md`, `pyproject.toml` description \"Local-first control centre for an ecosystem of applied-AI projects\").",
+    "purpose": "Mission Control is a local-first coordination application for an ecosystem of AI projects, books, research programmes and commercial work. It is not a library: it is a FastAPI backend (loopback-only) plus a React/Vite single-page UI, with a PostgreSQL operational store. Its user-meaningful job is to answer, in one place:",
     "purpose_source": "report.md overview",
     "remote": "https://github.com/ernanhughes/mission"
   },
   "inspect_version": {
-    "git_sha": "af123189b29a78059f564bedd149f65f5dc96c5d",
+    "git_sha": "b65bce63987121e7a9d22a99ad0e8d484b7da8b8",
     "prompt_version": "1.1.1",
     "schema_version": "1.0.0"
   },
   "inspection": {
     "gaps": [
-      "No live execution was authorized: no endpoint was called, no browser session was run, no managed process was launched, no Docker container was started, no migration was applied and no model/CLI call was made. Every operational_status is therefore bounded at tested-not-demonstrated or source-inspected-only.",
-      "The packaged SPA behaviour was inferred from frontend/src and frontend tests only; frontend/dist was not built or served during this inspection.",
-      "Frontend page/component inventory was sampled (HomePage, InboxPage, CommandPalette and the Living Book/Experiments surfaces) rather than exhaustively enumerated; capabilities.json cites frontend files as evidence for backend capabilities instead of describing every page separately.",
-      "Platform settings, Platform security and Platform persistence are each represented by a single capability; their internal helpers (retention policy, log rotation, background monitor loop, logging configuration) were not separately inventoried.",
-      "External engine internals (Next schema, Work CLI contract, CoCoder report schema, Writer summary schema, ALIVE endpoints, Worker API) were taken from Mission Control's client/adapter code and documentation; the external systems themselves are outside this repository and were not inspected.",
-      "The cultivation GitHub path depends on gh/REST credentials that were not present for inspection; only the code path and its tests were reviewed.",
-      "scripts/*.py helper scripts (capture_repo_states.py, demo_live_review.py, prove_restart.py, smoke_git_activity.py, workbench_browser_test.py, gen_prompt_example.py) are operational helpers and were not promoted to capabilities.",
-      "Test-level evidence cites test source files; the pytest suite was not executed, so no test result is asserted."
+      "No live execution was authorized: no endpoint was called, no server or container was started, no migration was applied, no browser session was run, no model/CLI call was made and no test suite was executed. Every operational_status is therefore bounded at tested-not-demonstrated or source-inspected-only; nothing is verified-working.",
+      "The working tree is dirty at HEAD e98884497fd3c34fbb4a89604a9aca587a00bf5c (dirty_tree=true). Findings describe the files as read in the working tree; the clean committed revision may differ, and a git status/diff could not be run under the read-only, no-shell constraint.",
+      "API routers were inventoried from route decorators and module headers. Individual route implementations, Pydantic schemas and edge-case branches were sampled rather than read line by line; very large services (workflows/service.py ~2.3k lines, cultivation/service.py ~3k lines, publication/pipeline.py ~1.5k lines, quality/service.py, work_observation/evaluate.py) were characterised from headers, symbol maps and targeted sections.",
+      "frontend/src was inspected at the routing/page/feature level (App.tsx, page list, selected components and tests) and used as evidence for backend capabilities. Individual component behaviour and CSS were not exhaustively enumerated; frontend/dist was not built or served.",
+      "External engines and their contracts (Next schema, Work CLI, CoCoder artifacts, Worker HTTP/harness, Writer report schema and CLI actions, ALIVE endpoints, Inspect CLI/snapshot, AI Test CLI, OpenCode database, GitHub, Hugo, Praxis proposal format) are outside this repository and were not inspected; their behaviour is described only as Mission Control's client/adapter code and docs state it.",
+      "Documentation in docs/ was used for context (MC01/MC09/MC10/MC11/MC-WRITER-01/MC-LIVING-BOOK-01/Praxis/Inspect/Cost/Pipeline reports) but was not treated as proof of implementation; capability evidence cites source and test files. Some docs describe milestone acceptance runs that were not re-verified here.",
+      "Scripts under scripts/ are operational helpers (setup/start/stop/dev/test, SQLite->PostgreSQL migration, PG backup, repo-state capture, Git smoke probes, Workbench browser test, prompt generator, acceptance expo02 artifacts). Only the migration utility is represented as a capability component; the rest are not promoted to application capabilities.",
+      "Test files are cited as evidence that a test exists; no test result is asserted. The README itself reports environment-dependent failures and one skipped test in earlier full runs, which were not reproduced."
     ],
-    "inspected_at": "2026-11-22T08:56:00Z",
+    "inspected_at": "2026-11-29T00:45:00Z",
     "report_lines": null,
     "status": "complete"
   },
   "invocation": {
-    "note": "No usage.json yet; entry points listed under architecture.",
-    "recipes": []
+    "note": "Deterministic recipes from usage.json; never executed during inspection.",
+    "recipes": [
+      {
+        "capability_id": "local-api-runtime",
+        "summary": "cli: python -m mission_control"
+      },
+      {
+        "capability_id": "security-boundary",
+        "summary": "internal: OriginGuardMiddleware / SecurityHeadersMiddleware in mission_control.main:create_app"
+      },
+      {
+        "capability_id": "settings-secret-management",
+        "summary": "http-api: GET /api/settings"
+      },
+      {
+        "capability_id": "postgres-persistence",
+        "summary": "cli: python scripts/migrate_sqlite_to_postgres.py"
+      },
+      {
+        "capability_id": "today-dashboard",
+        "summary": "http-api: GET /api/dashboard"
+      },
+      {
+        "capability_id": "project-workspace",
+        "summary": "http-api: GET /api/projects"
+      },
+      {
+        "capability_id": "checkpoints-resume",
+        "summary": "http-api: POST /api/checkpoints"
+      },
+      {
+        "capability_id": "book-workspaces",
+        "summary": "http-api: POST /api/books/detect"
+      },
+      {
+        "capability_id": "tasks-decisions-activity",
+        "summary": "http-api: POST /api/tasks"
+      },
+      {
+        "capability_id": "application-registry",
+        "summary": "http-api: GET /api/applications"
+      },
+      {
+        "capability_id": "managed-process-control",
+        "summary": "http-api: POST /api/applications/{application_id}/launch"
+      },
+      {
+        "capability_id": "editor-repository-open",
+        "summary": "http-api: POST /api/projects/{project_id}/open-repository"
+      },
+      {
+        "capability_id": "discovery-scan",
+        "summary": "http-api: POST /api/discovery/scan"
+      },
+      {
+        "capability_id": "website-discovery",
+        "summary": "http-api: GET /api/websites"
+      },
+      {
+        "capability_id": "git-activity-index",
+        "summary": "http-api: POST /api/git-activity/scan"
+      },
+      {
+        "capability_id": "git-ai-review",
+        "summary": "http-api: POST /api/git-activity/reviews"
+      },
+      {
+        "capability_id": "adapter-framework",
+        "summary": "http-api: GET /api/adapters"
+      },
+      {
+        "capability_id": "next-adapter",
+        "summary": "http-api: POST /api/adapters/applications/next/refresh"
+      },
+      {
+        "capability_id": "work-adapter",
+        "summary": "http-api: POST /api/adapters/applications/work/refresh"
+      },
+      {
+        "capability_id": "cocoder-adapter-action",
+        "summary": "http-api: POST /api/integrations/cocoder/actions/run_review/execute"
+      },
+      {
+        "capability_id": "writer-adapter-action",
+        "summary": "http-api: POST /api/writer/audit"
+      },
+      {
+        "capability_id": "technical-adapter-verifier",
+        "summary": "http-api: POST /api/integrations/technical/actions/verify_claim/execute"
+      },
+      {
+        "capability_id": "integration-resources",
+        "summary": "http-api: GET /api/integrations/{application_id}/resources"
+      },
+      {
+        "capability_id": "integration-action-execution",
+        "summary": "http-api: POST /api/integrations/{application_id}/actions/{action_id}/execute"
+      },
+      {
+        "capability_id": "unified-inbox-search",
+        "summary": "http-api: GET /api/inbox"
+      },
+      {
+        "capability_id": "research-export",
+        "summary": "http-api: GET /api/research/opportunities/{record_id}/export"
+      },
+      {
+        "capability_id": "research-chat",
+        "summary": "http-api: GET /api/research/models"
+      },
+      {
+        "capability_id": "daily-briefing",
+        "summary": "http-api: GET /api/briefing"
+      },
+      {
+        "capability_id": "experiment-proposal-approval",
+        "summary": "http-api: POST /api/workflows"
+      },
+      {
+        "capability_id": "experiment-execution",
+        "summary": "http-api: POST /api/workflows/{workflow_id}/execute"
+      }
+    ]
   },
   "repository_id": "mission",
   "schema_version": "1.0.0",
   "source_revision": {
-    "dirty": false,
-    "fingerprint": "0f34a87b507ab58c2d0cac29c56a9e5f",
-    "head_sha": "bd0ceb56e86edffac8682a829419ff92438d1200"
+    "dirty": true,
+    "fingerprint": "03e94565601534e32f2a174d2902cc8a",
+    "head_sha": "e98884497fd3c34fbb4a89604a9aca587a00bf5c"
   },
   "stale": true,
-  "stale_reason": "source changed since inspection; working tree dirty; prompt version drift"
+  "stale_reason": "source changed since inspection; working tree dirty"
 }
