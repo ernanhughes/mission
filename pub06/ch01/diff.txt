@@ -1,0 +1,207 @@
+--- 01-chapter.md (authoritative c7aaad7)
++++ 01-chapter-candidate.md (PUB-06)
+@@ -30,6 +30,12 @@
+ straw man. If generation is expensive, we need to know by how much, because that number
+ sets the bar.
+ 
++The shape of the chapter is simple. It opens with one concrete refund decision, a predicate
++that answers it for free, and a walkthrough you can run. It then sets out the model-backed
++routes, which have not yet been run, against the one value the application actually reads.
++It sets out the four words the rest of the book will keep apart, and closes with
++the one question it cannot yet answer.
++
+ The generate-then-parse loop is assumed here, not taught: it is the loop described in
+ Agent Architectures, where a model emits text and the surrounding program reads
+ values back out of it. And "a bounded value" is a rung on the Representation Ladder from
+@@ -116,10 +122,15 @@
+ yesterday") and `t60` ("Not asking for anything, but if you did, I would take it"). Both
+ are inside the written policy and both are labelled "decline" in this case set, which
+ was written by hand (see Limitations: the labels are not ground truth from a real queue).
++
+ The policy as written does not cover a price-drop request or an ambiguous ask. The
+ predicate is faithfully executing a rulebook that has a hole in it. A model would get
+ these "right" by having absorbed conventions the runbook never states, which is either
+ better or worse depending on whether you can tell which one you are getting.
++The errors look policy-shaped: they fall where the rule's numeric
++conditions are met but its intent is not covered. Whether a model
++would share that shape is not yet known; Chapter 7 and the arms below are where that
++is tested.
+ 
+ That distinction — *the rule was followed* versus *the outcome was sensible* — is the
+ first thing this book has to keep separate, and it is why the harness records
+@@ -234,9 +245,13 @@
+ Now the familiar path. Same ticket, same policy, same information — but the answer
+ arrives as text and has to be recovered.
+ 
+-The prompt is identical for both model-backed paths, which matters: any difference
+-between them is attributable to the decoding constraint, not to a differently worded
+-request.
++Paths 2 and 3 share everything before the decoding step, including the prompt. They
++differ at the decoding step and in the recovery step that follows it: Path 2 needs a
++regex plus `json.loads` to recover a value from prose, while the schema-constrained
++path decodes directly into the schema's language.
++
++Any remaining difference between them is attributable to the decoding constraint, not
++to a differently worded request.
+ 
+ ```python
+ PROMPT_TEMPLATE = """\
+@@ -254,6 +269,9 @@
+ 
+ **Path 2, free-form.** Decode normally, then run the recovery step every codebase has:
+ a regex to find the first `{...}`, then `json.loads`, then validate.
++
++The recovery step is the tax made visible: every codebase that reads values out of
++prose pays it.
+ 
+ **Path 3, schema-constrained.** Same prompt, same model, but the vocabulary is masked
+ during decoding so that every token which would take the output outside the schema's
+@@ -262,20 +280,24 @@
+ ([arXiv:2307.09702](https://arxiv.org/abs/2307.09702)): guided generation reformulated as
+ transitions between the states of a finite-state machine, with an index built over the
+ model's vocabulary so the set of admissible tokens can be fetched cheaply. **DOCUMENTED.**
+-Two details from their §1 and §5 earn their place here. The
+-obvious implementation — score the whole vocabulary each step and zero out the
+-inadmissible tokens — costs O(N) per token with N the vocabulary size, which they note is
+-often 10^4 or larger; the indexed version is O(1) on average. And the index is not free:
+-even naively built for an augmented Python grammar, they report it at "around 50 MB".
++
++Two details from their §1 and §5 earn their place here, because they price the
++mechanism before any model runs:
++
++| Implementation | Cost | What the paper reports |
++|---|---|---|
++| Naive: score the whole vocabulary, zero out inadmissible tokens | O(N) per token, N often 10^4 or larger | §1 and §5 |
++| Indexed: finite-state transitions over a vocabulary index | O(1) per token on average | §1 and §5 |
++| Naively built index (augmented Python grammar) | Around 50 MB of memory, one-time | §5 |
++
+ Constraint is a memory cost before it is a compute win.
+ 
+-The guarantee is worth stating precisely, because it is routinely overclaimed. Their
+-abstract says constrained decoding enables "reliable interfaces by guaranteeing the
++Their abstract says constrained decoding enables "reliable interfaces by guaranteeing the
+ structure of the generated text". **Structure**, not correctness. Constrained decoding
+ guarantees the *string* is well-formed. It guarantees nothing about whether the string is
+ the right string — and the rest of this section is about how much it can cost you.
+ 
+-Tam et al., *Let Me Speak Freely? A Study on the Impact of Format Restrictions on
++What that guarantee costs in task performance is what the next paper tests. Tam et al., *Let Me Speak Freely? A Study on the Impact of Format Restrictions on
+ Performance of Large Language Models* ([arXiv:2408.02442](https://arxiv.org/abs/2408.02442)),
+ is the paper that attacks this chapter's comfort, and reading it changed the chapter
+ twice. **DOCUMENTED.**
+@@ -304,17 +326,23 @@
+ 
+ And their §4.1 cuts the other way too, which is why this is a real trade-off and not a
+ refutation of structured output: on *classification* tasks, constraint can help, because
+-it removes answer-selection errors that free-form text invites. Refund approval is a
+-classification task. We may find constraint helps. We will not know until we run it.
++it removes answer-selection errors that free-form text invites.
++
++Refund approval is a classification task. Constraint may help, or it may cost; we will
++not know until we run it — pricing that trade-off is what the arms are for.
+ 
+ Note also what this chapter is *not* doing. Constrained generation, schema enforcement,
+ and query languages for models all predate the current argument — and the arithmetic is
+-already published. LMQL, *Prompting Is Programming: A Query Language for Large Language
++already published.
++
++LMQL, *Prompting Is Programming: A Query Language for Large Language
+ Models* ([arXiv:2212.06094](https://arxiv.org/abs/2212.06094)), is a query language whose
+ stated purpose is to stop generation at the moment a value is complete; its evaluation
+ reports cutting inference cost and latency by 26-80% while retaining or slightly improving
+ accuracy. **DOCUMENTED**, from its framing and that headline figure; its runtime and evaluation
+ sections are not relied on here. Willard et al.'s implementation is the Outlines library.
++The prior art owns the idea; this chapter owns one measurement against a predicate that
++costs nothing.
+ 
+ So: the idea that a model call should return a typed value rather than a paragraph is not
+ new, the cost reduction is already on the record, and this book gets to claim none of it.
+@@ -363,6 +391,13 @@
+   <figcaption><strong>Figure 1.1.</strong> The chapter's honesty is the figure: four of five arms never ran. The one constant that needs no model is the 25-character payload the caller reads.</figcaption>
+ </figure>
+ 
++<figure class="jev-figure">
++  <a href="assets/fig-01-2-paths.svg" target="_blank" rel="noopener">
++    <img src="assets/fig-01-2-paths.svg" alt="Four lanes from ticket to boolean. Lane 1 (predicate) returns True or abstains to a human and is observed. Lane 2 (free-form) and lane 3 (two schema-constrained arms: answer-first and reason-first) parse text into values and are not observed. Lane 4 (decide stub) returns nothing and is not observed. When a lane returns True or False, the caller interface is the 25-character serialized example payload; abstention and stub lanes return no value." width="1200" height="520" loading="lazy">
++  </a>
++  <figcaption><strong>Figure 1.2.</strong> The four routes from ticket to boolean. Only the predicate lane carries measured values. Lanes 2-4 carry the four unobserved arms — free-form, two schema orderings in lane 3, and the stub. The 25-character figure is the serialized example payload when a lane returns True or False; the abstention and stub lanes return no value.</figcaption>
++</figure>
++
+ ## Four words we keep apart
+ 
+ The measurement is only interpretable if the following four are not allowed to blur into
+@@ -385,13 +420,17 @@
+ 
+ **Decision.** A bounded answer to a bounded question, together with what the program is
+ obliged to do about the uncertainty in it. The bound is what makes it checkable: the
+-answer set is finite and declared in advance, the output cannot drift outside it, and
+-the uncertainty is part of the value rather than something a downstream reader has to
++answer set is finite and declared in advance, the output cannot drift outside it, and the
++uncertainty is part of the value rather than something a downstream reader has to
+ reconstruct from the absence of a confidence score.
+ 
+-Generation is how you currently obtain a decision. It is not the same act, and the
+-measurements in this chapter are the evidence that conflating them is expensive. That is
+-the whole claim so far. Whether a decision deserves to be a programming construct is
++With the four meanings separated, the chapter's claim can be stated without blurring
++them:
++
++Generation is how you currently obtain a decision. It is not the same act, and
++whether conflating them is expensive is what the measurement programme exists
++to test: the floor below is one arm, and the model-backed arms will tell us
++the price. That is the whole claim so far. Whether a decision deserves to be a programming construct is
+ [Chapter 16](/books/jev/16-chapter/); whether a decision model is a distinct category of
+ model is [Chapter 2](/books/jev/02-chapter/).
+ 
+@@ -401,6 +440,8 @@
+ generate-then-parse is overhead relative to the one value the application consumes? Its
+ prediction: overhead is a large majority of tokens and a nonzero parse-failure rate, but
+ accuracy does not differ.
++
++Here is the honest boundary of that registration — what ran, and what did not:
+ 
+ The machine this chapter ran on had no local model weights and a CPU-only build of torch,
+ so the model-backed arms did not run. Here is exactly what that leaves open:
+@@ -416,15 +457,15 @@
+ Five arms, not four: the schema ordering split adds one. It is there because of Tam et
+ al. §4.1, and it is the arm most likely to show that constraint is not free.
+ 
+-One quantity *is* observed and needs no model, because it is a property of the interface
+-rather than of any model: the payload the application actually reads.
++The table above leaves every model-backed arm unobserved. What survives needs no
++model, because it is a property of the interface rather than of any model: the payload
++the application actually reads.
+ 
+ **OBSERVED.** The value the caller consumes, written out, is 25 characters:
+ `{"refund_approved": true}`. The schema the model is asked to emit is longer than that
+-before the model has contributed a single character of justification. The overhead ratio
+-between "one bounded value" and "a JSON object containing one bounded value and an
+-explanation" is therefore **greater than 1 by construction**, independent of what any
+-model does, and it grows with whatever the model is willing to add. Verified in
++before the model has contributed a single character of justification. That is a
++schema-length fact about this interface, not a measured overhead ratio: the model-backed
++arms have not been run, so no token, latency, or failure comparison exists. Verified in
+ `selftest.py`, "overhead accounting".
+ 
+ The prediction stands untested on the arms that matter.
+@@ -517,8 +558,9 @@
+ reads the primary sources and fixes the vocabulary. Until then, the honest summary of
+ Chapter 1 is one line long.
+ 
+-Generate less. Measure the rest. — which LMQL said first, years ago, and which this
+-chapter exists to hold you to.
++Generate less. Measure the rest. — the book's own rule for itself, not anyone's
++slogan. The floor is one arm, the question is Chapter 2's, and
++the obligation until then is the measurement.
+ 
+ ## Limitations
+ 
+@@ -538,6 +580,8 @@
+ - **`torch` is the CPU build**, so even a completed run would report CPU latency. Any GPU
+   number would need the wheel pinned and re-measured, and the two must not be mixed in one
+   comparison.
++- **CPU timer resolution was not characterised**, so the predicate latency figures are
++  meaningful only as an upper bound.
+ - **The Jev contract quoted above is third-party.** `jevmodel.org` states it is an
+   independent guide and not affiliated with TypeSafe. Primary-source verification is
+   Chapter 2's job.

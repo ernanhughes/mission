@@ -1,0 +1,2089 @@
+{
+ "record_schema": "writer.transform.record.v1",
+ "detector": "publication-transformation-v0.1",
+ "profile": "transform-v0.1",
+ "plan_id": "plan:e314bdd88993b458",
+ "inputs": {
+  "manuscript_fingerprint": "b61a63c525e29e4339bea70b4239576c243220bcf1136f22d87a85cf69d5be3b",
+  "candidate_fingerprint": "50e1ef2e0886e6ee65fdbb81a7061b6dc32302c65ebcee4be3cd62fdab602f37",
+  "inventory_rev": "jev@899c02ad76215729",
+  "evidence_rev": "jev@899c02ad76215729",
+  "plan_inputs_digest": "3a43521e26d8fdd2a5a90f4d093433dd0bfb83f32b8d9666dc86727a96548415",
+  "before_fingerprint": "b61a63c525e29e4339bea70b4239576c243220bcf1136f22d87a85cf69d5be3b",
+  "after_fingerprint": "50e1ef2e0886e6ee65fdbb81a7061b6dc32302c65ebcee4be3cd62fdab602f37"
+ },
+ "config": {
+  "profile": "transform-v0.1",
+  "calibrated": false,
+  "model_dispatches": 4
+ },
+ "dispatch_ledger": {
+  "ledger_schema": "writer.automation.ledger.v1",
+  "detector": "publication-automation-v0.1",
+  "dispatch_count": 4,
+  "total_cost_usd": 0.00706125,
+  "total_tokens": 25504,
+  "by_role": {
+   "editorial": {
+    "dispatches": 2,
+    "cost_usd": 0.00706125,
+    "tokens": 14948
+   },
+   "verification": {
+    "dispatches": 2,
+    "cost_usd": 0.0,
+    "tokens": 10556
+   }
+  },
+  "by_model": {
+   "opencode-go/deepseek-v4.1-flash": {
+    "dispatches": 2,
+    "cost_usd": 0.00706125,
+    "tokens": 14948
+   },
+   "opencode-go/claude-haiku-5-5": {
+    "dispatches": 2,
+    "cost_usd": 0.0,
+    "tokens": 10556
+   }
+  },
+  "entries": [
+   {
+    "role": "editorial",
+    "task_kind": "publication.editorial",
+    "package_id": "passage:Nine older mechanisms, seven properties",
+    "attempt": 1,
+    "writer_execution_id": "model-exec-6d7b8067b26f",
+    "provider": "pi",
+    "model": "opencode-go/deepseek-v4.1-flash",
+    "route": "default_deepseek_go",
+    "economic_tier": "subscription",
+    "input_tokens": 2050,
+    "output_tokens": 7328,
+    "total_tokens": 9378,
+    "cost_usd": 0.0047043,
+    "latency_ms": 54702,
+    "prompt_sha256": "1d45f8e309f035b822934ab132e6717f6728679c751133711ce949883940aef7",
+    "schema_sha256": "a6a3308a87446adea13b699d5b4acf1f9c6207bd3f193612ff8770d1ba2c65ae",
+    "status": "succeeded",
+    "error_kind": null
+   },
+   {
+    "role": "verification",
+    "task_kind": "publication.review",
+    "package_id": "passage:Nine older mechanisms, seven properties",
+    "attempt": 1,
+    "writer_execution_id": "model-exec-c6bef59f8cd8",
+    "provider": "pi",
+    "model": "opencode-go/claude-haiku-5-5",
+    "route": "default_haiku_go",
+    "economic_tier": "subscription",
+    "input_tokens": 4,
+    "output_tokens": 2684,
+    "total_tokens": 5262,
+    "cost_usd": 0,
+    "latency_ms": 17003,
+    "prompt_sha256": "fcb8d615eeeeb19ad3275ec3a1119c163f5a252869faa2eed85c53ec773927b5",
+    "schema_sha256": "7eacde2741c8dae909ffc842ff3513a7e30515c42be7ee4de16c0e209b061d03",
+    "status": "succeeded",
+    "error_kind": null
+   },
+   {
+    "role": "editorial",
+    "task_kind": "publication.editorial",
+    "package_id": "passage:Nine older mechanisms, seven properties",
+    "attempt": 1,
+    "writer_execution_id": "model-exec-6b5b03750036",
+    "provider": "pi",
+    "model": "opencode-go/deepseek-v4.1-flash",
+    "route": "default_deepseek_go",
+    "economic_tier": "subscription",
+    "input_tokens": 2189,
+    "output_tokens": 3381,
+    "total_tokens": 5570,
+    "cost_usd": 0.00235695,
+    "latency_ms": 61219,
+    "prompt_sha256": "f1befb0fd7166395530a6e952d3ffb4ae7afb9c4fb827bac9c0a98c3084d6ad9",
+    "schema_sha256": "a6a3308a87446adea13b699d5b4acf1f9c6207bd3f193612ff8770d1ba2c65ae",
+    "status": "succeeded",
+    "error_kind": null
+   },
+   {
+    "role": "verification",
+    "task_kind": "publication.review",
+    "package_id": "passage:Nine older mechanisms, seven properties",
+    "attempt": 1,
+    "writer_execution_id": "model-exec-66b3a3312eb6",
+    "provider": "pi",
+    "model": "opencode-go/claude-haiku-5-5",
+    "route": "default_haiku_go",
+    "economic_tier": "subscription",
+    "input_tokens": 4,
+    "output_tokens": 2577,
+    "total_tokens": 5294,
+    "cost_usd": 0,
+    "latency_ms": 14850,
+    "prompt_sha256": "6ad0b06e6f617a1e2cc3a3adfb40c5c8f6375c1ec11b346bbb589c126ef46bd7",
+    "schema_sha256": "7eacde2741c8dae909ffc842ff3513a7e30515c42be7ee4de16c0e209b061d03",
+    "status": "succeeded",
+    "error_kind": null
+   }
+  ]
+ },
+ "boundary": {
+  "executable": true,
+  "violations": [
+   {
+    "code": "investigation_only_consumed",
+    "op_id": "op:b61a63c5:026",
+    "rationale": "REORDER is investigation-only (D-PUB-50): recorded as investigated, never consumed as a transformation.",
+    "severity": "isolating",
+    "evidence_label": "MEASURED_TEXT",
+    "detector": "publication-transformation-v0.1"
+   },
+   {
+    "code": "investigation_only_consumed",
+    "op_id": "op:b61a63c5:039",
+    "rationale": "REORDER is investigation-only (D-PUB-50): recorded as investigated, never consumed as a transformation.",
+    "severity": "isolating",
+    "evidence_label": "MEASURED_TEXT",
+    "detector": "publication-transformation-v0.1"
+   }
+  ],
+  "op_verdicts": {
+   "op:b61a63c5:001": "boundary_ok",
+   "op:b61a63c5:002": "boundary_ok",
+   "op:b61a63c5:003": "boundary_ok",
+   "op:b61a63c5:004": "boundary_ok",
+   "op:b61a63c5:005": "boundary_ok",
+   "op:b61a63c5:006": "boundary_ok",
+   "op:b61a63c5:007": "boundary_ok",
+   "op:b61a63c5:008": "boundary_ok",
+   "op:b61a63c5:009": "boundary_ok",
+   "op:b61a63c5:010": "boundary_ok",
+   "op:b61a63c5:011": "boundary_ok",
+   "op:b61a63c5:012": "boundary_ok",
+   "op:b61a63c5:013": "boundary_ok",
+   "op:b61a63c5:014": "boundary_ok",
+   "op:b61a63c5:015": "boundary_ok",
+   "op:b61a63c5:016": "boundary_ok",
+   "op:b61a63c5:017": "boundary_ok",
+   "op:b61a63c5:018": "boundary_ok",
+   "op:b61a63c5:019": "boundary_ok",
+   "op:b61a63c5:020": "boundary_ok",
+   "op:b61a63c5:021": "boundary_ok",
+   "op:b61a63c5:022": "boundary_ok",
+   "op:b61a63c5:023": "boundary_ok",
+   "op:b61a63c5:024": "boundary_ok",
+   "op:b61a63c5:025": "boundary_ok",
+   "op:b61a63c5:026": "investigation_only",
+   "op:b61a63c5:027": "boundary_ok",
+   "op:b61a63c5:028": "boundary_ok",
+   "op:b61a63c5:029": "boundary_ok",
+   "op:b61a63c5:030": "boundary_ok",
+   "op:b61a63c5:031": "boundary_ok",
+   "op:b61a63c5:032": "boundary_ok",
+   "op:b61a63c5:033": "boundary_ok",
+   "op:b61a63c5:034": "boundary_ok",
+   "op:b61a63c5:035": "boundary_ok",
+   "op:b61a63c5:036": "boundary_ok",
+   "op:b61a63c5:037": "boundary_ok",
+   "op:b61a63c5:038": "boundary_ok",
+   "op:b61a63c5:039": "investigation_only",
+   "op:b61a63c5:040": "boundary_ok",
+   "op:b61a63c5:041": "boundary_ok",
+   "op:b61a63c5:042": "boundary_ok",
+   "op:b61a63c5:043": "boundary_ok",
+   "op:b61a63c5:044": "boundary_ok",
+   "op:b61a63c5:045": "boundary_ok",
+   "op:b61a63c5:046": "boundary_ok"
+  },
+  "live_fingerprint": "b61a63c525e29e4339bea70b4239576c243220bcf1136f22d87a85cf69d5be3b",
+  "binding_digest": "673d3d338f5c25026a14a788673e0869d30786b9ea2c733cb8b00c49f3acb39d",
+  "checked_at": "2026-11-25T07:40:04.608260+00:00"
+ },
+ "work_packages": {
+  "profile": "transform-v0.1",
+  "detector": "publication-transformation-v0.1",
+  "plan_id": "plan:e314bdd88993b458",
+  "source_fingerprint": "b61a63c525e29e4339bea70b4239576c243220bcf1136f22d87a85cf69d5be3b",
+  "compiled_at": "2026-11-25T07:40:04.946813+00:00",
+  "packages": [
+   {
+    "package_id": "chapter:reconstruction",
+    "scale": "chapter",
+    "section": "(whole chapter)",
+    "op_refs": [],
+    "op_types": [
+     "RECONSTRUCTION_FRAME"
+    ],
+    "source_spans": [],
+    "finding_refs": [],
+    "preservation_obligations": [
+     {
+      "kind": "honest_record",
+      "span": {
+       "start_line": 28,
+       "end_line": 34
+      },
+      "what": "Everything in this section comes from TypeSafe's own documentation and launch post. The independent guide at `jevmodel.org` says much the same thing, but it st\u2026",
+      "rule": "not-observed",
+      "constraint": "byte-true: never reworded, never removed, never condensed away"
+     },
+     {
+      "kind": "honest_record",
+      "span": {
+       "start_line": 173,
+       "end_line": 181
+      },
+      "what": "Per the preregistered `what_would_refute`, a fully-absent-or-unknown column is a discovery, not a gap \u2014 so the prediction was **partially refuted**, and the ch\u2026",
+      "rule": "untested",
+      "constraint": "byte-true: never reworded, never removed, never condensed away"
+     },
+     {
+      "kind": "honest_record",
+      "span": {
+       "start_line": 302,
+       "end_line": 302
+      },
+      "what": "## Limitations",
+      "rule": "limitation",
+      "constraint": "byte-true: never reworded, never removed, never condensed away"
+     },
+     {
+      "kind": "honest_record",
+      "span": {
+       "start_line": 303,
+       "end_line": 303
+      },
+      "what": "",
+      "rule": "honest-record-section:limitations",
+      "constraint": "byte-true: never reworded, never removed, never condensed away"
+     },
+     {
+      "kind": "honest_record",
+      "span": {
+       "start_line": 304,
+       "end_line": 320
+      },
+      "what": "- **No live behavior was observed.** Without a Jev API key, every statement about what the service does \u2014 as opposed to what its documentation says \u2014 is `NOT_O\u2026",
+      "rule": "not-observed",
+      "constraint": "byte-true: never reworded, never removed, never condensed away"
+     },
+     {
+      "kind": "honest_record",
+      "span": {
+       "start_line": 321,
+       "end_line": 321
+      },
+      "what": "",
+      "rule": "honest-record-section:limitations",
+      "constraint": "byte-true: never reworded, never removed, never condensed away"
+     },
+     {
+      "kind": "honest_record",
+      "span": {
+       "start_line": 28,
+       "end_line": 34
+      },
+      "what": "Everything in this section comes from TypeSafe's own documentation and launch post. The independent guide at `jevmodel.org` says much the same thing, but it st\u2026",
+      "rule": "not-observed",
+      "constraint": "byte-true: never reworded, never removed, never condensed away"
+     },
+     {
+      "kind": "honest_record",
+      "span": {
+       "start_line": 173,
+       "end_line": 181
+      },
+      "what": "Per the preregistered `what_would_refute`, a fully-absent-or-unknown column is a discovery, not a gap \u2014 so the prediction was **partially refuted**, and the ch\u2026",
+      "rule": "untested",
+      "constraint": "byte-true: never reworded, never removed, never condensed away"
+     },
+     {
+      "kind": "honest_record",
+      "span": {
+       "start_line": 302,
+       "end_line": 302
+      },
+      "what": "## Limitations",
+      "rule": "limitation",
+      "constraint": "byte-true: never reworded, never removed, never condensed away"
+     },
+     {
+      "kind": "honest_record",
+      "span": {
+       "start_line": 303,
+       "end_line": 303
+      },
+      "what": "",
+      "rule": "honest-record-section:limitations",
+      "constraint": "byte-true: never reworded, never removed, never condensed away"
+     },
+     {
+      "kind": "honest_record",
+      "span": {
+       "start_line": 304,
+       "end_line": 320
+      },
+      "what": "- **No live behavior was observed.** Without a Jev API key, every statement about what the service does \u2014 as opposed to what its documentation says \u2014 is `NOT_O\u2026",
+      "rule": "not-observed",
+      "constraint": "byte-true: never reworded, never removed, never condensed away"
+     },
+     {
+      "kind": "honest_record",
+      "span": {
+       "start_line": 321,
+       "end_line": 321
+      },
+      "what": "",
+      "rule": "honest-record-section:limitations",
+      "constraint": "byte-true: never reworded, never removed, never condensed away"
+     },
+     {
+      "kind": "established_claim",
+      "tier": "established-documented",
+      "what": "Jev's public contract (P1-P7) as reconstructed from docs.typesafe.ai and the vendor launch post, both read 2026-10-05. See ledger 2.1-2.7.",
+      "constraint": "meaning preserved; presentation may move (prose/table/diagram/example)"
+     },
+     {
+      "kind": "established_claim",
+      "tier": "established-documented",
+      "what": "P(True)/P(IK) calibration results and qualifications (2207.05221); GenRM direct-verifier equation and results (2408.15240); Cobbe verifier method and scaling (2110.14168). See ledger 2.8-2.12.",
+      "constraint": "meaning preserved; presentation may move (prose/table/diagram/example)"
+     },
+     {
+      "kind": "established_claim",
+      "tier": "established-documented",
+      "what": "LLM2Jev training-free matching result (2610.02076, PARTIAL); Rao cost/speed/error-overlap result (2609.29769, ABSTRACT_ONLY); Guo eq. 9 (1706.04599, narrow read). See ledger 2.13-2.15.",
+      "constraint": "meaning preserved; presentation may move (prose/table/diagram/example)"
+     },
+     {
+      "kind": "established_claim",
+      "tier": "established-observed",
+      "what": "Six of seven columns HAS_PRIOR_ART; P6 NOVEL_CANDIDATE; P4 thin. results/ch02.jsonl.",
+      "constraint": "meaning preserved; presentation may move (prose/table/diagram/example)"
+     },
+     {
+      "kind": "established_claim",
+      "tier": "established-observed",
+      "what": "Our confidence functions reproduce the vendor's 0.76 and ~0.35 worked examples; 27 self-test checks pass 2026-10-05.",
+      "constraint": "meaning preserved; presentation may move (prose/table/diagram/example)"
+     },
+     {
+      "kind": "established_claim",
+      "tier": "established-observed",
+      "what": "No live Jev behavior was observed (no key).",
+      "constraint": "meaning preserved; presentation may move (prose/table/diagram/example)"
+     },
+     {
+      "kind": "proposed_claim",
+      "tier": "NOT established",
+      "what": "Our contract shapes match the vendor wire shapes but validate strictly (VENDOR_DIFFERENCES).",
+      "constraint": "must never be presented as established; hypothesis framing stays attached"
+     },
+     {
+      "kind": "proposed_claim",
+      "tier": "NOT established",
+      "what": "The provider line was provisionally named Decider despite the AnyJev collision; renamed arbiter on 2026-10-05.",
+      "constraint": "must never be presented as established; hypothesis framing stays attached"
+     },
+     {
+      "kind": "proposed_claim",
+      "tier": "NOT established",
+      "what": "The P6 asymmetry (published second number) is the candidate distinction to test in Ch 9-11, not a novelty claim.",
+      "constraint": "must never be presented as established; hypothesis framing stays attached"
+     },
+     {
+      "kind": "genuine_limitation",
+      "what": "No live behavior observed (no Jev API key). The contract is reconstructed from public pages, which change.",
+      "constraint": "stays beside the claim it qualifies; qualifications that constrain claims stay with them"
+     },
+     {
+      "kind": "genuine_limitation",
+      "what": "LLM2Jev read PARTIAL (\u00a74, \u00a73.4 not fully read); Rao et al. ABSTRACT_ONLY. Cells cite only what was read.",
+      "constraint": "stays beside the claim it qualifies; qualifications that constrain claims stay with them"
+     },
+     {
+      "kind": "genuine_limitation",
+      "what": "The NLI row (M2) is UNKNOWN throughout; Ch 5-6 own it. A published NLI confidence statistic would fell the P6 verdict.",
+      "constraint": "stays beside the claim it qualifies; qualifications that constrain claims stay with them"
+     },
+     {
+      "kind": "genuine_limitation",
+      "what": "AnyJev was not one of the nine mechanisms; its level-gating sits adjacent to P6.",
+      "constraint": "stays beside the claim it qualifies; qualifications that constrain claims stay with them"
+     },
+     {
+      "kind": "genuine_limitation",
+      "what": "The Red Hat article returns HTTP 403 from this machine; its numbers are secondhand via the author's summary.",
+      "constraint": "stays beside the claim it qualifies; qualifications that constrain claims stay with them"
+     },
+     {
+      "kind": "genuine_limitation",
+      "what": "Guo et al. read narrowly (abstract + \u00a74.2); Ch 9 reads it in full.",
+      "constraint": "stays beside the claim it qualifies; qualifications that constrain claims stay with them"
+     },
+     {
+      "kind": "genuine_limitation",
+      "what": "HN commenter numbers are recorded as C, never cited as results.",
+      "constraint": "stays beside the claim it qualifies; qualifications that constrain claims stay with them"
+     },
+     {
+      "kind": "unresolved_evidence",
+      "claim_id": "eclaim:c55a3c59ba780a15a97b",
+      "state": "unresolved",
+      "what": "Everything in this section comes from TypeSafe's own documentation and launch post. The independent guide at `jevmodel.org` says much the same thing, but it states on its own footer that it is unaffil",
+      "constraint": "NEVER strengthened/removed/presented-as-established during planning"
+     },
+     {
+      "kind": "unresolved_evidence",
+      "claim_id": "eclaim:95cca4099f893f3435b9",
+      "state": "partial",
+      "what": "Per the preregistered `what_would_refute`, a fully-absent-or-unknown column is a discovery, not a gap \u2014 so the prediction was **partially refuted**, and the chapter reports it as such. The honest read",
+      "constraint": "NEVER strengthened/removed/presented-as-established during planning"
+     },
+     {
+      "kind": "unresolved_evidence",
+      "claim_id": "eclaim:96c41e42f16b39d285ad",
+      "state": "unresolved",
+      "what": "Two caveats travel with the verdict, because a table is only as honest as its gaps. First, the NLI row is UNKNOWN throughout; if Chapters 5\u20136 find a published separate confidence statistic in NLI scor",
+      "constraint": "NEVER strengthened/removed/presented-as-established during planning"
+     },
+     {
+      "kind": "unresolved_evidence",
+      "claim_id": "eclaim:923d465d2ed86dfc5e26",
+      "state": "unresolved",
+      "what": "- **No live behavior was observed.** Without a Jev API key, every statement about what the service does \u2014 as opposed to what its documentation says \u2014 is `NOT_OBSERVED`. The contract above is a reconst",
+      "constraint": "NEVER strengthened/removed/presented-as-established during planning"
+     },
+     {
+      "kind": "unresolved_evidence",
+      "claim_id": "eclaim:d5f5f48df24c8b8cb835",
+      "state": "unresolved",
+      "what": "- `src/arbiter/contract.py` \u2014 `DecisionRequest`, the three question types, the three answer types with strict validation, the vendor's confidence formulas verbatim, `parse_vendor_response`, and `VENDO",
+      "constraint": "NEVER strengthened/removed/presented-as-established during planning"
+     }
+    ],
+    "adjudications": [],
+    "blocked": false,
+    "directions": "Reconstruct the chapter as one coherent reading: purpose: What is Jev's public contract, and what is genuinely distinctive about it?. Target understanding: ['UNKNOWN -- thesis null or undeclared']. Keep section order (REORDER is investigation-only); keep strong material unchanged; preserve every attached obligation."
+   },
+   {
+    "package_id": "passage:(opening)",
+    "scale": "passage",
+    "section": "(opening)",
+    "op_refs": [
+     "op:b61a63c5:002"
+    ],
+    "op_types": [
+     "CONVERT_TO_LIST"
+    ],
+    "source_spans": [
+     {
+      "start_line": 18,
+      "end_line": 24
+     }
+    ],
+    "finding_refs": [
+     "complexity:f4f1e11898b9f0c617bd"
+    ],
+    "preservation_obligations": [
+     {
+      "kind": "established_claim",
+      "tier": "established-documented",
+      "what": "Jev's public contract (P1-P7) as reconstructed from docs.typesafe.ai and the vendor launch post, both read 2026-10-05. See ledger 2.1-2.7.",
+      "constraint": "meaning preserved; presentation may move (prose/table/diagram/example)"
+     },
+     {
+      "kind": "established_claim",
+      "tier": "established-documented",
+      "what": "P(True)/P(IK) calibration results and qualifications (2207.05221); GenRM direct-verifier equation and results (2408.15240); Cobbe verifier method and scaling (2110.14168). See ledger 2.8-2.12.",
+      "constraint": "meaning preserved; presentation may move (prose/table/diagram/example)"
+     },
+     {
+      "kind": "established_claim",
+      "tier": "established-documented",
+      "what": "LLM2Jev training-free matching result (2610.02076, PARTIAL); Rao cost/speed/error-overlap result (2609.29769, ABSTRACT_ONLY); Guo eq. 9 (1706.04599, narrow read). See ledger 2.13-2.15.",
+      "constraint": "meaning preserved; presentation may move (prose/table/diagram/example)"
+     },
+     {
+      "kind": "established_claim",
+      "tier": "established-observed",
+      "what": "Six of seven columns HAS_PRIOR_ART; P6 NOVEL_CANDIDATE; P4 thin. results/ch02.jsonl.",
+      "constraint": "meaning preserved; presentation may move (prose/table/diagram/example)"
+     },
+     {
+      "kind": "established_claim",
+      "tier": "established-observed",
+      "what": "Our confidence functions reproduce the vendor's 0.76 and ~0.35 worked examples; 27 self-test checks pass 2026-10-05.",
+      "constraint": "meaning preserved; presentation may move (prose/table/diagram/example)"
+     },
+     {
+      "kind": "established_claim",
+      "tier": "established-observed",
+      "what": "No live Jev behavior was observed (no key).",
+      "constraint": "meaning preserved; presentation may move (prose/table/diagram/example)"
+     },
+     {
+      "kind": "proposed_claim",
+      "tier": "NOT established",
+      "what": "Our contract shapes match the vendor wire shapes but validate strictly (VENDOR_DIFFERENCES).",
+      "constraint": "must never be presented as established; hypothesis framing stays attached"
+     },
+     {
+      "kind": "proposed_claim",
+      "tier": "NOT established",
+      "what": "The provider line was provisionally named Decider despite the AnyJev collision; renamed arbiter on 2026-10-05.",
+      "constraint": "must never be presented as established; hypothesis framing stays attached"
+     },
+     {
+      "kind": "proposed_claim",
+      "tier": "NOT established",
+      "what": "The P6 asymmetry (published second number) is the candidate distinction to test in Ch 9-11, not a novelty claim.",
+      "constraint": "must never be presented as established; hypothesis framing stays attached"
+     },
+     {
+      "kind": "genuine_limitation",
+      "what": "No live behavior observed (no Jev API key). The contract is reconstructed from public pages, which change.",
+      "constraint": "stays beside the claim it qualifies; qualifications that constrain claims stay with them"
+     },
+     {
+      "kind": "genuine_limitation",
+      "what": "LLM2Jev read PARTIAL (\u00a74, \u00a73.4 not fully read); Rao et al. ABSTRACT_ONLY. Cells cite only what was read.",
+      "constraint": "stays beside the claim it qualifies; qualifications that constrain claims stay with them"
+     },
+     {
+      "kind": "genuine_limitation",
+      "what": "The NLI row (M2) is UNKNOWN throughout; Ch 5-6 own it. A published NLI confidence statistic would fell the P6 verdict.",
+      "constraint": "stays beside the claim it qualifies; qualifications that constrain claims stay with them"
+     },
+     {
+      "kind": "genuine_limitation",
+      "what": "AnyJev was not one of the nine mechanisms; its level-gating sits adjacent to P6.",
+      "constraint": "stays beside the claim it qualifies; qualifications that constrain claims stay with them"
+     },
+     {
+      "kind": "genuine_limitation",
+      "what": "The Red Hat article returns HTTP 403 from this machine; its numbers are secondhand via the author's summary.",
+      "constraint": "stays beside the claim it qualifies; qualifications that constrain claims stay with them"
+     },
+     {
+      "kind": "genuine_limitation",
+      "what": "Guo et al. read narrowly (abstract + \u00a74.2); Ch 9 reads it in full.",
+      "constraint": "stays beside the claim it qualifies; qualifications that constrain claims stay with them"
+     },
+     {
+      "kind": "genuine_limitation",
+      "what": "HN commenter numbers are recorded as C, never cited as results.",
+      "constraint": "stays beside the claim it qualifies; qualifications that constrain claims stay with them"
+     },
+     {
+      "kind": "unresolved_evidence",
+      "claim_id": "eclaim:c55a3c59ba780a15a97b",
+      "state": "unresolved",
+      "what": "Everything in this section comes from TypeSafe's own documentation and launch post. The independent guide at `jevmodel.org` says much the same thing, but it states on its own footer that it is unaffil",
+      "constraint": "NEVER strengthened/removed/presented-as-established during planning"
+     },
+     {
+      "kind": "unresolved_evidence",
+      "claim_id": "eclaim:95cca4099f893f3435b9",
+      "state": "partial",
+      "what": "Per the preregistered `what_would_refute`, a fully-absent-or-unknown column is a discovery, not a gap \u2014 so the prediction was **partially refuted**, and the chapter reports it as such. The honest read",
+      "constraint": "NEVER strengthened/removed/presented-as-established during planning"
+     },
+     {
+      "kind": "unresolved_evidence",
+      "claim_id": "eclaim:96c41e42f16b39d285ad",
+      "state": "unresolved",
+      "what": "Two caveats travel with the verdict, because a table is only as honest as its gaps. First, the NLI row is UNKNOWN throughout; if Chapters 5\u20136 find a published separate confidence statistic in NLI scor",
+      "constraint": "NEVER strengthened/removed/presented-as-established during planning"
+     },
+     {
+      "kind": "unresolved_evidence",
+      "claim_id": "eclaim:923d465d2ed86dfc5e26",
+      "state": "unresolved",
+      "what": "- **No live behavior was observed.** Without a Jev API key, every statement about what the service does \u2014 as opposed to what its documentation says \u2014 is `NOT_OBSERVED`. The contract above is a reconst",
+      "constraint": "NEVER strengthened/removed/presented-as-established during planning"
+     },
+     {
+      "kind": "unresolved_evidence",
+      "claim_id": "eclaim:d5f5f48df24c8b8cb835",
+      "state": "unresolved",
+      "what": "- `src/arbiter/contract.py` \u2014 `DecisionRequest`, the three question types, the three answer types with strict validation, the vendor's confidence formulas verbatim, `parse_vendor_response`, and `VENDO",
+      "constraint": "NEVER strengthened/removed/presented-as-established during planning"
+     }
+    ],
+    "adjudications": [],
+    "blocked": false,
+    "package_hash": "fba6a46e26c9b690b4e738b0adbbdb31669d1903199fe955543b18b41cea4357",
+    "directions": "op:b61a63c5:002:CONVERT_TO_LIST:Ordered-procedure cues in prose: sequence structure fits a numbered list."
+   },
+   {
+    "package_id": "passage:Nine older mechanisms, seven properties",
+    "scale": "passage",
+    "section": "Nine older mechanisms, seven properties",
+    "op_refs": [
+     "op:b61a63c5:006",
+     "op:b61a63c5:007"
+    ],
+    "op_types": [
+     "ADD_SYNTHESIS",
+     "SPLIT_EXPLANATION"
+    ],
+    "source_spans": [
+     {
+      "start_line": 133,
+      "end_line": 146
+     },
+     {
+      "start_line": 133,
+      "end_line": 146
+     }
+    ],
+    "finding_refs": [
+     "complexity:3e0283d44e668e4d7758",
+     "complexity:a73861baf24cb7ffe911",
+     "complexity:e917891ac749a6224034"
+    ],
+    "preservation_obligations": [
+     {
+      "kind": "established_claim",
+      "tier": "established-documented",
+      "what": "Jev's public contract (P1-P7) as reconstructed from docs.typesafe.ai and the vendor launch post, both read 2026-10-05. See ledger 2.1-2.7.",
+      "constraint": "meaning preserved; presentation may move (prose/table/diagram/example)"
+     },
+     {
+      "kind": "established_claim",
+      "tier": "established-documented",
+      "what": "P(True)/P(IK) calibration results and qualifications (2207.05221); GenRM direct-verifier equation and results (2408.15240); Cobbe verifier method and scaling (2110.14168). See ledger 2.8-2.12.",
+      "constraint": "meaning preserved; presentation may move (prose/table/diagram/example)"
+     },
+     {
+      "kind": "established_claim",
+      "tier": "established-documented",
+      "what": "LLM2Jev training-free matching result (2610.02076, PARTIAL); Rao cost/speed/error-overlap result (2609.29769, ABSTRACT_ONLY); Guo eq. 9 (1706.04599, narrow read). See ledger 2.13-2.15.",
+      "constraint": "meaning preserved; presentation may move (prose/table/diagram/example)"
+     },
+     {
+      "kind": "established_claim",
+      "tier": "established-observed",
+      "what": "Six of seven columns HAS_PRIOR_ART; P6 NOVEL_CANDIDATE; P4 thin. results/ch02.jsonl.",
+      "constraint": "meaning preserved; presentation may move (prose/table/diagram/example)"
+     },
+     {
+      "kind": "established_claim",
+      "tier": "established-observed",
+      "what": "Our confidence functions reproduce the vendor's 0.76 and ~0.35 worked examples; 27 self-test checks pass 2026-10-05.",
+      "constraint": "meaning preserved; presentation may move (prose/table/diagram/example)"
+     },
+     {
+      "kind": "established_claim",
+      "tier": "established-observed",
+      "what": "No live Jev behavior was observed (no key).",
+      "constraint": "meaning preserved; presentation may move (prose/table/diagram/example)"
+     },
+     {
+      "kind": "proposed_claim",
+      "tier": "NOT established",
+      "what": "Our contract shapes match the vendor wire shapes but validate strictly (VENDOR_DIFFERENCES).",
+      "constraint": "must never be presented as established; hypothesis framing stays attached"
+     },
+     {
+      "kind": "proposed_claim",
+      "tier": "NOT established",
+      "what": "The provider line was provisionally named Decider despite the AnyJev collision; renamed arbiter on 2026-10-05.",
+      "constraint": "must never be presented as established; hypothesis framing stays attached"
+     },
+     {
+      "kind": "proposed_claim",
+      "tier": "NOT established",
+      "what": "The P6 asymmetry (published second number) is the candidate distinction to test in Ch 9-11, not a novelty claim.",
+      "constraint": "must never be presented as established; hypothesis framing stays attached"
+     },
+     {
+      "kind": "genuine_limitation",
+      "what": "No live behavior observed (no Jev API key). The contract is reconstructed from public pages, which change.",
+      "constraint": "stays beside the claim it qualifies; qualifications that constrain claims stay with them"
+     },
+     {
+      "kind": "genuine_limitation",
+      "what": "LLM2Jev read PARTIAL (\u00a74, \u00a73.4 not fully read); Rao et al. ABSTRACT_ONLY. Cells cite only what was read.",
+      "constraint": "stays beside the claim it qualifies; qualifications that constrain claims stay with them"
+     },
+     {
+      "kind": "genuine_limitation",
+      "what": "The NLI row (M2) is UNKNOWN throughout; Ch 5-6 own it. A published NLI confidence statistic would fell the P6 verdict.",
+      "constraint": "stays beside the claim it qualifies; qualifications that constrain claims stay with them"
+     },
+     {
+      "kind": "genuine_limitation",
+      "what": "AnyJev was not one of the nine mechanisms; its level-gating sits adjacent to P6.",
+      "constraint": "stays beside the claim it qualifies; qualifications that constrain claims stay with them"
+     },
+     {
+      "kind": "genuine_limitation",
+      "what": "The Red Hat article returns HTTP 403 from this machine; its numbers are secondhand via the author's summary.",
+      "constraint": "stays beside the claim it qualifies; qualifications that constrain claims stay with them"
+     },
+     {
+      "kind": "genuine_limitation",
+      "what": "Guo et al. read narrowly (abstract + \u00a74.2); Ch 9 reads it in full.",
+      "constraint": "stays beside the claim it qualifies; qualifications that constrain claims stay with them"
+     },
+     {
+      "kind": "genuine_limitation",
+      "what": "HN commenter numbers are recorded as C, never cited as results.",
+      "constraint": "stays beside the claim it qualifies; qualifications that constrain claims stay with them"
+     },
+     {
+      "kind": "unresolved_evidence",
+      "claim_id": "eclaim:c55a3c59ba780a15a97b",
+      "state": "unresolved",
+      "what": "Everything in this section comes from TypeSafe's own documentation and launch post. The independent guide at `jevmodel.org` says much the same thing, but it states on its own footer that it is unaffil",
+      "constraint": "NEVER strengthened/removed/presented-as-established during planning"
+     },
+     {
+      "kind": "unresolved_evidence",
+      "claim_id": "eclaim:95cca4099f893f3435b9",
+      "state": "partial",
+      "what": "Per the preregistered `what_would_refute`, a fully-absent-or-unknown column is a discovery, not a gap \u2014 so the prediction was **partially refuted**, and the chapter reports it as such. The honest read",
+      "constraint": "NEVER strengthened/removed/presented-as-established during planning"
+     },
+     {
+      "kind": "unresolved_evidence",
+      "claim_id": "eclaim:96c41e42f16b39d285ad",
+      "state": "unresolved",
+      "what": "Two caveats travel with the verdict, because a table is only as honest as its gaps. First, the NLI row is UNKNOWN throughout; if Chapters 5\u20136 find a published separate confidence statistic in NLI scor",
+      "constraint": "NEVER strengthened/removed/presented-as-established during planning"
+     },
+     {
+      "kind": "unresolved_evidence",
+      "claim_id": "eclaim:923d465d2ed86dfc5e26",
+      "state": "unresolved",
+      "what": "- **No live behavior was observed.** Without a Jev API key, every statement about what the service does \u2014 as opposed to what its documentation says \u2014 is `NOT_OBSERVED`. The contract above is a reconst",
+      "constraint": "NEVER strengthened/removed/presented-as-established during planning"
+     },
+     {
+      "kind": "unresolved_evidence",
+      "claim_id": "eclaim:d5f5f48df24c8b8cb835",
+      "state": "unresolved",
+      "what": "- `src/arbiter/contract.py` \u2014 `DecisionRequest`, the three question types, the three answer types with strict validation, the vendor's confidence formulas verbatim, `parse_vendor_response`, and `VENDO",
+      "constraint": "NEVER strengthened/removed/presented-as-established during planning"
+     }
+    ],
+    "adjudications": [],
+    "blocked": false,
+    "package_hash": "da4a137efc3f7ed1b47ef87279459a4fafc82fcdb27bb23e31d339587023c1d5",
+    "directions": "op:b61a63c5:006:SPLIT_EXPLANATION:3 workload findings co-locate in one block (Nine older mechanisms, seven properties): concept overload, not isolated sentences.; op:b61a63c5:007:ADD_SYNTHESIS:Post-dense synthesis missing after an overloaded passage."
+   },
+   {
+    "package_id": "passage:The build: the contract as code",
+    "scale": "passage",
+    "section": "The build: the contract as code",
+    "op_refs": [
+     "op:b61a63c5:009",
+     "op:b61a63c5:010"
+    ],
+    "op_types": [
+     "ADD_SYNTHESIS",
+     "SPLIT_EXPLANATION"
+    ],
+    "source_spans": [
+     {
+      "start_line": 207,
+      "end_line": 217
+     },
+     {
+      "start_line": 207,
+      "end_line": 217
+     }
+    ],
+    "finding_refs": [
+     "complexity:221b67ad1fe382274d6f",
+     "complexity:3377f4888c263a91a168",
+     "complexity:7d8c04a0cb45f3576993",
+     "complexity:b0f369bf513985f0186c",
+     "complexity:b8e853288f2d05cd6710"
+    ],
+    "preservation_obligations": [
+     {
+      "kind": "established_claim",
+      "tier": "established-documented",
+      "what": "Jev's public contract (P1-P7) as reconstructed from docs.typesafe.ai and the vendor launch post, both read 2026-10-05. See ledger 2.1-2.7.",
+      "constraint": "meaning preserved; presentation may move (prose/table/diagram/example)"
+     },
+     {
+      "kind": "established_claim",
+      "tier": "established-documented",
+      "what": "P(True)/P(IK) calibration results and qualifications (2207.05221); GenRM direct-verifier equation and results (2408.15240); Cobbe verifier method and scaling (2110.14168). See ledger 2.8-2.12.",
+      "constraint": "meaning preserved; presentation may move (prose/table/diagram/example)"
+     },
+     {
+      "kind": "established_claim",
+      "tier": "established-documented",
+      "what": "LLM2Jev training-free matching result (2610.02076, PARTIAL); Rao cost/speed/error-overlap result (2609.29769, ABSTRACT_ONLY); Guo eq. 9 (1706.04599, narrow read). See ledger 2.13-2.15.",
+      "constraint": "meaning preserved; presentation may move (prose/table/diagram/example)"
+     },
+     {
+      "kind": "established_claim",
+      "tier": "established-observed",
+      "what": "Six of seven columns HAS_PRIOR_ART; P6 NOVEL_CANDIDATE; P4 thin. results/ch02.jsonl.",
+      "constraint": "meaning preserved; presentation may move (prose/table/diagram/example)"
+     },
+     {
+      "kind": "established_claim",
+      "tier": "established-observed",
+      "what": "Our confidence functions reproduce the vendor's 0.76 and ~0.35 worked examples; 27 self-test checks pass 2026-10-05.",
+      "constraint": "meaning preserved; presentation may move (prose/table/diagram/example)"
+     },
+     {
+      "kind": "established_claim",
+      "tier": "established-observed",
+      "what": "No live Jev behavior was observed (no key).",
+      "constraint": "meaning preserved; presentation may move (prose/table/diagram/example)"
+     },
+     {
+      "kind": "proposed_claim",
+      "tier": "NOT established",
+      "what": "Our contract shapes match the vendor wire shapes but validate strictly (VENDOR_DIFFERENCES).",
+      "constraint": "must never be presented as established; hypothesis framing stays attached"
+     },
+     {
+      "kind": "proposed_claim",
+      "tier": "NOT established",
+      "what": "The provider line was provisionally named Decider despite the AnyJev collision; renamed arbiter on 2026-10-05.",
+      "constraint": "must never be presented as established; hypothesis framing stays attached"
+     },
+     {
+      "kind": "proposed_claim",
+      "tier": "NOT established",
+      "what": "The P6 asymmetry (published second number) is the candidate distinction to test in Ch 9-11, not a novelty claim.",
+      "constraint": "must never be presented as established; hypothesis framing stays attached"
+     },
+     {
+      "kind": "genuine_limitation",
+      "what": "No live behavior observed (no Jev API key). The contract is reconstructed from public pages, which change.",
+      "constraint": "stays beside the claim it qualifies; qualifications that constrain claims stay with them"
+     },
+     {
+      "kind": "genuine_limitation",
+      "what": "LLM2Jev read PARTIAL (\u00a74, \u00a73.4 not fully read); Rao et al. ABSTRACT_ONLY. Cells cite only what was read.",
+      "constraint": "stays beside the claim it qualifies; qualifications that constrain claims stay with them"
+     },
+     {
+      "kind": "genuine_limitation",
+      "what": "The NLI row (M2) is UNKNOWN throughout; Ch 5-6 own it. A published NLI confidence statistic would fell the P6 verdict.",
+      "constraint": "stays beside the claim it qualifies; qualifications that constrain claims stay with them"
+     },
+     {
+      "kind": "genuine_limitation",
+      "what": "AnyJev was not one of the nine mechanisms; its level-gating sits adjacent to P6.",
+      "constraint": "stays beside the claim it qualifies; qualifications that constrain claims stay with them"
+     },
+     {
+      "kind": "genuine_limitation",
+      "what": "The Red Hat article returns HTTP 403 from this machine; its numbers are secondhand via the author's summary.",
+      "constraint": "stays beside the claim it qualifies; qualifications that constrain claims stay with them"
+     },
+     {
+      "kind": "genuine_limitation",
+      "what": "Guo et al. read narrowly (abstract + \u00a74.2); Ch 9 reads it in full.",
+      "constraint": "stays beside the claim it qualifies; qualifications that constrain claims stay with them"
+     },
+     {
+      "kind": "genuine_limitation",
+      "what": "HN commenter numbers are recorded as C, never cited as results.",
+      "constraint": "stays beside the claim it qualifies; qualifications that constrain claims stay with them"
+     },
+     {
+      "kind": "unresolved_evidence",
+      "claim_id": "eclaim:c55a3c59ba780a15a97b",
+      "state": "unresolved",
+      "what": "Everything in this section comes from TypeSafe's own documentation and launch post. The independent guide at `jevmodel.org` says much the same thing, but it states on its own footer that it is unaffil",
+      "constraint": "NEVER strengthened/removed/presented-as-established during planning"
+     },
+     {
+      "kind": "unresolved_evidence",
+      "claim_id": "eclaim:95cca4099f893f3435b9",
+      "state": "partial",
+      "what": "Per the preregistered `what_would_refute`, a fully-absent-or-unknown column is a discovery, not a gap \u2014 so the prediction was **partially refuted**, and the chapter reports it as such. The honest read",
+      "constraint": "NEVER strengthened/removed/presented-as-established during planning"
+     },
+     {
+      "kind": "unresolved_evidence",
+      "claim_id": "eclaim:96c41e42f16b39d285ad",
+      "state": "unresolved",
+      "what": "Two caveats travel with the verdict, because a table is only as honest as its gaps. First, the NLI row is UNKNOWN throughout; if Chapters 5\u20136 find a published separate confidence statistic in NLI scor",
+      "constraint": "NEVER strengthened/removed/presented-as-established during planning"
+     },
+     {
+      "kind": "unresolved_evidence",
+      "claim_id": "eclaim:923d465d2ed86dfc5e26",
+      "state": "unresolved",
+      "what": "- **No live behavior was observed.** Without a Jev API key, every statement about what the service does \u2014 as opposed to what its documentation says \u2014 is `NOT_OBSERVED`. The contract above is a reconst",
+      "constraint": "NEVER strengthened/removed/presented-as-established during planning"
+     },
+     {
+      "kind": "unresolved_evidence",
+      "claim_id": "eclaim:d5f5f48df24c8b8cb835",
+      "state": "unresolved",
+      "what": "- `src/arbiter/contract.py` \u2014 `DecisionRequest`, the three question types, the three answer types with strict validation, the vendor's confidence formulas verbatim, `parse_vendor_response`, and `VENDO",
+      "constraint": "NEVER strengthened/removed/presented-as-established during planning"
+     }
+    ],
+    "adjudications": [],
+    "blocked": false,
+    "package_hash": "eb187bb47edbc1e14e6e0688d9ab4f546ea5367acb7d89b3c919756cee77294c",
+    "directions": "op:b61a63c5:009:SPLIT_EXPLANATION:5 workload findings co-locate in one block (The build: the contract as code): concept overload, not isolated sentences.; op:b61a63c5:010:ADD_SYNTHESIS:Post-dense synthesis missing after an overloaded passage."
+   },
+   {
+    "package_id": "passage:The contract, from the vendor's pages only",
+    "scale": "passage",
+    "section": "The contract, from the vendor's pages only",
+    "op_refs": [
+     "op:b61a63c5:024",
+     "op:b61a63c5:025"
+    ],
+    "op_types": [
+     "ADD_SYNTHESIS",
+     "SPLIT_EXPLANATION"
+    ],
+    "source_spans": [
+     {
+      "start_line": 68,
+      "end_line": 75
+     },
+     {
+      "start_line": 68,
+      "end_line": 75
+     }
+    ],
+    "finding_refs": [
+     "complexity:47ec0cc5d995ff6de7c8",
+     "complexity:642404607f0b904b9e3b",
+     "complexity:a863429810837c042966",
+     "complexity:d23544fc46375ccc7ae6"
+    ],
+    "preservation_obligations": [
+     {
+      "kind": "established_claim",
+      "tier": "established-documented",
+      "what": "Jev's public contract (P1-P7) as reconstructed from docs.typesafe.ai and the vendor launch post, both read 2026-10-05. See ledger 2.1-2.7.",
+      "constraint": "meaning preserved; presentation may move (prose/table/diagram/example)"
+     },
+     {
+      "kind": "established_claim",
+      "tier": "established-documented",
+      "what": "P(True)/P(IK) calibration results and qualifications (2207.05221); GenRM direct-verifier equation and results (2408.15240); Cobbe verifier method and scaling (2110.14168). See ledger 2.8-2.12.",
+      "constraint": "meaning preserved; presentation may move (prose/table/diagram/example)"
+     },
+     {
+      "kind": "established_claim",
+      "tier": "established-documented",
+      "what": "LLM2Jev training-free matching result (2610.02076, PARTIAL); Rao cost/speed/error-overlap result (2609.29769, ABSTRACT_ONLY); Guo eq. 9 (1706.04599, narrow read). See ledger 2.13-2.15.",
+      "constraint": "meaning preserved; presentation may move (prose/table/diagram/example)"
+     },
+     {
+      "kind": "established_claim",
+      "tier": "established-observed",
+      "what": "Six of seven columns HAS_PRIOR_ART; P6 NOVEL_CANDIDATE; P4 thin. results/ch02.jsonl.",
+      "constraint": "meaning preserved; presentation may move (prose/table/diagram/example)"
+     },
+     {
+      "kind": "established_claim",
+      "tier": "established-observed",
+      "what": "Our confidence functions reproduce the vendor's 0.76 and ~0.35 worked examples; 27 self-test checks pass 2026-10-05.",
+      "constraint": "meaning preserved; presentation may move (prose/table/diagram/example)"
+     },
+     {
+      "kind": "established_claim",
+      "tier": "established-observed",
+      "what": "No live Jev behavior was observed (no key).",
+      "constraint": "meaning preserved; presentation may move (prose/table/diagram/example)"
+     },
+     {
+      "kind": "proposed_claim",
+      "tier": "NOT established",
+      "what": "Our contract shapes match the vendor wire shapes but validate strictly (VENDOR_DIFFERENCES).",
+      "constraint": "must never be presented as established; hypothesis framing stays attached"
+     },
+     {
+      "kind": "proposed_claim",
+      "tier": "NOT established",
+      "what": "The provider line was provisionally named Decider despite the AnyJev collision; renamed arbiter on 2026-10-05.",
+      "constraint": "must never be presented as established; hypothesis framing stays attached"
+     },
+     {
+      "kind": "proposed_claim",
+      "tier": "NOT established",
+      "what": "The P6 asymmetry (published second number) is the candidate distinction to test in Ch 9-11, not a novelty claim.",
+      "constraint": "must never be presented as established; hypothesis framing stays attached"
+     },
+     {
+      "kind": "genuine_limitation",
+      "what": "No live behavior observed (no Jev API key). The contract is reconstructed from public pages, which change.",
+      "constraint": "stays beside the claim it qualifies; qualifications that constrain claims stay with them"
+     },
+     {
+      "kind": "genuine_limitation",
+      "what": "LLM2Jev read PARTIAL (\u00a74, \u00a73.4 not fully read); Rao et al. ABSTRACT_ONLY. Cells cite only what was read.",
+      "constraint": "stays beside the claim it qualifies; qualifications that constrain claims stay with them"
+     },
+     {
+      "kind": "genuine_limitation",
+      "what": "The NLI row (M2) is UNKNOWN throughout; Ch 5-6 own it. A published NLI confidence statistic would fell the P6 verdict.",
+      "constraint": "stays beside the claim it qualifies; qualifications that constrain claims stay with them"
+     },
+     {
+      "kind": "genuine_limitation",
+      "what": "AnyJev was not one of the nine mechanisms; its level-gating sits adjacent to P6.",
+      "constraint": "stays beside the claim it qualifies; qualifications that constrain claims stay with them"
+     },
+     {
+      "kind": "genuine_limitation",
+      "what": "The Red Hat article returns HTTP 403 from this machine; its numbers are secondhand via the author's summary.",
+      "constraint": "stays beside the claim it qualifies; qualifications that constrain claims stay with them"
+     },
+     {
+      "kind": "genuine_limitation",
+      "what": "Guo et al. read narrowly (abstract + \u00a74.2); Ch 9 reads it in full.",
+      "constraint": "stays beside the claim it qualifies; qualifications that constrain claims stay with them"
+     },
+     {
+      "kind": "genuine_limitation",
+      "what": "HN commenter numbers are recorded as C, never cited as results.",
+      "constraint": "stays beside the claim it qualifies; qualifications that constrain claims stay with them"
+     },
+     {
+      "kind": "unresolved_evidence",
+      "claim_id": "eclaim:c55a3c59ba780a15a97b",
+      "state": "unresolved",
+      "what": "Everything in this section comes from TypeSafe's own documentation and launch post. The independent guide at `jevmodel.org` says much the same thing, but it states on its own footer that it is unaffil",
+      "constraint": "NEVER strengthened/removed/presented-as-established during planning"
+     },
+     {
+      "kind": "unresolved_evidence",
+      "claim_id": "eclaim:95cca4099f893f3435b9",
+      "state": "partial",
+      "what": "Per the preregistered `what_would_refute`, a fully-absent-or-unknown column is a discovery, not a gap \u2014 so the prediction was **partially refuted**, and the chapter reports it as such. The honest read",
+      "constraint": "NEVER strengthened/removed/presented-as-established during planning"
+     },
+     {
+      "kind": "unresolved_evidence",
+      "claim_id": "eclaim:96c41e42f16b39d285ad",
+      "state": "unresolved",
+      "what": "Two caveats travel with the verdict, because a table is only as honest as its gaps. First, the NLI row is UNKNOWN throughout; if Chapters 5\u20136 find a published separate confidence statistic in NLI scor",
+      "constraint": "NEVER strengthened/removed/presented-as-established during planning"
+     },
+     {
+      "kind": "unresolved_evidence",
+      "claim_id": "eclaim:923d465d2ed86dfc5e26",
+      "state": "unresolved",
+      "what": "- **No live behavior was observed.** Without a Jev API key, every statement about what the service does \u2014 as opposed to what its documentation says \u2014 is `NOT_OBSERVED`. The contract above is a reconst",
+      "constraint": "NEVER strengthened/removed/presented-as-established during planning"
+     },
+     {
+      "kind": "unresolved_evidence",
+      "claim_id": "eclaim:d5f5f48df24c8b8cb835",
+      "state": "unresolved",
+      "what": "- `src/arbiter/contract.py` \u2014 `DecisionRequest`, the three question types, the three answer types with strict validation, the vendor's confidence formulas verbatim, `parse_vendor_response`, and `VENDO",
+      "constraint": "NEVER strengthened/removed/presented-as-established during planning"
+     }
+    ],
+    "adjudications": [],
+    "blocked": false,
+    "package_hash": "17333fae2172d724e352847c2f257d9230610c757f6204243c079bfafbe5a74b",
+    "directions": "op:b61a63c5:024:SPLIT_EXPLANATION:4 workload findings co-locate in one block (The contract, from the vendor's pages only): concept overload, not isolated sentences.; op:b61a63c5:025:ADD_SYNTHESIS:Post-dense synthesis missing after an overloaded passage."
+   },
+   {
+    "package_id": "passage:The result: six crowds, one empty column, one thin one",
+    "scale": "passage",
+    "section": "The result: six crowds, one empty column, one thin one",
+    "op_refs": [
+     "op:b61a63c5:030",
+     "op:b61a63c5:031"
+    ],
+    "op_types": [
+     "ADD_SYNTHESIS",
+     "SPLIT_EXPLANATION"
+    ],
+    "source_spans": [
+     {
+      "start_line": 190,
+      "end_line": 196
+     },
+     {
+      "start_line": 190,
+      "end_line": 196
+     }
+    ],
+    "finding_refs": [
+     "complexity:5c6a84a3c327c290f017",
+     "complexity:c7dc5b67b7050a0aecd9",
+     "complexity:cff73633d7f4af2373f8",
+     "eclaim:96c41e42f16b39d285ad"
+    ],
+    "preservation_obligations": [
+     {
+      "kind": "established_claim",
+      "tier": "established-documented",
+      "what": "Jev's public contract (P1-P7) as reconstructed from docs.typesafe.ai and the vendor launch post, both read 2026-10-05. See ledger 2.1-2.7.",
+      "constraint": "meaning preserved; presentation may move (prose/table/diagram/example)"
+     },
+     {
+      "kind": "established_claim",
+      "tier": "established-documented",
+      "what": "P(True)/P(IK) calibration results and qualifications (2207.05221); GenRM direct-verifier equation and results (2408.15240); Cobbe verifier method and scaling (2110.14168). See ledger 2.8-2.12.",
+      "constraint": "meaning preserved; presentation may move (prose/table/diagram/example)"
+     },
+     {
+      "kind": "established_claim",
+      "tier": "established-documented",
+      "what": "LLM2Jev training-free matching result (2610.02076, PARTIAL); Rao cost/speed/error-overlap result (2609.29769, ABSTRACT_ONLY); Guo eq. 9 (1706.04599, narrow read). See ledger 2.13-2.15.",
+      "constraint": "meaning preserved; presentation may move (prose/table/diagram/example)"
+     },
+     {
+      "kind": "established_claim",
+      "tier": "established-observed",
+      "what": "Six of seven columns HAS_PRIOR_ART; P6 NOVEL_CANDIDATE; P4 thin. results/ch02.jsonl.",
+      "constraint": "meaning preserved; presentation may move (prose/table/diagram/example)"
+     },
+     {
+      "kind": "established_claim",
+      "tier": "established-observed",
+      "what": "Our confidence functions reproduce the vendor's 0.76 and ~0.35 worked examples; 27 self-test checks pass 2026-10-05.",
+      "constraint": "meaning preserved; presentation may move (prose/table/diagram/example)"
+     },
+     {
+      "kind": "established_claim",
+      "tier": "established-observed",
+      "what": "No live Jev behavior was observed (no key).",
+      "constraint": "meaning preserved; presentation may move (prose/table/diagram/example)"
+     },
+     {
+      "kind": "proposed_claim",
+      "tier": "NOT established",
+      "what": "Our contract shapes match the vendor wire shapes but validate strictly (VENDOR_DIFFERENCES).",
+      "constraint": "must never be presented as established; hypothesis framing stays attached"
+     },
+     {
+      "kind": "proposed_claim",
+      "tier": "NOT established",
+      "what": "The provider line was provisionally named Decider despite the AnyJev collision; renamed arbiter on 2026-10-05.",
+      "constraint": "must never be presented as established; hypothesis framing stays attached"
+     },
+     {
+      "kind": "proposed_claim",
+      "tier": "NOT established",
+      "what": "The P6 asymmetry (published second number) is the candidate distinction to test in Ch 9-11, not a novelty claim.",
+      "constraint": "must never be presented as established; hypothesis framing stays attached"
+     },
+     {
+      "kind": "genuine_limitation",
+      "what": "No live behavior observed (no Jev API key). The contract is reconstructed from public pages, which change.",
+      "constraint": "stays beside the claim it qualifies; qualifications that constrain claims stay with them"
+     },
+     {
+      "kind": "genuine_limitation",
+      "what": "LLM2Jev read PARTIAL (\u00a74, \u00a73.4 not fully read); Rao et al. ABSTRACT_ONLY. Cells cite only what was read.",
+      "constraint": "stays beside the claim it qualifies; qualifications that constrain claims stay with them"
+     },
+     {
+      "kind": "genuine_limitation",
+      "what": "The NLI row (M2) is UNKNOWN throughout; Ch 5-6 own it. A published NLI confidence statistic would fell the P6 verdict.",
+      "constraint": "stays beside the claim it qualifies; qualifications that constrain claims stay with them"
+     },
+     {
+      "kind": "genuine_limitation",
+      "what": "AnyJev was not one of the nine mechanisms; its level-gating sits adjacent to P6.",
+      "constraint": "stays beside the claim it qualifies; qualifications that constrain claims stay with them"
+     },
+     {
+      "kind": "genuine_limitation",
+      "what": "The Red Hat article returns HTTP 403 from this machine; its numbers are secondhand via the author's summary.",
+      "constraint": "stays beside the claim it qualifies; qualifications that constrain claims stay with them"
+     },
+     {
+      "kind": "genuine_limitation",
+      "what": "Guo et al. read narrowly (abstract + \u00a74.2); Ch 9 reads it in full.",
+      "constraint": "stays beside the claim it qualifies; qualifications that constrain claims stay with them"
+     },
+     {
+      "kind": "genuine_limitation",
+      "what": "HN commenter numbers are recorded as C, never cited as results.",
+      "constraint": "stays beside the claim it qualifies; qualifications that constrain claims stay with them"
+     },
+     {
+      "kind": "unresolved_evidence",
+      "claim_id": "eclaim:c55a3c59ba780a15a97b",
+      "state": "unresolved",
+      "what": "Everything in this section comes from TypeSafe's own documentation and launch post. The independent guide at `jevmodel.org` says much the same thing, but it states on its own footer that it is unaffil",
+      "constraint": "NEVER strengthened/removed/presented-as-established during planning"
+     },
+     {
+      "kind": "unresolved_evidence",
+      "claim_id": "eclaim:95cca4099f893f3435b9",
+      "state": "partial",
+      "what": "Per the preregistered `what_would_refute`, a fully-absent-or-unknown column is a discovery, not a gap \u2014 so the prediction was **partially refuted**, and the chapter reports it as such. The honest read",
+      "constraint": "NEVER strengthened/removed/presented-as-established during planning"
+     },
+     {
+      "kind": "unresolved_evidence",
+      "claim_id": "eclaim:96c41e42f16b39d285ad",
+      "state": "unresolved",
+      "what": "Two caveats travel with the verdict, because a table is only as honest as its gaps. First, the NLI row is UNKNOWN throughout; if Chapters 5\u20136 find a published separate confidence statistic in NLI scor",
+      "constraint": "NEVER strengthened/removed/presented-as-established during planning"
+     },
+     {
+      "kind": "unresolved_evidence",
+      "claim_id": "eclaim:923d465d2ed86dfc5e26",
+      "state": "unresolved",
+      "what": "- **No live behavior was observed.** Without a Jev API key, every statement about what the service does \u2014 as opposed to what its documentation says \u2014 is `NOT_OBSERVED`. The contract above is a reconst",
+      "constraint": "NEVER strengthened/removed/presented-as-established during planning"
+     },
+     {
+      "kind": "unresolved_evidence",
+      "claim_id": "eclaim:d5f5f48df24c8b8cb835",
+      "state": "unresolved",
+      "what": "- `src/arbiter/contract.py` \u2014 `DecisionRequest`, the three question types, the three answer types with strict validation, the vendor's confidence formulas verbatim, `parse_vendor_response`, and `VENDO",
+      "constraint": "NEVER strengthened/removed/presented-as-established during planning"
+     }
+    ],
+    "adjudications": [],
+    "blocked": false,
+    "package_hash": "9f548ab0f43830b3b257fd530e938c055bf0185f83c0ea8ceea03619ac509d00",
+    "directions": "op:b61a63c5:030:SPLIT_EXPLANATION:3 workload findings co-locate in one block (The result: six crowds, one empty column, one thin one): concept overload, not isolated sentences.; op:b61a63c5:031:ADD_SYNTHESIS:Post-dense synthesis missing after an overloaded passage."
+   },
+   {
+    "package_id": "passage:What Chapter 2 leaves behind",
+    "scale": "passage",
+    "section": "What Chapter 2 leaves behind",
+    "op_refs": [
+     "op:b61a63c5:035",
+     "op:b61a63c5:036"
+    ],
+    "op_types": [
+     "ADD_SYNTHESIS",
+     "SPLIT_EXPLANATION"
+    ],
+    "source_spans": [
+     {
+      "start_line": 335,
+      "end_line": 341
+     },
+     {
+      "start_line": 335,
+      "end_line": 341
+     }
+    ],
+    "finding_refs": [
+     "complexity:07101960672615b9a9dd",
+     "complexity:47b7844b64b5616c6ec4",
+     "complexity:cab148ceab1c02971b5e",
+     "complexity:d576e8df069ae6d86f66"
+    ],
+    "preservation_obligations": [
+     {
+      "kind": "established_claim",
+      "tier": "established-documented",
+      "what": "Jev's public contract (P1-P7) as reconstructed from docs.typesafe.ai and the vendor launch post, both read 2026-10-05. See ledger 2.1-2.7.",
+      "constraint": "meaning preserved; presentation may move (prose/table/diagram/example)"
+     },
+     {
+      "kind": "established_claim",
+      "tier": "established-documented",
+      "what": "P(True)/P(IK) calibration results and qualifications (2207.05221); GenRM direct-verifier equation and results (2408.15240); Cobbe verifier method and scaling (2110.14168). See ledger 2.8-2.12.",
+      "constraint": "meaning preserved; presentation may move (prose/table/diagram/example)"
+     },
+     {
+      "kind": "established_claim",
+      "tier": "established-documented",
+      "what": "LLM2Jev training-free matching result (2610.02076, PARTIAL); Rao cost/speed/error-overlap result (2609.29769, ABSTRACT_ONLY); Guo eq. 9 (1706.04599, narrow read). See ledger 2.13-2.15.",
+      "constraint": "meaning preserved; presentation may move (prose/table/diagram/example)"
+     },
+     {
+      "kind": "established_claim",
+      "tier": "established-observed",
+      "what": "Six of seven columns HAS_PRIOR_ART; P6 NOVEL_CANDIDATE; P4 thin. results/ch02.jsonl.",
+      "constraint": "meaning preserved; presentation may move (prose/table/diagram/example)"
+     },
+     {
+      "kind": "established_claim",
+      "tier": "established-observed",
+      "what": "Our confidence functions reproduce the vendor's 0.76 and ~0.35 worked examples; 27 self-test checks pass 2026-10-05.",
+      "constraint": "meaning preserved; presentation may move (prose/table/diagram/example)"
+     },
+     {
+      "kind": "established_claim",
+      "tier": "established-observed",
+      "what": "No live Jev behavior was observed (no key).",
+      "constraint": "meaning preserved; presentation may move (prose/table/diagram/example)"
+     },
+     {
+      "kind": "proposed_claim",
+      "tier": "NOT established",
+      "what": "Our contract shapes match the vendor wire shapes but validate strictly (VENDOR_DIFFERENCES).",
+      "constraint": "must never be presented as established; hypothesis framing stays attached"
+     },
+     {
+      "kind": "proposed_claim",
+      "tier": "NOT established",
+      "what": "The provider line was provisionally named Decider despite the AnyJev collision; renamed arbiter on 2026-10-05.",
+      "constraint": "must never be presented as established; hypothesis framing stays attached"
+     },
+     {
+      "kind": "proposed_claim",
+      "tier": "NOT established",
+      "what": "The P6 asymmetry (published second number) is the candidate distinction to test in Ch 9-11, not a novelty claim.",
+      "constraint": "must never be presented as established; hypothesis framing stays attached"
+     },
+     {
+      "kind": "genuine_limitation",
+      "what": "No live behavior observed (no Jev API key). The contract is reconstructed from public pages, which change.",
+      "constraint": "stays beside the claim it qualifies; qualifications that constrain claims stay with them"
+     },
+     {
+      "kind": "genuine_limitation",
+      "what": "LLM2Jev read PARTIAL (\u00a74, \u00a73.4 not fully read); Rao et al. ABSTRACT_ONLY. Cells cite only what was read.",
+      "constraint": "stays beside the claim it qualifies; qualifications that constrain claims stay with them"
+     },
+     {
+      "kind": "genuine_limitation",
+      "what": "The NLI row (M2) is UNKNOWN throughout; Ch 5-6 own it. A published NLI confidence statistic would fell the P6 verdict.",
+      "constraint": "stays beside the claim it qualifies; qualifications that constrain claims stay with them"
+     },
+     {
+      "kind": "genuine_limitation",
+      "what": "AnyJev was not one of the nine mechanisms; its level-gating sits adjacent to P6.",
+      "constraint": "stays beside the claim it qualifies; qualifications that constrain claims stay with them"
+     },
+     {
+      "kind": "genuine_limitation",
+      "what": "The Red Hat article returns HTTP 403 from this machine; its numbers are secondhand via the author's summary.",
+      "constraint": "stays beside the claim it qualifies; qualifications that constrain claims stay with them"
+     },
+     {
+      "kind": "genuine_limitation",
+      "what": "Guo et al. read narrowly (abstract + \u00a74.2); Ch 9 reads it in full.",
+      "constraint": "stays beside the claim it qualifies; qualifications that constrain claims stay with them"
+     },
+     {
+      "kind": "genuine_limitation",
+      "what": "HN commenter numbers are recorded as C, never cited as results.",
+      "constraint": "stays beside the claim it qualifies; qualifications that constrain claims stay with them"
+     },
+     {
+      "kind": "unresolved_evidence",
+      "claim_id": "eclaim:c55a3c59ba780a15a97b",
+      "state": "unresolved",
+      "what": "Everything in this section comes from TypeSafe's own documentation and launch post. The independent guide at `jevmodel.org` says much the same thing, but it states on its own footer that it is unaffil",
+      "constraint": "NEVER strengthened/removed/presented-as-established during planning"
+     },
+     {
+      "kind": "unresolved_evidence",
+      "claim_id": "eclaim:95cca4099f893f3435b9",
+      "state": "partial",
+      "what": "Per the preregistered `what_would_refute`, a fully-absent-or-unknown column is a discovery, not a gap \u2014 so the prediction was **partially refuted**, and the chapter reports it as such. The honest read",
+      "constraint": "NEVER strengthened/removed/presented-as-established during planning"
+     },
+     {
+      "kind": "unresolved_evidence",
+      "claim_id": "eclaim:96c41e42f16b39d285ad",
+      "state": "unresolved",
+      "what": "Two caveats travel with the verdict, because a table is only as honest as its gaps. First, the NLI row is UNKNOWN throughout; if Chapters 5\u20136 find a published separate confidence statistic in NLI scor",
+      "constraint": "NEVER strengthened/removed/presented-as-established during planning"
+     },
+     {
+      "kind": "unresolved_evidence",
+      "claim_id": "eclaim:923d465d2ed86dfc5e26",
+      "state": "unresolved",
+      "what": "- **No live behavior was observed.** Without a Jev API key, every statement about what the service does \u2014 as opposed to what its documentation says \u2014 is `NOT_OBSERVED`. The contract above is a reconst",
+      "constraint": "NEVER strengthened/removed/presented-as-established during planning"
+     },
+     {
+      "kind": "unresolved_evidence",
+      "claim_id": "eclaim:d5f5f48df24c8b8cb835",
+      "state": "unresolved",
+      "what": "- `src/arbiter/contract.py` \u2014 `DecisionRequest`, the three question types, the three answer types with strict validation, the vendor's confidence formulas verbatim, `parse_vendor_response`, and `VENDO",
+      "constraint": "NEVER strengthened/removed/presented-as-established during planning"
+     }
+    ],
+    "adjudications": [],
+    "blocked": false,
+    "package_hash": "9e4d468f4b1faf9fc76aefb6b7d6016f203eda6d64be1bdccad5795601344a0f",
+    "directions": "op:b61a63c5:035:SPLIT_EXPLANATION:4 workload findings co-locate in one block (What Chapter 2 leaves behind): concept overload, not isolated sentences.; op:b61a63c5:036:ADD_SYNTHESIS:Post-dense synthesis missing after an overloaded passage."
+   },
+   {
+    "package_id": "passage:What the vendor pointedly does not promise",
+    "scale": "passage",
+    "section": "What the vendor pointedly does not promise",
+    "op_refs": [
+     "op:b61a63c5:040",
+     "op:b61a63c5:041",
+     "op:b61a63c5:038"
+    ],
+    "op_types": [
+     "ADD_SYNTHESIS",
+     "CONVERT_TO_TABLE",
+     "SPLIT_EXPLANATION"
+    ],
+    "source_spans": [
+     {
+      "start_line": 79,
+      "end_line": 87
+     },
+     {
+      "start_line": 79,
+      "end_line": 87
+     },
+     {
+      "start_line": 105,
+      "end_line": 115
+     }
+    ],
+    "finding_refs": [
+     "complexity:0b7a7cf4dbed6a84d682",
+     "complexity:8b671a6c37875c85eda5",
+     "complexity:c6072a892a273c839599",
+     "complexity:e3058e4019b462430d2c",
+     "complexity:f791cf1caa7c18bd2cf7"
+    ],
+    "preservation_obligations": [
+     {
+      "kind": "established_claim",
+      "tier": "established-documented",
+      "what": "Jev's public contract (P1-P7) as reconstructed from docs.typesafe.ai and the vendor launch post, both read 2026-10-05. See ledger 2.1-2.7.",
+      "constraint": "meaning preserved; presentation may move (prose/table/diagram/example)"
+     },
+     {
+      "kind": "established_claim",
+      "tier": "established-documented",
+      "what": "P(True)/P(IK) calibration results and qualifications (2207.05221); GenRM direct-verifier equation and results (2408.15240); Cobbe verifier method and scaling (2110.14168). See ledger 2.8-2.12.",
+      "constraint": "meaning preserved; presentation may move (prose/table/diagram/example)"
+     },
+     {
+      "kind": "established_claim",
+      "tier": "established-documented",
+      "what": "LLM2Jev training-free matching result (2610.02076, PARTIAL); Rao cost/speed/error-overlap result (2609.29769, ABSTRACT_ONLY); Guo eq. 9 (1706.04599, narrow read). See ledger 2.13-2.15.",
+      "constraint": "meaning preserved; presentation may move (prose/table/diagram/example)"
+     },
+     {
+      "kind": "established_claim",
+      "tier": "established-observed",
+      "what": "Six of seven columns HAS_PRIOR_ART; P6 NOVEL_CANDIDATE; P4 thin. results/ch02.jsonl.",
+      "constraint": "meaning preserved; presentation may move (prose/table/diagram/example)"
+     },
+     {
+      "kind": "established_claim",
+      "tier": "established-observed",
+      "what": "Our confidence functions reproduce the vendor's 0.76 and ~0.35 worked examples; 27 self-test checks pass 2026-10-05.",
+      "constraint": "meaning preserved; presentation may move (prose/table/diagram/example)"
+     },
+     {
+      "kind": "established_claim",
+      "tier": "established-observed",
+      "what": "No live Jev behavior was observed (no key).",
+      "constraint": "meaning preserved; presentation may move (prose/table/diagram/example)"
+     },
+     {
+      "kind": "proposed_claim",
+      "tier": "NOT established",
+      "what": "Our contract shapes match the vendor wire shapes but validate strictly (VENDOR_DIFFERENCES).",
+      "constraint": "must never be presented as established; hypothesis framing stays attached"
+     },
+     {
+      "kind": "proposed_claim",
+      "tier": "NOT established",
+      "what": "The provider line was provisionally named Decider despite the AnyJev collision; renamed arbiter on 2026-10-05.",
+      "constraint": "must never be presented as established; hypothesis framing stays attached"
+     },
+     {
+      "kind": "proposed_claim",
+      "tier": "NOT established",
+      "what": "The P6 asymmetry (published second number) is the candidate distinction to test in Ch 9-11, not a novelty claim.",
+      "constraint": "must never be presented as established; hypothesis framing stays attached"
+     },
+     {
+      "kind": "genuine_limitation",
+      "what": "No live behavior observed (no Jev API key). The contract is reconstructed from public pages, which change.",
+      "constraint": "stays beside the claim it qualifies; qualifications that constrain claims stay with them"
+     },
+     {
+      "kind": "genuine_limitation",
+      "what": "LLM2Jev read PARTIAL (\u00a74, \u00a73.4 not fully read); Rao et al. ABSTRACT_ONLY. Cells cite only what was read.",
+      "constraint": "stays beside the claim it qualifies; qualifications that constrain claims stay with them"
+     },
+     {
+      "kind": "genuine_limitation",
+      "what": "The NLI row (M2) is UNKNOWN throughout; Ch 5-6 own it. A published NLI confidence statistic would fell the P6 verdict.",
+      "constraint": "stays beside the claim it qualifies; qualifications that constrain claims stay with them"
+     },
+     {
+      "kind": "genuine_limitation",
+      "what": "AnyJev was not one of the nine mechanisms; its level-gating sits adjacent to P6.",
+      "constraint": "stays beside the claim it qualifies; qualifications that constrain claims stay with them"
+     },
+     {
+      "kind": "genuine_limitation",
+      "what": "The Red Hat article returns HTTP 403 from this machine; its numbers are secondhand via the author's summary.",
+      "constraint": "stays beside the claim it qualifies; qualifications that constrain claims stay with them"
+     },
+     {
+      "kind": "genuine_limitation",
+      "what": "Guo et al. read narrowly (abstract + \u00a74.2); Ch 9 reads it in full.",
+      "constraint": "stays beside the claim it qualifies; qualifications that constrain claims stay with them"
+     },
+     {
+      "kind": "genuine_limitation",
+      "what": "HN commenter numbers are recorded as C, never cited as results.",
+      "constraint": "stays beside the claim it qualifies; qualifications that constrain claims stay with them"
+     },
+     {
+      "kind": "unresolved_evidence",
+      "claim_id": "eclaim:c55a3c59ba780a15a97b",
+      "state": "unresolved",
+      "what": "Everything in this section comes from TypeSafe's own documentation and launch post. The independent guide at `jevmodel.org` says much the same thing, but it states on its own footer that it is unaffil",
+      "constraint": "NEVER strengthened/removed/presented-as-established during planning"
+     },
+     {
+      "kind": "unresolved_evidence",
+      "claim_id": "eclaim:95cca4099f893f3435b9",
+      "state": "partial",
+      "what": "Per the preregistered `what_would_refute`, a fully-absent-or-unknown column is a discovery, not a gap \u2014 so the prediction was **partially refuted**, and the chapter reports it as such. The honest read",
+      "constraint": "NEVER strengthened/removed/presented-as-established during planning"
+     },
+     {
+      "kind": "unresolved_evidence",
+      "claim_id": "eclaim:96c41e42f16b39d285ad",
+      "state": "unresolved",
+      "what": "Two caveats travel with the verdict, because a table is only as honest as its gaps. First, the NLI row is UNKNOWN throughout; if Chapters 5\u20136 find a published separate confidence statistic in NLI scor",
+      "constraint": "NEVER strengthened/removed/presented-as-established during planning"
+     },
+     {
+      "kind": "unresolved_evidence",
+      "claim_id": "eclaim:923d465d2ed86dfc5e26",
+      "state": "unresolved",
+      "what": "- **No live behavior was observed.** Without a Jev API key, every statement about what the service does \u2014 as opposed to what its documentation says \u2014 is `NOT_OBSERVED`. The contract above is a reconst",
+      "constraint": "NEVER strengthened/removed/presented-as-established during planning"
+     },
+     {
+      "kind": "unresolved_evidence",
+      "claim_id": "eclaim:d5f5f48df24c8b8cb835",
+      "state": "unresolved",
+      "what": "- `src/arbiter/contract.py` \u2014 `DecisionRequest`, the three question types, the three answer types with strict validation, the vendor's confidence formulas verbatim, `parse_vendor_response`, and `VENDO",
+      "constraint": "NEVER strengthened/removed/presented-as-established during planning"
+     }
+    ],
+    "adjudications": [],
+    "blocked": false,
+    "package_hash": "03b5160a77da4fd1273589931ad49566d3111068bbb20e1896dda302b129b737",
+    "directions": "op:b61a63c5:040:SPLIT_EXPLANATION:3 workload findings co-locate in one block (What the vendor pointedly does not promise): concept overload, not isolated sentences.; op:b61a63c5:041:ADD_SYNTHESIS:Post-dense synthesis missing after an overloaded passage.; op:b61a63c5:038:CONVERT_TO_TABLE:7 parallel numeric sentences share comparison dims: information structure fits a table."
+   },
+   {
+    "package_id": "passage:What to carry forward",
+    "scale": "passage",
+    "section": "What to carry forward",
+    "op_refs": [
+     "op:b61a63c5:042",
+     "op:b61a63c5:043"
+    ],
+    "op_types": [
+     "ADD_SYNTHESIS",
+     "SPLIT_EXPLANATION"
+    ],
+    "source_spans": [
+     {
+      "start_line": 292,
+      "end_line": 300
+     },
+     {
+      "start_line": 292,
+      "end_line": 300
+     }
+    ],
+    "finding_refs": [
+     "complexity:0ff04f34e1867cfda4b2",
+     "complexity:191a9f4ca347e1506350",
+     "complexity:976d4e334f3595e0d497",
+     "complexity:c9d2db1db507df2ba07a"
+    ],
+    "preservation_obligations": [
+     {
+      "kind": "established_claim",
+      "tier": "established-documented",
+      "what": "Jev's public contract (P1-P7) as reconstructed from docs.typesafe.ai and the vendor launch post, both read 2026-10-05. See ledger 2.1-2.7.",
+      "constraint": "meaning preserved; presentation may move (prose/table/diagram/example)"
+     },
+     {
+      "kind": "established_claim",
+      "tier": "established-documented",
+      "what": "P(True)/P(IK) calibration results and qualifications (2207.05221); GenRM direct-verifier equation and results (2408.15240); Cobbe verifier method and scaling (2110.14168). See ledger 2.8-2.12.",
+      "constraint": "meaning preserved; presentation may move (prose/table/diagram/example)"
+     },
+     {
+      "kind": "established_claim",
+      "tier": "established-documented",
+      "what": "LLM2Jev training-free matching result (2610.02076, PARTIAL); Rao cost/speed/error-overlap result (2609.29769, ABSTRACT_ONLY); Guo eq. 9 (1706.04599, narrow read). See ledger 2.13-2.15.",
+      "constraint": "meaning preserved; presentation may move (prose/table/diagram/example)"
+     },
+     {
+      "kind": "established_claim",
+      "tier": "established-observed",
+      "what": "Six of seven columns HAS_PRIOR_ART; P6 NOVEL_CANDIDATE; P4 thin. results/ch02.jsonl.",
+      "constraint": "meaning preserved; presentation may move (prose/table/diagram/example)"
+     },
+     {
+      "kind": "established_claim",
+      "tier": "established-observed",
+      "what": "Our confidence functions reproduce the vendor's 0.76 and ~0.35 worked examples; 27 self-test checks pass 2026-10-05.",
+      "constraint": "meaning preserved; presentation may move (prose/table/diagram/example)"
+     },
+     {
+      "kind": "established_claim",
+      "tier": "established-observed",
+      "what": "No live Jev behavior was observed (no key).",
+      "constraint": "meaning preserved; presentation may move (prose/table/diagram/example)"
+     },
+     {
+      "kind": "proposed_claim",
+      "tier": "NOT established",
+      "what": "Our contract shapes match the vendor wire shapes but validate strictly (VENDOR_DIFFERENCES).",
+      "constraint": "must never be presented as established; hypothesis framing stays attached"
+     },
+     {
+      "kind": "proposed_claim",
+      "tier": "NOT established",
+      "what": "The provider line was provisionally named Decider despite the AnyJev collision; renamed arbiter on 2026-10-05.",
+      "constraint": "must never be presented as established; hypothesis framing stays attached"
+     },
+     {
+      "kind": "proposed_claim",
+      "tier": "NOT established",
+      "what": "The P6 asymmetry (published second number) is the candidate distinction to test in Ch 9-11, not a novelty claim.",
+      "constraint": "must never be presented as established; hypothesis framing stays attached"
+     },
+     {
+      "kind": "genuine_limitation",
+      "what": "No live behavior observed (no Jev API key). The contract is reconstructed from public pages, which change.",
+      "constraint": "stays beside the claim it qualifies; qualifications that constrain claims stay with them"
+     },
+     {
+      "kind": "genuine_limitation",
+      "what": "LLM2Jev read PARTIAL (\u00a74, \u00a73.4 not fully read); Rao et al. ABSTRACT_ONLY. Cells cite only what was read.",
+      "constraint": "stays beside the claim it qualifies; qualifications that constrain claims stay with them"
+     },
+     {
+      "kind": "genuine_limitation",
+      "what": "The NLI row (M2) is UNKNOWN throughout; Ch 5-6 own it. A published NLI confidence statistic would fell the P6 verdict.",
+      "constraint": "stays beside the claim it qualifies; qualifications that constrain claims stay with them"
+     },
+     {
+      "kind": "genuine_limitation",
+      "what": "AnyJev was not one of the nine mechanisms; its level-gating sits adjacent to P6.",
+      "constraint": "stays beside the claim it qualifies; qualifications that constrain claims stay with them"
+     },
+     {
+      "kind": "genuine_limitation",
+      "what": "The Red Hat article returns HTTP 403 from this machine; its numbers are secondhand via the author's summary.",
+      "constraint": "stays beside the claim it qualifies; qualifications that constrain claims stay with them"
+     },
+     {
+      "kind": "genuine_limitation",
+      "what": "Guo et al. read narrowly (abstract + \u00a74.2); Ch 9 reads it in full.",
+      "constraint": "stays beside the claim it qualifies; qualifications that constrain claims stay with them"
+     },
+     {
+      "kind": "genuine_limitation",
+      "what": "HN commenter numbers are recorded as C, never cited as results.",
+      "constraint": "stays beside the claim it qualifies; qualifications that constrain claims stay with them"
+     },
+     {
+      "kind": "unresolved_evidence",
+      "claim_id": "eclaim:c55a3c59ba780a15a97b",
+      "state": "unresolved",
+      "what": "Everything in this section comes from TypeSafe's own documentation and launch post. The independent guide at `jevmodel.org` says much the same thing, but it states on its own footer that it is unaffil",
+      "constraint": "NEVER strengthened/removed/presented-as-established during planning"
+     },
+     {
+      "kind": "unresolved_evidence",
+      "claim_id": "eclaim:95cca4099f893f3435b9",
+      "state": "partial",
+      "what": "Per the preregistered `what_would_refute`, a fully-absent-or-unknown column is a discovery, not a gap \u2014 so the prediction was **partially refuted**, and the chapter reports it as such. The honest read",
+      "constraint": "NEVER strengthened/removed/presented-as-established during planning"
+     },
+     {
+      "kind": "unresolved_evidence",
+      "claim_id": "eclaim:96c41e42f16b39d285ad",
+      "state": "unresolved",
+      "what": "Two caveats travel with the verdict, because a table is only as honest as its gaps. First, the NLI row is UNKNOWN throughout; if Chapters 5\u20136 find a published separate confidence statistic in NLI scor",
+      "constraint": "NEVER strengthened/removed/presented-as-established during planning"
+     },
+     {
+      "kind": "unresolved_evidence",
+      "claim_id": "eclaim:923d465d2ed86dfc5e26",
+      "state": "unresolved",
+      "what": "- **No live behavior was observed.** Without a Jev API key, every statement about what the service does \u2014 as opposed to what its documentation says \u2014 is `NOT_OBSERVED`. The contract above is a reconst",
+      "constraint": "NEVER strengthened/removed/presented-as-established during planning"
+     },
+     {
+      "kind": "unresolved_evidence",
+      "claim_id": "eclaim:d5f5f48df24c8b8cb835",
+      "state": "unresolved",
+      "what": "- `src/arbiter/contract.py` \u2014 `DecisionRequest`, the three question types, the three answer types with strict validation, the vendor's confidence formulas verbatim, `parse_vendor_response`, and `VENDO",
+      "constraint": "NEVER strengthened/removed/presented-as-established during planning"
+     }
+    ],
+    "adjudications": [],
+    "blocked": false,
+    "package_hash": "cfdeae5aae2061d1d9dde1b57a2fb0e2ffddb7b7187cae07b73255b23679e6fe",
+    "directions": "op:b61a63c5:042:SPLIT_EXPLANATION:4 workload findings co-locate in one block (What to carry forward): concept overload, not isolated sentences.; op:b61a63c5:043:ADD_SYNTHESIS:Post-dense synthesis missing after an overloaded passage."
+   },
+   {
+    "package_id": "surgical:finalization",
+    "scale": "surgical",
+    "section": "(residual corrections)",
+    "op_refs": [],
+    "op_types": [
+     "SURGICAL_SLOT"
+    ],
+    "source_spans": [],
+    "finding_refs": [],
+    "preservation_obligations": [],
+    "adjudications": [],
+    "blocked": false,
+    "directions": "Pass F only: sentence/paragraph defect fixes in apply_edits.py format against the candidate text; exact-or-explicit-failure; no bulk edits."
+   }
+  ],
+  "isolated": [
+   {
+    "op_id": "op:b61a63c5:003",
+    "type": "INVESTIGATE_EVIDENCE",
+    "disposition": "read_only_track",
+    "reason": "INVESTIGATE/ABSTAIN never executes prose changes; tracked as author questions."
+   },
+   {
+    "op_id": "op:b61a63c5:004",
+    "type": "INVESTIGATE_EVIDENCE",
+    "disposition": "read_only_track",
+    "reason": "INVESTIGATE/ABSTAIN never executes prose changes; tracked as author questions."
+   },
+   {
+    "op_id": "op:b61a63c5:014",
+    "type": "CONNECT_EXPLANATION",
+    "status": "context_blocked",
+    "disposition": "blocked_isolated",
+    "reason": "Unresolved context/evidence without fresh context-bound adjudication: only this claim + dependents held; unrelated improvements proceed."
+   },
+   {
+    "op_id": "op:b61a63c5:015",
+    "type": "INVESTIGATE_EVIDENCE",
+    "disposition": "read_only_track",
+    "reason": "INVESTIGATE/ABSTAIN never executes prose changes; tracked as author questions."
+   },
+   {
+    "op_id": "op:b61a63c5:016",
+    "type": "CONNECT_EXPLANATION",
+    "status": "context_blocked",
+    "disposition": "blocked_isolated",
+    "reason": "Unresolved context/evidence without fresh context-bound adjudication: only this claim + dependents held; unrelated improvements proceed."
+   },
+   {
+    "op_id": "op:b61a63c5:017",
+    "type": "INVESTIGATE_EVIDENCE",
+    "disposition": "read_only_track",
+    "reason": "INVESTIGATE/ABSTAIN never executes prose changes; tracked as author questions."
+   },
+   {
+    "op_id": "op:b61a63c5:018",
+    "type": "INVESTIGATE_EVIDENCE",
+    "disposition": "read_only_track",
+    "reason": "INVESTIGATE/ABSTAIN never executes prose changes; tracked as author questions."
+   },
+   {
+    "op_id": "op:b61a63c5:019",
+    "type": "INVESTIGATE_EVIDENCE",
+    "disposition": "read_only_track",
+    "reason": "INVESTIGATE/ABSTAIN never executes prose changes; tracked as author questions."
+   },
+   {
+    "op_id": "op:b61a63c5:020",
+    "type": "INVESTIGATE_EVIDENCE",
+    "disposition": "read_only_track",
+    "reason": "INVESTIGATE/ABSTAIN never executes prose changes; tracked as author questions."
+   },
+   {
+    "op_id": "op:b61a63c5:021",
+    "type": "INVESTIGATE_EVIDENCE",
+    "disposition": "read_only_track",
+    "reason": "INVESTIGATE/ABSTAIN never executes prose changes; tracked as author questions."
+   },
+   {
+    "op_id": "op:b61a63c5:022",
+    "type": "INVESTIGATE_EVIDENCE",
+    "disposition": "read_only_track",
+    "reason": "INVESTIGATE/ABSTAIN never executes prose changes; tracked as author questions."
+   },
+   {
+    "op_id": "op:b61a63c5:023",
+    "type": "INVESTIGATE_EVIDENCE",
+    "disposition": "read_only_track",
+    "reason": "INVESTIGATE/ABSTAIN never executes prose changes; tracked as author questions."
+   },
+   {
+    "op_id": "op:b61a63c5:026",
+    "type": "REORDER",
+    "disposition": "investigation_only",
+    "reason": "D-PUB-50: never consumed as a transformation."
+   },
+   {
+    "op_id": "op:b61a63c5:028",
+    "type": "INVESTIGATE_EVIDENCE",
+    "disposition": "read_only_track",
+    "reason": "INVESTIGATE/ABSTAIN never executes prose changes; tracked as author questions."
+   },
+   {
+    "op_id": "op:b61a63c5:029",
+    "type": "INVESTIGATE_EVIDENCE",
+    "disposition": "read_only_track",
+    "reason": "INVESTIGATE/ABSTAIN never executes prose changes; tracked as author questions."
+   },
+   {
+    "op_id": "op:b61a63c5:032",
+    "type": "INVESTIGATE_EVIDENCE",
+    "disposition": "read_only_track",
+    "reason": "INVESTIGATE/ABSTAIN never executes prose changes; tracked as author questions."
+   },
+   {
+    "op_id": "op:b61a63c5:034",
+    "type": "INVESTIGATE_EVIDENCE",
+    "disposition": "read_only_track",
+    "reason": "INVESTIGATE/ABSTAIN never executes prose changes; tracked as author questions."
+   },
+   {
+    "op_id": "op:b61a63c5:037",
+    "type": "CONNECT_EXPLANATION",
+    "status": "context_blocked",
+    "disposition": "blocked_isolated",
+    "reason": "Unresolved context/evidence without fresh context-bound adjudication: only this claim + dependents held; unrelated improvements proceed."
+   },
+   {
+    "op_id": "op:b61a63c5:039",
+    "type": "REORDER",
+    "disposition": "investigation_only",
+    "reason": "D-PUB-50: never consumed as a transformation."
+   }
+  ],
+  "respected": [
+   {
+    "op_id": "op:b61a63c5:001",
+    "type": "NO_CHANGE",
+    "disposition": "respected_unchanged"
+   },
+   {
+    "op_id": "op:b61a63c5:005",
+    "type": "NO_CHANGE",
+    "disposition": "respected_unchanged"
+   },
+   {
+    "op_id": "op:b61a63c5:008",
+    "type": "NO_CHANGE",
+    "disposition": "respected_unchanged"
+   },
+   {
+    "op_id": "op:b61a63c5:011",
+    "type": "NO_CHANGE",
+    "disposition": "respected_unchanged"
+   },
+   {
+    "op_id": "op:b61a63c5:012",
+    "type": "NO_CHANGE",
+    "disposition": "respected_unchanged"
+   },
+   {
+    "op_id": "op:b61a63c5:013",
+    "type": "NO_CHANGE",
+    "disposition": "respected_unchanged"
+   },
+   {
+    "op_id": "op:b61a63c5:027",
+    "type": "NO_CHANGE",
+    "disposition": "respected_unchanged"
+   },
+   {
+    "op_id": "op:b61a63c5:033",
+    "type": "NO_CHANGE",
+    "disposition": "respected_unchanged"
+   },
+   {
+    "op_id": "op:b61a63c5:044",
+    "type": "KEEP",
+    "disposition": "respected_unchanged"
+   },
+   {
+    "op_id": "op:b61a63c5:045",
+    "type": "KEEP",
+    "disposition": "respected_unchanged"
+   },
+   {
+    "op_id": "op:b61a63c5:046",
+    "type": "KEEP",
+    "disposition": "respected_unchanged"
+   }
+  ],
+  "counts": {
+   "packages": 10,
+   "isolated": 19,
+   "respected": 11
+  },
+  "boundary_executable": true,
+  "boundary_authenticated": true,
+  "binding_digest": "673d3d338f5c25026a14a788673e0869d30786b9ea2c733cb8b00c49f3acb39d",
+  "violations": [
+   {
+    "code": "investigation_only_consumed",
+    "op_id": "op:b61a63c5:026",
+    "rationale": "REORDER is investigation-only (D-PUB-50): recorded as investigated, never consumed as a transformation.",
+    "severity": "isolating",
+    "evidence_label": "MEASURED_TEXT",
+    "detector": "publication-transformation-v0.1"
+   },
+   {
+    "code": "investigation_only_consumed",
+    "op_id": "op:b61a63c5:039",
+    "rationale": "REORDER is investigation-only (D-PUB-50): recorded as investigated, never consumed as a transformation.",
+    "severity": "isolating",
+    "evidence_label": "MEASURED_TEXT",
+    "detector": "publication-transformation-v0.1"
+   }
+  ]
+ },
+ "package_hashes": [
+  "3e5c444bbaffaa2e9ddb618ddb0ff9a6dbb3ec7975f6eba19a0bd8909496515c",
+  "fba6a46e26c9b690b4e738b0adbbdb31669d1903199fe955543b18b41cea4357",
+  "da4a137efc3f7ed1b47ef87279459a4fafc82fcdb27bb23e31d339587023c1d5",
+  "eb187bb47edbc1e14e6e0688d9ab4f546ea5367acb7d89b3c919756cee77294c",
+  "17333fae2172d724e352847c2f257d9230610c757f6204243c079bfafbe5a74b",
+  "9f548ab0f43830b3b257fd530e938c055bf0185f83c0ea8ceea03619ac509d00",
+  "9e4d468f4b1faf9fc76aefb6b7d6016f203eda6d64be1bdccad5795601344a0f",
+  "03b5160a77da4fd1273589931ad49566d3111068bbb20e1896dda302b129b737",
+  "cfdeae5aae2061d1d9dde1b57a2fb0e2ffddb7b7187cae07b73255b23679e6fe",
+  "41c127cba2b366837d3c395985c988c1b6336e162d7cdbefb5acd73a40669fc1"
+ ],
+ "packages_digest": "88cedd2874c950f684a821efb58c81a58b59ce448d68a6b8158fdd2b079f1d93",
+ "preservation": {
+  "obligation_count": 33,
+  "byte_true_count": 12
+ },
+ "model_invocations": [
+  {
+   "writer_execution_id": "model-exec-6d7b8067b26f",
+   "role": "editorial",
+   "model": "opencode-go/deepseek-v4.1-flash",
+   "provider": "pi",
+   "route": "default_deepseek_go",
+   "usage": {
+    "input_tokens": 2050,
+    "output_tokens": 7328,
+    "total_tokens": 9378
+   },
+   "cost_usd": 0.0047043,
+   "prompt_sha256": "1d45f8e309f035b822934ab132e6717f6728679c751133711ce949883940aef7"
+  },
+  {
+   "writer_execution_id": "model-exec-c6bef59f8cd8",
+   "role": "verification",
+   "model": "opencode-go/claude-haiku-5-5",
+   "provider": "pi",
+   "route": "default_haiku_go",
+   "usage": {
+    "input_tokens": 4,
+    "output_tokens": 2684,
+    "total_tokens": 5262
+   },
+   "cost_usd": 0,
+   "prompt_sha256": "fcb8d615eeeeb19ad3275ec3a1119c163f5a252869faa2eed85c53ec773927b5"
+  },
+  {
+   "writer_execution_id": "model-exec-6b5b03750036",
+   "role": "editorial",
+   "model": "opencode-go/deepseek-v4.1-flash",
+   "provider": "pi",
+   "route": "default_deepseek_go",
+   "usage": {
+    "input_tokens": 2189,
+    "output_tokens": 3381,
+    "total_tokens": 5570
+   },
+   "cost_usd": 0.00235695,
+   "prompt_sha256": "f1befb0fd7166395530a6e952d3ffb4ae7afb9c4fb827bac9c0a98c3084d6ad9"
+  },
+  {
+   "writer_execution_id": "model-exec-66b3a3312eb6",
+   "role": "verification",
+   "model": "opencode-go/claude-haiku-5-5",
+   "provider": "pi",
+   "route": "default_haiku_go",
+   "usage": {
+    "input_tokens": 4,
+    "output_tokens": 2577,
+    "total_tokens": 5294
+   },
+   "cost_usd": 0,
+   "prompt_sha256": "6ad0b06e6f617a1e2cc3a3adfb40c5c8f6375c1ec11b346bbb589c126ef46bd7"
+  }
+ ],
+ "revisions": [
+  {
+   "program_outcome": "review_invalid",
+   "iterations": 1
+  }
+ ],
+ "dispositions": [],
+ "assets": [
+  {
+   "kind": "candidate",
+   "path": "candidate.md"
+  },
+  {
+   "kind": "staged_change_set",
+   "path": "staged.json"
+  }
+ ],
+ "reviews": [
+  {
+   "round": 0,
+   "verdict": "request_changes",
+   "reasons": []
+  },
+  {
+   "round": 1,
+   "verdict": "invalid",
+   "reasons": [
+    "quote_not_in_either_passage: 'a resemblance, not a demonstrated equivalence'"
+   ]
+  }
+ ],
+ "verification": {
+  "verdict": "pass",
+  "gaming_note": "No preservation failures; deltas are informative.",
+  "checks_passed": 15,
+  "checks_failed": 0,
+  "before_fingerprint": "b61a63c525e29e4339bea70b4239576c243220bcf1136f22d87a85cf69d5be3b",
+  "after_fingerprint": "50e1ef2e0886e6ee65fdbb81a7061b6dc32302c65ebcee4be3cd62fdab602f37"
+ },
+ "chain": {
+  "plan_digest": "c21897226f0c950f4a2554f237fb9c6dd07047a8b1ac117881db29a2178510b3",
+  "boundary_digest": "bcf66eab929bccaa43d747f6c746b817f9333c0093ca2fe73fd8c82471dc6669",
+  "packages_digest": "88cedd2874c950f684a821efb58c81a58b59ce448d68a6b8158fdd2b079f1d93",
+  "verification_digest": "cbb3fc7d2cc3fbc952712a6f58ba641f1114ff2e1dc1a805477ffe528188e5d1",
+  "candidate_fingerprint": "50e1ef2e0886e6ee65fdbb81a7061b6dc32302c65ebcee4be3cd62fdab602f37"
+ },
+ "unresolved_obligations": [],
+ "acceptance": {
+  "status": "pending_author_decision",
+  "approved_by": null,
+  "note": "Presented for approval; never auto-approved, never auto-applied (D-PUB-71)."
+ },
+ "recorded_at": "2026-11-25T07:42:35.730931+00:00"
+}

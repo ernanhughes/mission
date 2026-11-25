@@ -1,0 +1,203 @@
+{
+ "detector": "publication-transformation-v0.1",
+ "profile": "transform-v0.1",
+ "verified_at": "2026-11-25T07:42:35.730931+00:00",
+ "verdict": "pass",
+ "gaming_note": "No preservation failures; deltas are informative.",
+ "checks": [
+  {
+   "check": "byte_true_present",
+   "span": {
+    "start_line": 28,
+    "end_line": 34
+   },
+   "rule": "not-observed",
+   "passed": true,
+   "detail": "verbatim full lines in order"
+  },
+  {
+   "check": "byte_true_present",
+   "span": {
+    "start_line": 173,
+    "end_line": 181
+   },
+   "rule": "untested",
+   "passed": true,
+   "detail": "verbatim full lines in order"
+  },
+  {
+   "check": "byte_true_present",
+   "span": {
+    "start_line": 302,
+    "end_line": 302
+   },
+   "rule": "limitation",
+   "passed": true,
+   "detail": "verbatim full lines in order"
+  },
+  {
+   "check": "byte_true_present",
+   "span": {
+    "start_line": 303,
+    "end_line": 303
+   },
+   "rule": "honest-record-section:limitations",
+   "passed": true,
+   "detail": "empty source span, vacuously present"
+  },
+  {
+   "check": "byte_true_present",
+   "span": {
+    "start_line": 304,
+    "end_line": 320
+   },
+   "rule": "not-observed",
+   "passed": true,
+   "detail": "verbatim full lines in order"
+  },
+  {
+   "check": "byte_true_present",
+   "span": {
+    "start_line": 321,
+    "end_line": 321
+   },
+   "rule": "honest-record-section:limitations",
+   "passed": true,
+   "detail": "empty source span, vacuously present"
+  },
+  {
+   "check": "new_sentence_honesty",
+   "passed": true,
+   "detail": "no added sentence presents unobserved model-backed work as established (first layer; full semantics PUB-08)."
+  },
+  {
+   "check": "no_change_identical",
+   "span": {
+    "start_line": 12,
+    "end_line": 16
+   },
+   "passed": true,
+   "detail": "verbatim contiguous block present"
+  },
+  {
+   "check": "no_change_identical",
+   "span": {
+    "start_line": 127,
+    "end_line": 131
+   },
+   "passed": true,
+   "detail": "verbatim contiguous block present"
+  },
+  {
+   "check": "no_change_identical",
+   "span": {
+    "start_line": 148,
+    "end_line": 156
+   },
+   "passed": true,
+   "detail": "verbatim contiguous block present"
+  },
+  {
+   "check": "no_change_identical",
+   "span": {
+    "start_line": 219,
+    "end_line": 224
+   },
+   "passed": true,
+   "detail": "verbatim contiguous block present"
+  },
+  {
+   "check": "no_change_identical",
+   "span": {
+    "start_line": 226,
+    "end_line": 273
+   },
+   "passed": true,
+   "detail": "verbatim contiguous block present"
+  },
+  {
+   "check": "no_change_identical",
+   "span": {
+    "start_line": 281,
+    "end_line": 284
+   },
+   "passed": true,
+   "detail": "verbatim contiguous block present"
+  },
+  {
+   "check": "no_change_identical",
+   "span": {
+    "start_line": 162,
+    "end_line": 171
+   },
+   "passed": true,
+   "detail": "verbatim contiguous block present"
+  },
+  {
+   "check": "no_change_identical",
+   "span": {
+    "start_line": 198,
+    "end_line": 203
+   },
+   "passed": true,
+   "detail": "verbatim contiguous block present"
+  }
+ ],
+ "checks_passed": 15,
+ "checks_failed": 0,
+ "before": {
+  "cruft": {
+   "total": 0,
+   "by": {},
+   "preserved": 6
+  },
+  "complexity": {
+   "total": 44,
+   "by": {
+    "CX01": 5,
+    "CX02": 13,
+    "CX03": 8,
+    "CX04": 2,
+    "CX06": 3,
+    "CX10": 2,
+    "CX11": 2,
+    "CX12": 1,
+    "CX13": 2,
+    "CX14": 4,
+    "CX15": 2
+   },
+   "preserved": 6
+  },
+  "fingerprint": "b61a63c525e29e4339bea70b4239576c243220bcf1136f22d87a85cf69d5be3b"
+ },
+ "after": {
+  "cruft": {
+   "total": 0,
+   "by": {},
+   "preserved": 6
+  },
+  "complexity": {
+   "total": 44,
+   "by": {
+    "CX01": 5,
+    "CX02": 13,
+    "CX03": 8,
+    "CX04": 2,
+    "CX06": 3,
+    "CX10": 2,
+    "CX11": 2,
+    "CX12": 1,
+    "CX13": 2,
+    "CX14": 4,
+    "CX15": 2
+   },
+   "preserved": 6
+  },
+  "fingerprint": "61b99491cb2f05401acc7ed218720af537ac11db1ca238c5903885c3025fe4c2"
+ },
+ "diff": {
+  "added_lines": 6,
+  "removed_lines": 14
+ },
+ "work_package_count": 10
+}

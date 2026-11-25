@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="520" viewBox="0 0 1200 520" role="img" aria-labelledby="fig012-title fig012-desc">
+<title id="fig012-title">The four routes from ticket to boolean</title>
+<desc id="fig012-desc">Four lanes from ticket to boolean. Lane 1 (predicate) returns True or abstains to a human and is observed. Lane 2 (free-form) and lane 3 (two schema-constrained arms: answer-first and reason-first) parse text into values and are not observed. Lane 4 (decide stub) returns nothing and is not observed. When a lane returns True or False, the caller interface is the 25-character serialized example payload; abstention and stub lanes return no value.</desc>
+<style>
+  .lane { fill: #f7f7f5; stroke: #c9c9c7; rx: 8; }
+  .node { fill: #ffffff; stroke: #555550; }
+  .obs { fill: #1a7f37; color: #ffffff; }
+  .unobs { fill: #9a6700; }
+  .lab { font: 600 20px system-ui, sans-serif; fill: #1a1a1a; }
+  .sub { font: 400 16px system-ui, sans-serif; fill: #444440; }
+  .badge { font: 700 14px system-ui, sans-serif; }
+  .bobs { fill: #1a7f37; }
+  .bunobs { fill: #9a6700; }
+  .btxt { fill: #ffffff; font: 700 13px system-ui, sans-serif; }
+  .arr { stroke: #555550; stroke-width: 2; fill: none; marker-end: url(#ah); }
+</style>
+<defs>
+<marker id="ah" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+<path d="M0,0 L10,4 L0,8 Z" fill="#555550"/>
+</marker>
+</defs>
+<text x="30" y="36" class="lab">Figure 1.2 — the four routes from ticket to boolean</text>
+
+<!-- Lane 1: predicate -->
+<rect x="20" y="55" width="1160" height="95" rx="8" class="lane"/>
+<text x="36" y="82" class="lab">1 · predicate (code)</text>
+<rect x="330" y="66" width="150" height="34" class="node"/><text x="405" y="89" text-anchor="middle" class="sub">ticket</text>
+<rect x="520" y="66" width="230" height="34" class="node"/><text x="635" y="89" text-anchor="middle" class="sub">predicate_decide</text>
+<rect x="790" y="66" width="130" height="34" class="node"/><text x="855" y="89" text-anchor="middle" class="sub">True / None</text>
+<rect x="960" y="66" width="150" height="34" class="node"/><text x="1035" y="89" text-anchor="middle" class="sub">human / refund</text>
+<line x1="480" y1="83" x2="515" y2="83" class="arr"/>
+<line x1="750" y1="83" x2="785" y2="83" class="arr"/>
+<line x1="920" y1="83" x2="955" y2="83" class="arr"/>
+<rect x="36" y="100" width="120" height="26" rx="13" class="bobs"/><text x="96" y="118" text-anchor="middle" class="btxt">OBSERVED</text>
+<text x="170" y="119" class="sub">0 tokens · &lt; 4 µs · 10 answered, 10 abstained</text>
+
+<!-- Lane 2: free-form -->
+<rect x="20" y="160" width="1160" height="95" rx="8" class="lane"/>
+<text x="36" y="187" class="lab">2 · generate, free-form</text>
+<rect x="330" y="171" width="150" height="34" class="node"/><text x="405" y="194" text-anchor="middle" class="sub">ticket+prompt</text>
+<rect x="520" y="171" width="150" height="34" class="node"/><text x="595" y="194" text-anchor="middle" class="sub">prose</text>
+<rect x="710" y="171" width="190" height="34" class="node"/><text x="805" y="194" text-anchor="middle" class="sub">regex + json.loads</text>
+<rect x="940" y="171" width="170" height="34" class="node"/><text x="1025" y="194" text-anchor="middle" class="sub">value</text>
+<line x1="480" y1="188" x2="515" y2="188" class="arr"/>
+<line x1="670" y1="188" x2="705" y2="188" class="arr"/>
+<line x1="900" y1="188" x2="935" y2="188" class="arr"/>
+<rect x="36" y="205" width="140" height="26" rx="13" class="bunobs"/><text x="106" y="223" text-anchor="middle" class="btxt">NOT_OBSERVED</text>
+<text x="190" y="224" class="sub">recovery step (the tax) paid on every call</text>
+
+<!-- Lane 3: schema-constrained x2 -->
+<rect x="20" y="265" width="1160" height="95" rx="8" class="lane"/>
+<text x="36" y="292" class="lab">3 · generate, schema-constrained ×2</text>
+<rect x="390" y="276" width="150" height="34" class="node"/><text x="465" y="299" text-anchor="middle" class="sub">ticket+prompt</text>
+<rect x="580" y="276" width="200" height="34" class="node"/><text x="680" y="299" text-anchor="middle" class="sub">masked decode</text>
+<rect x="820" y="276" width="150" height="34" class="node"/><text x="895" y="299" text-anchor="middle" class="sub">JSON → value</text>
+<line x1="540" y1="293" x2="575" y2="293" class="arr"/>
+<line x1="780" y1="293" x2="815" y2="293" class="arr"/>
+<rect x="36" y="310" width="140" height="26" rx="13" class="bunobs"/><text x="106" y="328" text-anchor="middle" class="btxt">NOT_OBSERVED</text>
+<text x="190" y="329" class="sub">answer-first + reason-first key orderings · naive index, augmented Python grammar (§5): ~50 MB</text>
+
+<!-- Lane 4: decide stub -->
+<rect x="20" y="370" width="1160" height="95" rx="8" class="lane"/>
+<text x="36" y="397" class="lab">4 · decide stub</text>
+<rect x="330" y="381" width="150" height="34" class="node"/><text x="405" y="404" text-anchor="middle" class="sub">ticket</text>
+<rect x="520" y="381" width="250" height="34" class="node"/><text x="645" y="404" text-anchor="middle" class="sub">not implemented (Ch 7)</text>
+<rect x="810" y="381" width="150" height="34" class="node"/><text x="885" y="404" text-anchor="middle" class="sub">nothing</text>
+<line x1="480" y1="398" x2="515" y2="398" class="arr"/>
+<line x1="770" y1="398" x2="805" y2="398" class="arr"/>
+<rect x="36" y="415" width="140" height="26" rx="13" class="bunobs"/><text x="106" y="433" text-anchor="middle" class="btxt">NOT_OBSERVED</text>
+<text x="190" y="434" class="sub">honest stub: writes down that the path does not exist yet</text>
+
+<text x="30" y="498" class="sub">When a lane returns True or False, the caller reads 25 characters: {'refund_approved': true}. Abstention and stub lanes return nothing.</text>
+</svg>

@@ -4023,6 +4023,22 @@ class AitestSummaryRead(BaseModel):
     repair_needed: int = 0
 
 
+class AitestQualityRead(BaseModel):
+    project_id: str
+    mode: str = ""
+    snapshot: str = ""
+    tests_evaluated: int = 0
+    findings: dict[str, int] = Field(default_factory=dict)
+    recommendations: dict[str, int] = Field(default_factory=dict)
+    verification_gaps: int = 0
+    redundancy_candidates: int = 0
+    coverage_percent: float | None = None
+    mutations_attempted: int = 0
+    mutations_killed: int = 0
+    latest_at: str = ""
+    cost_ms: float = 0
+
+
 class AitestEventIngest(BaseModel):
     model_config = ConfigDict(extra="allow")
 

@@ -1,0 +1,111 @@
+{
+ "action": "none",
+ "approval": {
+  "approved_by": null,
+  "note": "Candidate-generation autonomy exercised; publication-acceptance autonomy NOT exercised. No auto-approval, no auto-apply (D-PUB-71).",
+  "status": "pending_author_decision"
+ },
+ "artifacts": {
+  "candidate": {
+   "bytes": 20716,
+   "fingerprint": "50e1ef2e0886e6ee65fdbb81a7061b6dc32302c65ebcee4be3cd62fdab602f37",
+   "path": "pub07/ch02/candidate.md"
+  },
+  "program": "pub07/ch02/program.json (4 dispatches, outcome review_invalid, bounds respected)",
+  "proposal": {
+   "fresh": true,
+   "id": "pub07-ch02-p001",
+   "path": "pub07/ch02/proposal.json",
+   "status": "pending"
+  },
+  "staged": "pub07/ch02/staged.json (design_only, fixture_only, no production path)",
+  "transformation_record": "pub07/ch02/transformation-record.json (writer.transform.record.v1 + dispatch_ledger)",
+  "verification": "pub07/ch02/verification.json (15/15 pass; necessary-but-insufficient per D-PUB-70)"
+ },
+ "candidate_provenance": {
+  "assembly": "in-memory splice of validated dispatch output into byte-copied chapter lines; per-line origin lineage in program.json",
+  "deterministic_checks": "verify_candidate 15/15 pass (byte-true, no-change, honesty, cruft/complexity deltas informative)",
+  "dispatches": [
+   {
+    "cost_usd": 0.0047043,
+    "model": "opencode-go/deepseek-v4.1-flash",
+    "provider": "pi",
+    "role": "editorial",
+    "route": "default_deepseek_go",
+    "writer_execution_id": "model-exec-6d7b8067b26f"
+   },
+   {
+    "cost_usd": 0,
+    "model": "opencode-go/claude-haiku-5-5",
+    "provider": "pi",
+    "role": "verification",
+    "route": "default_haiku_go",
+    "writer_execution_id": "model-exec-c6bef59f8cd8"
+   },
+   {
+    "cost_usd": 0.00235695,
+    "model": "opencode-go/deepseek-v4.1-flash",
+    "provider": "pi",
+    "role": "editorial",
+    "route": "default_deepseek_go",
+    "writer_execution_id": "model-exec-6b5b03750036"
+   },
+   {
+    "cost_usd": 0,
+    "model": "opencode-go/claude-haiku-5-5",
+    "provider": "pi",
+    "role": "verification",
+    "route": "default_haiku_go",
+    "writer_execution_id": "model-exec-66b3a33182eb"
+   }
+  ],
+  "editorial_model": "opencode-go/deepseek-v4.1-flash (default_deepseek_go, subscription)",
+  "evidence_labels": "candidate MODEL_JUDGEMENT; review INDEPENDENT_REVIEW (disclosed identity, separate family); deterministic checks MEASURED_TEXT",
+  "review_model": "opencode-go/claude-haiku-5-5 (default_haiku_go, independent family)",
+  "total_cost_usd": 0.00706125,
+  "total_tokens": 25504
+ },
+ "correction_loop": {
+  "attempts_used": "editorial 2 (initial + 1 review-driven) + review 2 = 4 total (budget 5)",
+  "outcome": "review_invalid (terminal; no further iteration by design)",
+  "termination": "final review verdict unusable (quote-discipline failure); loop halted, nothing redriven"
+ },
+ "decision": "pending_author_decision",
+ "decision_id": "pub07-ch02-decision-01",
+ "open_objections": [
+  {
+   "basis": "ledger 2.13 records LLM2Jev as PARTIAL (section 3.4 not fully read); the synthesis presents matched-community-model, 4B, diminishing-returns and \u00a71-reading claims the passage does not establish",
+   "count": 2,
+   "raised_by": "independent reviewer (haiku-go), rounds 1 and 2",
+   "subject": "possible LLM2Jev overstatement in the synthesis line"
+  }
+ ],
+ "options_for_author": [
+  "A) Narrow the synthesis to passage-established claims and re-run as a NEW bounded program (fresh dispatches, fresh record; this run is never reopened).",
+  "B) Adjudicate the LLM2Jev point against ledger 2.13 first, then decide.",
+  "C) Decline the package; keep source bytes (KEEP) and record the rationale."
+ ],
+ "recommendation": "Do NOT accept as-is. The objection is substantive and twice-raised on the same point; the machinery correctly refused to self-certify (D-PUB-70). Prefer option A or B.",
+ "recorded_at": "2026-11-25T07:45:00Z",
+ "review_outcome": {
+  "final": "request_changes on substance + quote_not_in_either_passage (verdict recorded invalid, rationale preserved for the author)",
+  "rounds": [
+   {
+    "validation": [],
+    "verdict": "request_changes"
+   },
+   {
+    "validation": [
+     "quote_not_in_either_passage"
+    ],
+    "verdict": "invalid"
+   }
+  ]
+ },
+ "safety": [
+  "No unsupervised authoritative mutation: Jev tree untouched (HEAD c7aaad7, only pre-existing untracked scripts/).",
+  "No automatic publication approval: status stays pending_author_decision.",
+  "Workbench accept/undo never invoked; proposal pub07-ch02-p001 stays pending.",
+  "All mutation confined to disposable fixture bytes (C:/Temp) and in-memory candidate assembly."
+ ]
+}

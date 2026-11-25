@@ -57,6 +57,8 @@ its ADRs, which this programme adopts rather than relitigates):
 | Publication read model, orchestration, release assurance | Mission (`mission_control/publication/`, `/api/publication`, `BookPublishingPage`, `/writer` queue) | REST; Writer evidence by reference |
 | Manuscript truth, results, ledger, preregistration, book tests | Book repo (Jev: `content/books/jev`, `results/`, `evidence/ledger.md`, `planning/`, `scripts/apply_edits.py`) | Files + SHA-256; Mission fingerprinting |
 | Rendering/publication artifacts | Hugo + layouts + EPUB/PDF tooling (Jev: `hugo.toml`, `layouts/`, `publication/`) | Build outputs + deployment evidence |
+| Production-path editorial automation | Writer `publication_automation` (writer-core analysis + `transform automate` CLI; injected dispatch via D-PUB-08 seam, no writer_runtime import) | `transform automate`, record `dispatch_ledger` (`writer.automation.ledger.v1`) |
+| Package-scale candidate proposals | Workbench `publication_proposals` (Proposal data + span-bound stale/source checks; accept/undo never invoked) | `proposal.json` records, `check_proposal_fresh` |
 
 Unresolved ownership (explicitly not decided in PUB-00):
 

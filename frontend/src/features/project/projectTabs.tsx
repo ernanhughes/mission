@@ -11,7 +11,8 @@ export type ProjectTabId =
   | "work"
   | "activity"
   | "tests"
-  | "inspect";
+  | "inspect"
+  | "harness";
 
 export const PROJECT_TABS: Array<{ id: ProjectTabId; label: string }> = [
   { id: "overview", label: "Overview" },
@@ -24,6 +25,7 @@ export const PROJECT_TABS: Array<{ id: ProjectTabId; label: string }> = [
   { id: "activity", label: "Activity" },
   { id: "tests", label: "Tests" },
   { id: "inspect", label: "Inspect" },
+  { id: "harness", label: "Harness" },
 ];
 
 const VALID = new Set<string>(PROJECT_TABS.map((t) => t.id));

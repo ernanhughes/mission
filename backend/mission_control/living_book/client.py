@@ -100,6 +100,14 @@ class AliveClient:
                 if isinstance(detail, str)
                 else f"ALIVE returned HTTP {response.status_code}."
             )
+            if allow_unavailable:
+                return {
+                    "status": "unavailable",
+                    "detail": (
+                        f"ALIVE is unavailable at {self.base_url} "
+                        f"(HTTP {response.status_code})."
+                    ),
+                }
             correlation = response.headers.get("x-correlation-id")
             raise LivingBookError(message[:1000], response.status_code, correlation)
         if payload is None and allow_null and content_type.startswith("application/json"):

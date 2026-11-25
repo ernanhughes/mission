@@ -93,13 +93,26 @@ ownership resolved-or-explicitly-open (U1–U5), acceptance criteria, docs in
   disposable-fixture end-to-end apply/undo with fingerprint proof; no bulk apply
   before staged design lands.
 
-## PUB-07 — Workbench and Worker workflow integration
+## PUB-07 — Workbench and Worker workflow integration + production automation
 
 - Wire quality/findings bridge read-only first (existing unwired mapper), then
   proposals → Apply with stale/source checks; Worker-executed long jobs with
   provenance; no arbitrary execution from Mission.
-- **Depends on:** PUB-06. **Gates:** wired bridge tests; provenance on every
-  Worker-produced candidate.
+- Expanded scope (D-PUB-71/72): close the prepared-never-dispatched gap with
+  at least one real editorial transformation through the actual production
+  model-routing + Worker execution path (invocation provenance, model
+  identity, provider, usage/cost, response validation, candidate
+  fingerprint, review outcome, correction-loop behaviour recorded).
+  Automated candidate generation, independent model review, bounded
+  correction loops, governed VFS staging, Workbench proposal/acceptance
+  integration, fixture-based application, explicit approvals, recovery.
+  Safety boundary: NO unsupervised authoritative mutation and NO
+  automatic publication approval on current checks (candidate-generation
+  autonomy and publication-acceptance autonomy are separate).
+- **Depends on:** PUB-06 (accepted). **Gates:** wired bridge tests;
+  provenance on every Worker-produced candidate; one real dispatched
+  transformation demonstrated end-to-end; no duplicate gateway or
+  mutation path.
 
 ## PUB-08 — Independent validation and calibration
 
@@ -107,6 +120,23 @@ ownership resolved-or-explicitly-open (U1–U5), acceptance criteria, docs in
   `evaluation_fabric` with conflicted-judgement handling), dev/held-out
   calibration suites for cruft + complexity, reader-comprehension outcome
   measures (human study only via `quality.reader_study` + consent review).
+  Accepted calibration debt queued here: CX10b whitespace-normalised
+  quotes, display-`$$` mathematics, coherent-short-prose CX10-medium FPs,
+  indented/tilde code fences, synthetic-heavy held-out suites (broaden
+  real-manuscript held-out), cue-based new-sentence honesty (negation-
+  insensitive establishment cues; full semantics).
+- **Mandatory semantic verification (D-PUB-74):** compose Manuscript IR +
+  compiler, argument, knowledge-state, evidence, QC, mediated read,
+  evaluation fabric (+ Praxis semantic-loss) before inventing anything.
+  Required: (a) forward preservation (lost/weakened/distorted/
+  disconnected knowledge); (b) backward grounding (unsupported claims,
+  new conclusions, altered certainty, invented relations, ungrounded
+  additions); (c) authorized knowledge changes recognised as
+  corrections via PUB-03 reconciliation (never misclassified as loss);
+  (d) pedagogical recovery via independent reader probes
+  (model-reader vs human-reader distinguished; negative controls that
+  pass lexical checks while failing semantic/epistemic integrity
+  included).
 - **Depends on:** PUB-02, PUB-04 findings to validate. **Gates:** no thresholds
   promoted without held-out evidence; no reader claims without human data.
 

@@ -51,7 +51,7 @@ function mockBase(detail: ReturnType<typeof makeProjectDetail>, extra?: (info: {
 }
 
 describe("ProjectPage tabs", () => {
-  it("defaults to Overview with compact header and ten tabs", async () => {
+  it("defaults to Overview with compact header and eleven tabs", async () => {
     const detail = makeProjectDetail({ id: "math", name: "Math" });
     mockBase(detail);
     renderProject("/projects/math");
@@ -59,9 +59,9 @@ describe("ProjectPage tabs", () => {
     const tablist = await screen.findByRole("tablist", { name: "Project workspace sections" });
     const tabs = within(tablist).getAllByRole("tab");
     expect(tabs.map((t) => t.textContent?.replace(/\d+\+?/g, "").trim())).toEqual(
-      expect.arrayContaining(["Overview", "Book", "Quality", "Technical", "Calibration", "Publishing", "Work", "Activity", "Tests", "Inspect"]),
+      expect.arrayContaining(["Overview", "Book", "Quality", "Technical", "Calibration", "Publishing", "Work", "Activity", "Tests", "Inspect", "Harness"]),
     );
-    expect(tabs).toHaveLength(10);
+    expect(tabs).toHaveLength(11);
     expect(within(tablist).getByRole("tab", { name: /Overview/ })).toHaveAttribute("aria-selected", "true");
     // Overview content visible, quality table not mounted
     expect(await screen.findByRole("heading", { name: "Project summary" })).toBeInTheDocument();

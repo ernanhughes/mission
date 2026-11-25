@@ -1,0 +1,282 @@
+{
+  "ok": true,
+  "command": "transform verify",
+  "project_id": "jev",
+  "result": {
+    "detector": "publication-transformation-v0.1",
+    "profile": "transform-v0.1",
+    "verified_at": "2026-11-25T00:47:30.216242+00:00",
+    "verdict": "pass",
+    "gaming_note": "No preservation failures; deltas are informative.",
+    "checks": [
+      {
+        "check": "byte_true_present",
+        "span": {
+          "start_line": 101,
+          "end_line": 109
+        },
+        "rule": "amendment",
+        "passed": true,
+        "detail": "verbatim full lines in order"
+      },
+      {
+        "check": "byte_true_present",
+        "span": {
+          "start_line": 115,
+          "end_line": 122
+        },
+        "rule": "limitation",
+        "passed": true,
+        "detail": "verbatim full lines in order"
+      },
+      {
+        "check": "byte_true_present",
+        "span": {
+          "start_line": 359,
+          "end_line": 364
+        },
+        "rule": "not-observed",
+        "passed": true,
+        "detail": "verbatim full lines in order"
+      },
+      {
+        "check": "byte_true_present",
+        "span": {
+          "start_line": 405,
+          "end_line": 406
+        },
+        "rule": "did-not-run",
+        "passed": true,
+        "detail": "verbatim full lines in order"
+      },
+      {
+        "check": "byte_true_present",
+        "span": {
+          "start_line": 408,
+          "end_line": 414
+        },
+        "rule": "not-observed",
+        "passed": true,
+        "detail": "verbatim full lines in order"
+      },
+      {
+        "check": "byte_true_present",
+        "span": {
+          "start_line": 430,
+          "end_line": 430
+        },
+        "rule": "untested",
+        "passed": true,
+        "detail": "verbatim full lines in order"
+      },
+      {
+        "check": "byte_true_present",
+        "span": {
+          "start_line": 432,
+          "end_line": 433
+        },
+        "rule": "not-yet-run",
+        "passed": true,
+        "detail": "verbatim full lines in order"
+      },
+      {
+        "check": "byte_true_present",
+        "span": {
+          "start_line": 523,
+          "end_line": 523
+        },
+        "rule": "limitation",
+        "passed": true,
+        "detail": "verbatim full lines in order"
+      },
+      {
+        "check": "byte_true_present",
+        "span": {
+          "start_line": 524,
+          "end_line": 524
+        },
+        "rule": "honest-record-section:limitations",
+        "passed": true,
+        "detail": "empty source span, vacuously present"
+      },
+      {
+        "check": "byte_true_present",
+        "span": {
+          "start_line": 525,
+          "end_line": 543
+        },
+        "rule": "not-observed",
+        "passed": true,
+        "detail": "verbatim full lines in order"
+      },
+      {
+        "check": "byte_true_present",
+        "span": {
+          "start_line": 544,
+          "end_line": 544
+        },
+        "rule": "honest-record-section:limitations",
+        "passed": true,
+        "detail": "empty source span, vacuously present"
+      },
+      {
+        "check": "new_sentence_honesty",
+        "passed": true,
+        "detail": "no added sentence presents unobserved model-backed work as established (first layer; full semantics PUB-08)."
+      },
+      {
+        "check": "no_change_identical",
+        "span": {
+          "start_line": 12,
+          "end_line": 18
+        },
+        "passed": true,
+        "detail": "verbatim contiguous block present"
+      },
+      {
+        "check": "no_change_identical",
+        "span": {
+          "start_line": 454,
+          "end_line": 468
+        },
+        "passed": true,
+        "detail": "verbatim contiguous block present"
+      },
+      {
+        "check": "no_change_identical",
+        "span": {
+          "start_line": 470,
+          "end_line": 476
+        },
+        "passed": true,
+        "detail": "verbatim contiguous block present"
+      },
+      {
+        "check": "no_change_identical",
+        "span": {
+          "start_line": 111,
+          "end_line": 113
+        },
+        "passed": true,
+        "detail": "verbatim contiguous block present"
+      },
+      {
+        "check": "no_change_identical",
+        "span": {
+          "start_line": 95,
+          "end_line": 99
+        },
+        "passed": true,
+        "detail": "verbatim contiguous block present"
+      },
+      {
+        "check": "no_change_identical",
+        "span": {
+          "start_line": 359,
+          "end_line": 364
+        },
+        "passed": true,
+        "detail": "verbatim contiguous block present"
+      },
+      {
+        "check": "no_change_identical",
+        "span": {
+          "start_line": 283,
+          "end_line": 289
+        },
+        "passed": true,
+        "detail": "verbatim contiguous block present"
+      },
+      {
+        "check": "no_change_identical",
+        "span": {
+          "start_line": 159,
+          "end_line": 159
+        },
+        "passed": true,
+        "detail": "verbatim contiguous block present"
+      },
+      {
+        "check": "no_change_identical",
+        "span": {
+          "start_line": 435,
+          "end_line": 442
+        },
+        "passed": true,
+        "detail": "verbatim contiguous block present"
+      }
+    ],
+    "checks_passed": 21,
+    "checks_failed": 0,
+    "before": {
+      "cruft": {
+        "total": 1,
+        "by": {
+          "CR04": 1
+        },
+        "preserved": 11
+      },
+      "complexity": {
+        "total": 38,
+        "by": {
+          "CX01": 2,
+          "CX02": 8,
+          "CX03": 8,
+          "CX04": 1,
+          "CX05": 2,
+          "CX08": 1,
+          "CX10": 1,
+          "CX11": 5,
+          "CX13": 1,
+          "CX14": 8,
+          "CX15": 1
+        },
+        "preserved": 10
+      },
+      "fingerprint": "435974701050832da4d39925e753abdafacb9bc990668d0cb182a56e3b73dadb"
+    },
+    "after": {
+      "cruft": {
+        "total": 1,
+        "by": {
+          "CR04": 1
+        },
+        "preserved": 12
+      },
+      "complexity": {
+        "total": 39,
+        "by": {
+          "CX01": 2,
+          "CX02": 9,
+          "CX03": 8,
+          "CX04": 1,
+          "CX05": 4,
+          "CX08": 1,
+          "CX10": 1,
+          "CX11": 4,
+          "CX13": 2,
+          "CX14": 6,
+          "CX15": 1
+        },
+        "preserved": 11
+      },
+      "fingerprint": "f6c1cbf4266b083ca4211cdb5090eae38a388df8199c626879662233636e60e5"
+    },
+    "diff": {
+      "added_lines": 71,
+      "removed_lines": 27
+    },
+    "work_package_count": 7
+  },
+  "warnings": [],
+  "errors": [],
+  "artifacts": [
+    "C:\\books\\jev\\content\\books\\jev\\01-chapter.md",
+    "C:\\Projects\\mission\\pub06\\ch01\\01-chapter-candidate.md"
+  ],
+  "meta": {
+    "schema_version": "writer.transform.cli.v1",
+    "generated_at": "2026-11-25T00:47:30.216242+00:00"
+  },
+  "exit_code": 0
+}

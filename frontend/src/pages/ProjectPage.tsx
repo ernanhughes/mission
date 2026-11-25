@@ -28,6 +28,7 @@ import { BookTab } from "../features/project/BookTab";
 import { WorkTab } from "../features/project/WorkTab";
 import { ActivityTab } from "../features/project/ActivityTab";
 import { TestsTab } from "../features/project/TestsTab";
+import { ProjectHarnessPanel } from "../features/harness/HarnessPage";
 import { InspectTab } from "../features/project/InspectTab";
 import {
   ActionButton,
@@ -3069,7 +3070,12 @@ export function ProjectPage() {
 
         {tab === "book" ? (
           <section role="tabpanel" id="panel-book" aria-labelledby="tab-book">
-            <BookTab projectId={projectId} data={data} discovery={discovery.data} />
+            <BookTab
+              projectId={projectId}
+              data={data}
+              discovery={discovery.data}
+              onRefresh={discovery.reload}
+            />
           </section>
         ) : null}
 
@@ -3136,6 +3142,11 @@ export function ProjectPage() {
         {tab === "inspect" ? (
           <section role="tabpanel" id="panel-inspect" aria-labelledby="tab-inspect">
             <InspectTab mcProjectId={projectId} />
+          </section>
+        ) : null}
+        {tab === "harness" ? (
+          <section role="tabpanel" id="panel-harness" aria-labelledby="tab-harness">
+            <ProjectHarnessPanel projectKey={projectId} />
           </section>
         ) : null}
       </div>

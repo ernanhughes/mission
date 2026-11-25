@@ -1,6 +1,6 @@
 # PUBLICATION State
 
-**Updated:** 2026-11-24 (PUB-02 ACCEPTED by author direction — §8. Next: PUB-03.)
+**Updated:** 2026-11-25 (PUB-07 scope-done, pending review gate. 7/12 accepted; PUB-07 in review.)
 
 ## 1. Current position
 
@@ -46,9 +46,493 @@ deletion of unrelated files. Docs created (canonical set only):
 
 ## 3. Active work
 
-PUB-02 scope-complete, pending the review gate (Codex architecture/integration
-+ DeepSeek regression — prompts in the handover report §9). Criterion for
-acceptance: scope-done (below) vs verified-done (reviewers' verdict).
+PUB-07 scope-done 2026-11-25 (Muse implementation), pending review
+gate. Production-path automation (`publication-automation-v0.1`,
+`automation-v0.1` UNCALIBRATED) + `writer transform automate` CLI
+(existing group, no catalog change) + additive record `dispatch_ledger`
+(D-PUB-77) + Workbench `publication_proposals` bridge (D-PUB-78):
+one dispatch per package via the D-PUB-08 seam (Writer prompts +
+contracts, Worker providers/transport/usage/cost), quote discipline,
+per-line origin lineage, bounded correction loop (<= 5 dispatches,
+explicit termination), $10 spend cap, independent-family review
+(deepseek-go generate, haiku-go review). Tests: 19 automation (fakes,
+zero live) + 5 CLI incl. 3 automate pins + 10 bridge; fast gate 560
+passed + 1 strict xfailed (held-cx15) / 0 failed; ruff clean.
+Live end-to-end (Jev Ch2 `c7aaad7`, 346 lines): boundary executable
+(44 boundary_ok + 2 isolating), 10 packages, ONE bounded package
+executed (ops 006/007, lines 133-146). 4 dispatches, $0.00706,
+25,504 tokens; candidate 338 lines, verify 15/15 pass, chain fp
+`50e1ef2e…`; loop terminated honestly (verify-pass, review
+request_changes x2 on LLM2Jev substance, final verdict invalid on a
+quote failure -- all recorded, none redriven). Presented
+`pending_author_decision` (pub07/ch02/approval-decision.json); fixture
+apply/undo byte-proven; Workbench proposal pending + fresh; staged
+change-set design-only. Zero authoritative mutation; Jev clean; no
+commits. Decisions D-PUB-76…80. Spend split editorial vs
+verification kept in the ledger. Full detail: CAPABILITIES.md PUB-07
+subsection. Previous PUB-06 record below retained; do not reopen
+without evidence of a consequential defect.
+
+PUB-07 fix batch in progress 2026-11-25 (Muse implementation, D-PUB-81;
+single combined batch for the Codex BLOCKED-4 + DeepSeek F1-F5 + Claude
+CONDITIONAL residuals; no commits). Code + pins done, fast gate green
+(576 passed + 1 strict xfailed held-cx15 / 0 failed; workbench
+neighbours 35/0; ruff clean): review-excerpt scoping to the
+replacement lineage range (Fix A), rebind-before-final-review with
+excerpt-exact validation (Fix B), pre-dispatch spend guard with
+explicit override bookkeeping (Fix C), ledger
+replacement-sha + record `chain.ledger_digest` + bridge refusal of
+unbound ledgers + replacement-hash freshness + record-chain reference
+(Fix D), paragraph-break assembly + no-gloss/no-section-citation
+prompt rules (Fix E), LF/slash canonical digest forms (Fix G).
+Run-1 artifacts preserved verbatim in `pub07/ch02-superseded-run1/`
+(+README: stale-window + spurious-quote-failure analysis). ONE bounded
+re-run of the affected package attempted 08:48 UTC into a temp dir:
+Worker BLOCKED (authentication_failed, no API key for opencode-go,
+non-retryable; $0 spent, 0 tokens) -- infra outage, not a code defect;
+run-1 bytes in `pub07/ch02/` untouched (restored from archive and
+re-verified). Re-run + Fix F annotations + doc-number refresh + delta
+review prompts resume when the Worker path recovers; see §6.
+
+PUB-05 ACCEPTED 2026-11-24 by author (§11). PUB-06 fix batch 2026-11-24
+(Muse implementation, addresses Codex BLOCKED a–f + 2 editorial and
+Claude BLOCKED-narrow must-fix P1/P2/P4/P5/P8 + should-fix P3/P6/P7/P9/
+P10; DeepSeek ACCEPT carried) + close-out 2026-11-24 (coordinator:
+Codex delta-confirm residuals + Claude R1/R2/R4/R5; verified green,
+no new review cycle per README §6). Deterministic transformation boundary
+(`publication-transformation-v0.1`, profile `transform-v0.1`
+UNCALIBRATED) + `writer transform check|package|verify|surgical` CLI
+(library+CLI, no catalog change, zero engine dispatches):
+execution-boundary revalidation (blocking vs isolating, freshness
+unconditional, digest/states mandatory, adjudication binding,
+preservation auth, dependency cycles), dependency-ordered three-scale
+work packages (blocked derived, vocab map), placement-proof preservation
+verification (byte-true full-line, no-change contiguous,
+unresolved-independent, new-sentence honesty) with anti-gaming rule,
+real-applier surgical exactness (≥24 chars, block-or-refuse), staged
+design-only guarded application with QC/downstream binding (D-PUB-56…
+63, fix batch 2 D-PUB-65…67). Tests: 74 + 2 CLI green; neighbours 260 + 1 strict xfail (held-cx15,
+PUB-04), 0 failed. Live: Ch1 plan revalidated executable (44
+boundary_ok + 1 evidence_held + 1 investigation-only) with live
+states/digest + 17 bound adjudications; 7 packages / 17 isolated / 12
+respected; revised Ch1 candidate (`f6c1cbf4…` 606 lines -- recorded
+`bb95457e…`/`c54258e8…` superseded by post-record drift, chain rebuilt
+fix batch 2 + close-out, see §6), verification pass 21/21, cruft 1→1
+(11→12 preserved), complexity 38→39 (recorded 38→35 then 38→40
+superseded; the "new HIGH" was a cross-table false positive removed by
+the PUB-04 structural-break fix -- verified gone, CX10 1→1) + Figure 1.2 SVG (per-lane honesty, naive-index qualifier,
+four-lane desc, after Fig 1.1) + Willard table (both spec-validated) +
+before-after (assessment record updated to current bytes; R5 revert
+noted; `diff.txt` predates polish, deltas listed verbatim) + provenance
+record with hash-chain in `pub06/ch01/` (plan-ch1.json +
+adjudications-ch1.json + live states/digest + boundary/packages gate
+files shipped); bounded passages P-07 + P-09 in `pub06/passages/`;
+review pack (refreshed Codex/DeepSeek/Claude prompts + Claude report
+`claude-report.md` + mediated probe, still specified-not-executed) in
+`pub06/review-pack/`; disposable-fixture apply_edits.py end-to-end
+(2/2 ratio-1.000, fingerprint `441a51…`→`7576d7…`, byte-identical undo,
+ambiguous + short-substring refusal). `mission/.writer/writer.db`
+(13 MB, CLI/test state) is git-ignored, never committed; Jev ignore
+untouched; Temp evidence cleaned. Decisions D-PUB-53…68. Full detail:
+CAPABILITIES.md PUB-06 subsection. Prior PUB-05 scope record retained
+below; do not reopen without evidence of a consequential defect.
+
+PUB-05 scope-done 2026-11-24 (Muse implementation), pending review
+gate. Deterministic pedagogical planner (`publication-pedagogy-v0.1`,
+profile `pedagogy-v0.1` UNCALIBRATED) + `writer pedag plan|validate`
+CLI (library+CLI, no catalog change, zero dispatches): PD01–PD16 with
+support statuses, preservation-before-planning, plan/validator/
+freshness contracts, materiality-scoped blocking, representation
+selection with pipeline caveats. Tests: 50 unit + 23 calibration
+(10 dev + 12 held incl. 6 fresh once-only held-2) = 73 green;
+neighbours 457 collected (456 + 1 strict xfail held-cx15, PUB-04),
+0 failed; ruff clean. Live: Ch1 46 ops (11/17/6/9/3, validates),
+Ch2 46, Ch7 49, Ch9 62, book 36 chapters / 1398 structural ops
+(all validate). Decisions D-PUB-39…51. Full detail:
+CAPABILITIES.md PUB-05 + fix-batch subsections. PUB-04 record (accepted §10)
+below is retained for provenance; do not reopen without evidence of a
+consequential defect.
+
+PUB-05 fix batch 2026-11-24 (Muse implementation; addresses the Codex
+CONDITIONAL 4 residuals + the DeepSeek record-number correction;
+verified by coordinator -- see fix batch 2 below):
+
+- Validator authority (D-PUB-49): exact content anchors on every op
+  (`anchor_sha256`; KEEP retarget to a different in-range span fails
+  `span_anchor_mismatch`); preservation enforced on attached
+  obligations (stripped lists fail `preservation_gap`); execution-ready
+  reconciled against refs/blockers, skew fails
+  `evidence_needs_mismatch` (16 validator codes: 14 actual + 2 new;
+  the "12" was a counting error). Freshness binds reconcile states +
+  intent contents + reader-context values + render-cap values.
+- One-primary honesty (D-PUB-50): CX13 REORDER is
+  `investigation_only`, never a primary, forced `candidate` -- PUB-06
+  cannot consume it as a second transformation. Label-token guard kept
+  planner-side heuristic with documented scope.
+- Correction path (D-PUB-51): UPDATE_FROM_VERIFIED_EVIDENCE only with
+  a linked correction proposal + evidence; else evidence-gated
+  INVESTIGATE (reproduced superseded-without-payload case emits no
+  UPDATE). Grouping retains correction + evidence refs + provenance.
+  INVESTIGATE honours the D-PUB-47 read-only exemption under
+  conflicted/contradicted evidence.
+- Record correction: re-ran all four chapter plans on the fixed tree --
+  Ch1 46 (11/17/6/9/3), Ch2 46, Ch7 49 (UPDATE stands: live superseded
+  carries correction + evidence), Ch9 62 -- every count confirms
+  DeepSeek exactly; the pre-fix record was hand-tallied wrong. Book
+  scan 1398 exact (only delta: 31 investigation-only REORDERs moved
+  adjudication-ready 280→249 + 31 candidate). All 40 plans validate.
+- CLI docs: INDEX.md hand-updated to 58 rows / 855 nodes (no generator
+  run -- owning-team collision boundary stands); coverage 3/4 with the
+  sole failure the 5 pre-existing owning-team gaps
+  (book-campaign, strategy-evolution, quality, validate-site-links,
+  reader-legibility), recorded not fixed.
+
+PUB-05 fix batch 2 2026-11-24 (coordinator-executed; addresses the Codex
+delta re-review's 2 deeper residuals on the fix-batch tree; verified
+in-session, no review cycle per README §6 two-round policy):
+
+- Anchor presence (D-PUB-52): span-carrying op without `anchor_sha256`
+  now fails `span_anchor_missing` (never grandfathered). 2 pins
+  (mismatch + missing); validator now 17 codes (record corrected).
+- Linked-evidence UPDATE gate (D-PUB-52): `or provenance` fallback
+  removed; correction + binding with zero evidence refs routes to
+  evidence-gated INVESTIGATE. Existing no-payload / payload-without-
+  evidence pins still pass; new binding-without-evidence pin added.
+  Live Ch7 UPDATE (ledger refs present) unaffected.
+- Suites: pedagogy 75 green; fast gate 459 passed (457 + 2 new) /
+  0 failed; ruff clean. Live (Jev `c7aaad7`): Ch1 46 (11/17/6/9/3),
+  Ch2 46, Ch7 49 (UPDATE present, evidence_blocked per pre-existing
+  status logic), Ch9 62, all validate clean; catalog 167; Jev clean;
+  $0; no commits.
+- Exact live invocations (CWD `C:\Projects\writer`, venv python,
+  `--book-root C:\books\jev`; per chapter NN in 01/02/07/09):
+  `writer cruft review jev NN-chapter --json`,
+  `writer complex review jev NN-chapter --json`,
+  `writer reconcile chapter jev NN-chapter --json` (chapter-scoped
+  inventory; revs Ch1 `jev@bbbb73b55d7668a8`, Ch2
+  `jev@899c02ad76215729`, Ch7 `jev@a6cd2b879ef9ae6a`, Ch9
+  `jev@d3c457a3af1aa23b`),
+  `writer pedag plan jev NN-chapter --cruft-report … --complex-report …
+  --reconcile-report … --intent C:\books\jev\metadata\NN-chapter.yaml
+  --inventory-rev <rev> --json`,
+  `writer pedag validate plan-NN.json jev NN-chapter --book-root …`.
+  Book scan: same cruft+complex chain per chapter 01–36 with
+  `pedag plan` on cruft+complex reports only (no reconcile/intent).
+- Suites: pedagogy 73 green (50+23); combined neighbours 457 (456 +
+  1 strict xfail); capability short 1 + 1 deselected; catalog 167;
+  fingerprint `435974701050…` unchanged; Jev `c7aaad7` clean
+  (pre-existing `scripts/` only); zero dispatches; $0; no commits;
+  temp cleaned. Held-evaluation limitation kept candid (6 synthetic
+  held-2 ≠ generalisation; profile uncalibrated).
+
+PUB-04 fix batch 2026-11-24 (Muse implementation; addresses the Codex
+BLOCKED findings-contract defects + DeepSeek F1/F2/F3/F7 must-fix;
+F4/F5/F6/F8/F9 documented as PUB-08-owned traps; pending Codex +
+DeepSeek delta re-review):
+
+- Span contract (code + README + pins): char spans locate quoted
+  evidence (sentence/term/block per detector; CX07 lines bracket the
+  use→define gap); zero-spans never emitted (unlocatable →
+  needs-context locator miss). CX07 now carries real term-occurrence
+  spans.
+- Related linkage AFTER severity-preserving dedupe (max severity per
+  key, tie first): book-wide dangling refs 312→0 (Ch1 12→0); CX04 HIGH
+  roll-up and longer-CX10-run reachability pinned.
+- `concept_index`/`glossary_terms` RESOLVE CX07 terms (established
+  vocabulary = quiet); old pretend-test rewritten to pin resolution.
+- `_is_html_block` narrowed to structural tags; `_is_list_block`
+  narrowed to list-structured (wrapped continuations belong to the
+  list); genuinely mixed blocks assessable; CX14 probes prose lines.
+- `generated_at` volatile, excluded from replay identity
+  (`replay_identity()` + test); `review --cx` rescopes with recomputed
+  summary (live CX02 8/8, DeepSeek 1-vs-38 gone); `compare` text mode
+  shows `max_severity`. held-cx15 now a STRICT behavioural xfail.
+- Counts: writer INDEX 48→51, README 50→51.
+- Suites: complexity 94 passed + 1 xfailed (was 83 + 1); combined
+  neighbours editing+quality 87 + cruft/legibility/complexity 197 =
+  284 passed + 1 xfailed, 0 failed; capability 8 passed + 1 deselected
+  (long corpus); mediated/eval 114 deferred (long, untouched). `ruff
+  check` clean (format drift pre-existing, untouched). Catalog 167;
+  fingerprint `435974701050…` unchanged.
+- Live (Jev `c7aaad7`, read-only): Ch1 → 38 findings, IDENTICAL finding
+  set to baseline (dangling 12→0 the only change); book scan → 36
+  chapters, 1083 findings, zero per-chapter deltas, dangling 312→0;
+  Ch7 clause-heavy (CX02×16/CX03×18) intact — no whole-section
+  suppression. Zero dispatches; $0; trees clean; no commits/pushes.
+- Decisions D-PUB-29…34 recorded. Full detail: CAPABILITIES.md
+  PUB-04 fix-batch subsection.
+
+PUB-04 fix batch 2 2026-11-24 (Muse implementation; addresses the Codex
+delta re-review's 2 precise residuals on the fix-batch tree; pending
+Codex + DeepSeek delta re-review):
+
+- CX10 invalid span: run sentences located forward from the run's own
+  start (`_locate_span(..., start=...)`); a later HIGH run whose final
+  sentence also occurs earlier in the block quotes its own occurrence
+  (pre-fix reproduced char_start>char_end; post-fix valid start<end).
+  Pin: `test_later_cx10_run_with_repeated_final_sentence_keeps_valid_span`.
+- Wrapped continuations: `_prose_lines()` excludes list lines AND their
+  indented continuations from CX10/CX11/CX14 probes in mixed blocks;
+  CX11 quotes the probe when the block carries list lines. Pins:
+  continuation-only load → no CX10/CX11; genuine prose in the same block
+  still assessed with a probe-only quote; CX14 never quotes a
+  continuation.
+- Docs: span contract (module + complex README) states the forward run
+  anchor and the prose-probe/quote rule; `--cx` rescoping documented as
+  chapter-scoped preserved/needs-context/concept counters; held-cx15
+  rationale 38→39 words (1-word margin, verified via `word_count`).
+- Suites: complexity 98 passed + 1 strict xfailed (94 + 4 new pins);
+  combined neighbours 280 passed (editing+quality 87, cruft 46+40,
+  legibility 17, evidence 50+40); capability 8 passed + 1 deselected;
+  mediated/eval 114 deferred (long, untouched); `ruff check` clean.
+  Catalog 167; fingerprint `435974701050…` unchanged. Live (Jev
+  `c7aaad7`, read-only): Ch1 → 38 findings, IDENTICAL by-CX set to
+  baseline; book scan → 36 chapters, 1083 findings, 0 dangling, 0 bad
+  spans; Ch7 CX02×16/CX03×18 intact; `--cx CX02` → 8/8 chapter-scoped
+  counters intact. Zero dispatches; $0; trees clean; no commits/pushes.
+- Decisions D-PUB-35/36 recorded (D-PUB-35 run-span anchoring, D-PUB-36
+  prose-probe exclusion). `INDEX.md`/`README.md` counts untouched by
+  instruction (owning-team flux; DeepSeek R1 stays backlog).
+
+PUB-04 fix batch 3 2026-11-24 (coordinator-executed; addresses the Codex
+delta re-review's 2 deeper edge residuals on the fix-batch-2 tree),
+extended in-session with the cross-structural seq break (see below):
+
+- CX10 run findings require located occurrences: new `_strict_locate()`
+  (verbatim forward search, `None` on miss -- never a fallback span);
+  the run branch declines runs with any unlocatable sentence
+  (D-PUB-37). Pre-fix fallback accepted a whole-block span as a run
+  endpoint when line filtering removed the probe's context.
+- Probes are contiguous segments: new `_prose_segments()` (identical
+  membership to `_prose_lines`, which now delegates to it); CX10 runs,
+  CX11 and the CX14 opening probe each measure one segment, so prose
+  is never joined across a removed list boundary (D-PUB-38). CX11
+  quotes its own segment text; CX14 probes the opening segment.
+  Same-block dedupe (max severity per `(cx_id, start_line)`) unchanged:
+  two same-block runs still collapse to one, now with a side-local
+  quote and truthful run_length (pins assert run_length 3/MEDIUM, not
+  the joined 6/HIGH).
+- Pins (5 new): cross-boundary no-join, segment-local CX10 span,
+  segment-local CX11 quote, opening-segment CX14 scoping,
+  `_strict_locate` unit pins. Post-verification extension (same
+  coordinator session): the consecutive-one-sentence CX10b run now
+  iterates ALL blocks and breaks the sequence on structural
+  (non-assessable, non-blank) blocks -- previously joined runs across
+  tables/code/figures (2 pins: cross-table no-join + blank-gap
+  positive control; whitespace-normalisation documented in the span
+  contract).
+- Suites: complexity 63 unit + 43 calibration (42 passed + 1 strict
+  xfailed); full fast gate 467 passed + 1 xfailed / 0 failed;
+  `ruff check` clean. Live (Jev `c7aaad7`, read-only): Ch1 38
+  findings identical set, book scan 36 chapters / 1073 findings /
+  0 dangling / 0 bad spans (-10 removed cross-structural joins; Ch1
+  untouched), fingerprint-stable; catalog 167; Jev
+  clean; $0; no commits/pushes. Behavioural delta vs batch-2 tree:
+  only the removal of non-contiguous cross-structural joins.
+- Out of scope (unchanged, recorded): CX10b one-sentence sequences
+  still quote joined block texts (block-level, span-bounded; not
+  flagged by any review); INDEX/README counts (owning-team flux).
+
+PUB-04 scope-done 2026-11-24 (Muse implementation), pending review gate.
+
+- Deterministic CX01–CX15 screen
+  (`packages/writer-core/writer_core/analysis/publication_complexity.py`,
+  `publication-complexity-v0.1`, profile `complexity-v0.1` UNCALIBRATED) +
+  `writer complex` CLI (`review|scan|compare`; `complex.py` + `main.py`
+  registration + `docs/cli/complex/README.md` + INDEX row). Library+CLI
+  surface, no runtime domain, no catalog change (D-PUB-24); zero model
+  dispatches. Reuses `reader_legibility` spans + `EvidenceRole`, editing
+  sentence/word heuristics (mirrored, writer-core stays dependency-light),
+  PUB-02 honest-record discipline + typed-task seam shape (D-PUB-08).
+- Contracts: Level A observations vs Level B candidates vs Level C
+  (never emitted; 8 prepared adjudication payloads for
+  CX02/04/06/07/10/11/14/15, dispatched only via the D-PUB-08 seam — zero
+  in PUB-04). Per finding: CX id, kind, exact span, chapter/project,
+  fingerprint, detector+profile versions, measured features, reader
+  burden, correction direction (never prose), preservation notes,
+  limitations, related links, no-composite summary with concentrations.
+  Coverage reports assessed/unassessed blocks; code/table/figure/HTML are
+  structure (CX08 breaks), never prose load. Reader context consumed
+  where given, missing profile explicit, unfamiliarity never assumed.
+- Preservation in code: honest-record sections + genuine-uncertainty
+  markers exempt from tone/load CXs; definition sentences become
+  concept events and exempt from CX06 on their own block; methods
+  sections exempt from CX12; lists exempt from staccato/avalanche/
+  bridge screens; HTML figure blocks unassessed; math spans recorded,
+  never clause-parsed.
+- Calibration: 41 unit (`test_publication_complexity.py`) + 43
+  calibration (30 dev + 12 held entries + split-discipline,
+  `publication_complexity_calibration.jsonl`; labels human/synthetic)
+  = 83 passed, 1 xfailed. Held evaluated once against the
+  frozen profile (no threshold value ever retuned; all pre-freeze work
+  was structural precision + fixture-text shaping): 11/12 pass; the one
+  miss is a KNOWN-FN pinning case (held-cx15: 39-word block vs the
+  40-word floor — absolute-word floors are edge-brittle; PUB-08 should
+  consider density-relative sizing). Mandatory staccato regression:
+  staccato rewrite fires CX10-high + CX11, never ranks below the
+  genuinely-clearer rewrite (max-severity lens, no composite anywhere).
+- Live read-only demo, Jev `c7aaad7`: Ch1 → 38 findings
+  (CX02×8/CX03×8/CX14×8/CX01×2/CX05×2/CX08×1/CX10×1/CX11×5/CX13×1/
+  CX15×1/CX04×1), 10 preserved, 6 needs-context, 9 concept events;
+  heaviest concentration L509 (closing question: CX01+CX02+CX04+CX05+
+  CX13 → interrupted-argument + qualification-pile-up). Ch7 reads
+  clause-heavy (CX02×16/CX03×18); Ch35 longest-sentence-heavy (CX01×9);
+  Ch9 staccato-heavy (CX10×9). Bounded book-wide scan: 36 chapters,
+  1083 findings, coverage explicit. Before-after on the real Ch1 closing
+  block: overloaded 5×medium → staccato 1×high+1×medium (count drops
+  5→2 but max severity rises — the no-composite design is what stops
+  the staccato cheat) → clearer 0. Fingerprint `435974701050…`.
+- Regression (same invocation/CWD as PUB-01): editing+quality+cruft
+  (46+40)+legibility+complexity(41 unit+43 calibration) = 273 passed,
+  0 failed (1 xfailed, the known CX15 FN);
+  capability short 1 passed + 1 deselected; mediated/eval 114 deferred
+  (long, untouched paths). Catalog 167; Jev tree verified clean;
+  zero dispatches; $0; temp evidence removed.
+- Decisions recorded before/during implementation (D-PUB-24…28):
+  library+CLI surface, reuse verdicts, no-composite severity semantics,
+  CX15 candidate-only, frozen-profile calibration discipline.
+
+PUB-03 ACCEPTED 2026-11-24 by author (§9). PUB-04 scope-done, pending review gate.
+
+PUB-03 scope-done 2026-11-24 (Muse implementation):
+- Reusable, repository-aware evidence reconciliation: generic engine
+  (`evidence_reconciliation.py`, `evidence-reconciler-v0.1`, profile
+  `reconcile-v0.1` UNCALIBRATED) + Jev adapter (`jev_evidence.py`,
+  `jev-evidence-v0.1`) + `writer reconcile` CLI
+  (`inventory|chapter|book|resolve`). Library+CLI surface, no runtime
+  domain, no catalog change (D-PUB-11); zero model dispatches.
+- Contracts: 8-state `ReconciliationState` (D-PUB-13, SupportLabel mapping
+  documented, state/severity/lifecycle kept separate); 10 claim categories;
+  8 correction operations (proposals only, no manuscript modification);
+  `Binding` freshness (manuscript + inventory + repo revisions, detector +
+  profile + config, model always None) with `check_stale`.
+- Authority policy in code (D-PUB-15): validated record > raw complete >
+  partial > report-as-lead > absent; later ≠ authoritative without explicit
+  supersede record; passing test ≠ hypothesis established; file ≠
+  complete/valid/applicable.
+- Preservation conditional (D-PUB-14): `evaluate_preservation()` re-checks
+  every preserved passage against the current inventory; all Ch1 honesty
+  statements UPHELD (no completion evidence anywhere for model arms).
+- PUB-02 integration: `to_evidence_index()` projection (provider-as-arm
+  translation; chapter ids bare per PUB-02 convention); live cruft review
+  Ch1 with real inventory → 1 finding (CR04-LOW, baseline-identical),
+  11 preserved, 2 needs-evidence (CR01×2 by frozen no-backticked-arm rule;
+  CR02×4/CR12×1/CR06×2 resolve silent). `reconcile resolve` consumes the
+  2 items → SUPPORTED (L111 predicate rows) + UNRESOLVED-on-excerpt
+  (L493; full-text verdict is PARTIAL conclusion). PUB-02 files untouched.
+- Jev demo (read-only, `c7aaad7`, inventory `jev@7f008df8772f677f`):
+  chapters 01+02+07+36 inspected, 32 uninspected (coverage partial,
+  explicit) → 59 supported / 9 not_applicable / 15 unresolved /
+  3 superseded / 3 partial, 0 contradicted/conflicted; 6 correction
+  proposals. ≥1 genuinely stale live claim demonstrated:
+  Ch7 `run_ch07.py` "To run" reference (file absent at revision, never
+  existed; SUPERSEDED + update_impl_description, fully traced row by row).
+  Ch1→Ch7 / Ch1→Ch2 forward pointers resolve SUPERSEDED (promise
+  materialised; incorporate_results). Unsupported schemas explicit
+  (`results/ch32.jsonl`, `results/ch35.jsonl`). Tree verified clean.
+- Tests: 38 unit + 38 calibration (23 dev + 15 held-out, frozen rules,
+  held-out from uninspected Ch3/Ch8 prose + novel synthetics) = 76 passed.
+  Fast neighbours 190/190 green (editing+quality 87, cruft 86, legibility
+  17); capability short test 1 passed; CLI surface verified. Mediated/eval
+  114 deferred (long, untouched paths). Catalog-CLI "30" suite names gone
+  (owning-team reorganisation — recorded, not a regression).
+- Decisions recorded before implementation (D-PUB-11…18) plus D-PUB-19
+  (selftest execution as read-only inspection; static 52 sites vs runtime
+  53 executions) and D-PUB-20 (binding precision rules, each added after a
+  live false bind and pinned by regression tests). $0 model spend; zero
+  dispatches; Jev and all repo trees clean of strays, no commits.
+
+PUB-03 fix batch 2026-11-24 (Muse implementation; addresses the Codex
+BLOCKED 5 points + the DeepSeek carry-forward, pending Codex + DeepSeek
+delta re-review):
+- Chapter-scope rule (D-PUB-21): named arm binds completion rows only
+  within the claim's chapter unless the claim explicitly references
+  cross-chapter evidence or the experiment identity is globally unique
+  in the inventory (stated in code + docs); 7 cross-chapter regression
+  tests (adjudication + preservation, incl. positive controls).
+- State-mapping comment completed (SupportLabel orphans, no direct
+  conflicted counterpart, `check_stale` returns triggers not a
+  FreshnessStatus value, nothing serialized).
+- Selftest hardening (D-PUB-22): validated explicit script set (no
+  dynamic glob), per-script 120 s cap PLUS 300 s total inventory
+  deadline, post-run clean-tree verification in inventory notes;
+  Ch1/Ch2/Ch7 counts (53/27/87) green.
+- CLI `reconcile resolve` envelope validation (`_unwrap_cruft_report`:
+  null/malformed result → clean exit 1, never traceback-out) + 2 tests.
+- Reuse honesty: `argument.disagreement` lineage stated as conceptual,
+  not a code dependency (module + `_find_conflict` docstrings, D-PUB-12).
+- CLI docs for `reconcile` + `cruft` added (INDEX 48→50); 5 remaining
+  missing docs are pre-existing owning-team backlog — recorded, not fixed.
+- Suites: `test_evidence_reconciliation` 85 passed (76 + 9 new);
+  editing+quality+cruft+legibility combined 190 passed; capability
+  short 1 passed + 1 deselected. Live re-verification: `reconcile book`
+  01,02,07,36 → 59/9/15/3/3 @ same inventory rev
+  `jev@7f008df8772f677f`, repo `c7aaad7`; `cruft` Ch1 → 1/11/2; catalog
+  167; Jev clean; zero dispatches; no manuscript/evidence edits, no
+  commits/pushes, temp cleaned.
+
+PUB-03 fix batch 2 2026-11-24 (Muse implementation; applies the Codex
+delta re-review's 2 residuals post-acceptance — execution removal +
+README count — see §9; handed back for the record, no review cycle
+required):
+- Execution removed (D-PUB-23, supersedes the D-PUB-19 execution
+  allowance, retires the D-PUB-22 hardening): `jev_evidence` no longer
+  executes repo scripts (`_run_selftest_count`, `_validated_selftests`,
+  `_tracked_dirty` and the 120 s / 300 s / 32-script / 1 MB constants
+  deleted; `sys`/`time` imports dropped; no opt-in flag, no new execution
+  mechanism). Each chapter-referenced selftest now yields a computed_fact
+  with `execution={"runtime": "unavailable", "static_sites": N}` plus an
+  explicit `runtime_unavailable` validation note and inventory note.
+  Static call-site counts kept as pure parsing (Ch1/Ch2/Ch7: 52/17/73).
+  Sandboxed re-execution recorded as deferred future work.
+- Engine (`evidence_reconciliation.py`): `_runtime_unavailable` screen —
+  a claim naming a selftest script and stating its check count
+  (`selftest` + number + `checks`) with a bound unavailable marker
+  resolves UNRESOLVED with an explicit D-PUB-23 rationale, in both
+  `_adjudicate_status` and `_adjudicate_result` (the latter covers the
+  Ch7 measurement-shaped 87-checks claim). Claim-gated, so neighbours
+  that merely share a topic word keep their normal verdicts (pinned by
+  `test_neighbour_sharing_topic_word_is_not_hijacked`); unavailable
+  markers are excluded from `_explained_numbers`, so static numbers
+  verify nothing and absorb no claimed count.
+- Tests: `test_evidence_reconciliation` 50 passed (47 + 3 new pins) +
+  calibration 40 (23 dev + 15 held-out, with the two `dev-selftest-*`
+  entries renamed `*-unresolved` and re-pointed at unavailable markers)
+  = 90 passed. Combined fast neighbours 190 green; capability short
+  1 passed + 1 deselected. CLI docs coverage (final state, `docs/cli`
+  under active owning-team edits throughout the session): 1 passed / 3
+  failed — `has_docs` missing the 5 batch-era gaps (book-campaign,
+  strategy-evolution, quality, validate-site-links, reader-legibility);
+  `index_lists` missing those 5 + the validate-rendered-math row;
+  `count` 48-vs-57 (stale total). Reconcile + cruft rows AND README dirs
+  (batch outputs) are present; the newly registered `complex` command is
+  documented. Remaining failures are owning-team backlog only —
+  recorded, not fixed (same category as the batch report). README set to
+  50 exactly as specified. No further `generate_cli_docs.py` runs from
+  this stage: the script rewrites the owning team's active work area
+  unconditionally, and two in-session runs demonstrably collided with
+  their concurrent edits; their hand state stands.
+- Live re-verification (Jev `c7aaad7`, read-only, tree verified clean —
+  only pre-existing untracked `scripts/`): `reconcile book` 01,02,07,36
+  → 57 supported / 17 unresolved / 9 not_applicable / 3 superseded /
+  3 partial (89 claims; per chapter — 01: 35 claims 22/5/4/2/2 corr 4;
+  02: 14 claims 7/4/2/0/1 corr 1; 07: 28 claims 22/4/1/1/0 corr 1;
+  36: 12 claims 6/4/2/0/0 corr 0), 6 corrections. Delta vs the batch
+  tree is exactly the two execution_status selftest-count claims (Ch1 53,
+  Ch2 27) SUPPORTED→UNRESOLVED; the Ch7 87-checks measurement claim was
+  already UNRESOLVED (no complete rows ever bound) and keeps its state
+  with the explicit unavailable rationale. One mid-session transient
+  (a per-chapter run disagreeing with six mutually-consistent
+  measurements) is recorded but not reproducible — three consecutive
+  book runs plus four per-chapter runs agree exactly. Inventory rev
+  `jev@6c13d2837f138c84` (changed from `jev@7f008df8772f677f` because
+  entry digests feed the rev hash — `"53"` → `"unavailable/52"` — while
+  notes do not; Ch1/Ch2/Ch7 notes now read `runtime=unavailable (not
+  executed, D-PUB-23); static_sites=52/17/73`). `cruft` Ch1 with real
+  inventory → 1/11/2 (fingerprint `435974701050…`,
+  baseline-identical). Catalog 167. Zero model dispatches; $0; no
+  manuscript/evidence edits, no commits/pushes, temp cleaned. Writer
+  HEAD `101b88336`; Jev HEAD `c7aaad7`.
 
 PUB-02 scope-done 2026-11-24 (Muse implementation), fix batch 2026-11-24:
 - Entry re-baseline confirmed: `test_direct_rejects_invented_citations` still
@@ -243,6 +727,31 @@ unchanged and green.
    `writer cruft review` — later-stage gap, not a PUB-02 gate item;
    (c) `reader_legibility` teardown flake (final-cleanup notice during
    the legibility run) — cosmetic, unrelated to PUB-02.
+7. **PUB-08 calibration carry-forwards (accepted PUB-04/PUB-05/PUB-06
+   limitations, not gate items).** CX10b whitespace-normalised quotes
+   (span exact, quote space-joined); display-`$$` mathematics (inline-
+   only `_MATH_SPAN_RE` parses display math as prose); coherent-short-
+   prose CX10-medium false positives (needs connective/density-aware
+   clearing); indented/tilde code fences outside the parser; synthetic-
+   heavy held-out suites (broaden real-manuscript held-out, esp. CX);
+   new-sentence honesty is first-layer cue-based (negation-insensitive
+   establishment cues; full semantics deferred). PUB-06 review
+   additions: derived artifacts are not auto-regenerated on detector
+   change (re-verify step mandatory before citing numbers); records do
+   not bind detector implementation versions (profile versions only);
+   no independent editorial read of the final candidate bytes exists
+   yet beyond the scoped delta re-review (full-chapter human read
+   remains author-side).
+8. **PUB-07 review-gate items (open, author/reviewer adjudication).**
+    (a) Demo outcome `review_invalid`: verify-pass candidate with a
+    twice-raised substantive objection (LLM2Jev overstatement vs ledger
+    PARTIAL) + a final-round reviewer quote failure; presented
+    `pending_author_decision` with options A/B/C (approval-decision).
+    (b) Provider-reported usage anomaly on the haiku route
+    (input_tokens 4 vs total 5262): recorded verbatim, cost $0,
+    flagged for Worker owner awareness -- no action in programme.
+    (c) Codex delta from PUB-06 close still outstanding at PUB-07
+    scope-done; triage stands (hardening unless substantive).
 
 ### 4.6 Jev evidence question (unresolved; binding framing for PUB-03)
 
@@ -280,19 +789,245 @@ Change` verified in `C:\books\jev\scripts\apply_edits.py`.
 
 ## 6. Exact next action
 
-**PUB-02 ACCEPTED 2026-11-24 by author direction (§8). PUB-03 is next
-(proposed scope below -- awaiting author go-ahead, not started).**
+**PUB-07 scope-done 2026-11-25 (Muse implementation), pending review
+gate. 7/12 accepted.** Independent review required before any PUB-08
+start: (1) Codex architecture/integration review of the automation seam
+(dispatch injection, fail-closed compile, record extension, bridge
+granularity, no new gateway/mutator); (2) DeepSeek regression
+verification (reproduce the fast gate + live chain on the final tree);
+(3) Claude editorial read of the produced candidate
+(pub07/ch02/candidate.md vs Ch2 source) + the review objections
+(LLM2Jev substance). The demo outcome is `review_invalid` with a
+verify-pass candidate and a twice-raised substantive objection --
+reviewers should judge whether the machinery's termination +
+presentation (pending_author_decision, options A/B/C) is the correct
+governed behaviour, not whether the prose is publishable (it is
+explicitly NOT approved). No PUB-08 work, no Mission UI, no
+commit/push until the gate closes. Worker runs only the demo
+dispatches (4 done, $0.00706); no further paid calls without author
+direction.
 
-**After the gate, PUB-03 scope (propose, do not start):** bind manuscript
-claims to authoritative repo evidence for ≥3 Jev chapters incl. one
-genuinely-stale case (`evidence/ledger.md`, `results/*.jsonl`,
-`examples/*/run_*.py`); stale-result and evidence-missing findings live via
-the PUB-02 `EvidenceIndex`/NEEDS_EVIDENCE pattern; apply the ROADMAP PUB-03
-decision table (pending+match → update; pending+equivalent → investigate
-transfer; pending+partial → preserve; pending+none → unresolved; completed+
-contradictory → block). Owner: Muse (design), Codex (integration review),
-DeepSeek (regression). Manuscript, experiments, migrations, deployment all
-out of scope until PUB-06/PUB-10.
+**PUB-07 fix batch 2026-11-25 (D-PUB-81; this task authorises the
+bounded spend).** Code + pins + docs done (fast gate 576+1/0,
+workbench 35/0, ruff clean; run-1 archived with analysis). ONE bounded
+re-run of the affected package is authorised (expect small $) but
+currently BLOCKED by Worker auth (authentication_failed for
+opencode-go, non-retryable, $0 spent; run-1 bytes intact). When the
+Worker path recovers: (1) re-run `transform automate` for the single
+package into `pub07/ch02/`; (2) rebuild proposal + approval record
+with Fix F supersede annotations; (3) refresh review-pack numbers;
+(4) re-verify (fast gate + live chain + catalog + Jev clean + spend
+ledger) and issue the Codex/DeepSeek/Claude delta prompts. No PUB-08
+until the deltas close.
+
+**PUB-06 ACCEPTED by author 2026-11-24 (in-session verification record accepted as sufficient; Codex delta outstanding at close and triaged as PUB-07 hardening unless it evidences a consequential defect -- no PUB-06 reopen). 7/12 accepted.**
+Close-out evidence accepted as satisfactory; no additional review
+cycle or implementation work required unless Codex identifies a
+substantive defect. Baseline: 545 passed + 1 strict xfail / 0
+unexpected failures; 21/21 preservation; Claude 10/10 regions PASS;
+canonical plan hash independently matched; candidate `f6c1cbf4…`;
+catalog 167; Jev unmodified; 0 dispatches; Codex delta outstanding.
+**Standing authorization executed: PUB-06 recorded ACCEPTED (7/12) above on the in-session verification record per author direction; late Codex delta triaged as PUB-07 hardening unless substantive. Tracker + PUB-07/PUB-08 scope per D-PUB-69…74 stand as the author specified.** PUB-07 must demonstrate real production execution
+(findings → plan → Worker dispatch → candidate → independent review
+→ bounded corrections → Workbench staging → approval) built by
+Muse but performed by the machinery itself. Outstanding obligations
+carried forward unchanged: author-side research questions, semantic
+verification limits, derived-artifact revalidation, detector-version
+binding, full-chapter human assessment. Basis remains the supplied
+verification reports, not direct author inspection.
+
+Fix-batch-2 tree delta (verified this session): writer
+`publication_transformation.py` (always-revalidate compile with
+fail-closed conjunction + `binding_digest` + `supplied_boundary_
+mismatch`; claim-presence + dict-parity + fail-closed
+`_restrict_unresolved`; live preservation rehydration from re-run
+detectors + live states with materiality scope),
+`cli/commands/transform.py` (live inputs + book/chapter threaded
+through `check` and through both revalidate and `compile` in
+`package`; non-zero exit on non-executable boundary kept),
+`tests/core/test_publication_transformation.py` (65→76: 4 fixtures
+re-pinned honest + 9 new behavioural pins + close-out gates),
+`tests/cli/test_transform_cli.py` (new, 2 CLI exit-code pins);
+mission `pub06/` (candidate `f6c1cbf4…` 606 lines + regenerated
+boundary/packages gate files with binding digests + verification
+21/21 + hash-chained record + before-after (updated to final bytes,
+R5 revert + stub-row deferral noted) + 207-line pre-polish diff;
+`adjudications-ch1.json`, live states/digest untouched inputs).
+Full gate (final tree): transformation 76 + CLI 2 + neighbours = 545
+passed + 1 strict xfail (held-cx15) / 0 failed, ruff clean; live Ch1 46 / Ch2 (not
+re-run, unchanged code path) / Ch9 (not re-run) -- Ch1 chain exact:
+cruft 1/11/9 fp `43597470…`, complex 38→39 (no HIGH; CX02 8→9, CX05
+2→4, CX13 1→2, CX11 5→4, CX14 8→6), pedag 46 (11/17/6/9/3)
+validates, boundary executable 44/1/1, packages 7/17/12
+authenticated, verify pass 21/21 on final bytes; catalog 167; Jev `c7aaad7` clean
+(pre-existing `scripts/` only); zero engine dispatches; $0; no
+commits/pushes; Temp cleaned.
+Coordinator close-out items carried (verified, not redone): D-PUB-64
+gates + 6 pins re-run green (either-provenance, no-fallback,
+non-executable isolation, unbound adjudication, missing record fps,
+chain-digest stability); candidate R1/R2/R5 prose verified present (roadmap qualifier, policy-
+shaped hedge, Tam sense, per-lane 25-char distinction, naive-index
+qualifier, four-lane desc, Fig 1.2 after 1.1); R5 lane-3 alt +
+R4 wording aligned. Writer-tree attribution caveat: PUB-06 touches
+only its own files — new `publication_transformation.py`,
+`commands/transform.py`, `test_publication_transformation.py` (+2 new
+CLI tests); `main.py` registration + `docs/cli/INDEX.md` rows are
+shared with concurrent owning-team/stage work (see handover for the
+exact `git status`).
+
+**Post-record candidate drift (found and resolved this session, prose untouched by
+this batch).** The 23:02 record described `bb95457e…` (604 lines);
+the candidate on disk was `f6c1cbf4…` (606 lines, written 23:17, after
+the record and after `before-after.md`). Per the stage brief the
+chain was rebuilt on current bytes via the builder (after ==
+candidate asserted; gate files + diff regenerated). The rebuilt
+after-state initially read complexity 38→40 with a new CX10-high on
+the Willard fragment -- coordinator investigation proved it a
+cross-table false-positive join (prose on both sides of the table
+glued into one "run"), removed by the PUB-04 structural-break fix
+(iterate all blocks, break on structural blocks; 2 pins). Final
+after-state: cruft 1→1 (11→12 preserved, unchanged), complexity
+38→39 (CX02 8→9, CX05 2→4, CX13 1→2, CX11 5→4, CX10 1→1 -- HIGH gone;
+CX14 8→6). `before-after.md` updated to the final bytes (fingerprint,
+38→39 table, polish-note list). No prose edits by this batch; the
+fingerprint delta vs the record is formatting/whitespace-level only
+(verified: 21/21 pass on final bytes, record rebuilt to match).
+
+Prior close-out record (2026-11-24, coordinator-executed, retained
+for provenance; do not reopen without evidence of a consequential
+defect):
+
+PUB-06 fix-batch tree delta (verified this session): writer
+`publication_transformation.py` (D-PUB-56…61 hardening + D-PUB-64
+fail-closed: either-provenance-missing, no candidate-fp fallback,
+non-executable boundary isolation with CLI non-zero, unbound
+adjudication rejection, required record fingerprints),
+`cli/commands/transform.py` (live states/digest/adjudications wiring
++ package non-zero exit on non-executable boundary),
+`tests/core/test_publication_transformation.py` (60→65: unbound
+adjudication, either-provenance, no-fallback, boundary isolation,
+missing record fps) + fix batch 2 (65→74 + 2 CLI pins, D-PUB-65/66/67;
+see §6 head entry); Jev
+`c7aaad7` clean (pre-existing `scripts/` only); mission `pub06/`
+(ch01 candidate `f6c1cbf4…` 606 lines -- post-record drift from recorded
+`bb95457e…`, chain rebuilt fix batch 2 -- + assets + verification 21/21
+(cruft 1→1; complexity 38→40, see §6) + record with hash-chain +
+before-after (assessment record, untouched) + plan-ch1.json +
+adjudications-ch1.json (bound) + live states/digest + boundary/packages
+gate files, passages, refreshed review-pack incl. `claude-report.md`)
+untracked KEEP artifacts. Coordinator full gate: 532 passed + 1 xfailed
+/ 0 failed, ruff clean, live Ch1 46 / Ch2 46 / Ch7 49 (UPDATE present,
+evidence_blocked per pre-existing status logic) / Ch9 62 all validate,
+book scan 36 chapters / 1398 ops / 0 invalid (mix identical to
+baseline), catalog 167, $0, no commits/pushes. Zero engine dispatches; editorial generation
+spend separately recorded (muse-spark-1.3/opencode-session/$0); no
+commits/pushes. `mission/.writer/writer.db` git-ignored side effect
+recorded (D-PUB-63), Temp cleaned.
+
+**PUB-07 review gate -- Claude editorial read (received 2026-11-25): CONDITIONAL (BLOCKED cleared).** Scored 765 original / 760 candidate (provisional; defects override). Findings: (1) paragraph-split unrealised -- candidate 133-138 renders as one paragraph, assembly must realise line breaks (code defect, queued for fix batch); (2) unreviewed new gloss + "real/not rhetorical" certainty shift; (3) stale LLM2Jev objection vs on-disk attempt-2 bytes; (4) ledger/rationale read-depth conflict. Specified edits recorded for the fix batch + Claude delta re-review on new bytes. Residual: full-chapter re-read remains author-side. Disposition: fix assembly in code and re-run the pipeline (no hand-editing the candidate -- that would break dispatch provenance).
+
+**PUB-07 review gate -- Codex architecture review (received 2026-11-25): BLOCKED.** Four substantive defects, all in review/dispatch plumbing (candidate prose itself accepted as-is editorially): (1) stale candidate_text in the review-driven correction loop -- excerpt sliced with source line numbers, corrected lines not re-bound, so the recorded invalid-verdict cause is a code defect, not a reviewer failure; (2) final per-line lineage describes the earlier candidate, replacement discards relines/relin -- candidate-to-lineage mismatch (133-138 six lines vs 0-11 indexes); (3) spend hard cap is post-run reporting, not a pre-dispatch guard, and --spend-cap is caller-adjustable; (4) dispatch provenance not cryptographically joined to candidate/proposal -- ledger stored separately, builder requires only non-empty entries + passing verdict, check_proposal_fresh ignores the replacement hash, no record-chain reference. Confirmed sound: existing transport path only (no new gateway/client), fail-closed boundary + recompilation (except spend), safe halt with no approval/apply, semantic limits honestly documented (D-PUB-70/74). Pending: DeepSeek regression verdict; then ONE combined fix batch for Codex + Claude items.
+
+**PUB-07 review gate -- all three verdicts received 2026-11-25:**
+- Codex: BLOCKED (4 substantive: stale candidate_text in review loop; discarded relin lineage; post-run spend cap + caller-adjustable; dispatch provenance not hash-joined to candidate/proposal).
+- DeepSeek: CONDITIONAL (F1 review window must scope to replacement region; F2 rebind candidate_text + final_lineage before final review; F3 pins incl. shorter/longer corrections and corrected-only quotes; F4 annotate program.json/approval-decision + docs rather than silently rewriting evidence; F5 optional normalisation of after-fp form + intent path spelling).
+- Claude: CONDITIONAL (BLOCKED cleared; candidate prose faithful with fixable defects; paragraph-split unrealised in bytes; two small certainty shifts; stale LLM2Jev objection vs attempt-2 bytes; ledger/rationale read-depth conflict; specified edits + delta re-read required).
+Corroboration note: Codex F1/F2 and DeepSeek F1/F2 are the SAME two defects found independently (stale review bytes, dropped lineage) -- treat as confirmed. Fix batch (single, combined) authorised below; delta re-review to follow (Codex confirm, DeepSeek re-verify, Claude delta on new bytes).
+
+## PUB-07 infrastructure note (coordinator-verified 2026-11-25, blocks the re-run, not a code defect)
+
+Muse fix batch 2 reported Worker authentication_failed (opencode-go, non-retryable, 5 attempts with request IDs). Coordinator diagnosis in-session: a stale Worker (PID 20652, started 08:02) was still listening on :7317 although the batch reported its instance stopped; its provider-state lattice held the 08:48 AUTHENTICATION_FAILED with retry_at null and retry_source NONE. A FRESH server started in a credential-bearing shell reports routes admissible, not blocked. One live probe dispatch through the exact production path (Writer run_typed_task to Worker POST /v1/work to opencode-go/deepseek-v4.1-flash) SUCCEEDED (73 in / 3 out tokens; the only failure was the probes own DTO expecting JSON for a bare-text reply -- i.e. schema validation working as designed). Conclusion: the upstream path is healthy; the batch failure was environmental (Worker process without usable upstream credentials in the subagent shell) compounded by a real robustness gap: a recorded AUTHENTICATION_FAILED latches to BLOCKED with no retry ever scheduled, so one bad hour poisons the Worker until restart. The batch re-run must (a) verify routes admissible via /health BEFORE dispatching (fail fast with a clear message otherwise), and (b) inherit a credential-bearing env. Worker-side follow-up (owning team): schedule a retry/backoff instead of latching BLOCKED forever. Probe server left running for the re-run; stop it after the gate closes.
+
+## 11. PUB-05 review verdict (closed 2026-11-24, author direction)
+
+PUB-05 **ACCEPTED**. Basis: reported implementation (deterministic
+pedagogical planner + plan/validator/freshness contracts + 12-code
+validator + representation selection with pipeline caveats), independent
+reviews (Codex CONDITIONAL→fix batch→2 deeper residuals fixed with
+pins, verified in-session; DeepSeek CONDITIONAL→ACCEPT with live
+numbers exact), regression evidence (fast gate 459 green, live Ch1 46 /
+Ch2 46 / Ch7 49 / Ch9 62 / book 1398 all validate, $0), and
+coordinator-executed final residuals (D-PUB-52 anchor presence +
+linked-evidence gate). Author acceptance notes: relies on supplied
+reports; calibration, doc-count discrepancies and execution-boundary
+revalidation stay open. Authoritative manuscript unmodified throughout.
+PUB-06 authorized: complete revised Jev Ch1 candidate as key
+deliverable.
+
+## 10. PUB-04 review verdict (closed 2026-11-24, author direction)
+
+PUB-04 **ACCEPTED**. Basis: reported implementation (CX01–CX15 deterministic
+screen, 83+1 suites), independent reviews (Codex BLOCKED→contract fixes→2
+deeper edges fixed with pins; DeepSeek ACCEPT/CONDITIONAL→ACCEPT with live
+invariants exact), regression evidence (fast gate 391 green, live Ch1 38 /
+book 1083 / 0 dangling / 0 bad spans, $0), and coordinator-executed final
+residuals (D-PUB-37 strict locate, D-PUB-38 segment probes) verified
+in-session. Author acceptance notes: relies on supplied implementation and
+verification reports, not local execution; calibration/coverage limits stay
+open (CX10b quotes, indented/tilde code, `$$` math, coherent-short FP,
+synthetic-heavy held-out, `_stamp` flake, INDEX counts). Key result: editing
+88.7–100 "good" vs 38 reader-workload findings — the Publication-domain gap
+demonstrated. PUB-05 authorized (fix batch 3 residuals mapped 1:1 in the
+§3 entry above; fast-gate close-out per README §6 two-round policy).
+
+### PUB-04 final fix batch — ACCEPTED (author direction, no new review cycle)
+
+The cross-block CX10b correction (sequence breaks on structural blocks;
+2 pins) is accepted as justified: a table, code block or figure is a
+structural interruption, and prose on either side must not combine into
+one staccato sequence.
+**Authoritative PUB-04 baseline updated: 36 chapters, 1,073 findings**
+(was 1,083). The 10 removed findings were invalid cross-structural
+joins, so the reduction is an accuracy improvement, not a coverage
+loss. Chapter 1 unchanged at 38 (identical by-CX set). Current
+verification: complexity 63 unit + 43 calibration (42 passed + 1 strict
+xfailed); fast gate 467 passed + 1 xfailed / 0 failed; ruff clean.
+Historical entries above retain their at-the-time numbers.
+
+**Downstream compatibility check (coordinator-executed 2026-11-24):**
+no retained PUB-05 plan or PUB-06 candidate record depends on the 10
+removed findings. Ch1 plan re-validates clean (0 violations); Ch1
+candidate re-verifies 21/21 pass on current bytes; Ch7 output
+identical to baseline (52 total, CX02×16/CX03×18) so the P-07
+superseded-pointer passage (evidence-domain basis) is unaffected;
+Ch9 CX10×9 intact so the P-09 staccato-consolidation basis holds.
+No derived artifacts regenerated. Book-wide PUB-05 structural plans
+remain demonstration artifacts; any stale finding reference at a
+future consumption boundary is caught by the standing revalidation
+rule -- no mass regeneration.
+**Carried to PUB-08 calibration:** CX10b whitespace-normalised quotes,
+display-`$$` mathematics handling, coherent-short-prose false
+positives (plus the already-recorded indented/tilde code fences and
+synthetic-heavy held-out).
+
+## 12. PUB-06 review verdict (closed 2026-11-24, author direction: in-session verification record accepted as sufficient)
+
+PUB-06 **ACCEPTED**. Basis: deterministic transformation engine +
+governed work-package compilation + fixture-only surgical path
+(60→78 behavioural pins incl. fail-closed gates, unbound-adjudication
+rejection, missing-fingerprint refusal, non-executable isolation,
+record chain with content-bound digest); independent reviews
+(Codex BLOCKED→contract fixes→BLOCKED on trust-root bypasses→fix
+batch 2 with binding-digest/conjunction/fail-closed rehydration;
+DeepSeek CONDITIONAL→ACCEPT on the final tree; Claude BLOCKED-narrow
+→CONDITIONAL with BLOCKED cleared, 10/10 regions verified);
+regression evidence (fast gate 545 passed + 1 strict xfailed / 0
+failed, ruff clean; live Ch1 46 validates, verify 21/21 pass on
+final bytes `f6c1cbf4…`; catalog 167); coordinator close-out with
+in-session verification (R1 numbers corrected to 38→39, CX10 HIGH
+shown to be a cross-table false positive and removed; R3 chain
+binding to canonicalized plan content, independently recomputed MATCH;
+R4 handoff refresh; R5 blind spots to PUB-08; candidate prose fixes
+verified present).
+Codex delta confirm was outstanding at close; per author direction
+the in-session record (544→545 green, 21/21, recomputed chain
+match, full-suite pins) stands as sufficient -- any Codex residual
+arriving late will be triaged as a PUB-07 hardening item, not a
+PUB-06 reopen, unless it evidences a consequential defect.
+Authoritative manuscript + evidence unmodified throughout; $0
+metered spend; no commits. PUB-07 authorized with the expanded
+automation-closing scope (D-PUB-69…74): machinery performs,
+Muse builds.
 
 ## 7. PUB-00 review verdict (recorded PUB-01)
 
@@ -330,3 +1065,25 @@ the change is covered by 4 pinning tests (3 indeterminate + 1
 contradiction positive) plus the untouched 82-test base, all green
 in-session. Carried into PUB-03: the 7 needs-evidence items and the
 EvidenceIndex/NEEDS_EVIDENCE pattern.
+
+## 9. PUB-03 review verdict (closed 2026-11-24, author direction)
+
+PUB-03 **ACCEPTED** on the reported independent regression verdict
+(DeepSeek ACCEPT: 76 evidence + 190 neighbours + short suites + live
+59/9/15/3/3 @ `jev@7f008df8772f677f` and cruft 1/11/2, $0) and the
+implemented review findings. Lane record: Codex BLOCKED (chapter-blind
+matching) → fix batch (D-PUB-21 scope rule + 7 cross-chapter tests) →
+Codex 5/6 ACCEPT with sandbox residual → execution path REMOVED
+(D-PUB-23, runtime counts explicitly unavailable, static counts kept)
+plus README count fix; coordinator verified 171/171 green in-session,
+then post-acceptance batch-2 confirmation: evidence suites 90/90,
+live reconcile 57/17/9/3/3 with 6 corrections @ `jev@6c13d2837f138c84`
+(delta vs baseline exactly the two selftest-count claims
+SUPPORTED→UNRESOLVED, as specified), cruft 1/11/2 fingerprint-stable,
+$0, Jev clean.
+Caveats recorded by the author: acceptance rests on the supplied
+verification reports; the local implementation and deferred long suites
+were not independently executed by the author. Carry-forwards: Ch7
+correction stays scoped (missing file ≠ replacement identified);
+Ch1 model-arm supersession unproven (lead, not evidence); 4/36 chapters
+reconciled — full-book reconciliation is PUB-10 scope. PUB-04 authorized.

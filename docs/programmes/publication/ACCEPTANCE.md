@@ -77,7 +77,17 @@ pending/blocked state, never a silent pass.
   justification; comprehension probes on samples with labelled judges.
 - **PUB-06:** disposable-fixture apply/undo end-to-end with fingerprint proof;
   staged-change-set design approved before any bulk apply; QC gate results kept.
+  Preservation levels distinguished (D-PUB-70): (1) lexical, (2) structural,
+  (3) quantitative, (4) semantic [PUB-08], (5) epistemic [partial],
+  (6) pedagogical recovery [PUB-08]. Passing bounded checks is necessary,
+  never sufficient proof of complete meaning preservation.
 - **PUB-07:** bridge + proposal wiring tests; provenance on Worker outputs.
+  Gate additionally requires: one real dispatched transformation
+  end-to-end (invocation provenance, model/provider/usage/cost,
+  validation, candidate fingerprint, review outcome, correction-loop
+  behaviour); no unsupervised authoritative mutation; no automatic
+  publication approval (candidate-generation autonomy ≠
+  publication-acceptance autonomy).
 - **PUB-08:** held-out calibration results; conflicted-judgement handling
   demonstrated; no reader claims without human data.
 - **PUB-09:** every displayed claim traces to an owning-system evidence id +

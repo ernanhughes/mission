@@ -1,23 +1,48 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { BookOpen } from "lucide-react";
+import { BookOpen, Play } from "lucide-react";
 import { LivingBookCard } from "../living-book/LivingBookCard";
 import { EmptyState, Section, SimpleStatusBadge, Tag } from "../../components/ui";
+import { useToast } from "../../components/Toast";
+import { api, errorMessage } from "../../api/client";
 import { useApi } from "../../api/useApi";
 import { timeAgo } from "../../lib/format";
-import type { ProjectDetail, QualityDiscovery } from "../../types/api";
+import { ChapterRunDialog } from "./ChapterRunDialog";
+import type {
+  PipelineBookMatrix,
+  ProjectDetail,
+  QualityCampaign,
+  QualityDiscovery,
+} from "../../types/api";
+
+const ACTIVE_CAMPAIGN_STATES = ["pending", "running", "cancelling"];
+const DEFAULT_REVIEW_MODEL = "opencode-go/deepseek-v4.1-flash";
 
 export function BookTab({
   projectId,
   data,
   discovery,
+  onRefresh,
 }: {
   projectId: string;
   data: ProjectDetail;
   discovery: QualityDiscovery[] | null;
+  onRefresh?: () => void;
 }) {
   const living = useApi<{ book_title?: string; detail?: string; state?: string; book?: { chapters?: Array<{ chapter_id: string; title?: string | null }> } | null }>(
     `/api/living-book/projects/${projectId}`,
   );
+  const toast = useToast();
+  const campaigns = useApi<QualityCampaign[]>(
+    `/api/quality/campaigns?project_id=${projectId}`,
+    { pollMs: 15000 },
+  );
+  const pipeline = useApi<PipelineBookMatrix>(
+    data.book ? `/api/pipeline/books/${projectId}` : null,
+    { pollMs: 60000 },
+  );
+  const [runChapter, setRunChapter] = useState<QualityDiscovery | null>(null);
+  const [campaignBusy, setCampaignBusy] = useState(false);
 
   if (!data.book && data.kind !== "book") {
     return (
@@ -32,6 +57,52 @@ export function BookTab({
 
   const chapters = discovery ?? [];
   const book = data.book;
+  const activeProse =
+    (campaigns.data ?? []).find(
+      (campaign) =>
+        (campaign.assessment_type ?? "prose") === "prose" &&
+        ACTIVE_CAMPAIGN_STATES.includes(campaign.status),
+    ) ?? null;
+  const pendingChapters = chapters.filter((chapter) => !chapter.has_current);
+
+  function refreshAfterRun() {
+    campaigns.reload();
+    pipeline.reload();
+    onRefresh?.();
+  }
+
+  async function evaluateMissing() {
+    if (activeProse || campaignBusy || pendingChapters.length === 0) return;
+    if (
+      !window.confirm(
+        `Start a prose review campaign for ${pendingChapters.length} chapter${
+          pendingChapters.length === 1 ? "" : "s"
+        }? This is model-backed work and may incur cost.`,
+      )
+    ) {
+      return;
+    }
+    setCampaignBusy(true);
+    try {
+      const created = await api.post<QualityCampaign>("/api/quality/campaigns", {
+        project_id: projectId,
+        mode: "missing",
+        model: DEFAULT_REVIEW_MODEL,
+        strategy: "direct",
+      });
+      await api.post(`/api/quality/campaigns/${created.id}/run`);
+      toast.push(
+        "success",
+        "Evaluation campaign started",
+        `${created.chapter_selection.length} chapters queued. Progress is recorded in the Quality tab.`,
+      );
+      refreshAfterRun();
+    } catch (caught) {
+      toast.push("error", "Could not start evaluation campaign", errorMessage(caught));
+    } finally {
+      setCampaignBusy(false);
+    }
+  }
 
   return (
     <div>
@@ -70,9 +141,35 @@ export function BookTab({
 
       <Section
         title="Manuscript and chapter inventory"
-        description="Discovered chapters. Counts are reported as observed, never reconciled across pillars."
-        actions={chapters.length ? <Tag>{chapters.length} chapters</Tag> : undefined}
+        description="Discovered chapters. Counts are reported as observed, never reconciled across pillars. Runs record evidence; they never edit the manuscript."
+        actions={
+          <div className="button-row">
+            {chapters.length ? <Tag>{chapters.length} chapters</Tag> : null}
+            {activeProse ? (
+              <Tag tone="accent">
+                Prose review {activeProse.completed}/{activeProse.total}
+              </Tag>
+            ) : pendingChapters.length ? (
+              <button
+                type="button"
+                className="button button-primary button-small"
+                disabled={campaignBusy}
+                onClick={() => void evaluateMissing()}
+              >
+                {campaignBusy
+                  ? "Starting…"
+                  : `Evaluate prose (${pendingChapters.length})`}
+              </button>
+            ) : null}
+          </div>
+        }
       >
+        {campaigns.error ? (
+          <p className="muted small">
+            Campaign status is unavailable: {campaigns.error.message}. Runs may still be
+            available.
+          </p>
+        ) : null}
         {chapters.length === 0 ? (
           <EmptyState
             title="No chapters discovered"
@@ -86,6 +183,7 @@ export function BookTab({
                   <th>Chapter</th>
                   <th>Title</th>
                   <th>Evaluation</th>
+                  <th>Run</th>
                 </tr>
               </thead>
               <tbody>
@@ -100,6 +198,16 @@ export function BookTab({
                         <Tag>{row.eligibility}</Tag>
                       )}
                     </td>
+                    <td>
+                      <button
+                        type="button"
+                        className="button button-secondary button-small"
+                        aria-label={`Run chapter work for ${row.chapter_id}`}
+                        onClick={() => setRunChapter(row)}
+                      >
+                        <Play size={13} /> Run…
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -107,6 +215,18 @@ export function BookTab({
           </div>
         )}
       </Section>
+
+      {runChapter ? (
+        <ChapterRunDialog
+          projectId={projectId}
+          chapter={runChapter}
+          campaigns={campaigns.data ?? []}
+          pipeline={pipeline.data}
+          pipelineLoading={pipeline.loading}
+          onClose={() => setRunChapter(null)}
+          onStarted={refreshAfterRun}
+        />
+      ) : null}
 
       <Section title="Book outcomes" description="Outcome relationships for this manuscript.">
         {data.outcomes.length ? (

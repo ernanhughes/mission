@@ -1,0 +1,213 @@
+{
+  "adjudicated_by": "muse-spark-1.3 (opencode session PUB-06, bounded semantic adjudication)",
+  "adjudications": [
+    {
+      "context_used": [
+        "01-chapter.md L392-396 + adjacent four-definitions block",
+        "metadata/01-chapter.yaml purpose"
+      ],
+      "op_id": "op:43597470:005",
+      "outcome": "accept",
+      "rationale": "Local transitional bridge between the four definitions and the closing claim. Content derivable from adjacent in-manuscript text (definitions of computation/prediction/generation/decision + the conflation claim at L392). No audience modeling required; bridge preserves meaning.",
+      "adjudicated_by": "muse-spark-1.3 (opencode session PUB-06, bounded semantic adjudication)",
+      "at": "2026-11-24T22:01:33+00:00",
+      "plan_id": "plan:774e0e946434b53a",
+      "source_fingerprint": "435974701050832da4d39925e753abdafacb9bc990668d0cb182a56e3b73dadb"
+    },
+    {
+      "context_used": [
+        "01-chapter.md L115-122 error sentences (byte-true)"
+      ],
+      "op_id": "op:43597470:008",
+      "outcome": "accept",
+      "rationale": "Split one idea per paragraph: (1) the two named errors as policy-shaped; (2) the rulebook-hole diagnosis. Sentences stay byte-true; only paragraphing changes.",
+      "adjudicated_by": "muse-spark-1.3 (opencode session PUB-06, bounded semantic adjudication)",
+      "at": "2026-11-24T22:01:33+00:00",
+      "plan_id": "plan:774e0e946434b53a",
+      "source_fingerprint": "435974701050832da4d39925e753abdafacb9bc990668d0cb182a56e3b73dadb"
+    },
+    {
+      "context_used": [
+        "01-chapter.md L115-122",
+        "split outcome of op:43597470:008"
+      ],
+      "op_id": "op:43597470:009",
+      "outcome": "accept",
+      "rationale": "One synthesis line after the split naming the carry-forward (rule-followed vs outcome-sensible). Additive only; preservation-safe.",
+      "adjudicated_by": "muse-spark-1.3 (opencode session PUB-06, bounded semantic adjudication)",
+      "at": "2026-11-24T22:01:33+00:00",
+      "plan_id": "plan:774e0e946434b53a",
+      "source_fingerprint": "435974701050832da4d39925e753abdafacb9bc990668d0cb182a56e3b73dadb"
+    },
+    {
+      "context_used": [
+        "01-chapter.md L101-109 correction note",
+        "preservation obligation: amendment byte-true, never reworded"
+      ],
+      "op_id": "op:43597470:006",
+      "outcome": "decline",
+      "rationale": "DECLINED under preservation constraint: the attached obligation requires the amendment byte-true (never reworded, never condensed). The note is already one minimal note; no surrounding scaffolding exists to consolidate. Fact + traceability retained verbatim.",
+      "adjudicated_by": "muse-spark-1.3 (opencode session PUB-06, bounded semantic adjudication)",
+      "at": "2026-11-24T22:01:33+00:00",
+      "plan_id": "plan:774e0e946434b53a",
+      "source_fingerprint": "435974701050832da4d39925e753abdafacb9bc990668d0cb182a56e3b73dadb"
+    },
+    {
+      "context_used": [
+        "01-chapter.md L234-236 + L240-253 prompt block"
+      ],
+      "op_id": "op:43597470:013",
+      "outcome": "accept",
+      "rationale": "Bridge from the identical-prompt guarantee to Path 2/3 descriptions. Content in-manuscript (decoding constraint vs wording). Accept.",
+      "adjudicated_by": "muse-spark-1.3 (opencode session PUB-06, bounded semantic adjudication)",
+      "at": "2026-11-24T22:01:33+00:00",
+      "plan_id": "plan:774e0e946434b53a",
+      "source_fingerprint": "435974701050832da4d39925e753abdafacb9bc990668d0cb182a56e3b73dadb"
+    },
+    {
+      "context_used": [
+        "01-chapter.md L255-257 + L258-270 Willard passage"
+      ],
+      "op_id": "op:43597470:014",
+      "outcome": "accept",
+      "rationale": "One synthesis line carrying the constraint-cost takeaway before the table. Additive only.",
+      "adjudicated_by": "muse-spark-1.3 (opencode session PUB-06, bounded semantic adjudication)",
+      "at": "2026-11-24T22:01:33+00:00",
+      "plan_id": "plan:774e0e946434b53a",
+      "source_fingerprint": "435974701050832da4d39925e753abdafacb9bc990668d0cb182a56e3b73dadb"
+    },
+    {
+      "context_used": [
+        "01-chapter.md L258-270 Willard et al. \u00a71/\u00a75 details",
+        "open question: rows/cols/dims from cited values only"
+      ],
+      "op_id": "op:43597470:015",
+      "outcome": "accept",
+      "rationale": "Comparison table naive-vs-indexed + index cost, values strictly from cited text (O(N)/token vs O(1) avg; ~50MB index). Prose keeps interpretation. Dims recorded at apply time.",
+      "adjudicated_by": "muse-spark-1.3 (opencode session PUB-06, bounded semantic adjudication)",
+      "at": "2026-11-24T22:01:33+00:00",
+      "plan_id": "plan:774e0e946434b53a",
+      "source_fingerprint": "435974701050832da4d39925e753abdafacb9bc990668d0cb182a56e3b73dadb"
+    },
+    {
+      "context_used": [
+        "01-chapter.md L258-270"
+      ],
+      "op_id": "op:43597470:016",
+      "outcome": "accept",
+      "rationale": "Post-table synthesis line (memory cost before compute win). Additive only.",
+      "adjudicated_by": "muse-spark-1.3 (opencode session PUB-06, bounded semantic adjudication)",
+      "at": "2026-11-24T22:01:33+00:00",
+      "plan_id": "plan:774e0e946434b53a",
+      "source_fingerprint": "435974701050832da4d39925e753abdafacb9bc990668d0cb182a56e3b73dadb"
+    },
+    {
+      "context_used": [
+        "01-chapter.md L272-277 + L278-289 Tam et al. \u00a75.3"
+      ],
+      "op_id": "op:43597470:018",
+      "outcome": "accept",
+      "rationale": "Bridge from structure-guarantee to the comfort-attacking paper. Content in-manuscript. Accept.",
+      "adjudicated_by": "muse-spark-1.3 (opencode session PUB-06, bounded semantic adjudication)",
+      "at": "2026-11-24T22:01:33+00:00",
+      "plan_id": "plan:774e0e946434b53a",
+      "source_fingerprint": "435974701050832da4d39925e753abdafacb9bc990668d0cb182a56e3b73dadb"
+    },
+    {
+      "context_used": [
+        "01-chapter.md L291-299 reason-first variant + L300-303 \u00a75.4"
+      ],
+      "op_id": "op:43597470:021",
+      "outcome": "accept",
+      "rationale": "Bridge from ordering confound to the 2-of-3-datasets warning. Content in-manuscript. Accept.",
+      "adjudicated_by": "muse-spark-1.3 (opencode session PUB-06, bounded semantic adjudication)",
+      "at": "2026-11-24T22:01:33+00:00",
+      "plan_id": "plan:774e0e946434b53a",
+      "source_fingerprint": "435974701050832da4d39925e753abdafacb9bc990668d0cb182a56e3b73dadb"
+    },
+    {
+      "context_used": [
+        "01-chapter.md L305-308 classification trade-off"
+      ],
+      "op_id": "op:43597470:022",
+      "outcome": "accept",
+      "rationale": "Split the two-sided cut (helps classification / hurts reasoning) into one idea per paragraph.",
+      "adjudicated_by": "muse-spark-1.3 (opencode session PUB-06, bounded semantic adjudication)",
+      "at": "2026-11-24T22:01:33+00:00",
+      "plan_id": "plan:774e0e946434b53a",
+      "source_fingerprint": "435974701050832da4d39925e753abdafacb9bc990668d0cb182a56e3b73dadb"
+    },
+    {
+      "context_used": [
+        "split outcome of op:43597470:022"
+      ],
+      "op_id": "op:43597470:023",
+      "outcome": "accept",
+      "rationale": "One synthesis line: constraint is not free, direction depends on task. Additive only.",
+      "adjudicated_by": "muse-spark-1.3 (opencode session PUB-06, bounded semantic adjudication)",
+      "at": "2026-11-24T22:01:33+00:00",
+      "plan_id": "plan:774e0e946434b53a",
+      "source_fingerprint": "435974701050832da4d39925e753abdafacb9bc990668d0cb182a56e3b73dadb"
+    },
+    {
+      "context_used": [
+        "01-chapter.md L310-317 LMQL paragraph"
+      ],
+      "op_id": "op:43597470:024",
+      "outcome": "accept",
+      "rationale": "Split idea-vs-measurement: (1) LMQL prior art exists and claims nothing here; (2) what Ch1 still must measure. Meaning preserved.",
+      "adjudicated_by": "muse-spark-1.3 (opencode session PUB-06, bounded semantic adjudication)",
+      "at": "2026-11-24T22:01:33+00:00",
+      "plan_id": "plan:774e0e946434b53a",
+      "source_fingerprint": "435974701050832da4d39925e753abdafacb9bc990668d0cb182a56e3b73dadb"
+    },
+    {
+      "context_used": [
+        "split outcome of op:43597470:024"
+      ],
+      "op_id": "op:43597470:025",
+      "outcome": "accept",
+      "rationale": "One synthesis line fixing Ch1's narrow contribution. Additive only.",
+      "adjudicated_by": "muse-spark-1.3 (opencode session PUB-06, bounded semantic adjudication)",
+      "at": "2026-11-24T22:01:33+00:00",
+      "plan_id": "plan:774e0e946434b53a",
+      "source_fingerprint": "435974701050832da4d39925e753abdafacb9bc990668d0cb182a56e3b73dadb"
+    },
+    {
+      "context_used": [
+        "01-chapter.md L405-406 + L408-414 NOT_OBSERVED table"
+      ],
+      "op_id": "op:43597470:029",
+      "outcome": "accept",
+      "rationale": "Bridge from no-local-weights sentence to the honesty table. Content in-manuscript. Accept.",
+      "adjudicated_by": "muse-spark-1.3 (opencode session PUB-06, bounded semantic adjudication)",
+      "at": "2026-11-24T22:01:33+00:00",
+      "plan_id": "plan:774e0e946434b53a",
+      "source_fingerprint": "435974701050832da4d39925e753abdafacb9bc990668d0cb182a56e3b73dadb"
+    },
+    {
+      "context_used": [
+        "01-chapter.md L419-420 + L422-428 25-character payload"
+      ],
+      "op_id": "op:43597470:030",
+      "outcome": "accept",
+      "rationale": "Bridge from five-arms note to the observed 25-character payload. Content in-manuscript. Accept.",
+      "adjudicated_by": "muse-spark-1.3 (opencode session PUB-06, bounded semantic adjudication)",
+      "at": "2026-11-24T22:01:33+00:00",
+      "plan_id": "plan:774e0e946434b53a",
+      "source_fingerprint": "435974701050832da4d39925e753abdafacb9bc990668d0cb182a56e3b73dadb"
+    },
+    {
+      "context_used": [
+        "01-chapter.md L509-518 closing + PD13 cluster"
+      ],
+      "op_id": "op:43597470:040",
+      "outcome": "accept",
+      "rationale": "One synthesis line after the closing question naming the Chapter 2 handoff. Additive only; evidence refs recorded, text preserved (D-PUB-47: synthesis never blocked by needs).",
+      "adjudicated_by": "muse-spark-1.3 (opencode session PUB-06, bounded semantic adjudication)",
+      "at": "2026-11-24T22:01:33+00:00",
+      "plan_id": "plan:774e0e946434b53a",
+      "source_fingerprint": "435974701050832da4d39925e753abdafacb9bc990668d0cb182a56e3b73dadb"
+    }
+  ]
+}

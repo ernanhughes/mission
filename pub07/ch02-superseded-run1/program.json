@@ -1,0 +1,3591 @@
+{
+ "program_schema": "writer.automation.program.v1",
+ "detector": "publication-automation-v0.1",
+ "package_id": "passage:Nine older mechanisms, seven properties",
+ "editorial_loop": {
+  "loop_schema": "writer.automation.correction.v1",
+  "detector": "publication-automation-v0.1",
+  "role": "editorial",
+  "max_iterations": 2,
+  "outcome": "verified_pass",
+  "iterations": [
+   {
+    "attempt": 1,
+    "dispatch": {
+     "role": "editorial",
+     "task_kind": "publication_editorial",
+     "package_id": "passage:Nine older mechanisms, seven properties",
+     "attempt": 1,
+     "status": "succeeded",
+     "succeeded": true,
+     "typed": {
+      "operation_ids": [
+       "op:b61a63c5:006",
+       "op:b61a63c5:007"
+      ],
+      "replacement_lines": [
+       "Almost every property has a crowd of ancestors.",
+       "Typed questions and bounded answers (P2, P3) are covered four times over.",
+       "P(True) gives distributions over labeled options and True/False reformulations (Kadavath et al., [arXiv:2207.05221](https://arxiv.org/abs/2207.05221)).",
+       "Constrained generation bounds any schema by construction (Willard et al., [arXiv:2307.09702](https://arxiv.org/abs/2307.09702)).",
+       "LMQL declares answer kinds up front ([arXiv:2212.06094](https://arxiv.org/abs/2212.06094)).",
+       "LLM2Jev takes choice/noul/score as its three canonical formats ([arXiv:2610.02076](https://arxiv.org/abs/2610.02076)).",
+       "Probabilities by default (P5) are older still.",
+       "The Cobbe verifier outputs the probability a solution is correct ([arXiv:2110.14168](https://arxiv.org/abs/2110.14168)).",
+       "The GenRM direct verifier uses the likelihood of a single 'Yes' token as its score ([arXiv:2408.15240](https://arxiv.org/abs/2408.15240)).",
+       "That last one deserves a pause: option scoring over a two-option slate, trained with the ordinary next-token loss, published in 2024.",
+       "If you squint, Jev's choice primitive is GenRM's direct verifier with better marketing and a parallel sampler.",
+       "Taken together, the passage establishes that almost every property has a crowd of ancestors: P2 and P3 are covered four times over, P5 is older still, and, if you squint, Jev's choice primitive is GenRM's direct verifier with better marketing and a parallel sampler."
+      ],
+      "rationale": "Split the overloaded prior-art paragraph into one idea per paragraph and appended a consolidating synthesis that restates only the passage's existing P2/P3, P5, and GenRM points.",
+      "quotes_used": [
+       "Almost every property has a crowd of ancestors.",
+       "(P2, P3) are covered four times over",
+       "LMQL declares answer kinds up",
+       "choice/noul/score as its three canonical formats",
+       "Probabilities by default (P5) are older still",
+       "the Cobbe verifier outputs the",
+       "the GenRM direct verifier uses the likelihood of a single 'Yes' token as its score",
+       "option scoring over a two-option slate, trained with the ordinary next-token loss",
+       "If you squint, Jev's choice primitive is GenRM's direct verifier",
+       "with better marketing and a parallel sampler."
+      ],
+      "preservation_notes": [
+       "P2/P3 coverage claim and all four prior-art citations preserved with identical arXiv IDs.",
+       "P5 older-still claim and Cobbe/GenRM citations preserved.",
+       "GenRM direct-verifier analogy preserved, including the 'if you squint' hedge.",
+       "The source's 'choice/noul/score' spelling is retained.",
+       "No new factual claims, numbers, citations, or conclusions were introduced."
+      ],
+      "no_new_claims": true
+     },
+     "error": null,
+     "error_kind": null,
+     "provenance": {
+      "task": "publication.editorial",
+      "operation_version": "v0.1",
+      "schema_identity": "EditorialCandidateResponse",
+      "schema_version": "v0.1",
+      "prompt_sha256": "1d45f8e309f035b822934ab132e6717f6728679c751133711ce949883940aef7",
+      "context_sha256": null,
+      "schema_sha256": "a6a3308a87446adea13b699d5b4acf1f9c6207bd3f193612ff8770d1ba2c65ae",
+      "writer_execution_id": "model-exec-6d7b8067b26f",
+      "attempts": 1,
+      "latency_ms": 54702,
+      "usage": {
+       "input_tokens": 2050,
+       "cached_input_tokens": 0,
+       "output_tokens": 7328,
+       "reasoning_tokens": 0,
+       "total_tokens": 9378,
+       "cached_write_tokens": null,
+       "_subject_hash": null,
+       "_candidate_hash": null,
+       "_protocol_version": null,
+       "_evaluator_role": null,
+       "_blindness": null,
+       "_parent_experiment_id": null
+      },
+      "cost_usd": 0.0047043
+     },
+     "raw_response": {
+      "writer_execution_id": "model-exec-6d7b8067b26f",
+      "worker_request_id": "wrq_52a5da33cd148c64dd31f791df96035a",
+      "worker_work_id": "wk_bd5f83c4fbdca6593e9e8bd78cb47800",
+      "worker_run_id": "wr_3f7194dbbb04ffc0a300a757827c6bf8",
+      "worker_acceptance_id": "ac_22bec0f54da5c6248be69e1f5726c4e6",
+      "worker_status": "ACCEPTED",
+      "worker_backend": "opencode-work",
+      "worker_provenance": {
+       "project_id": "writer",
+       "work_id": "wk_bd5f83c4fbdca6593e9e8bd78cb47800",
+       "worker_request_id": "wrq_52a5da33cd148c64dd31f791df96035a",
+       "application": "writer",
+       "ledger_dir": "C:\\Projects\\writer\\.opencode\\vfs",
+       "edge_record_ids": [
+        "fa9aba37cd3f2fbbdfeadc876bde62ca9660f32e0fc676646e9088d32cfd4dc7",
+        "acaad5c9150462504e2220585dff3e9fc04bbeef333f56394765ca1e336a0b58",
+        "37bf0eb96bcef7b36c6400b6c4ed50253f2db99d187e136381d7f40d86b185e7",
+        "00daba2ada5053ec7b8023432fc1408d4df5899ba3e978e6e65320fcdba21165",
+        "44f44e018c501889ba494e1eb1438d13c3afd6adac2a7dc94b0d2c37b25192a8",
+        "a70035d082ab50eaee44f8ff13c9ed8988e690b0ca25e9ba02529c94e9ad4acc",
+        "07f146c5c3c928ad2c7ea4b240f6cb18fd111c940ec7819e92255c53edc51968",
+        "9b17affccb7cc39142011979c5fd4ca8d9350bddba91077856703a703c7e06ca",
+        "e1cc3899c9c3309ef6de018d13b6e9327667024540ef00eddd7e59703ef85634",
+        "e9b9fc70de6649c72548d4e2293edf061cf8727aa72990d4d6548a674f7c613a",
+        "72d2696f483e1b8a9caa19ff47b3af16a804896b8112c13ad6ffb5c337d87815"
+       ]
+      },
+      "worker_model_execution": {
+       "requested": {
+        "route": "default_deepseek_go",
+        "provider": "pi",
+        "model": "opencode-go/deepseek-v4.1-flash",
+        "policy": "default"
+       },
+       "observed": {
+        "provider": "opencode-go",
+        "model": "deepseek-v4.1-flash",
+        "id": "opencode-go/deepseek-v4.1-flash",
+        "family": "deepseek",
+        "family_source": "verified_mapping",
+        "mapping_version": "worker-families/2026-10-13-longcat",
+        "matches_request": true
+       },
+       "execution_id": "161be972-ae4b-4c79-b9ed-6577cea797b5",
+       "status": "SUCCEEDED",
+       "provider": "pi",
+       "model": "opencode-go/deepseek-v4.1-flash",
+       "failure_domain": "pi",
+       "usage": {
+        "input_tokens": 2050,
+        "output_tokens": 7328,
+        "cached_read_tokens": 0,
+        "cache_write_tokens": 0,
+        "total_tokens": 9378,
+        "raw": {
+         "input": 2050,
+         "output": 7328,
+         "cacheRead": 0,
+         "cacheWrite": 0,
+         "reasoning": 6631,
+         "totalTokens": 9378,
+         "cost": {
+          "input": 0.0003075,
+          "output": 0.0043968,
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "total": 0.0047043,
+          "totalFromProvider": false
+         }
+        }
+       },
+       "cost": {
+        "amount": 0.0047043,
+        "currency": "USD",
+        "economic_tier": "subscription",
+        "kind": "estimated",
+        "status": "known",
+        "amount_known": true,
+        "low_usd": 0.0047043,
+        "high_usd": 0.0047043,
+        "basis": "flat",
+        "schedule": "opencode-go-catalogue-2026-11-08",
+        "pricing_schedule": "opencode-go-catalogue-2026-11-08",
+        "source": "OpenCode model catalogue (opencode.ai/docs/console/models)",
+        "observed_at": "2026-11-08",
+        "effective_from": "2026-11-08",
+        "verification": "catalogue_observed",
+        "conditions": [
+         "Published Go accounting rate; not an invoice or billed charge."
+        ]
+       },
+       "latency_ms": 54130,
+       "attempts": [
+        {
+         "requested_model": "opencode-go/deepseek-v4.1-flash",
+         "observed": {
+          "provider": "opencode-go",
+          "model": "deepseek-v4.1-flash",
+          "id": "opencode-go/deepseek-v4.1-flash",
+          "family": "deepseek",
+          "family_source": "verified_mapping",
+          "mapping_version": "worker-families/2026-10-13-longcat",
+          "matches_request": true
+         },
+         "route": "default_deepseek_go",
+         "provider": "pi",
+         "model": "opencode-go/deepseek-v4.1-flash",
+         "transport": "pi-rpc",
+         "failure_domain": "pi",
+         "started_at": "2026-11-25T07:40:05.327Z",
+         "latency_ms": 54130,
+         "status": "SUCCEEDED",
+         "provider_state_ref": "provider-state-3f5f8abb-d1e7-4236-a4fc-118a1b2f923c",
+         "request_dispatched": true,
+         "request_admitted": "YES",
+         "inference_executed": "UNKNOWN",
+         "usage": {
+          "input_tokens": 2050,
+          "output_tokens": 7328,
+          "cached_read_tokens": 0,
+          "cache_write_tokens": 0,
+          "total_tokens": 9378,
+          "raw": {
+           "input": 2050,
+           "output": 7328,
+           "cacheRead": 0,
+           "cacheWrite": 0,
+           "reasoning": 6631,
+           "totalTokens": 9378,
+           "cost": {
+            "input": 0.0003075,
+            "output": 0.0043968,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0.0047043,
+            "totalFromProvider": false
+           }
+          }
+         },
+         "cost": {
+          "amount": 0.0047043,
+          "currency": "USD",
+          "economic_tier": "subscription",
+          "kind": "estimated",
+          "status": "known",
+          "amount_known": true,
+          "low_usd": 0.0047043,
+          "high_usd": 0.0047043,
+          "basis": "flat",
+          "schedule": "opencode-go-catalogue-2026-11-08",
+          "pricing_schedule": "opencode-go-catalogue-2026-11-08",
+          "source": "OpenCode model catalogue (opencode.ai/docs/console/models)",
+          "observed_at": "2026-11-08",
+          "effective_from": "2026-11-08",
+          "verification": "catalogue_observed",
+          "conditions": [
+           "Published Go accounting rate; not an invoice or billed charge."
+          ]
+         }
+        }
+       ],
+       "fallback_path": [
+        "default_deepseek_go"
+       ],
+       "execution_state": "MODEL_OUTPUT_OBSERVED",
+       "stop_batch": false,
+       "provider_state_ref": "provider-state-3f5f8abb-d1e7-4236-a4fc-118a1b2f923c",
+       "provider_events": [
+        {
+         "schema_version": "provider-event.v1",
+         "event_id": "2677c24a-93b1-42dd-b3a6-1577efdfb4fc",
+         "type": "MODEL_PREFLIGHT",
+         "observed_at": "2026-11-25T07:40:05.327Z",
+         "execution_id": "161be972-ae4b-4c79-b9ed-6577cea797b5",
+         "provider_state_ref": "provider-state-05ee1f11-f7dd-4f13-98e2-edbcab354c79",
+         "previous": "AVAILABLE",
+         "current": "AVAILABLE",
+         "provider": "pi",
+         "model": "opencode-go/deepseek-v4.1-flash",
+         "failure_domain": "pi",
+         "observed_from": "runtime_response",
+         "quota_state": "UNKNOWN",
+         "retry_at": null
+        },
+        {
+         "schema_version": "provider-event.v1",
+         "event_id": "5f873b12-45d2-4aff-ad54-9d3d35f93d43",
+         "type": "PROVIDER_STATE_OBSERVED",
+         "observed_at": "2026-11-25T07:40:59.456Z",
+         "execution_id": "161be972-ae4b-4c79-b9ed-6577cea797b5",
+         "provider_state_ref": "provider-state-3f5f8abb-d1e7-4236-a4fc-118a1b2f923c",
+         "previous": "AVAILABLE",
+         "current": "AVAILABLE",
+         "provider": "pi",
+         "model": "opencode-go/deepseek-v4.1-flash",
+         "failure_domain": "pi",
+         "observed_from": "runtime_response",
+         "quota_state": "UNKNOWN",
+         "retry_at": null
+        }
+       ],
+       "provider_states": [
+        {
+         "schema_version": "provider-state.v1",
+         "provider_state_id": "provider-state-05ee1f11-f7dd-4f13-98e2-edbcab354c79",
+         "provider": "pi",
+         "model": "opencode-go/deepseek-v4.1-flash",
+         "failure_domain": "pi",
+         "scope": "model",
+         "observed_at": "2026-11-25T07:34:33.751Z",
+         "observed_from": "runtime_response",
+         "status": "AVAILABLE",
+         "authentication": "UNKNOWN",
+         "model_available": "AVAILABLE",
+         "request_admissible": "UNKNOWN",
+         "quota_state": "UNKNOWN",
+         "quota_windows": [],
+         "reset_at": null,
+         "retry_at": null,
+         "retry_source": "NONE",
+         "extra_credit_usd": null,
+         "extra_usage": "UNKNOWN",
+         "last_provider_error": null
+        },
+        {
+         "schema_version": "provider-state.v1",
+         "provider_state_id": "provider-state-3f5f8abb-d1e7-4236-a4fc-118a1b2f923c",
+         "provider": "pi",
+         "model": "opencode-go/deepseek-v4.1-flash",
+         "failure_domain": "pi",
+         "scope": "model",
+         "observed_at": "2026-11-25T07:40:59.456Z",
+         "observed_from": "runtime_response",
+         "status": "AVAILABLE",
+         "authentication": "UNKNOWN",
+         "model_available": "AVAILABLE",
+         "request_admissible": "UNKNOWN",
+         "quota_state": "UNKNOWN",
+         "quota_windows": [],
+         "reset_at": null,
+         "retry_at": null,
+         "retry_source": "NONE",
+         "extra_credit_usd": null,
+         "extra_usage": "UNKNOWN",
+         "last_provider_error": null
+        }
+       ],
+       "provider_warnings": [
+        "Provider quota is not observed; request admissibility remains unknown unless blocked by runtime evidence."
+       ],
+       "selection": {
+        "policy": "default",
+        "prior_families": [],
+        "ordered_routes": [
+         "default_deepseek_go"
+        ],
+        "distinct_route_count": 0,
+        "independence_required": false,
+        "same_family_fallback": false
+       },
+       "independence": {
+        "required": false,
+        "state": "not_required",
+        "prior_families": []
+       }
+      },
+      "model_prompt_sha256": "1d45f8e309f035b822934ab132e6717f6728679c751133711ce949883940aef7",
+      "observed_model": "opencode-go/deepseek-v4.1-flash"
+     },
+     "recorded_at": "2026-11-25T07:41:00.008791+00:00"
+    },
+    "validation_reasons": [],
+    "assembled_lines": 344,
+    "verify_verdict": "pass",
+    "verify_failed": 0,
+    "outcome": "verified_pass"
+   }
+  ],
+  "final_lines": [
+   "+++",
+   "title = \"The Jev Provocation\"",
+   "date = '2026-10-05T09:00:00+01:00'",
+   "description = \"What Jev's public contract actually says, reconstructed from the vendor's own documentation \u2014 and which of its seven properties, if any, is genuinely new.\"",
+   "weight = 2",
+   "draft = false",
+   "series = [\"The Book of Jev\"]",
+   "categories = [\"AI\", \"Decision Models\", \"Programming Languages\"]",
+   "tags = [\"jev\", \"decision contract\", \"prior art\", \"confidence\", \"option scoring\"]",
+   "lastmod = '2026-11-10'",
+   "+++",
+   "Chapter 1 ended with a question: the predicate cannot answer half the test split, so",
+   "what is the thing that handles the rest? The vendor's answer is a product. Before this",
+   "book builds anything, it owes you a careful reading of that product's contract \u2014 what",
+   "it promises, what it pointedly does not promise, and which parts, if any, nobody had",
+   "built before.",
+   "",
+   "That last clause is the whole chapter. Everything Jev does arrives wrapped in the",
+   "claim that it is a new kind of model. The claim might be true. It is more likely to be",
+   "packaging. Packaging is not nothing \u2014 a good interface changes what gets built \u2014 but",
+   "packaging and discovery are different achievements, and confusing them is how a book",
+   "like this one lies to you. So: the contract first, from the vendor's own pages only;",
+   "then nine older mechanisms held up against it, one property at a time; then the",
+   "verdict, including the one place where the verdict went against the prediction.",
+   "",
+   "## The contract, from the vendor's pages only",
+   "",
+   "Everything in this section comes from TypeSafe's own documentation and launch post.",
+   "The independent guide at `jevmodel.org` says much the same",
+   "thing, but it states on its own footer that it is unaffiliated with TypeSafe, so it is",
+   "not a source for anything here. Vendor claims about speed, price and calibration are",
+   "recorded as claims, not repeated as facts. No live behavior was observed: this book had",
+   "no Jev API key, and every statement about what the service *does*,",
+   "as opposed to what its documentation *says*, is `NOT_OBSERVED`.",
+   "",
+   "You send a **state** \u2014 the application data you already have \u2014 and a set of **typed",
+   "questions** about it. What comes back is typed values, never prose. That sentence is",
+   "the product.",
+   "",
+   "A question has an **ID** you choose (it is not sent to the model; the answer comes",
+   "back under it), a **type**, **instructions** in plain language, and **criteria**. There",
+   "are three types, and the trio is worth stating exactly, because every later chapter",
+   "assumes it:",
+   "",
+   "- **Choice** \u2014 which of these options? Returns the winner, a probability for each",
+   "  option, and a confidence number. Up to 255 options; beyond comfortable sizes the",
+   "  vendor describes a two-stage score-then-choose system.",
+   "- **Score** \u2014 which level? Criteria are an ordered array of 2 to 10 level descriptions,",
+   "  numbered from 0. Returns a score that *can land between levels* (their worked example",
+   "  returns 1.43 on a three-level rubric), a legend, a probability per level, and a",
+   "  confidence number.",
+   "- **Noul** \u2014 is this true? Returns a single probability from 0 to 1. No separate",
+   "  confidence: in the vendor's own words, \"the number is the answer and the certainty",
+   "  in one.\"",
+   "",
+   "Several questions share one request. Every question sees the same state and is",
+   "evaluated **independently and in parallel** \u2014 the docs say adding questions \"barely",
+   "changes\" response time and does not create \"context-rot\". And the docs prescribe a",
+   "discipline, not just an API: ask one snap judgment per question, decompose anything",
+   "multi-factor into separate questions, and **combine the answers with logic in your",
+   "code**. Weights live in your code, not in a prompt, so when priorities shift you change",
+   "a coefficient rather than rewriting prose. That paragraph is the closest the vendor",
+   "comes to stating this book's thesis for it, and it is doing real work in the chapters",
+   "on composition.",
+   "",
+   "![Decision flow for Chapter 2](/images/books/jev/diagram-02-01.png)",
+   "",
+   "Seven properties, then. One state. Typed questions. Bounded answers. Many questions per",
+   "request, parallel and independent. Probabilities on every answer. A separate",
+   "confidence statistic. Atomic questions composed in code. Call them P1 through P7; the",
+   "experiment below is organized around them, and the code in `src/arbiter/contract.py`",
+   "implements exactly this shape \u2014 with one deliberate difference recorded below. If you",
+   "read Language, you already have the shape of this: a typed question is a rung on the",
+   "Representation Ladder chosen in advance by the programmer, rather than one the model",
+   "climbs to while writing. Chapter 1 imported that idea; this chapter spends it.",
+   "",
+   "## What the vendor pointedly does not promise",
+   "",
+   "> **Wrong:** Jev returns typed output, so the answer must be right. The schema is a",
+   "> guarantee of correctness.",
+   ">",
+   "> **Correct:** The schema is a guarantee about the *string*. The vendor's own launch",
+   "> post separates checkable claims (speed, pricing, zero type errors) from bolder ones,",
+   "> calls its headline 193.6x/444.6x figures \"on the higher end\", admits the reference",
+   "> answers bias toward OpenAI and Anthropic models, and notes that the 0% type-error",
+   "> figure in its plots is \"not empirical\" \u2014 schema matching is guaranteed, so there is",
+   "> nothing to measure.",
+   "",
+   "That honesty is worth naming because it is unusual in launch material, and because the",
+   "book's standard for the vendor is the vendor's own standard. Type safety means the",
+   "output cannot be malformed. It says nothing about whether the output is true. Every",
+   "time this book grades a decision against a label, it is testing the part the vendor",
+   "never promised.",
+   "",
+   "There is a second non-promise hiding in the confidence formulas, and it is the most",
+   "interesting thing the vendor published. Confidence is *derived* \u2014 a statistic computed",
+   "from the answer's own probabilities, with the formula printed in the docs:",
+   "",
+   "```python",
+   "def choice_confidence(probabilities: list[float]) -> float:",
+   "    n = len(probabilities)",
+   "    return (max(probabilities) - 1 / n) / (1 - 1 / n)",
+   "```",
+   "",
+   "Even split is 0, certainty is 1. The score formula compares the probability-weighted",
+   "distance from the peak level against the same distance under an even spread, floored",
+   "at 0 \u2014 so probability on a neighboring level costs less than probability far away.",
+   "Nouls get no separate confidence; the suggested equivalent is |2p \u2212 1|. Our",
+   "implementation reproduces the vendor's own worked numbers exactly (their 0.76 choice",
+   "example, their ~0.35 score example \u2014 verified in `selftest_ch02.py`). Publishing the",
+   "formula is what makes confidence checkable rather than mystical, and checkability is",
+   "the theme of Chapter 9. Whether the number *means* anything \u2014 whether 0.76 behaves",
+   "like 76% \u2014 is a calibration question, and calibration is Chapter 9's, not this",
+   "chapter's. Do not let the formula's exactness convince you the uncertainty is exact.",
+   "That confusion has a name, and Chapter 9 gives it a chapter.",
+   "",
+   "## Nine older mechanisms, seven properties",
+   "",
+   "The preregistration, written before any of this was built, predicted",
+   "that **no single element of the contract is new**, and that the combination \u2014 shared",
+   "state, typed question set, probabilities by default \u2014 is the packaging contribution.",
+   "The test is a table: nine prior mechanisms against the seven properties, 63 cells,",
+   "each cell carrying a citation or marked UNKNOWN. The table lives in",
+   "`examples/ch02-the-jev-provocation/table.py`, the acceptance check is executable",
+   "(`check_table` fails on an uncited cell), and the rows are in `results/ch02.jsonl`.",
+   "",
+   "The nine: a fine-tuned classifier, zero-shot/NLI scoring, the Cobbe verifier, the",
+   "GenRM direct verifier, P(True) self-evaluation, constrained generation, LMQL, the",
+   "LLM-as-judge, and training-free option scoring from an off-the-shelf LLM (LLM2Jev).",
+   "The NLI row is UNKNOWN throughout \u2014 Chapters 5 and 6 own it, and this chapter does",
+   "not borrow their findings in advance.",
+   "",
+   "Almost every property has a crowd of ancestors.",
+   "Typed questions and bounded answers (P2, P3) are covered four times over: P(True) gives distributions over labeled options and True/False reformulations (Kadavath et al., [arXiv:2207.05221](https://arxiv.org/abs/2207.05221)); constrained generation bounds any schema by construction (Willard et al., [arXiv:2307.09702](https://arxiv.org/abs/2307.09702)); LMQL declares answer kinds up front ([arXiv:2212.06094](https://arxiv.org/abs/2212.06094)); LLM2Jev takes choice/noul/score as its three canonical formats ([arXiv:2610.02076](https://arxiv.org/abs/2610.02076)).",
+   "Probabilities by default (P5) are older still \u2014 the Cobbe verifier outputs the probability a solution is correct ([arXiv:2110.14168](https://arxiv.org/abs/2110.14168)), and the GenRM direct verifier uses the likelihood of a single 'Yes' token as its score ([arXiv:2408.15240](https://arxiv.org/abs/2408.15240)).",
+   "That last one deserves a pause: option scoring over a two-option slate, trained with the ordinary next-token loss, published in 2024.",
+   "If you squint, Jev's choice primitive is GenRM's direct verifier with better marketing and a parallel sampler.",
+   "So the crowding is real, not rhetorical: P2 and P3 are covered four times over, P5's ancestors are older still, and the GenRM comparison is offered with a squint \u2014 a resemblance, not a demonstrated equivalence.",
+   "",
+   "And then there is the paper that says the quiet part loudly. LLM2Jev's finding, read",
+   "in its \u00a71, is that \"modern LLMs are inherently effective decision models\": an",
+   "off-the-shelf 4B model *matches community Jev-style models built on the same",
+   "backbone*, with no training, and fine-tuning gives diminishing or even negative",
+   "returns on capable models. If that holds up \u2014 this chapter relies on its findings and",
+   "method sections, not its full experiments \u2014 then \"decision model\" is an inference",
+   "recipe, not a model category. That is H1 wearing a paper's clothes, and Chapter 2",
+   "concedes it explicitly rather than burying it: nothing in the contract below required",
+   "training a new model.",
+   "",
+   "## The result: six crowds, one empty column, one thin one",
+   "",
+   "Six of the seven columns have prior art. The seventh does not.",
+   "",
+   "**P6 \u2014 confidence as a separate, published, derived statistic \u2014 has no prior",
+   "mechanism among the nine.** Eight cells are ABSENT with citations, one (NLI) is",
+   "UNKNOWN. The sharpest ABSENT is the classifier's: Guo et al.'s temperature scaling",
+   "([arXiv:1706.04599](https://arxiv.org/abs/1706.04599), \u00a74.2, eq. 9) defines the",
+   "\"confidence prediction\" as the max of the softened distribution itself. There is no",
+   "second statistic. Every other mechanism is the same story told differently: the score",
+   "*is* the probability (Cobbe, GenRM, P(True)), or no probabilities are returned at all",
+   "(constrained generation, LMQL), or the judge \"do[es] not natively provide\" calibrated",
+   "distributions (Rao & Callison-Burch, [arXiv:2609.29769](https://arxiv.org/abs/2609.29769),",
+   "abstract only).",
+   "",
+   "Per the preregistered `what_would_refute`, a fully-absent-or-unknown column is a",
+   "discovery, not a gap \u2014 so the prediction was **partially refuted**, and the chapter",
+   "reports it as such. The honest reading: the genuinely distinctive thing in Jev's",
+   "contract may not be the typed values, the probabilities, or the parallel questions.",
+   "It may be the *published second number* \u2014 a vendor committing, in documentation, to",
+   "exactly how its certainty statistic is computed from its distribution, so that anyone",
+   "can check it. Whether that number is *calibrated* is untested here. A checkable",
+   "formula is not a true formula. But nothing else in the nine mechanisms even publishes",
+   "one, and that asymmetry is real.",
+   "",
+   "The thin column is P4: one state, many questions, parallel and independent. Only",
+   "holistic LLM judging covers it \u2014 reading a whole rubric at once, which Rao's abstract",
+   "explicitly compares to Jev on this axis \u2014 and LMQL's multi-part prompting partially",
+   "does. Everything else answers one question per call. P4 is the closest thing to a",
+   "second distinction, and it is the outcome the prediction allowed for: the combination",
+   "may be the contribution even where the elements are not.",
+   "",
+   "Two caveats travel with the verdict, because a table is only as honest as its gaps.",
+   "First, the NLI row is UNKNOWN throughout; if Chapters 5\u20136 find a published separate",
+   "confidence statistic in NLI scoring, claim P6 falls, and the ledger already records",
+   "the condition. Second, AnyJev \u2014 third-party, not one of the nine \u2014 ships level-gated",
+   "decisions with calibrated L2 heads and a `require=\"L1\"` gate, which sits adjacent to",
+   "P6 and must be addressed before any novelty claim hardens. Chapter 7 builds option",
+   "scoring independently; Chapter 9 tests calibration directly.",
+   "",
+   "<figure class=\"jev-figure\">",
+   "  <a href=\"/images/books/jev/fig-02-1-seven-properties.svg\" target=\"_blank\" rel=\"noopener\">",
+   "    <img src=\"/images/books/jev/fig-02-1-seven-properties.svg\" alt=\"Seven cards, one per contract property. Five are marked prior art, one is thin, and P6, a separate published confidence, has no prior mechanism.\" width=\"1200\" height=\"800\" loading=\"lazy\">",
+   "  </a>",
+   "  <figcaption><strong>Figure 2.1.</strong> Six of seven properties are crowded. P6 is the empty column and P4 is the thin one. Whether an empty column is a contribution or a decoration is the question the rest of the book tests.</figcaption>",
+   "</figure>",
+   "",
+   "## The build: the contract as code",
+   "",
+   "`src/arbiter/contract.py` is the specification side of the book's standing split \u2014",
+   "specification, provider, runtime, evidence, action. Providers arrive in later chapters",
+   "and import it; they do not fork it. It implements the vendor shape exactly",
+   "(`DecisionRequest` with state, questions keyed by caller-chosen ids, and model;",
+   "`ChoiceAnswer`, `ScoreAnswer`, `NoulAnswer`; the confidence formulas verbatim) with",
+   "four recorded differences (`VENDOR_DIFFERENCES`): our names follow the book's",
+   "vocabulary rather than client/server; we validate what the vendor merely parses",
+   "(probabilities must sum to one, the winner must be the argmax, the score must be",
+   "in range); we do not model token usage (cost lives in `results/` rows, not in the",
+   "answer type); and our library and model line are called `arbiter` / Arbiter rather",
+   "than `Decider`, because AnyJev already ships a client class of that name.",
+   "",
+   "Chapter 1's refund decision restated in the contract looks like this, and runs. This is",
+   "`examples/ch02-the-jev-provocation/demo_ch02.py`, complete. It imports Chapter 1's",
+   "tickets and this chapter's contract, builds one request that asks the same ticket two",
+   "questions (a yes/no probability and a two-way choice, the way the vendor's own triage",
+   "example asks several questions about one state), and prints what a provider would",
+   "receive. Nothing is sent anywhere.",
+   "",
+   "```python",
+   "\"\"\"The Chapter 1 refund decision, restated in the Chapter 2 contract.",
+   "",
+   "    python examples/ch02-the-jev-provocation/demo_ch02.py",
+   "",
+   "Builds the same ticket state Chapter 1 measured and asks the same question two",
+   "ways \u2014 as a noul and as a two-option choice \u2014 the way the vendor's own triage",
+   "example asks several questions about one ticket. Nothing is sent anywhere; this",
+   "prints the request a provider would receive.",
+   "\"\"\"",
+   "",
+   "from __future__ import annotations",
+   "",
+   "import sys",
+   "from pathlib import Path",
+   "",
+   "ROOT = Path(__file__).resolve().parents[2]",
+   "sys.path.insert(0, str(ROOT / \"src\"))",
+   "sys.path.insert(0, str(ROOT / \"examples/ch01-generate-vs-decide\"))",
+   "",
+   "from arbiter.contract import ChoiceQuestion, DecisionRequest, NoulQuestion  # noqa: E402",
+   "from tickets import BY_ID, render  # noqa: E402",
+   "",
+   "ticket = BY_ID[\"t01\"]",
+   "",
+   "request = DecisionRequest(",
+   "    state=render(ticket),",
+   "    questions={",
+   "        \"refund\": NoulQuestion(",
+   "            id=\"refund\",",
+   "            instructions=\"Should this ticket get an automatic refund?\",",
+   "            criteria={",
+   "                \"true\": \"Amount at most 50.00, purchase at most 30 days old, first refund\",",
+   "                \"false\": \"Anything else\",",
+   "            },",
+   "        ),",
+   "        \"route\": ChoiceQuestion(",
+   "            id=\"route\",",
+   "            instructions=\"Which team should handle this?\",",
+   "            criteria={\"billing\": \"Charges and payments\", \"returns\": \"Wrong or damaged items\"},",
+   "        ),",
+   "    },",
+   ")",
+   "",
+   "print(f\"state chars : {len(request.state)}\")",
+   "for qid, question in request.questions.items():",
+   "    print(f\"question {qid}: {type(question).__name__}: {question.instructions}\")",
+   "```",
+   "",
+   "```text",
+   "state chars : 188",
+   "question refund: NoulQuestion: Should this ticket get an automatic refund?",
+   "question route: ChoiceQuestion: Which team should handle this?",
+   "```",
+   "",
+   "The `noul` question carries optional `criteria` that say what `true` and `false` mean;",
+   "the `choice` question requires them. Both are part of the request and neither is",
+   "interpreted here, which is the point: the contract describes what is being asked, and a",
+   "provider decides how to answer it.",
+   "",
+   "The demo imports Chapter 1's tickets rather than copying them. Later chapters import",
+   "this contract rather than copying it. That chain of imports is the book's actual",
+   "argument about composition, stated in code before it is stated in prose.",
+   "",
+   "## What to carry forward",
+   "",
+   "Three things. First, the contract: `DecisionRequest` in, `DecisionResult` out, every",
+   "number checkable against the answer's own distribution. Second, the table:",
+   "`planning/prior-art.md` now registers all nine mechanisms with what each contributes",
+   "and what each lacks, and every later chapter updates it instead of re-litigating it.",
+   "Third, the two live questions: **is P6 \u2014 the published second number \u2014 a real",
+   "distinction or a nicely documented decoration?** (Chapters 9 through 11 decide, by",
+   "testing whether confidence behaves like certainty), and **does anything in the",
+   "contract require a new model, or is it all an inference recipe on existing weights?**",
+   "(Chapters 7, 14, 15 and 28 decide, by building the recipe and measuring it).",
+   "",
+   "## Limitations",
+   "",
+   "- **No live behavior was observed.** Without a Jev API key, every statement about what",
+   "  the service does \u2014 as opposed to what its documentation says \u2014 is `NOT_OBSERVED`.",
+   "  The contract above is a reconstruction from public pages as of October 2026, and",
+   "  pages change.",
+   "- **Two sources are used narrowly.** LLM2Jev is cited for its findings and method, not",
+   "  its \u00a74 experiments; Rao et al. only for its abstract.",
+   "- **The NLI row is UNKNOWN throughout.** Zero-shot classification and NLI scoring",
+   "  are deliberately left to Chapters 5 and 6. If they publish a separate",
+   "  confidence statistic, the P6 verdict falls.",
+   "- **AnyJev was not one of the nine.** Its level-gated decisions sit adjacent to P6",
+   "  and must be addressed before any novelty claim hardens.",
+   "- **The Red Hat benchmark is secondhand here.** Chapter 3 treats it directly.",
+   "- **Guo et al. is used narrowly.** Only \u00a74.2 \u2014 enough for the classifier/P6 cell",
+   "  (eq. 9 defines confidence as max over softmax), not a general citation for",
+   "  calibration. Chapter 9 uses it in full.",
+   "- **Commenter claims are not findings.** Numbers from Hacker News comments",
+   "  (jev-sec-bench, Banking77) are never cited as results.",
+   "",
+   "## What Chapter 2 leaves behind",
+   "",
+   "- `src/arbiter/contract.py` \u2014 `DecisionRequest`, the three question types, the three",
+   "  answer types with strict validation, the vendor's confidence formulas verbatim,",
+   "  `parse_vendor_response`, and `VENDOR_DIFFERENCES`.",
+   "- `examples/ch02-the-jev-provocation/table.py` \u2014 the 63-cell table with its",
+   "  executable acceptance check.",
+   "- `examples/ch02-the-jev-provocation/run_ch02.py`, `selftest_ch02.py` (27 checks,",
+   "  **OBSERVED** passing), `demo_ch02.py`, `requirements.txt`, `README.md`.",
+   "- `planning/prior-art.md` \u2014 the mechanism register and the open threads.",
+   "- `results/ch02.jsonl` \u2014 63 cell rows + 7 column rows.",
+   "- `evidence/ledger.md` \u2014 claims 2.1\u20132.21 with type and source.",
+   "",
+   "What exactly did Jev discover? One sentence, defensible from the rows: **Jev packaged",
+   "typed, probabilistic, parallel questions with a published, checkable confidence",
+   "formula \u2014 six-sevenths of which existed, with the seventh, the published second",
+   "number, the one element none of the nine prior mechanisms provide.** What could not",
+   "be verified: every live behavior (no key); the NLI row (left to Chapters 5\u20136); the Rao",
+   "paper beyond its abstract; LLM2Jev's full experiments; and whether the confidence",
+   "formula is calibrated, which no published page establishes.",
+   "",
+   "Chapter 3 asks the adversarial version of this chapter's question: granted the",
+   "contract is mostly packaging, did Jev's *implementation* beat the alternatives",
+   "anyway \u2014 and what does the Red Hat benchmark, which found it did not reliably do so,",
+   "actually show?"
+  ],
+  "final_lineage": [
+   {
+    "line": 1,
+    "origin": "source",
+    "source_line": 1
+   },
+   {
+    "line": 2,
+    "origin": "source",
+    "source_line": 2
+   },
+   {
+    "line": 3,
+    "origin": "source",
+    "source_line": 3
+   },
+   {
+    "line": 4,
+    "origin": "source",
+    "source_line": 4
+   },
+   {
+    "line": 5,
+    "origin": "source",
+    "source_line": 5
+   },
+   {
+    "line": 6,
+    "origin": "source",
+    "source_line": 6
+   },
+   {
+    "line": 7,
+    "origin": "source",
+    "source_line": 7
+   },
+   {
+    "line": 8,
+    "origin": "source",
+    "source_line": 8
+   },
+   {
+    "line": 9,
+    "origin": "source",
+    "source_line": 9
+   },
+   {
+    "line": 10,
+    "origin": "source",
+    "source_line": 10
+   },
+   {
+    "line": 11,
+    "origin": "source",
+    "source_line": 11
+   },
+   {
+    "line": 12,
+    "origin": "source",
+    "source_line": 12
+   },
+   {
+    "line": 13,
+    "origin": "source",
+    "source_line": 13
+   },
+   {
+    "line": 14,
+    "origin": "source",
+    "source_line": 14
+   },
+   {
+    "line": 15,
+    "origin": "source",
+    "source_line": 15
+   },
+   {
+    "line": 16,
+    "origin": "source",
+    "source_line": 16
+   },
+   {
+    "line": 17,
+    "origin": "source",
+    "source_line": 17
+   },
+   {
+    "line": 18,
+    "origin": "source",
+    "source_line": 18
+   },
+   {
+    "line": 19,
+    "origin": "source",
+    "source_line": 19
+   },
+   {
+    "line": 20,
+    "origin": "source",
+    "source_line": 20
+   },
+   {
+    "line": 21,
+    "origin": "source",
+    "source_line": 21
+   },
+   {
+    "line": 22,
+    "origin": "source",
+    "source_line": 22
+   },
+   {
+    "line": 23,
+    "origin": "source",
+    "source_line": 23
+   },
+   {
+    "line": 24,
+    "origin": "source",
+    "source_line": 24
+   },
+   {
+    "line": 25,
+    "origin": "source",
+    "source_line": 25
+   },
+   {
+    "line": 26,
+    "origin": "source",
+    "source_line": 26
+   },
+   {
+    "line": 27,
+    "origin": "source",
+    "source_line": 27
+   },
+   {
+    "line": 28,
+    "origin": "source",
+    "source_line": 28
+   },
+   {
+    "line": 29,
+    "origin": "source",
+    "source_line": 29
+   },
+   {
+    "line": 30,
+    "origin": "source",
+    "source_line": 30
+   },
+   {
+    "line": 31,
+    "origin": "source",
+    "source_line": 31
+   },
+   {
+    "line": 32,
+    "origin": "source",
+    "source_line": 32
+   },
+   {
+    "line": 33,
+    "origin": "source",
+    "source_line": 33
+   },
+   {
+    "line": 34,
+    "origin": "source",
+    "source_line": 34
+   },
+   {
+    "line": 35,
+    "origin": "source",
+    "source_line": 35
+   },
+   {
+    "line": 36,
+    "origin": "source",
+    "source_line": 36
+   },
+   {
+    "line": 37,
+    "origin": "source",
+    "source_line": 37
+   },
+   {
+    "line": 38,
+    "origin": "source",
+    "source_line": 38
+   },
+   {
+    "line": 39,
+    "origin": "source",
+    "source_line": 39
+   },
+   {
+    "line": 40,
+    "origin": "source",
+    "source_line": 40
+   },
+   {
+    "line": 41,
+    "origin": "source",
+    "source_line": 41
+   },
+   {
+    "line": 42,
+    "origin": "source",
+    "source_line": 42
+   },
+   {
+    "line": 43,
+    "origin": "source",
+    "source_line": 43
+   },
+   {
+    "line": 44,
+    "origin": "source",
+    "source_line": 44
+   },
+   {
+    "line": 45,
+    "origin": "source",
+    "source_line": 45
+   },
+   {
+    "line": 46,
+    "origin": "source",
+    "source_line": 46
+   },
+   {
+    "line": 47,
+    "origin": "source",
+    "source_line": 47
+   },
+   {
+    "line": 48,
+    "origin": "source",
+    "source_line": 48
+   },
+   {
+    "line": 49,
+    "origin": "source",
+    "source_line": 49
+   },
+   {
+    "line": 50,
+    "origin": "source",
+    "source_line": 50
+   },
+   {
+    "line": 51,
+    "origin": "source",
+    "source_line": 51
+   },
+   {
+    "line": 52,
+    "origin": "source",
+    "source_line": 52
+   },
+   {
+    "line": 53,
+    "origin": "source",
+    "source_line": 53
+   },
+   {
+    "line": 54,
+    "origin": "source",
+    "source_line": 54
+   },
+   {
+    "line": 55,
+    "origin": "source",
+    "source_line": 55
+   },
+   {
+    "line": 56,
+    "origin": "source",
+    "source_line": 56
+   },
+   {
+    "line": 57,
+    "origin": "source",
+    "source_line": 57
+   },
+   {
+    "line": 58,
+    "origin": "source",
+    "source_line": 58
+   },
+   {
+    "line": 59,
+    "origin": "source",
+    "source_line": 59
+   },
+   {
+    "line": 60,
+    "origin": "source",
+    "source_line": 60
+   },
+   {
+    "line": 61,
+    "origin": "source",
+    "source_line": 61
+   },
+   {
+    "line": 62,
+    "origin": "source",
+    "source_line": 62
+   },
+   {
+    "line": 63,
+    "origin": "source",
+    "source_line": 63
+   },
+   {
+    "line": 64,
+    "origin": "source",
+    "source_line": 64
+   },
+   {
+    "line": 65,
+    "origin": "source",
+    "source_line": 65
+   },
+   {
+    "line": 66,
+    "origin": "source",
+    "source_line": 66
+   },
+   {
+    "line": 67,
+    "origin": "source",
+    "source_line": 67
+   },
+   {
+    "line": 68,
+    "origin": "source",
+    "source_line": 68
+   },
+   {
+    "line": 69,
+    "origin": "source",
+    "source_line": 69
+   },
+   {
+    "line": 70,
+    "origin": "source",
+    "source_line": 70
+   },
+   {
+    "line": 71,
+    "origin": "source",
+    "source_line": 71
+   },
+   {
+    "line": 72,
+    "origin": "source",
+    "source_line": 72
+   },
+   {
+    "line": 73,
+    "origin": "source",
+    "source_line": 73
+   },
+   {
+    "line": 74,
+    "origin": "source",
+    "source_line": 74
+   },
+   {
+    "line": 75,
+    "origin": "source",
+    "source_line": 75
+   },
+   {
+    "line": 76,
+    "origin": "source",
+    "source_line": 76
+   },
+   {
+    "line": 77,
+    "origin": "source",
+    "source_line": 77
+   },
+   {
+    "line": 78,
+    "origin": "source",
+    "source_line": 78
+   },
+   {
+    "line": 79,
+    "origin": "source",
+    "source_line": 79
+   },
+   {
+    "line": 80,
+    "origin": "source",
+    "source_line": 80
+   },
+   {
+    "line": 81,
+    "origin": "source",
+    "source_line": 81
+   },
+   {
+    "line": 82,
+    "origin": "source",
+    "source_line": 82
+   },
+   {
+    "line": 83,
+    "origin": "source",
+    "source_line": 83
+   },
+   {
+    "line": 84,
+    "origin": "source",
+    "source_line": 84
+   },
+   {
+    "line": 85,
+    "origin": "source",
+    "source_line": 85
+   },
+   {
+    "line": 86,
+    "origin": "source",
+    "source_line": 86
+   },
+   {
+    "line": 87,
+    "origin": "source",
+    "source_line": 87
+   },
+   {
+    "line": 88,
+    "origin": "source",
+    "source_line": 88
+   },
+   {
+    "line": 89,
+    "origin": "source",
+    "source_line": 89
+   },
+   {
+    "line": 90,
+    "origin": "source",
+    "source_line": 90
+   },
+   {
+    "line": 91,
+    "origin": "source",
+    "source_line": 91
+   },
+   {
+    "line": 92,
+    "origin": "source",
+    "source_line": 92
+   },
+   {
+    "line": 93,
+    "origin": "source",
+    "source_line": 93
+   },
+   {
+    "line": 94,
+    "origin": "source",
+    "source_line": 94
+   },
+   {
+    "line": 95,
+    "origin": "source",
+    "source_line": 95
+   },
+   {
+    "line": 96,
+    "origin": "source",
+    "source_line": 96
+   },
+   {
+    "line": 97,
+    "origin": "source",
+    "source_line": 97
+   },
+   {
+    "line": 98,
+    "origin": "source",
+    "source_line": 98
+   },
+   {
+    "line": 99,
+    "origin": "source",
+    "source_line": 99
+   },
+   {
+    "line": 100,
+    "origin": "source",
+    "source_line": 100
+   },
+   {
+    "line": 101,
+    "origin": "source",
+    "source_line": 101
+   },
+   {
+    "line": 102,
+    "origin": "source",
+    "source_line": 102
+   },
+   {
+    "line": 103,
+    "origin": "source",
+    "source_line": 103
+   },
+   {
+    "line": 104,
+    "origin": "source",
+    "source_line": 104
+   },
+   {
+    "line": 105,
+    "origin": "source",
+    "source_line": 105
+   },
+   {
+    "line": 106,
+    "origin": "source",
+    "source_line": 106
+   },
+   {
+    "line": 107,
+    "origin": "source",
+    "source_line": 107
+   },
+   {
+    "line": 108,
+    "origin": "source",
+    "source_line": 108
+   },
+   {
+    "line": 109,
+    "origin": "source",
+    "source_line": 109
+   },
+   {
+    "line": 110,
+    "origin": "source",
+    "source_line": 110
+   },
+   {
+    "line": 111,
+    "origin": "source",
+    "source_line": 111
+   },
+   {
+    "line": 112,
+    "origin": "source",
+    "source_line": 112
+   },
+   {
+    "line": 113,
+    "origin": "source",
+    "source_line": 113
+   },
+   {
+    "line": 114,
+    "origin": "source",
+    "source_line": 114
+   },
+   {
+    "line": 115,
+    "origin": "source",
+    "source_line": 115
+   },
+   {
+    "line": 116,
+    "origin": "source",
+    "source_line": 116
+   },
+   {
+    "line": 117,
+    "origin": "source",
+    "source_line": 117
+   },
+   {
+    "line": 118,
+    "origin": "source",
+    "source_line": 118
+   },
+   {
+    "line": 119,
+    "origin": "source",
+    "source_line": 119
+   },
+   {
+    "line": 120,
+    "origin": "source",
+    "source_line": 120
+   },
+   {
+    "line": 121,
+    "origin": "source",
+    "source_line": 121
+   },
+   {
+    "line": 122,
+    "origin": "source",
+    "source_line": 122
+   },
+   {
+    "line": 123,
+    "origin": "source",
+    "source_line": 123
+   },
+   {
+    "line": 124,
+    "origin": "source",
+    "source_line": 124
+   },
+   {
+    "line": 125,
+    "origin": "source",
+    "source_line": 125
+   },
+   {
+    "line": 126,
+    "origin": "source",
+    "source_line": 126
+   },
+   {
+    "line": 127,
+    "origin": "source",
+    "source_line": 127
+   },
+   {
+    "line": 128,
+    "origin": "source",
+    "source_line": 128
+   },
+   {
+    "line": 129,
+    "origin": "source",
+    "source_line": 129
+   },
+   {
+    "line": 130,
+    "origin": "source",
+    "source_line": 130
+   },
+   {
+    "line": 131,
+    "origin": "source",
+    "source_line": 131
+   },
+   {
+    "line": 132,
+    "origin": "source",
+    "source_line": 132
+   },
+   {
+    "line": 133,
+    "origin": "dispatch",
+    "dispatch_ref": "model-exec-6b5b03750036",
+    "index": 0
+   },
+   {
+    "line": 134,
+    "origin": "dispatch",
+    "dispatch_ref": "model-exec-6b5b03750036",
+    "index": 1
+   },
+   {
+    "line": 135,
+    "origin": "dispatch",
+    "dispatch_ref": "model-exec-6b5b03750036",
+    "index": 2
+   },
+   {
+    "line": 136,
+    "origin": "dispatch",
+    "dispatch_ref": "model-exec-6b5b03750036",
+    "index": 3
+   },
+   {
+    "line": 137,
+    "origin": "dispatch",
+    "dispatch_ref": "model-exec-6b5b03750036",
+    "index": 4
+   },
+   {
+    "line": 138,
+    "origin": "dispatch",
+    "dispatch_ref": "model-exec-6b5b03750036",
+    "index": 5
+   },
+   {
+    "line": 139,
+    "origin": "dispatch",
+    "dispatch_ref": "model-exec-6b5b03750036",
+    "index": 6
+   },
+   {
+    "line": 140,
+    "origin": "dispatch",
+    "dispatch_ref": "model-exec-6b5b03750036",
+    "index": 7
+   },
+   {
+    "line": 141,
+    "origin": "dispatch",
+    "dispatch_ref": "model-exec-6b5b03750036",
+    "index": 8
+   },
+   {
+    "line": 142,
+    "origin": "dispatch",
+    "dispatch_ref": "model-exec-6b5b03750036",
+    "index": 9
+   },
+   {
+    "line": 143,
+    "origin": "dispatch",
+    "dispatch_ref": "model-exec-6b5b03750036",
+    "index": 10
+   },
+   {
+    "line": 144,
+    "origin": "dispatch",
+    "dispatch_ref": "model-exec-6b5b03750036",
+    "index": 11
+   },
+   {
+    "line": 145,
+    "origin": "source",
+    "source_line": 147
+   },
+   {
+    "line": 146,
+    "origin": "source",
+    "source_line": 148
+   },
+   {
+    "line": 147,
+    "origin": "source",
+    "source_line": 149
+   },
+   {
+    "line": 148,
+    "origin": "source",
+    "source_line": 150
+   },
+   {
+    "line": 149,
+    "origin": "source",
+    "source_line": 151
+   },
+   {
+    "line": 150,
+    "origin": "source",
+    "source_line": 152
+   },
+   {
+    "line": 151,
+    "origin": "source",
+    "source_line": 153
+   },
+   {
+    "line": 152,
+    "origin": "source",
+    "source_line": 154
+   },
+   {
+    "line": 153,
+    "origin": "source",
+    "source_line": 155
+   },
+   {
+    "line": 154,
+    "origin": "source",
+    "source_line": 156
+   },
+   {
+    "line": 155,
+    "origin": "source",
+    "source_line": 157
+   },
+   {
+    "line": 156,
+    "origin": "source",
+    "source_line": 158
+   },
+   {
+    "line": 157,
+    "origin": "source",
+    "source_line": 159
+   },
+   {
+    "line": 158,
+    "origin": "source",
+    "source_line": 160
+   },
+   {
+    "line": 159,
+    "origin": "source",
+    "source_line": 161
+   },
+   {
+    "line": 160,
+    "origin": "source",
+    "source_line": 162
+   },
+   {
+    "line": 161,
+    "origin": "source",
+    "source_line": 163
+   },
+   {
+    "line": 162,
+    "origin": "source",
+    "source_line": 164
+   },
+   {
+    "line": 163,
+    "origin": "source",
+    "source_line": 165
+   },
+   {
+    "line": 164,
+    "origin": "source",
+    "source_line": 166
+   },
+   {
+    "line": 165,
+    "origin": "source",
+    "source_line": 167
+   },
+   {
+    "line": 166,
+    "origin": "source",
+    "source_line": 168
+   },
+   {
+    "line": 167,
+    "origin": "source",
+    "source_line": 169
+   },
+   {
+    "line": 168,
+    "origin": "source",
+    "source_line": 170
+   },
+   {
+    "line": 169,
+    "origin": "source",
+    "source_line": 171
+   },
+   {
+    "line": 170,
+    "origin": "source",
+    "source_line": 172
+   },
+   {
+    "line": 171,
+    "origin": "source",
+    "source_line": 173
+   },
+   {
+    "line": 172,
+    "origin": "source",
+    "source_line": 174
+   },
+   {
+    "line": 173,
+    "origin": "source",
+    "source_line": 175
+   },
+   {
+    "line": 174,
+    "origin": "source",
+    "source_line": 176
+   },
+   {
+    "line": 175,
+    "origin": "source",
+    "source_line": 177
+   },
+   {
+    "line": 176,
+    "origin": "source",
+    "source_line": 178
+   },
+   {
+    "line": 177,
+    "origin": "source",
+    "source_line": 179
+   },
+   {
+    "line": 178,
+    "origin": "source",
+    "source_line": 180
+   },
+   {
+    "line": 179,
+    "origin": "source",
+    "source_line": 181
+   },
+   {
+    "line": 180,
+    "origin": "source",
+    "source_line": 182
+   },
+   {
+    "line": 181,
+    "origin": "source",
+    "source_line": 183
+   },
+   {
+    "line": 182,
+    "origin": "source",
+    "source_line": 184
+   },
+   {
+    "line": 183,
+    "origin": "source",
+    "source_line": 185
+   },
+   {
+    "line": 184,
+    "origin": "source",
+    "source_line": 186
+   },
+   {
+    "line": 185,
+    "origin": "source",
+    "source_line": 187
+   },
+   {
+    "line": 186,
+    "origin": "source",
+    "source_line": 188
+   },
+   {
+    "line": 187,
+    "origin": "source",
+    "source_line": 189
+   },
+   {
+    "line": 188,
+    "origin": "source",
+    "source_line": 190
+   },
+   {
+    "line": 189,
+    "origin": "source",
+    "source_line": 191
+   },
+   {
+    "line": 190,
+    "origin": "source",
+    "source_line": 192
+   },
+   {
+    "line": 191,
+    "origin": "source",
+    "source_line": 193
+   },
+   {
+    "line": 192,
+    "origin": "source",
+    "source_line": 194
+   },
+   {
+    "line": 193,
+    "origin": "source",
+    "source_line": 195
+   },
+   {
+    "line": 194,
+    "origin": "source",
+    "source_line": 196
+   },
+   {
+    "line": 195,
+    "origin": "source",
+    "source_line": 197
+   },
+   {
+    "line": 196,
+    "origin": "source",
+    "source_line": 198
+   },
+   {
+    "line": 197,
+    "origin": "source",
+    "source_line": 199
+   },
+   {
+    "line": 198,
+    "origin": "source",
+    "source_line": 200
+   },
+   {
+    "line": 199,
+    "origin": "source",
+    "source_line": 201
+   },
+   {
+    "line": 200,
+    "origin": "source",
+    "source_line": 202
+   },
+   {
+    "line": 201,
+    "origin": "source",
+    "source_line": 203
+   },
+   {
+    "line": 202,
+    "origin": "source",
+    "source_line": 204
+   },
+   {
+    "line": 203,
+    "origin": "source",
+    "source_line": 205
+   },
+   {
+    "line": 204,
+    "origin": "source",
+    "source_line": 206
+   },
+   {
+    "line": 205,
+    "origin": "source",
+    "source_line": 207
+   },
+   {
+    "line": 206,
+    "origin": "source",
+    "source_line": 208
+   },
+   {
+    "line": 207,
+    "origin": "source",
+    "source_line": 209
+   },
+   {
+    "line": 208,
+    "origin": "source",
+    "source_line": 210
+   },
+   {
+    "line": 209,
+    "origin": "source",
+    "source_line": 211
+   },
+   {
+    "line": 210,
+    "origin": "source",
+    "source_line": 212
+   },
+   {
+    "line": 211,
+    "origin": "source",
+    "source_line": 213
+   },
+   {
+    "line": 212,
+    "origin": "source",
+    "source_line": 214
+   },
+   {
+    "line": 213,
+    "origin": "source",
+    "source_line": 215
+   },
+   {
+    "line": 214,
+    "origin": "source",
+    "source_line": 216
+   },
+   {
+    "line": 215,
+    "origin": "source",
+    "source_line": 217
+   },
+   {
+    "line": 216,
+    "origin": "source",
+    "source_line": 218
+   },
+   {
+    "line": 217,
+    "origin": "source",
+    "source_line": 219
+   },
+   {
+    "line": 218,
+    "origin": "source",
+    "source_line": 220
+   },
+   {
+    "line": 219,
+    "origin": "source",
+    "source_line": 221
+   },
+   {
+    "line": 220,
+    "origin": "source",
+    "source_line": 222
+   },
+   {
+    "line": 221,
+    "origin": "source",
+    "source_line": 223
+   },
+   {
+    "line": 222,
+    "origin": "source",
+    "source_line": 224
+   },
+   {
+    "line": 223,
+    "origin": "source",
+    "source_line": 225
+   },
+   {
+    "line": 224,
+    "origin": "source",
+    "source_line": 226
+   },
+   {
+    "line": 225,
+    "origin": "source",
+    "source_line": 227
+   },
+   {
+    "line": 226,
+    "origin": "source",
+    "source_line": 228
+   },
+   {
+    "line": 227,
+    "origin": "source",
+    "source_line": 229
+   },
+   {
+    "line": 228,
+    "origin": "source",
+    "source_line": 230
+   },
+   {
+    "line": 229,
+    "origin": "source",
+    "source_line": 231
+   },
+   {
+    "line": 230,
+    "origin": "source",
+    "source_line": 232
+   },
+   {
+    "line": 231,
+    "origin": "source",
+    "source_line": 233
+   },
+   {
+    "line": 232,
+    "origin": "source",
+    "source_line": 234
+   },
+   {
+    "line": 233,
+    "origin": "source",
+    "source_line": 235
+   },
+   {
+    "line": 234,
+    "origin": "source",
+    "source_line": 236
+   },
+   {
+    "line": 235,
+    "origin": "source",
+    "source_line": 237
+   },
+   {
+    "line": 236,
+    "origin": "source",
+    "source_line": 238
+   },
+   {
+    "line": 237,
+    "origin": "source",
+    "source_line": 239
+   },
+   {
+    "line": 238,
+    "origin": "source",
+    "source_line": 240
+   },
+   {
+    "line": 239,
+    "origin": "source",
+    "source_line": 241
+   },
+   {
+    "line": 240,
+    "origin": "source",
+    "source_line": 242
+   },
+   {
+    "line": 241,
+    "origin": "source",
+    "source_line": 243
+   },
+   {
+    "line": 242,
+    "origin": "source",
+    "source_line": 244
+   },
+   {
+    "line": 243,
+    "origin": "source",
+    "source_line": 245
+   },
+   {
+    "line": 244,
+    "origin": "source",
+    "source_line": 246
+   },
+   {
+    "line": 245,
+    "origin": "source",
+    "source_line": 247
+   },
+   {
+    "line": 246,
+    "origin": "source",
+    "source_line": 248
+   },
+   {
+    "line": 247,
+    "origin": "source",
+    "source_line": 249
+   },
+   {
+    "line": 248,
+    "origin": "source",
+    "source_line": 250
+   },
+   {
+    "line": 249,
+    "origin": "source",
+    "source_line": 251
+   },
+   {
+    "line": 250,
+    "origin": "source",
+    "source_line": 252
+   },
+   {
+    "line": 251,
+    "origin": "source",
+    "source_line": 253
+   },
+   {
+    "line": 252,
+    "origin": "source",
+    "source_line": 254
+   },
+   {
+    "line": 253,
+    "origin": "source",
+    "source_line": 255
+   },
+   {
+    "line": 254,
+    "origin": "source",
+    "source_line": 256
+   },
+   {
+    "line": 255,
+    "origin": "source",
+    "source_line": 257
+   },
+   {
+    "line": 256,
+    "origin": "source",
+    "source_line": 258
+   },
+   {
+    "line": 257,
+    "origin": "source",
+    "source_line": 259
+   },
+   {
+    "line": 258,
+    "origin": "source",
+    "source_line": 260
+   },
+   {
+    "line": 259,
+    "origin": "source",
+    "source_line": 261
+   },
+   {
+    "line": 260,
+    "origin": "source",
+    "source_line": 262
+   },
+   {
+    "line": 261,
+    "origin": "source",
+    "source_line": 263
+   },
+   {
+    "line": 262,
+    "origin": "source",
+    "source_line": 264
+   },
+   {
+    "line": 263,
+    "origin": "source",
+    "source_line": 265
+   },
+   {
+    "line": 264,
+    "origin": "source",
+    "source_line": 266
+   },
+   {
+    "line": 265,
+    "origin": "source",
+    "source_line": 267
+   },
+   {
+    "line": 266,
+    "origin": "source",
+    "source_line": 268
+   },
+   {
+    "line": 267,
+    "origin": "source",
+    "source_line": 269
+   },
+   {
+    "line": 268,
+    "origin": "source",
+    "source_line": 270
+   },
+   {
+    "line": 269,
+    "origin": "source",
+    "source_line": 271
+   },
+   {
+    "line": 270,
+    "origin": "source",
+    "source_line": 272
+   },
+   {
+    "line": 271,
+    "origin": "source",
+    "source_line": 273
+   },
+   {
+    "line": 272,
+    "origin": "source",
+    "source_line": 274
+   },
+   {
+    "line": 273,
+    "origin": "source",
+    "source_line": 275
+   },
+   {
+    "line": 274,
+    "origin": "source",
+    "source_line": 276
+   },
+   {
+    "line": 275,
+    "origin": "source",
+    "source_line": 277
+   },
+   {
+    "line": 276,
+    "origin": "source",
+    "source_line": 278
+   },
+   {
+    "line": 277,
+    "origin": "source",
+    "source_line": 279
+   },
+   {
+    "line": 278,
+    "origin": "source",
+    "source_line": 280
+   },
+   {
+    "line": 279,
+    "origin": "source",
+    "source_line": 281
+   },
+   {
+    "line": 280,
+    "origin": "source",
+    "source_line": 282
+   },
+   {
+    "line": 281,
+    "origin": "source",
+    "source_line": 283
+   },
+   {
+    "line": 282,
+    "origin": "source",
+    "source_line": 284
+   },
+   {
+    "line": 283,
+    "origin": "source",
+    "source_line": 285
+   },
+   {
+    "line": 284,
+    "origin": "source",
+    "source_line": 286
+   },
+   {
+    "line": 285,
+    "origin": "source",
+    "source_line": 287
+   },
+   {
+    "line": 286,
+    "origin": "source",
+    "source_line": 288
+   },
+   {
+    "line": 287,
+    "origin": "source",
+    "source_line": 289
+   },
+   {
+    "line": 288,
+    "origin": "source",
+    "source_line": 290
+   },
+   {
+    "line": 289,
+    "origin": "source",
+    "source_line": 291
+   },
+   {
+    "line": 290,
+    "origin": "source",
+    "source_line": 292
+   },
+   {
+    "line": 291,
+    "origin": "source",
+    "source_line": 293
+   },
+   {
+    "line": 292,
+    "origin": "source",
+    "source_line": 294
+   },
+   {
+    "line": 293,
+    "origin": "source",
+    "source_line": 295
+   },
+   {
+    "line": 294,
+    "origin": "source",
+    "source_line": 296
+   },
+   {
+    "line": 295,
+    "origin": "source",
+    "source_line": 297
+   },
+   {
+    "line": 296,
+    "origin": "source",
+    "source_line": 298
+   },
+   {
+    "line": 297,
+    "origin": "source",
+    "source_line": 299
+   },
+   {
+    "line": 298,
+    "origin": "source",
+    "source_line": 300
+   },
+   {
+    "line": 299,
+    "origin": "source",
+    "source_line": 301
+   },
+   {
+    "line": 300,
+    "origin": "source",
+    "source_line": 302
+   },
+   {
+    "line": 301,
+    "origin": "source",
+    "source_line": 303
+   },
+   {
+    "line": 302,
+    "origin": "source",
+    "source_line": 304
+   },
+   {
+    "line": 303,
+    "origin": "source",
+    "source_line": 305
+   },
+   {
+    "line": 304,
+    "origin": "source",
+    "source_line": 306
+   },
+   {
+    "line": 305,
+    "origin": "source",
+    "source_line": 307
+   },
+   {
+    "line": 306,
+    "origin": "source",
+    "source_line": 308
+   },
+   {
+    "line": 307,
+    "origin": "source",
+    "source_line": 309
+   },
+   {
+    "line": 308,
+    "origin": "source",
+    "source_line": 310
+   },
+   {
+    "line": 309,
+    "origin": "source",
+    "source_line": 311
+   },
+   {
+    "line": 310,
+    "origin": "source",
+    "source_line": 312
+   },
+   {
+    "line": 311,
+    "origin": "source",
+    "source_line": 313
+   },
+   {
+    "line": 312,
+    "origin": "source",
+    "source_line": 314
+   },
+   {
+    "line": 313,
+    "origin": "source",
+    "source_line": 315
+   },
+   {
+    "line": 314,
+    "origin": "source",
+    "source_line": 316
+   },
+   {
+    "line": 315,
+    "origin": "source",
+    "source_line": 317
+   },
+   {
+    "line": 316,
+    "origin": "source",
+    "source_line": 318
+   },
+   {
+    "line": 317,
+    "origin": "source",
+    "source_line": 319
+   },
+   {
+    "line": 318,
+    "origin": "source",
+    "source_line": 320
+   },
+   {
+    "line": 319,
+    "origin": "source",
+    "source_line": 321
+   },
+   {
+    "line": 320,
+    "origin": "source",
+    "source_line": 322
+   },
+   {
+    "line": 321,
+    "origin": "source",
+    "source_line": 323
+   },
+   {
+    "line": 322,
+    "origin": "source",
+    "source_line": 324
+   },
+   {
+    "line": 323,
+    "origin": "source",
+    "source_line": 325
+   },
+   {
+    "line": 324,
+    "origin": "source",
+    "source_line": 326
+   },
+   {
+    "line": 325,
+    "origin": "source",
+    "source_line": 327
+   },
+   {
+    "line": 326,
+    "origin": "source",
+    "source_line": 328
+   },
+   {
+    "line": 327,
+    "origin": "source",
+    "source_line": 329
+   },
+   {
+    "line": 328,
+    "origin": "source",
+    "source_line": 330
+   },
+   {
+    "line": 329,
+    "origin": "source",
+    "source_line": 331
+   },
+   {
+    "line": 330,
+    "origin": "source",
+    "source_line": 332
+   },
+   {
+    "line": 331,
+    "origin": "source",
+    "source_line": 333
+   },
+   {
+    "line": 332,
+    "origin": "source",
+    "source_line": 334
+   },
+   {
+    "line": 333,
+    "origin": "source",
+    "source_line": 335
+   },
+   {
+    "line": 334,
+    "origin": "source",
+    "source_line": 336
+   },
+   {
+    "line": 335,
+    "origin": "source",
+    "source_line": 337
+   },
+   {
+    "line": 336,
+    "origin": "source",
+    "source_line": 338
+   },
+   {
+    "line": 337,
+    "origin": "source",
+    "source_line": 339
+   },
+   {
+    "line": 338,
+    "origin": "source",
+    "source_line": 340
+   },
+   {
+    "line": 339,
+    "origin": "source",
+    "source_line": 341
+   },
+   {
+    "line": 340,
+    "origin": "source",
+    "source_line": 342
+   },
+   {
+    "line": 341,
+    "origin": "source",
+    "source_line": 343
+   },
+   {
+    "line": 342,
+    "origin": "source",
+    "source_line": 344
+   },
+   {
+    "line": 343,
+    "origin": "source",
+    "source_line": 345
+   },
+   {
+    "line": 344,
+    "origin": "source",
+    "source_line": 346
+   }
+  ]
+ },
+ "review_rounds": [
+  {
+   "dispatch": {
+    "role": "verification",
+    "task_kind": "publication_review",
+    "package_id": "passage:Nine older mechanisms, seven properties",
+    "attempt": 1,
+    "status": "succeeded",
+    "succeeded": true,
+    "typed": {
+     "operation_ids": [
+      "op:b61a63c5:006",
+      "op:b61a63c5:007"
+     ],
+     "verdict": "request_changes",
+     "rationale": "The revision reflows the original passage without changing its citations or numbers, but it introduces two problems. First, the final paragraph is cut off mid-sentence and asserts an unstated LLM2Jev finding. The ledger records LLM2Jev as PARTIAL (section 4 read, section 3.4 not fully read), so characterizing that finding as saying the quiet part loudly goes beyond what was read. Second, the added 'Taken together' sentence says the passage 'establishes' the GenRM equivalence, which hardens the original 'if you squint' hedge into a conclusion. That conflicts with the requirement that P6 remain a candidate distinction to test in Ch 9-11, not a settled finding, and with the requirement that cells cite only what was read.",
+     "quotes_used": [
+      "LLM2Jev's finding, read",
+      "Taken together, the passage establishes that almost every property has a crowd of ancestors:",
+      "Probabilities by default (P5) are older still."
+     ],
+     "failed_checks": [
+      "Obligation (a), LLM2Jev read status: the final sentence 'And then there is the paper that says the quiet part loudly. LLM2Jev's finding, read' is truncated and asserts a finding the revision never states. The LLM2Jev source is PARTIAL, so this characterization is not supported by what was read. Remove the sentence or complete it using only the PARTIAL-read content, with the PARTIAL qualification stated.",
+      "Obligation (a), hedge preservation: the added sentence 'Taken together, the passage establishes that ... if you squint, Jev's choice primitive is GenRM's direct verifier with better marketing and a parallel sampler' converts a hedged comparison into an established claim. Restore the hedged framing, or drop the added summary sentence.",
+      "Obligation (a), P6 non-novelty framing: the summary frames the prior-art pattern as a settled conclusion across all properties. The P6 asymmetry must remain a candidate to test in Ch 9-11, not a conclusion drawn in this passage. Rephrase so the summary does not preempt that test.",
+      "Obligation (b): the added 'Taken together' sentence is a new evaluative claim, not a number or citation, but it is new content that was not in the original passage. Either remove it or flag it as a deliberate revision for review."
+     ]
+    },
+    "error": null,
+    "error_kind": null,
+    "provenance": {
+     "task": "publication.review",
+     "operation_version": "v0.1",
+     "schema_identity": "EditorialReviewResponse",
+     "schema_version": "v0.1",
+     "prompt_sha256": "fcb8d615eeeeb19ad3275ec3a1119c163f5a252869faa2eed85c53ec773927b5",
+     "context_sha256": null,
+     "schema_sha256": "7eacde2741c8dae909ffc842ff3513a7e30515c42be7ee4de16c0e209b061d03",
+     "writer_execution_id": "model-exec-c6bef59f8cd8",
+     "attempts": 1,
+     "latency_ms": 17003,
+     "usage": {
+      "input_tokens": 4,
+      "cached_input_tokens": 0,
+      "output_tokens": 2684,
+      "reasoning_tokens": 0,
+      "total_tokens": 5262,
+      "cached_write_tokens": null,
+      "_subject_hash": null,
+      "_candidate_hash": null,
+      "_protocol_version": null,
+      "_evaluator_role": null,
+      "_blindness": null,
+      "_parent_experiment_id": null
+     },
+     "cost_usd": 0
+    },
+    "raw_response": {
+     "writer_execution_id": "model-exec-c6bef59f8cd8",
+     "worker_request_id": "wrq_c8fa253d75b73ea6e3ffd9d22aa93853",
+     "worker_work_id": "wk_22a420807681c926df35ba27191a4547",
+     "worker_run_id": "wr_209ed631fb4dc23865328faa1c91c69b",
+     "worker_acceptance_id": "ac_7d93a8ecee9fb3723cbc47db94d6020c",
+     "worker_status": "ACCEPTED",
+     "worker_backend": "opencode-work",
+     "worker_provenance": {
+      "project_id": "writer",
+      "work_id": "wk_22a420807681c926df35ba27191a4547",
+      "worker_request_id": "wrq_c8fa253d75b73ea6e3ffd9d22aa93853",
+      "application": "writer",
+      "ledger_dir": "C:\\Projects\\writer\\.opencode\\vfs",
+      "edge_record_ids": [
+       "01362f4c914b7671c304451e6fc325a2e3cdf67501fe37b2a6a6cdac3e7cb3f5",
+       "b97df821e888bb3db0ffd433cc11772ec7c050bb6ad426f5fbdfc3865d42836c",
+       "eef30724b3bd2b6acc97ea58d8da03f75fd3c59a416d59b5b2c1fb000a93340d",
+       "433c03b1359cf705c310d8cb537229678827d65cb218f04d2ee396d40f39d034",
+       "4edc1e71c63cf01c612ded359c0541f23962aca1e4e23032c6a176971c822d6c",
+       "08d4338eaa5b3205a92fda93ff7ff366bc6649fb6c1057c65511d43658efe04f",
+       "92b7dcb6a7a53a0bdb08f88edf01a73944ff86f960eb27b8364cf543757e3f05",
+       "60a205b82eb4787e3d9a5210e65e91a7455e3d982e0da21ac501b9e6e2fac428",
+       "a45e6fa646a7cb6f05d9a3c9a39217120a834402766bc2d7101dce1ae604d73a",
+       "e88937ef0b20052795139c1c784b6d5f7bc2fa4ca7d8bdfbda777eb6aa25c921",
+       "6058e7ddb4460c5ece6ba9339149e1c4d026a3194e111d890640581ab80ad835"
+      ]
+     },
+     "worker_model_execution": {
+      "requested": {
+       "route": "default_haiku_go",
+       "provider": "pi",
+       "model": "opencode-go/claude-haiku-5-5",
+       "policy": "default"
+      },
+      "observed": {
+       "provider": "opencode-go",
+       "model": "claude-haiku-5-5",
+       "id": "opencode-go/claude-haiku-5-5",
+       "family": "claude",
+       "family_source": "verified_mapping",
+       "mapping_version": "worker-families/2026-10-13-longcat",
+       "matches_request": true
+      },
+      "execution_id": "e74d40a2-7857-4eb7-a18b-21fd14319fad",
+      "status": "SUCCEEDED",
+      "provider": "pi",
+      "model": "opencode-go/claude-haiku-5-5",
+      "failure_domain": "pi",
+      "usage": {
+       "input_tokens": 4,
+       "output_tokens": 2684,
+       "cached_read_tokens": 0,
+       "cache_write_tokens": 2574,
+       "total_tokens": 5262,
+       "raw": {
+        "input": 4,
+        "output": 2684,
+        "cacheRead": 0,
+        "cacheWrite": 2574,
+        "totalTokens": 5262,
+        "cost": {
+         "input": 4.0000000000000003e-07,
+         "output": 0.0013419999999999999,
+         "cacheRead": 0,
+         "cacheWrite": 0.00032175,
+         "total": 0.0016641499999999999,
+         "totalFromProvider": false
+        },
+        "cacheWrite1h": 0,
+        "reasoning": 1876
+       }
+      },
+      "cost": {
+       "amount": 0,
+       "currency": "USD",
+       "economic_tier": "subscription",
+       "kind": "estimated",
+       "status": "range",
+       "amount_known": false,
+       "low_usd": 0.00166415,
+       "high_usd": 0.00832075,
+       "basis": "tiered",
+       "schedule": "opencode-go-catalogue-2026-11-08",
+       "pricing_schedule": "opencode-go-catalogue-2026-11-08",
+       "source": "OpenCode model catalogue (opencode.ai/docs/console/models)",
+       "observed_at": "2026-11-08",
+       "effective_from": "2026-11-08",
+       "verification": "catalogue_observed",
+       "conditions": [
+        "Published Go accounting rate; not an invoice or billed charge.",
+        "Context length selects the tier when reported; otherwise Worker reports a range."
+       ],
+       "note": "Context length was not reported; the estimate spans the published pricing tiers."
+      },
+      "latency_ms": 16422,
+      "attempts": [
+       {
+        "requested_model": "opencode-go/claude-haiku-5-5",
+        "observed": {
+         "provider": "opencode-go",
+         "model": "claude-haiku-5-5",
+         "id": "opencode-go/claude-haiku-5-5",
+         "family": "claude",
+         "family_source": "verified_mapping",
+         "mapping_version": "worker-families/2026-10-13-longcat",
+         "matches_request": true
+        },
+        "route": "default_haiku_go",
+        "provider": "pi",
+        "model": "opencode-go/claude-haiku-5-5",
+        "transport": "pi-rpc",
+        "failure_domain": "pi",
+        "started_at": "2026-11-25T07:41:00.938Z",
+        "latency_ms": 16422,
+        "status": "SUCCEEDED",
+        "provider_state_ref": "provider-state-17d48eff-6064-488e-a006-a4720dd07c73",
+        "request_dispatched": true,
+        "request_admitted": "YES",
+        "inference_executed": "UNKNOWN",
+        "usage": {
+         "input_tokens": 4,
+         "output_tokens": 2684,
+         "cached_read_tokens": 0,
+         "cache_write_tokens": 2574,
+         "total_tokens": 5262,
+         "raw": {
+          "input": 4,
+          "output": 2684,
+          "cacheRead": 0,
+          "cacheWrite": 2574,
+          "totalTokens": 5262,
+          "cost": {
+           "input": 4.0000000000000003e-07,
+           "output": 0.0013419999999999999,
+           "cacheRead": 0,
+           "cacheWrite": 0.00032175,
+           "total": 0.0016641499999999999,
+           "totalFromProvider": false
+          },
+          "cacheWrite1h": 0,
+          "reasoning": 1876
+         }
+        },
+        "cost": {
+         "amount": 0,
+         "currency": "USD",
+         "economic_tier": "subscription",
+         "kind": "estimated",
+         "status": "range",
+         "amount_known": false,
+         "low_usd": 0.00166415,
+         "high_usd": 0.00832075,
+         "basis": "tiered",
+         "schedule": "opencode-go-catalogue-2026-11-08",
+         "pricing_schedule": "opencode-go-catalogue-2026-11-08",
+         "source": "OpenCode model catalogue (opencode.ai/docs/console/models)",
+         "observed_at": "2026-11-08",
+         "effective_from": "2026-11-08",
+         "verification": "catalogue_observed",
+         "conditions": [
+          "Published Go accounting rate; not an invoice or billed charge.",
+          "Context length selects the tier when reported; otherwise Worker reports a range."
+         ],
+         "note": "Context length was not reported; the estimate spans the published pricing tiers."
+        }
+       }
+      ],
+      "fallback_path": [
+       "default_haiku_go"
+      ],
+      "execution_state": "MODEL_OUTPUT_OBSERVED",
+      "stop_batch": false,
+      "provider_state_ref": "provider-state-17d48eff-6064-488e-a006-a4720dd07c73",
+      "provider_events": [
+       {
+        "schema_version": "provider-event.v1",
+        "event_id": "0448365f-7d97-472f-bae9-87cceddd6499",
+        "type": "MODEL_PREFLIGHT",
+        "observed_at": "2026-11-25T07:41:00.938Z",
+        "execution_id": "e74d40a2-7857-4eb7-a18b-21fd14319fad",
+        "provider_state_ref": "provider-state-6b01fb01-0469-4c76-86c8-3d3360cf621f",
+        "previous": "AVAILABLE",
+        "current": "AVAILABLE",
+        "provider": "pi",
+        "model": "opencode-go/claude-haiku-5-5",
+        "failure_domain": "pi",
+        "observed_from": "runtime_response",
+        "quota_state": "UNKNOWN",
+        "retry_at": null
+       },
+       {
+        "schema_version": "provider-event.v1",
+        "event_id": "c778c94b-26bb-4462-aaf1-ba8bc29a9814",
+        "type": "PROVIDER_STATE_OBSERVED",
+        "observed_at": "2026-11-25T07:41:17.360Z",
+        "execution_id": "e74d40a2-7857-4eb7-a18b-21fd14319fad",
+        "provider_state_ref": "provider-state-17d48eff-6064-488e-a006-a4720dd07c73",
+        "previous": "AVAILABLE",
+        "current": "AVAILABLE",
+        "provider": "pi",
+        "model": "opencode-go/claude-haiku-5-5",
+        "failure_domain": "pi",
+        "observed_from": "runtime_response",
+        "quota_state": "UNKNOWN",
+        "retry_at": null
+       }
+      ],
+      "provider_states": [
+       {
+        "schema_version": "provider-state.v1",
+        "provider_state_id": "provider-state-6b01fb01-0469-4c76-86c8-3d3360cf621f",
+        "provider": "pi",
+        "model": "opencode-go/claude-haiku-5-5",
+        "failure_domain": "pi",
+        "scope": "model",
+        "observed_at": "2026-11-25T07:33:17.931Z",
+        "observed_from": "runtime_response",
+        "status": "AVAILABLE",
+        "authentication": "UNKNOWN",
+        "model_available": "AVAILABLE",
+        "request_admissible": "UNKNOWN",
+        "quota_state": "UNKNOWN",
+        "quota_windows": [],
+        "reset_at": null,
+        "retry_at": null,
+        "retry_source": "NONE",
+        "extra_credit_usd": null,
+        "extra_usage": "UNKNOWN",
+        "last_provider_error": null
+       },
+       {
+        "schema_version": "provider-state.v1",
+        "provider_state_id": "provider-state-17d48eff-6064-488e-a006-a4720dd07c73",
+        "provider": "pi",
+        "model": "opencode-go/claude-haiku-5-5",
+        "failure_domain": "pi",
+        "scope": "model",
+        "observed_at": "2026-11-25T07:41:17.360Z",
+        "observed_from": "runtime_response",
+        "status": "AVAILABLE",
+        "authentication": "UNKNOWN",
+        "model_available": "AVAILABLE",
+        "request_admissible": "UNKNOWN",
+        "quota_state": "UNKNOWN",
+        "quota_windows": [],
+        "reset_at": null,
+        "retry_at": null,
+        "retry_source": "NONE",
+        "extra_credit_usd": null,
+        "extra_usage": "UNKNOWN",
+        "last_provider_error": null
+       }
+      ],
+      "provider_warnings": [
+       "Provider quota is not observed; request admissibility remains unknown unless blocked by runtime evidence."
+      ],
+      "selection": {
+       "policy": "default",
+       "prior_families": [],
+       "ordered_routes": [
+        "default_haiku_go"
+       ],
+       "distinct_route_count": 0,
+       "independence_required": false,
+       "same_family_fallback": false
+      },
+      "independence": {
+       "required": false,
+       "state": "not_required",
+       "prior_families": []
+      }
+     },
+     "model_prompt_sha256": "fcb8d615eeeeb19ad3275ec3a1119c163f5a252869faa2eed85c53ec773927b5",
+     "observed_model": "opencode-go/claude-haiku-5-5"
+    },
+    "recorded_at": "2026-11-25T07:41:17.736798+00:00"
+   },
+   "validation_reasons": [],
+   "verdict": "request_changes"
+  },
+  {
+   "dispatch": {
+    "role": "verification",
+    "task_kind": "publication_review",
+    "package_id": "passage:Nine older mechanisms, seven properties",
+    "attempt": 1,
+    "status": "succeeded",
+    "succeeded": true,
+    "typed": {
+     "operation_ids": [
+      "op:b61a63c5:006",
+      "op:b61a63c5:007"
+     ],
+     "verdict": "request_changes",
+     "rationale": "The revision adds a new paragraph on LLM2Jev that introduces factual claims, numbers, and a section citation absent from the original passage: a 4B model, a match to community Jev-style models, fine-tuning yielding diminishing or negative returns, and a reading 'in its \u00a71'. Ledger 2.13 records LLM2Jev as PARTIAL, with \u00a74 and \u00a73.4 not fully read, and the training-free matching result is only partially verified. The paragraph asserts these findings as read, with only a conditional 'If that holds up' hedge, and then draws a conceptual conclusion ('an inference recipe, not a model category') that the passage does not support. The paragraph also ends mid-sentence ('and Chapter 2'). The original-passage content (P2/P3 crowding, P5 ancestors, GenRM squint) is preserved, and the added 'So the crowding is real' sentence restates existing content without new claims.",
+     "quotes_used": [
+      "modern LLMs are inherently effective decision models",
+      "a resemblance, not a demonstrated equivalence"
+     ],
+     "failed_checks": [
+      "(b) New factual claim: LLM2Jev 'an off-the-shelf 4B model matches community Jev-style models built on the same backbone, with no training' does not appear in the original passage.",
+      "(b) New number: '4B' is introduced and does not appear in the original passage or in the verified ledger cells.",
+      "(b) New factual claim: 'fine-tuning gives diminishing or even negative returns on capable models' is unverified; the ledger marks LLM2Jev as PARTIAL with \u00a74 and \u00a73.4 not fully read, and such a claim plausibly sits in the unread experimental sections.",
+      "(b) New citation locator: 'read in its \u00a71' is new and not part of the original citation for 2610.02076.",
+      "(a) LLM2Jev preservation obligation: the training-free matching result is PARTIAL and must be cited only as read. The revision presents it as a stated finding, and its qualification ('findings and method sections, not its full experiments') does not cover the specific claims made.",
+      "(a) Unsupported conclusion: 'decision model is an inference recipe, not a model category' and 'That is H1 wearing a paper's clothes' are new substantive claims. H1 is undefined in the passage, and the conclusion goes beyond the evidence the chapter has verified.",
+      "Structural defect: the final sentence is truncated ('and Chapter 2') and is incomplete."
+     ]
+    },
+    "error": null,
+    "error_kind": null,
+    "provenance": {
+     "task": "publication.review",
+     "operation_version": "v0.1",
+     "schema_identity": "EditorialReviewResponse",
+     "schema_version": "v0.1",
+     "prompt_sha256": "6ad0b06e6f617a1e2cc3a3adfb40c5c8f6375c1ec11b346bbb589c126ef46bd7",
+     "context_sha256": null,
+     "schema_sha256": "7eacde2741c8dae909ffc842ff3513a7e30515c42be7ee4de16c0e209b061d03",
+     "writer_execution_id": "model-exec-66b3a3312eb6",
+     "attempts": 1,
+     "latency_ms": 14850,
+     "usage": {
+      "input_tokens": 4,
+      "cached_input_tokens": 0,
+      "output_tokens": 2577,
+      "reasoning_tokens": 0,
+      "total_tokens": 5294,
+      "cached_write_tokens": null,
+      "_subject_hash": null,
+      "_candidate_hash": null,
+      "_protocol_version": null,
+      "_evaluator_role": null,
+      "_blindness": null,
+      "_parent_experiment_id": null
+     },
+     "cost_usd": 0
+    },
+    "raw_response": {
+     "writer_execution_id": "model-exec-66b3a3312eb6",
+     "worker_request_id": "wrq_7a0ebe2bb6126cda69f68d4a4708ebc6",
+     "worker_work_id": "wk_bd723f035d223e1ccde4a315d76a36ea",
+     "worker_run_id": "wr_331377a77b5d8373bd2bdd3f7298c563",
+     "worker_acceptance_id": "ac_04dd0bdf9145b573616f7309a5d14def",
+     "worker_status": "ACCEPTED",
+     "worker_backend": "opencode-work",
+     "worker_provenance": {
+      "project_id": "writer",
+      "work_id": "wk_bd723f035d223e1ccde4a315d76a36ea",
+      "worker_request_id": "wrq_7a0ebe2bb6126cda69f68d4a4708ebc6",
+      "application": "writer",
+      "ledger_dir": "C:\\Projects\\writer\\.opencode\\vfs",
+      "edge_record_ids": [
+       "da11ddf19524f8313748d3ec82ccf0a7d1ce81c54bfacc7379911dcea405f71c",
+       "8abcbbf22cc3ecde85edf934fda3e85fdfcfe0a9ffe3b11df4a7b697f86b458b",
+       "3fc15b8c3d491ea2c5d14896fd71f5a3abd03562ff25b1ad33f7e6282ab763d2",
+       "a66e1ae20c7170010dab973e315073097315cb87db9a70e4f049df87ac58ae42",
+       "d20c0ac6605279a04ece059cfd4ae63078b69c3cad1724ec14d3246be151ea84",
+       "66cd8625e3b55578f848b696887cfb688e166fa20d4f67f1311da2605f8b607b",
+       "c64ff022a9b1dc46a6e9db54ab361de65cf17874496486ee7b47c64f1e852949",
+       "79d1adeb572a219cc65be04f817fd2fdb97a7f4f76f4ba9a467eca60d77157e4",
+       "061468d9d7e6f6a18579f92e2e8a0b614e90b715fa0178da44f946330d87b435",
+       "4deee75a15a1a8eb977176ae81f84c3523291de9b1efd0555c407abaf39f24cf",
+       "c43ede3a2b015c453131f09382dfc136979d94b2c2d5c83a0e2e13b040d2fd63"
+      ]
+     },
+     "worker_model_execution": {
+      "requested": {
+       "route": "default_haiku_go",
+       "provider": "pi",
+       "model": "opencode-go/claude-haiku-5-5",
+       "policy": "default"
+      },
+      "observed": {
+       "provider": "opencode-go",
+       "model": "claude-haiku-5-5",
+       "id": "opencode-go/claude-haiku-5-5",
+       "family": "claude",
+       "family_source": "verified_mapping",
+       "mapping_version": "worker-families/2026-10-13-longcat",
+       "matches_request": true
+      },
+      "execution_id": "d85e70e7-e989-4669-baae-60b84d82a21b",
+      "status": "SUCCEEDED",
+      "provider": "pi",
+      "model": "opencode-go/claude-haiku-5-5",
+      "failure_domain": "pi",
+      "usage": {
+       "input_tokens": 4,
+       "output_tokens": 2577,
+       "cached_read_tokens": 0,
+       "cache_write_tokens": 2713,
+       "total_tokens": 5294,
+       "raw": {
+        "input": 4,
+        "output": 2577,
+        "cacheRead": 0,
+        "cacheWrite": 2713,
+        "totalTokens": 5294,
+        "cost": {
+         "input": 4.0000000000000003e-07,
+         "output": 0.0012885,
+         "cacheRead": 0,
+         "cacheWrite": 0.000339125,
+         "total": 0.001628025,
+         "totalFromProvider": false
+        },
+        "cacheWrite1h": 0,
+        "reasoning": 1716
+       }
+      },
+      "cost": {
+       "amount": 0,
+       "currency": "USD",
+       "economic_tier": "subscription",
+       "kind": "estimated",
+       "status": "range",
+       "amount_known": false,
+       "low_usd": 0.0016280250000000002,
+       "high_usd": 0.008140125,
+       "basis": "tiered",
+       "schedule": "opencode-go-catalogue-2026-11-08",
+       "pricing_schedule": "opencode-go-catalogue-2026-11-08",
+       "source": "OpenCode model catalogue (opencode.ai/docs/console/models)",
+       "observed_at": "2026-11-08",
+       "effective_from": "2026-11-08",
+       "verification": "catalogue_observed",
+       "conditions": [
+        "Published Go accounting rate; not an invoice or billed charge.",
+        "Context length selects the tier when reported; otherwise Worker reports a range."
+       ],
+       "note": "Context length was not reported; the estimate spans the published pricing tiers."
+      },
+      "latency_ms": 14153,
+      "attempts": [
+       {
+        "requested_model": "opencode-go/claude-haiku-5-5",
+        "observed": {
+         "provider": "opencode-go",
+         "model": "claude-haiku-5-5",
+         "id": "opencode-go/claude-haiku-5-5",
+         "family": "claude",
+         "family_source": "verified_mapping",
+         "mapping_version": "worker-families/2026-10-13-longcat",
+         "matches_request": true
+        },
+        "route": "default_haiku_go",
+        "provider": "pi",
+        "model": "opencode-go/claude-haiku-5-5",
+        "transport": "pi-rpc",
+        "failure_domain": "pi",
+        "started_at": "2026-11-25T07:42:20.098Z",
+        "latency_ms": 14152,
+        "status": "SUCCEEDED",
+        "provider_state_ref": "provider-state-b1f090b8-85bb-4f1d-a9a1-5e2837d1c2ae",
+        "request_dispatched": true,
+        "request_admitted": "YES",
+        "inference_executed": "UNKNOWN",
+        "usage": {
+         "input_tokens": 4,
+         "output_tokens": 2577,
+         "cached_read_tokens": 0,
+         "cache_write_tokens": 2713,
+         "total_tokens": 5294,
+         "raw": {
+          "input": 4,
+          "output": 2577,
+          "cacheRead": 0,
+          "cacheWrite": 2713,
+          "totalTokens": 5294,
+          "cost": {
+           "input": 4.0000000000000003e-07,
+           "output": 0.0012885,
+           "cacheRead": 0,
+           "cacheWrite": 0.000339125,
+           "total": 0.001628025,
+           "totalFromProvider": false
+          },
+          "cacheWrite1h": 0,
+          "reasoning": 1716
+         }
+        },
+        "cost": {
+         "amount": 0,
+         "currency": "USD",
+         "economic_tier": "subscription",
+         "kind": "estimated",
+         "status": "range",
+         "amount_known": false,
+         "low_usd": 0.0016280250000000002,
+         "high_usd": 0.008140125,
+         "basis": "tiered",
+         "schedule": "opencode-go-catalogue-2026-11-08",
+         "pricing_schedule": "opencode-go-catalogue-2026-11-08",
+         "source": "OpenCode model catalogue (opencode.ai/docs/console/models)",
+         "observed_at": "2026-11-08",
+         "effective_from": "2026-11-08",
+         "verification": "catalogue_observed",
+         "conditions": [
+          "Published Go accounting rate; not an invoice or billed charge.",
+          "Context length selects the tier when reported; otherwise Worker reports a range."
+         ],
+         "note": "Context length was not reported; the estimate spans the published pricing tiers."
+        }
+       }
+      ],
+      "fallback_path": [
+       "default_haiku_go"
+      ],
+      "execution_state": "MODEL_OUTPUT_OBSERVED",
+      "stop_batch": false,
+      "provider_state_ref": "provider-state-b1f090b8-85bb-4f1d-a9a1-5e2837d1c2ae",
+      "provider_events": [
+       {
+        "schema_version": "provider-event.v1",
+        "event_id": "200a838a-1500-4759-9f30-59836e2f4027",
+        "type": "MODEL_PREFLIGHT",
+        "observed_at": "2026-11-25T07:42:20.097Z",
+        "execution_id": "d85e70e7-e989-4669-baae-60b84d82a21b",
+        "provider_state_ref": "provider-state-17d48eff-6064-488e-a006-a4720dd07c73",
+        "previous": "AVAILABLE",
+        "current": "AVAILABLE",
+        "provider": "pi",
+        "model": "opencode-go/claude-haiku-5-5",
+        "failure_domain": "pi",
+        "observed_from": "runtime_response",
+        "quota_state": "UNKNOWN",
+        "retry_at": null
+       },
+       {
+        "schema_version": "provider-event.v1",
+        "event_id": "8efaa840-5feb-4710-a5c6-4a42cb97856d",
+        "type": "PROVIDER_STATE_OBSERVED",
+        "observed_at": "2026-11-25T07:42:34.250Z",
+        "execution_id": "d85e70e7-e989-4669-baae-60b84d82a21b",
+        "provider_state_ref": "provider-state-b1f090b8-85bb-4f1d-a9a1-5e2837d1c2ae",
+        "previous": "AVAILABLE",
+        "current": "AVAILABLE",
+        "provider": "pi",
+        "model": "opencode-go/claude-haiku-5-5",
+        "failure_domain": "pi",
+        "observed_from": "runtime_response",
+        "quota_state": "UNKNOWN",
+        "retry_at": null
+       }
+      ],
+      "provider_states": [
+       {
+        "schema_version": "provider-state.v1",
+        "provider_state_id": "provider-state-17d48eff-6064-488e-a006-a4720dd07c73",
+        "provider": "pi",
+        "model": "opencode-go/claude-haiku-5-5",
+        "failure_domain": "pi",
+        "scope": "model",
+        "observed_at": "2026-11-25T07:41:17.360Z",
+        "observed_from": "runtime_response",
+        "status": "AVAILABLE",
+        "authentication": "UNKNOWN",
+        "model_available": "AVAILABLE",
+        "request_admissible": "UNKNOWN",
+        "quota_state": "UNKNOWN",
+        "quota_windows": [],
+        "reset_at": null,
+        "retry_at": null,
+        "retry_source": "NONE",
+        "extra_credit_usd": null,
+        "extra_usage": "UNKNOWN",
+        "last_provider_error": null
+       },
+       {
+        "schema_version": "provider-state.v1",
+        "provider_state_id": "provider-state-b1f090b8-85bb-4f1d-a9a1-5e2837d1c2ae",
+        "provider": "pi",
+        "model": "opencode-go/claude-haiku-5-5",
+        "failure_domain": "pi",
+        "scope": "model",
+        "observed_at": "2026-11-25T07:42:34.250Z",
+        "observed_from": "runtime_response",
+        "status": "AVAILABLE",
+        "authentication": "UNKNOWN",
+        "model_available": "AVAILABLE",
+        "request_admissible": "UNKNOWN",
+        "quota_state": "UNKNOWN",
+        "quota_windows": [],
+        "reset_at": null,
+        "retry_at": null,
+        "retry_source": "NONE",
+        "extra_credit_usd": null,
+        "extra_usage": "UNKNOWN",
+        "last_provider_error": null
+       }
+      ],
+      "provider_warnings": [
+       "Provider quota is not observed; request admissibility remains unknown unless blocked by runtime evidence."
+      ],
+      "selection": {
+       "policy": "default",
+       "prior_families": [],
+       "ordered_routes": [
+        "default_haiku_go"
+       ],
+       "distinct_route_count": 0,
+       "independence_required": false,
+       "same_family_fallback": false
+      },
+      "independence": {
+       "required": false,
+       "state": "not_required",
+       "prior_families": []
+      }
+     },
+     "model_prompt_sha256": "6ad0b06e6f617a1e2cc3a3adfb40c5c8f6375c1ec11b346bbb589c126ef46bd7",
+     "observed_model": "opencode-go/claude-haiku-5-5"
+    },
+    "recorded_at": "2026-11-25T07:42:35.030977+00:00"
+   },
+   "validation_reasons": [
+    "quote_not_in_either_passage: 'a resemblance, not a demonstrated equivalence'"
+   ],
+   "verdict": "invalid"
+  }
+ ],
+ "outcome": "review_invalid",
+ "review_correction": {
+  "attempt": 2,
+  "dispatch": {
+   "role": "editorial",
+   "task_kind": "publication_editorial",
+   "package_id": "passage:Nine older mechanisms, seven properties",
+   "attempt": 2,
+   "status": "succeeded",
+   "succeeded": true,
+   "typed": {
+    "operation_ids": [
+     "op:b61a63c5:006",
+     "op:b61a63c5:007"
+    ],
+    "replacement_lines": [
+     "Almost every property has a crowd of ancestors.",
+     "Typed questions and bounded answers (P2, P3) are covered four times over: P(True) gives distributions over labeled options and True/False reformulations (Kadavath et al., [arXiv:2207.05221](https://arxiv.org/abs/2207.05221)); constrained generation bounds any schema by construction (Willard et al., [arXiv:2307.09702](https://arxiv.org/abs/2307.09702)); LMQL declares answer kinds up front ([arXiv:2212.06094](https://arxiv.org/abs/2212.06094)); LLM2Jev takes choice/noul/score as its three canonical formats ([arXiv:2610.02076](https://arxiv.org/abs/2610.02076)).",
+     "Probabilities by default (P5) are older still \u2014 the Cobbe verifier outputs the probability a solution is correct ([arXiv:2110.14168](https://arxiv.org/abs/2110.14168)), and the GenRM direct verifier uses the likelihood of a single 'Yes' token as its score ([arXiv:2408.15240](https://arxiv.org/abs/2408.15240)).",
+     "That last one deserves a pause: option scoring over a two-option slate, trained with the ordinary next-token loss, published in 2024.",
+     "If you squint, Jev's choice primitive is GenRM's direct verifier with better marketing and a parallel sampler.",
+     "So the crowding is real, not rhetorical: P2 and P3 are covered four times over, P5's ancestors are older still, and the GenRM comparison is offered with a squint \u2014 a resemblance, not a demonstrated equivalence."
+    ],
+    "rationale": "The single overloaded block is split so that one idea leads each paragraph: the topic claim, the four P2/P3 ancestors, the two P5 ancestors, the 'pause' observation about the GenRM result, and the squint-level analogy. The GenRM sentence keeps its original hedge ('If you squint') and is not upgraded to equivalence anywhere. LLM2Jev is left at exactly what the passage states \u2014 three canonical formats \u2014 with no characterization of its finding added, per the PARTIAL read. The closing synthesis restates only claims already made in the passage ('covered four times over', 'older still', the squint comparison) and hardens nothing.",
+    "quotes_used": [
+     "Almost every property has a crowd of ancestors.",
+     "Typed questions and bounded answers",
+     "covered four times over",
+     "choice/noul/score as its three canonical formats",
+     "Probabilities by default (P5) are older still",
+     "the likelihood of a single 'Yes' token as its score",
+     "That last one deserves a pause:",
+     "option scoring over a two-option slate, trained with the ordinary next-token loss,",
+     "published in 2024.",
+     "If you squint, Jev's choice primitive is GenRM's direct verifier",
+     "with better marketing and a parallel sampler."
+    ],
+    "preservation_notes": [
+     "All five citations (2207.05221, 2307.09702, 2212.06094, 2610.02076, 2110.14168, 2408.15240) survive byte-identical in text and link form.",
+     "Property labels P2, P3, P5 and the phrase 'covered four times over' are retained unchanged.",
+     "LLM2Jev (2610.02076) appears only with the three canonical formats; no finding, result or reading status is asserted or implied, consistent with the PARTIAL read.",
+     "The GenRM sentence retains its 'If you squint' hedge; the synthesis explicitly declines to call it an equivalence, so no proposed/novel framing is presented as established.",
+     "The 'two-option slate' and 'ordinary next-token loss' details are kept verbatim with no added numbers.",
+     "Synthesis line adds no citation, quantity, or conclusion beyond the passage's own statements."
+    ],
+    "no_new_claims": true
+   },
+   "error": null,
+   "error_kind": null,
+   "provenance": {
+    "task": "publication.editorial",
+    "operation_version": "v0.1",
+    "schema_identity": "EditorialCandidateResponse",
+    "schema_version": "v0.1",
+    "prompt_sha256": "f1befb0fd7166395530a6e952d3ffb4ae7afb9c4fb827bac9c0a98c3084d6ad9",
+    "context_sha256": null,
+    "schema_sha256": "a6a3308a87446adea13b699d5b4acf1f9c6207bd3f193612ff8770d1ba2c65ae",
+    "writer_execution_id": "model-exec-6b5b03750036",
+    "attempts": 1,
+    "latency_ms": 61219,
+    "usage": {
+     "input_tokens": 2189,
+     "cached_input_tokens": 0,
+     "output_tokens": 3381,
+     "reasoning_tokens": 0,
+     "total_tokens": 5570,
+     "cached_write_tokens": null,
+     "_subject_hash": null,
+     "_candidate_hash": null,
+     "_protocol_version": null,
+     "_evaluator_role": null,
+     "_blindness": null,
+     "_parent_experiment_id": null
+    },
+    "cost_usd": 0.00235695
+   },
+   "raw_response": {
+    "writer_execution_id": "model-exec-6b5b03750036",
+    "worker_request_id": "wrq_6b28da50d0ed8fb9445f942c9efbc15a",
+    "worker_work_id": "wk_d7b348dc829dd07d35310173c4bb0cd1",
+    "worker_run_id": "wr_a2cbe07e9599e7de6ee32481d9f2d3f5",
+    "worker_acceptance_id": "ac_936730aa6adf95b6a122fd2eb0332db2",
+    "worker_status": "ACCEPTED",
+    "worker_backend": "opencode-work",
+    "worker_provenance": {
+     "project_id": "writer",
+     "work_id": "wk_d7b348dc829dd07d35310173c4bb0cd1",
+     "worker_request_id": "wrq_6b28da50d0ed8fb9445f942c9efbc15a",
+     "application": "writer",
+     "ledger_dir": "C:\\Projects\\writer\\.opencode\\vfs",
+     "edge_record_ids": [
+      "b0c65c559307f493db54b8a63896513f6f998f806b76e03c233bc41415bd33d0",
+      "178a316a8caa753809f1c143d54f3c4c8c90b0e3325f72148357fea3167a869c",
+      "5750c35126fe2549aa6d9a3d4bcc55a312c7d7e9df72da5605f364e06e9640d4",
+      "b3fad382b379ad881c333112ca8d3548184dc3e60c15e6fdfc91004bc3e360d3",
+      "4d7ec5d3c6c67add08dd9d0aaf9701f6adaed1de4b9461a6adf20926633fab9b",
+      "b20d0d4c9802be917a27e2671e73e53c9c51d85dc37dc59803a276e4d9e795f6",
+      "fb4c6b5776ba32d95feb66e38a6c0445e81c5b5a240736c32bb2c3e094498424",
+      "c7ce0c0f98f38625d3f10a25407b0dcd30ca010f8b24929904469a218586ae45",
+      "a01458a12b0885936d09ad1d53ffbca2b6ed437190d028307e7e8315a13d9217",
+      "96d4e6658a777399a299e90ac92bb23207c3dfbc588262071eda222b79ab60c7",
+      "05d8a7cef900140a7aa24e015a30bca02996910122bd372a8480ec5a42579664"
+     ]
+    },
+    "worker_model_execution": {
+     "requested": {
+      "route": "default_deepseek_go",
+      "provider": "pi",
+      "model": "opencode-go/deepseek-v4.1-flash",
+      "policy": "default"
+     },
+     "observed": {
+      "provider": "opencode-go",
+      "model": "deepseek-v4.1-flash",
+      "id": "opencode-go/deepseek-v4.1-flash",
+      "family": "deepseek",
+      "family_source": "verified_mapping",
+      "mapping_version": "worker-families/2026-10-13-longcat",
+      "matches_request": true
+     },
+     "execution_id": "9fb5b1b6-08c2-4d88-af54-3e980f7aff86",
+     "status": "SUCCEEDED",
+     "provider": "pi",
+     "model": "opencode-go/deepseek-v4.1-flash",
+     "failure_domain": "pi",
+     "usage": {
+      "input_tokens": 2189,
+      "output_tokens": 3381,
+      "cached_read_tokens": 0,
+      "cache_write_tokens": 0,
+      "total_tokens": 5570,
+      "raw": {
+       "input": 2189,
+       "output": 3381,
+       "cacheRead": 0,
+       "cacheWrite": 0,
+       "reasoning": 2481,
+       "totalTokens": 5570,
+       "cost": {
+        "input": 0.00032835,
+        "output": 0.0020285999999999998,
+        "cacheRead": 0,
+        "cacheWrite": 0,
+        "total": 0.0023569499999999996,
+        "totalFromProvider": false
+       }
+      }
+     },
+     "cost": {
+      "amount": 0.00235695,
+      "currency": "USD",
+      "economic_tier": "subscription",
+      "kind": "estimated",
+      "status": "known",
+      "amount_known": true,
+      "low_usd": 0.00235695,
+      "high_usd": 0.00235695,
+      "basis": "flat",
+      "schedule": "opencode-go-catalogue-2026-11-08",
+      "pricing_schedule": "opencode-go-catalogue-2026-11-08",
+      "source": "OpenCode model catalogue (opencode.ai/docs/console/models)",
+      "observed_at": "2026-11-08",
+      "effective_from": "2026-11-08",
+      "verification": "catalogue_observed",
+      "conditions": [
+       "Published Go accounting rate; not an invoice or billed charge."
+      ]
+     },
+     "latency_ms": 60609,
+     "attempts": [
+      {
+       "requested_model": "opencode-go/deepseek-v4.1-flash",
+       "observed": {
+        "provider": "opencode-go",
+        "model": "deepseek-v4.1-flash",
+        "id": "opencode-go/deepseek-v4.1-flash",
+        "family": "deepseek",
+        "family_source": "verified_mapping",
+        "mapping_version": "worker-families/2026-10-13-longcat",
+        "matches_request": true
+       },
+       "route": "default_deepseek_go",
+       "provider": "pi",
+       "model": "opencode-go/deepseek-v4.1-flash",
+       "transport": "pi-rpc",
+       "failure_domain": "pi",
+       "started_at": "2026-11-25T07:41:17.978Z",
+       "latency_ms": 60608,
+       "status": "SUCCEEDED",
+       "provider_state_ref": "provider-state-c9781e2a-73ae-4a18-a60b-014ffe7d733d",
+       "request_dispatched": true,
+       "request_admitted": "YES",
+       "inference_executed": "UNKNOWN",
+       "usage": {
+        "input_tokens": 2189,
+        "output_tokens": 3381,
+        "cached_read_tokens": 0,
+        "cache_write_tokens": 0,
+        "total_tokens": 5570,
+        "raw": {
+         "input": 2189,
+         "output": 3381,
+         "cacheRead": 0,
+         "cacheWrite": 0,
+         "reasoning": 2481,
+         "totalTokens": 5570,
+         "cost": {
+          "input": 0.00032835,
+          "output": 0.0020285999999999998,
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "total": 0.0023569499999999996,
+          "totalFromProvider": false
+         }
+        }
+       },
+       "cost": {
+        "amount": 0.00235695,
+        "currency": "USD",
+        "economic_tier": "subscription",
+        "kind": "estimated",
+        "status": "known",
+        "amount_known": true,
+        "low_usd": 0.00235695,
+        "high_usd": 0.00235695,
+        "basis": "flat",
+        "schedule": "opencode-go-catalogue-2026-11-08",
+        "pricing_schedule": "opencode-go-catalogue-2026-11-08",
+        "source": "OpenCode model catalogue (opencode.ai/docs/console/models)",
+        "observed_at": "2026-11-08",
+        "effective_from": "2026-11-08",
+        "verification": "catalogue_observed",
+        "conditions": [
+         "Published Go accounting rate; not an invoice or billed charge."
+        ]
+       }
+      }
+     ],
+     "fallback_path": [
+      "default_deepseek_go"
+     ],
+     "execution_state": "MODEL_OUTPUT_OBSERVED",
+     "stop_batch": false,
+     "provider_state_ref": "provider-state-c9781e2a-73ae-4a18-a60b-014ffe7d733d",
+     "provider_events": [
+      {
+       "schema_version": "provider-event.v1",
+       "event_id": "497ab8b6-3055-46f6-b2e0-1ed8b6879f2a",
+       "type": "MODEL_PREFLIGHT",
+       "observed_at": "2026-11-25T07:41:17.978Z",
+       "execution_id": "9fb5b1b6-08c2-4d88-af54-3e980f7aff86",
+       "provider_state_ref": "provider-state-3f5f8abb-d1e7-4236-a4fc-118a1b2f923c",
+       "previous": "AVAILABLE",
+       "current": "AVAILABLE",
+       "provider": "pi",
+       "model": "opencode-go/deepseek-v4.1-flash",
+       "failure_domain": "pi",
+       "observed_from": "runtime_response",
+       "quota_state": "UNKNOWN",
+       "retry_at": null
+      },
+      {
+       "schema_version": "provider-event.v1",
+       "event_id": "23a1f71a-6175-4de3-89a5-ccb7949f1a2f",
+       "type": "PROVIDER_STATE_OBSERVED",
+       "observed_at": "2026-11-25T07:42:18.586Z",
+       "execution_id": "9fb5b1b6-08c2-4d88-af54-3e980f7aff86",
+       "provider_state_ref": "provider-state-c9781e2a-73ae-4a18-a60b-014ffe7d733d",
+       "previous": "AVAILABLE",
+       "current": "AVAILABLE",
+       "provider": "pi",
+       "model": "opencode-go/deepseek-v4.1-flash",
+       "failure_domain": "pi",
+       "observed_from": "runtime_response",
+       "quota_state": "UNKNOWN",
+       "retry_at": null
+      }
+     ],
+     "provider_states": [
+      {
+       "schema_version": "provider-state.v1",
+       "provider_state_id": "provider-state-3f5f8abb-d1e7-4236-a4fc-118a1b2f923c",
+       "provider": "pi",
+       "model": "opencode-go/deepseek-v4.1-flash",
+       "failure_domain": "pi",
+       "scope": "model",
+       "observed_at": "2026-11-25T07:40:59.456Z",
+       "observed_from": "runtime_response",
+       "status": "AVAILABLE",
+       "authentication": "UNKNOWN",
+       "model_available": "AVAILABLE",
+       "request_admissible": "UNKNOWN",
+       "quota_state": "UNKNOWN",
+       "quota_windows": [],
+       "reset_at": null,
+       "retry_at": null,
+       "retry_source": "NONE",
+       "extra_credit_usd": null,
+       "extra_usage": "UNKNOWN",
+       "last_provider_error": null
+      },
+      {
+       "schema_version": "provider-state.v1",
+       "provider_state_id": "provider-state-c9781e2a-73ae-4a18-a60b-014ffe7d733d",
+       "provider": "pi",
+       "model": "opencode-go/deepseek-v4.1-flash",
+       "failure_domain": "pi",
+       "scope": "model",
+       "observed_at": "2026-11-25T07:42:18.586Z",
+       "observed_from": "runtime_response",
+       "status": "AVAILABLE",
+       "authentication": "UNKNOWN",
+       "model_available": "AVAILABLE",
+       "request_admissible": "UNKNOWN",
+       "quota_state": "UNKNOWN",
+       "quota_windows": [],
+       "reset_at": null,
+       "retry_at": null,
+       "retry_source": "NONE",
+       "extra_credit_usd": null,
+       "extra_usage": "UNKNOWN",
+       "last_provider_error": null
+      }
+     ],
+     "provider_warnings": [
+      "Provider quota is not observed; request admissibility remains unknown unless blocked by runtime evidence."
+     ],
+     "selection": {
+      "policy": "default",
+      "prior_families": [],
+      "ordered_routes": [
+       "default_deepseek_go"
+      ],
+      "distinct_route_count": 0,
+      "independence_required": false,
+      "same_family_fallback": false
+     },
+     "independence": {
+      "required": false,
+      "state": "not_required",
+      "prior_families": []
+     }
+    },
+    "model_prompt_sha256": "f1befb0fd7166395530a6e952d3ffb4ae7afb9c4fb827bac9c0a98c3084d6ad9",
+    "observed_model": "opencode-go/deepseek-v4.1-flash"
+   },
+   "recorded_at": "2026-11-25T07:42:19.116910+00:00"
+  },
+  "driven_by": "review",
+  "validation_reasons": [],
+  "assembled_lines": 338,
+  "verify_verdict": "pass"
+ },
+ "ledger": {
+  "ledger_schema": "writer.automation.ledger.v1",
+  "detector": "publication-automation-v0.1",
+  "dispatch_count": 4,
+  "total_cost_usd": 0.00706125,
+  "total_tokens": 25504,
+  "by_role": {
+   "editorial": {
+    "dispatches": 2,
+    "cost_usd": 0.00706125,
+    "tokens": 14948
+   },
+   "verification": {
+    "dispatches": 2,
+    "cost_usd": 0.0,
+    "tokens": 10556
+   }
+  },
+  "by_model": {
+   "opencode-go/deepseek-v4.1-flash": {
+    "dispatches": 2,
+    "cost_usd": 0.00706125,
+    "tokens": 14948
+   },
+   "opencode-go/claude-haiku-5-5": {
+    "dispatches": 2,
+    "cost_usd": 0.0,
+    "tokens": 10556
+   }
+  },
+  "entries": [
+   {
+    "role": "editorial",
+    "task_kind": "publication.editorial",
+    "package_id": "passage:Nine older mechanisms, seven properties",
+    "attempt": 1,
+    "writer_execution_id": "model-exec-6d7b8067b26f",
+    "provider": "pi",
+    "model": "opencode-go/deepseek-v4.1-flash",
+    "route": "default_deepseek_go",
+    "economic_tier": "subscription",
+    "input_tokens": 2050,
+    "output_tokens": 7328,
+    "total_tokens": 9378,
+    "cost_usd": 0.0047043,
+    "latency_ms": 54702,
+    "prompt_sha256": "1d45f8e309f035b822934ab132e6717f6728679c751133711ce949883940aef7",
+    "schema_sha256": "a6a3308a87446adea13b699d5b4acf1f9c6207bd3f193612ff8770d1ba2c65ae",
+    "status": "succeeded",
+    "error_kind": null
+   },
+   {
+    "role": "verification",
+    "task_kind": "publication.review",
+    "package_id": "passage:Nine older mechanisms, seven properties",
+    "attempt": 1,
+    "writer_execution_id": "model-exec-c6bef59f8cd8",
+    "provider": "pi",
+    "model": "opencode-go/claude-haiku-5-5",
+    "route": "default_haiku_go",
+    "economic_tier": "subscription",
+    "input_tokens": 4,
+    "output_tokens": 2684,
+    "total_tokens": 5262,
+    "cost_usd": 0,
+    "latency_ms": 17003,
+    "prompt_sha256": "fcb8d615eeeeb19ad3275ec3a1119c163f5a252869faa2eed85c53ec773927b5",
+    "schema_sha256": "7eacde2741c8dae909ffc842ff3513a7e30515c42be7ee4de16c0e209b061d03",
+    "status": "succeeded",
+    "error_kind": null
+   },
+   {
+    "role": "editorial",
+    "task_kind": "publication.editorial",
+    "package_id": "passage:Nine older mechanisms, seven properties",
+    "attempt": 1,
+    "writer_execution_id": "model-exec-6b5b03750036",
+    "provider": "pi",
+    "model": "opencode-go/deepseek-v4.1-flash",
+    "route": "default_deepseek_go",
+    "economic_tier": "subscription",
+    "input_tokens": 2189,
+    "output_tokens": 3381,
+    "total_tokens": 5570,
+    "cost_usd": 0.00235695,
+    "latency_ms": 61219,
+    "prompt_sha256": "f1befb0fd7166395530a6e952d3ffb4ae7afb9c4fb827bac9c0a98c3084d6ad9",
+    "schema_sha256": "a6a3308a87446adea13b699d5b4acf1f9c6207bd3f193612ff8770d1ba2c65ae",
+    "status": "succeeded",
+    "error_kind": null
+   },
+   {
+    "role": "verification",
+    "task_kind": "publication.review",
+    "package_id": "passage:Nine older mechanisms, seven properties",
+    "attempt": 1,
+    "writer_execution_id": "model-exec-66b3a3312eb6",
+    "provider": "pi",
+    "model": "opencode-go/claude-haiku-5-5",
+    "route": "default_haiku_go",
+    "economic_tier": "subscription",
+    "input_tokens": 4,
+    "output_tokens": 2577,
+    "total_tokens": 5294,
+    "cost_usd": 0,
+    "latency_ms": 14850,
+    "prompt_sha256": "6ad0b06e6f617a1e2cc3a3adfb40c5c8f6375c1ec11b346bbb589c126ef46bd7",
+    "schema_sha256": "7eacde2741c8dae909ffc842ff3513a7e30515c42be7ee4de16c0e209b061d03",
+    "status": "succeeded",
+    "error_kind": null
+   }
+  ]
+ }
+}

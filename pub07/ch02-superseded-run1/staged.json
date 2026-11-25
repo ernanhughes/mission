@@ -1,0 +1,11 @@
+{
+ "design_only": true,
+ "status": "fixture_only",
+ "production_path": null,
+ "plan_id": "plan:e314bdd88993b458",
+ "candidate_fingerprint": "50e1ef2e0886e6ee65fdbb81a7061b6dc32302c65ebcee4be3cd62fdab602f37",
+ "package_hashes": [
+  "da4a137efc3f7ed1b47ef87279459a4fafc82fcdb27bb23e31d339587023c1d5"
+ ],
+ "created_at": "2026-11-25T07:42:35.730931+00:00"
+}
