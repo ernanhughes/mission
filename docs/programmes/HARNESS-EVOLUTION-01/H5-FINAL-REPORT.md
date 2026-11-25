@@ -1,0 +1,9 @@
+# H5 final report
+
+**Verdict: ACCEPTED FOR THE BOUNDED MECHANISM AND EVIDENCE; READY FOR H6 DESIGN.** H4Q passed its independent qualification checkpoint immediately before H5 source edits. H5 adds opt-in adaptive normalization/structural correction with bounded, auditable decisions and provenance. Existing H4 strategy identities remain stable.
+
+Fresh deterministic bundle `deterministic-20261125-d` verifies PASS: the same frozen fenced response fails the raw-output evaluator for direct, structured, and corrective, while adaptive normalizes it and passes. Fresh local pair `live-local-20261125-d` verifies VERIFIED: corrective and adaptive each made one local Mistral invocation and independently passed the pinned task evaluator. Both results remain `AWAITING_ACCEPTANCE`; the live adaptive response needed no normalization or correction. The live trace records inference execution as UNKNOWN. The combined evidence demonstrates plumbing and one representation-handling example only, not generalized effectiveness, causal attribution, safety, or independent model-family judgement.
+
+Final focused Worker tests passed (43 across four files), typecheck passed, and a separate read-only Codex review found no material issue. Six of eight authorized H5 live invocations were used across the final runs; two remained unused. No paid route was used. Long/full suites were intentionally deferred. H4 historical bundles are now INCONCLUSIVE under the strengthened output-digest verifier; H4Q's pre-H5 snapshot remains time-specific evidence and does not hash-match the modified Worker tree.
+
+No Mission operational database, service, deployment, commit/push, manuscript, or cross-repository cleanup was performed. H6 inputs are design-only in `H6-INTEGRATION-INPUTS.md`; H6 implementation and H7+ remain outside this authorization.

@@ -1,0 +1,603 @@
+diff --git a/src/core/execution-summary.ts b/src/core/execution-summary.ts
+new file mode 100644
+index 0000000..7a49f07
+--- /dev/null
++++ b/src/core/execution-summary.ts
+@@ -0,0 +1,159 @@
++import { createHash } from "node:crypto"
++import type { JobState } from "./worker.js"
++import { safeExecutionIdentifier as executionIdentifier, type NormalizedWorkRequest } from "../schema/request.js"
++import type { WorkResult } from "../schema/result.js"
++import type { UsageRecord } from "../models/usage.js"
++
++type RecordedEvent = Pick<JobState["events"][number], "type" | "timestamp">
++
++export const EXECUTION_SUMMARY_SCHEMA = "worker.execution-summary.v1"
++export const DIGEST_VERSION = "sha256/worker-sorted-json-v1"
++export const REQUEST_ID_PATTERN = /^wrq_[a-f0-9]{32}$/
++
++function object(value: unknown): Record<string, unknown> | undefined {
++  return value && typeof value === "object" && !Array.isArray(value) ? value as Record<string, unknown> : undefined
++}
++
++function sorted(value: unknown): unknown {
++  if (Array.isArray(value)) return value.map(sorted)
++  if (value && typeof value === "object") {
++    const input = value as Record<string, unknown>
++    return Object.fromEntries(Object.keys(input).sort().map(key => [key, sorted(input[key])]))
++  }
++  return value
++}
++
++export function executionDigest(value: unknown): string | null {
++  try {
++    const bytes = JSON.stringify(sorted(value))
++    return bytes === undefined ? null : createHash("sha256").update(bytes).digest("hex")
++  } catch {
++    // An in-process adapter may return a non-serializable value. Keep the attempt.
++    return null
++  }
++}
++
++export function requestedExecution(input: unknown) {
++  const execution = object(object(input)?.execution)
++  return {
++    engine: executionIdentifier(execution?.backend),
++    model: executionIdentifier(execution?.model),
++    policy: executionIdentifier(execution?.policy),
++    max_output_tokens: nonnegative(object(object(input)?.parameters)?.max_output_tokens),
++  }
++}
++
++const RUNTIME_TYPES = new Set([
++  "PI_EXECUTION_STARTED", "PI_RUNTIME_IDENTIFIED", "PI_REQUEST_STARTED", "PI_REQUEST_COMPLETED",
++  "PI_TOOL_STARTED", "PI_TOOL_COMPLETED", "PI_EXECUTION_COMPLETED", "PI_EXECUTION_ABORTED",
++  "PROCESS_KILL_REQUESTED", "PROCESS_KILL_CONFIRMED", "MODEL_RELAY_RESPONSE",
++  "DOCKER_CONTAINER_STARTED", "DOCKER_CONTAINER_EXITED", "DOCKER_SANDBOX_CLEANED",
++  "DOCKER_VERIFICATION_STARTED", "DOCKER_VERIFICATION_COMPLETED",
++])
++
++function runtimeEventType(value: string): boolean {
++  return RUNTIME_TYPES.has(value) ||
++    /^(PI_RUNNER|OPENCODE(?:_(?:VERSION|EXPORT))?)_(PROCESS_STARTED|PROCESS_EXIT|FIRST_EVENT|LAST_PROGRESS|FINAL_EVENT)$/.test(value)
++}
++
++function workStatus(value: unknown): WorkResult["status"] | null {
++  return value === "ACCEPTED" || value === "REJECTED" || value === "BLOCKED" ||
++    value === "AWAITING_ACCEPTANCE" || value === "FAILED" ? value : null
++}
++
++function nonnegative(value: unknown): number | null {
++  return typeof value === "number" && Number.isFinite(value) && value >= 0 ? value : null
++}
++
++function receiptOf(result: WorkResult | undefined) {
++  const modelExecution = object(result?.model_execution) ?? object(object(result?.output)?.model_execution)
++  const receipt = object(modelExecution?.receipt)
++  const observed = object(modelExecution?.observed) ?? object(receipt?.observed)
++  return { modelExecution, receipt, observed }
++}
++
++export function executionSummary(
++  request: NormalizedWorkRequest, requested: ReturnType<typeof requestedExecution>,
++  resolvedBackend: string, invokedBackend: string | null, probedVersion: string | null,
++  job: JobState, result: WorkResult | undefined, abortRequested: boolean, workerEvents: RecordedEvent[],
++  usage: UsageRecord | null, inputDigest: string | null, includePublicContent: boolean,
++  failureCode?: string,
++) {
++  const { modelExecution, receipt, observed } = receiptOf(result)
++  const selection = object(modelExecution?.selection)
++  const runtimeRequest = object(modelExecution?.requested)
++  const effectivePolicy = executionIdentifier(selection?.policy ?? runtimeRequest?.policy)
++  const configuration = {
++    // This version names the current Worker rule: explicit request > profile > default backend.
++    worker_routing_policy: "worker.executor-selection.v1",
++    selected_executor: executionIdentifier(resolvedBackend),
++    resolved_model_route: executionIdentifier(runtimeRequest?.route),
++    resolved_model_policy: effectivePolicy,
++    dry_run: request.options?.dry_run === true,
++  }
++  const fallbackPath = modelExecution?.fallback_path
++  const workerEventSet = new Set(workerEvents)
++  const events: Array<{ sequence: number; source: "worker" | "runtime"; type: string; at: string }> = []
++  let runtimeCount = 0
++  for (const event of job.events) {
++    const source = workerEventSet.has(event) ? "worker" : "runtime"
++    if (source === "runtime") {
++      if (!runtimeEventType(event.type) || runtimeCount >= 200) continue
++      if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(event.timestamp) || !Number.isFinite(Date.parse(event.timestamp))) continue
++      runtimeCount++
++    }
++    events.push({ sequence: events.length + 1, source, type: event.type, at: event.timestamp })
++  }
++  const trace = { events, runtime_events_omitted: job.events.length - events.length }
++  return {
++    schema_version: EXECUTION_SUMMARY_SCHEMA,
++    digest_version: DIGEST_VERSION,
++    request_id: request.request_id,
++    task_id: request.task_id ?? null,
++    episode_id: request.episode_id ?? null,
++    episode_link: request.episode_id ? "caller_supplied_unverified" as const : "absent" as const,
++    requested,
++    resolved: { ...configuration, configuration_digest: executionDigest(configuration) },
++    observed: {
++      worker_executor: executionIdentifier(invokedBackend),
++      engine: executionIdentifier(receipt ? observed?.runtime : undefined),
++      engine_version: executionIdentifier(receipt ? observed?.runtime_version : undefined),
++      probed_executor_version: executionIdentifier(probedVersion),
++      model: executionIdentifier(observed?.model),
++      provider: executionIdentifier(observed?.provider),
++      model_execution_id: executionIdentifier(modelExecution?.execution_id),
++      fallback_path: Array.isArray(fallbackPath) ? fallbackPath.map(executionIdentifier) : null,
++      session_id: executionIdentifier(result?.provenance?.session_id),
++    },
++    started_at: job.started_at,
++    completed_at: job.completed_at ?? null,
++    abort_requested: abortRequested,
++    result_status: workStatus(result?.status),
++    failure_code: executionIdentifier(failureCode ?? result?.unresolved?.[0]?.code),
++    input_digest: inputDigest,
++    output_digest: includePublicContent ? executionDigest(result?.output) : null,
++    output_present: result?.output !== undefined,
++    input_output_digest_scope: includePublicContent ? "public_fixture" as const : "withheld" as const,
++    work_id: executionIdentifier(result?.work_id),
++    run_id: executionIdentifier(result?.run_id),
++    acceptance_id: executionIdentifier(result?.acceptance_id),
++    artifact_ids: (Array.isArray(result?.artifacts) ? result?.artifacts : []).slice(0, 50)
++      .map(item => executionIdentifier(item?.id)).filter((id): id is string => id !== null),
++    resource_usage: {
++      input_tokens: nonnegative(usage?.usage?.input_tokens),
++      output_tokens: nonnegative(usage?.usage?.output_tokens),
++      total_tokens: nonnegative(usage?.usage?.total_tokens),
++      cost: {
++        billed_status: usage?.billed_cost?.status ?? "unknown",
++        billed_usd: nonnegative(usage?.billed_cost?.usd),
++        estimated_status: usage?.estimated_value?.status ?? "unknown",
++        estimated_usd: nonnegative(usage?.estimated_value?.usd),
++        estimated_low_usd: nonnegative(usage?.estimated_value?.low_usd),
++        estimated_high_usd: nonnegative(usage?.estimated_value?.high_usd),
++      },
++    },
++    trace: { ...trace, digest: executionDigest(trace) },
++  }
++}
++
++export type ExecutionSummary = ReturnType<typeof executionSummary>
+diff --git a/src/core/execution-ledger.ts b/src/core/execution-ledger.ts
+new file mode 100644
+index 0000000..cf9c2c5
+--- /dev/null
++++ b/src/core/execution-ledger.ts
+@@ -0,0 +1,75 @@
++import { appendFileSync, closeSync, mkdirSync, openSync, readSync, fstatSync } from "node:fs"
++import { dirname } from "node:path"
++import { EXECUTION_SUMMARY_SCHEMA, REQUEST_ID_PATTERN, executionDigest, type ExecutionSummary } from "./execution-summary.js"
++
++type ReadResult = { records: ExecutionSummary[]; malformed: number; conflicts: number; truncated: boolean; unavailable: boolean }
++
++export class ExecutionLedger {
++  constructor(
++    readonly path: string,
++    // Private runtime inputs and outputs can contain guessable text or secrets.
++    // Only a caller setting up an isolated public fixture lane may enable their digests.
++    readonly publicFixtureDigests = false,
++    readonly readLimitBytes = 8 * 1024 * 1024,
++  ) {}
++
++  append(record: ExecutionSummary): boolean {
++    try {
++      mkdirSync(dirname(this.path), { recursive: true, mode: 0o700 })
++      appendFileSync(this.path, JSON.stringify({ record, digest: executionDigest(record) }) + "\n", { encoding: "utf8", mode: 0o600 })
++      return true
++    } catch {
++      return false
++    }
++  }
++
++  read(): ReadResult {
++    const result: ReadResult = { records: [], malformed: 0, conflicts: 0, truncated: false, unavailable: false }
++    let fd: number | undefined
++    let text: string
++    try {
++      fd = openSync(this.path, "r")
++      const { size } = fstatSync(fd)
++      const offset = Math.max(0, size - this.readLimitBytes)
++      result.truncated = offset > 0
++      const buffer = Buffer.alloc(size - offset)
++      const bytesRead = readSync(fd, buffer, 0, buffer.length, offset)
++      text = buffer.subarray(0, bytesRead).toString("utf8")
++      if (result.truncated) {
++        const start = text.indexOf("\n")
++        text = start < 0 ? "" : text.slice(start + 1)
++      }
++    } catch (error) {
++      result.unavailable = (error as NodeJS.ErrnoException).code !== "ENOENT"
++      return result
++    } finally {
++      if (fd !== undefined) closeSync(fd)
++    }
++
++    const records = new Map<string, { record: ExecutionSummary; digest: string }>()
++    const conflicts = new Set<string>()
++    for (const line of text.split("\n")) {
++      if (!line.trim()) continue
++      try {
++        const { record, digest } = JSON.parse(line) as { record?: ExecutionSummary; digest?: string }
++        if (!record || record.schema_version !== EXECUTION_SUMMARY_SCHEMA || typeof record.request_id !== "string" ||
++            !REQUEST_ID_PATTERN.test(record.request_id) || typeof digest !== "string" || executionDigest(record) !== digest) {
++          result.malformed++
++          continue
++        }
++        const previous = records.get(record.request_id)
++        if (previous && previous.digest !== digest) {
++          records.delete(record.request_id)
++          conflicts.add(record.request_id)
++        } else if (!conflicts.has(record.request_id) && !previous) {
++          records.set(record.request_id, { record, digest })
++        }
++      } catch {
++        result.malformed++
++      }
++    }
++    result.conflicts = conflicts.size
++    result.records = [...records.values()].map(row => row.record)
++    return result
++  }
++}
+diff --git a/tests/execution-ledger.test.ts b/tests/execution-ledger.test.ts
+new file mode 100644
+index 0000000..ec99b3e
+--- /dev/null
++++ b/tests/execution-ledger.test.ts
+@@ -0,0 +1,150 @@
++import { afterEach, expect, test } from "bun:test"
++import { appendFileSync, existsSync, mkdtempSync, readFileSync, rmdirSync, unlinkSync, writeFileSync } from "node:fs"
++import { tmpdir } from "node:os"
++import { dirname, join } from "node:path"
++import { ExecutionLedger } from "../src/core/execution-ledger.js"
++import { executionDigest } from "../src/core/execution-summary.js"
++import { WorkerService } from "../src/core/worker.js"
++import { ExecutorRegistry } from "../src/executors/types.js"
++import { WORK_RESULT_SCHEMA } from "../src/schema/result.js"
++
++// The independently evaluated fixture is declared in Mission's H3 task manifest.
++const fixture = { name: "fixture-worker", version: "1.2.3", dependencies: { alpha: "^1.0.0", beta: "~2.0.0" } }
++const fixtureOutput = {
++  schema: "harness.inspection-result.v1",
++  findings: [
++    { path: "package.json", fact: "name", value: "fixture-worker" },
++    { path: "package.json", fact: "version", value: "1.2.3" },
++    { path: "package.json", fact: "dependency", value: "alpha" },
++    { path: "package.json", fact: "dependency", value: "beta" },
++  ],
++}
++
++function service(ledger: ExecutionLedger, mode: "success" | "fail" | "health-error" | "model-receipt" = "success") {
++  const executors = new ExecutorRegistry()
++  executors.register({
++    id: "harness-fixture-v1",
++    async health() {
++      if (mode === "health-error") throw new Error("fixture health exception")
++      return { id: this.id, available: true, details: { version: "1" } }
++    },
++    async execute(request, onEvent) {
++      onEvent?.({ type: "JOB_COMPLETED", timestamp: "arbitrary executor payload", secret: "fixture-key" })
++      onEvent?.({ type: "PI_EXECUTION_COMPLETED", timestamp: "2026-11-24T12:00:00.000Z", secret: "fixture-key" })
++      if (mode === "fail") throw new Error("fixture failure with private diagnostic")
++      const model_execution = mode === "model-receipt" ? {
++        requested: { route: "selected-" + request.execution?.model, policy: "worker-model-policy" },
++        observed: { model: "observed-model", provider: "fixture-provider" },
++        fallback_path: ["first-route", "selected-" + request.execution?.model],
++      } : undefined
++      return { schema: WORK_RESULT_SCHEMA, request_id: request.request_id, status: "AWAITING_ACCEPTANCE", execution: { backend: this.id, model: request.execution?.model }, output: fixtureOutput, ...(model_execution ? { model_execution } : {}) }
++    },
++  })
++  return new WorkerService(executors, "harness-fixture-v1", {}, undefined, undefined, undefined, undefined, undefined, undefined, ledger)
++}
++
++const temporaryLedgers: string[] = []
++afterEach(() => {
++  for (const path of temporaryLedgers.splice(0)) {
++    for (const artifact of [path, join(dirname(path), "output.json")]) {
++      if (existsSync(artifact)) unlinkSync(artifact)
++    }
++    rmdirSync(dirname(path))
++  }
++})
++
++function tempLedger(publicFixtureDigests = false) {
++  const path = join(mkdtempSync(join(tmpdir(), "worker-execution-")), "executions.jsonl")
++  temporaryLedgers.push(path)
++  return new ExecutionLedger(path, publicFixtureDigests)
++}
++
++test("public fixture digests and request identity survive a fresh ledger reader", async () => {
++  const ledger = tempLedger(true)
++  const worker = service(ledger)
++  const request = { objective: "fixture-private-text", task_id: "HE-PKG-001", episode_id: "ep:task:fixture", execution: { model: "requested-only" } }
++  const first = await worker.run({ ...request, inputs: { b: 2, a: 1, fixture } })
++  const second = await worker.run({ ...request, inputs: { a: 1, b: 2, fixture } })
++  const output = join(dirname(ledger.path), "output.json")
++  writeFileSync(output, JSON.stringify({ request_id: first.request_id, result: first.output }), { flag: "wx" })
++  expect(first.request_id).not.toBe(second.request_id)
++  const archive = new ExecutionLedger(ledger.path).read()
++  const [a, b] = archive.records
++  expect(a?.request_id).toBe(first.request_id)
++  expect(b?.input_digest).toBe(a?.input_digest)
++  expect(a?.input_digest).toMatch(/^[a-f0-9]{64}$/)
++  const artifact = JSON.parse(readFileSync(output, "utf8"))
++  expect(artifact.request_id).toBe(a?.request_id)
++  expect(a?.output_digest).toBe(executionDigest(artifact.result))
++  expect(a?.episode_link).toBe("caller_supplied_unverified")
++  expect(a?.episode_id).toBe("ep:task:fixture")
++  expect(a?.task_id).toBe("HE-PKG-001")
++  expect(a?.requested.model).toBe("requested-only")
++  expect(a?.resolved.selected_executor).toBe("harness-fixture-v1")
++  expect(a?.resolved.resolved_model_route).toBeNull()
++  expect(a?.resolved.resolved_model_policy).toBeNull()
++  expect(a?.observed.model).toBeNull()
++  expect(a?.observed.worker_executor).toBe("harness-fixture-v1")
++  expect(a?.resource_usage.cost.billed_usd).toBeNull()
++  expect(a?.trace.events.map(event => event.type)).toEqual(["JOB_ACCEPTED", "JOB_STARTED", "STAGE_STARTED", "PI_EXECUTION_COMPLETED", "STAGE_COMPLETED", "JOB_COMPLETED"])
++  expect(a?.trace.events.find(event => event.source === "runtime")).toEqual({ sequence: 4, source: "runtime", type: "PI_EXECUTION_COMPLETED", at: "2026-11-24T12:00:00.000Z" })
++  expect(a?.trace.runtime_events_omitted).toBe(1)
++  for (const secret of ["fixture-private-text", "fixture-worker", "fixture-key", "arbitrary executor payload"]) {
++    expect(readFileSync(ledger.path, "utf8")).not.toContain(secret)
++  }
++})
++
++test("private capture withholds content digests and retains dry, cancelled and failed attempts", async () => {
++  const ledger = tempLedger()
++  const worker = service(ledger, "fail")
++  const dry = await worker.run({ objective: "private", options: { dry_run: true } })
++  const controller = new AbortController()
++  controller.abort()
++  const cancelled = await worker.run({ objective: "private" }, controller.signal)
++  const failed = await worker.run({ objective: "private" })
++  const rows = ledger.read().records
++  expect(rows.map(row => row.request_id)).toEqual([dry.request_id, cancelled.request_id, failed.request_id])
++  expect(rows.map(row => row.observed.worker_executor)).toEqual([null, null, "harness-fixture-v1"])
++  expect(rows.map(row => row.result_status)).toEqual(["AWAITING_ACCEPTANCE", "BLOCKED", "FAILED"])
++  expect(rows.map(row => row.failure_code)).toEqual([null, "CANCELLED", "EXECUTOR_FAILED"])
++  expect(rows.every(row => row.input_digest === null && row.output_digest === null)).toBe(true)
++  expect(rows.every(row => row.task_id === null && row.episode_id === null)).toBe(true)
++  expect(readFileSync(ledger.path, "utf8")).not.toContain("private diagnostic")
++})
++
++test("ledger ignores identical duplicates and exposes malformed or conflicting rows", async () => {
++  const ledger = tempLedger()
++  await service(ledger).run({ objective: "fixture" })
++  const record = ledger.read().records[0]!
++  appendFileSync(ledger.path, readFileSync(ledger.path))
++  appendFileSync(ledger.path, '{"record":{},"digest":"invalid"}\n')
++  expect(ledger.read()).toMatchObject({ records: [record], malformed: 1, conflicts: 0 })
++  expect(ledger.append({ ...record, output_present: !record.output_present })).toBe(true)
++  expect(ledger.read()).toMatchObject({ records: [], malformed: 1, conflicts: 1 })
++})
++
++test("configuration fingerprint changes when the confirmed model route changes", async () => {
++  const ledger = tempLedger()
++  const worker = service(ledger, "model-receipt")
++  await worker.run({ objective: "fixture", execution: { model: "alpha" } })
++  await worker.run({ objective: "fixture", execution: { model: "beta" } })
++  const [a, b] = ledger.read().records
++  expect(a?.resolved.configuration_digest).not.toBe(b?.resolved.configuration_digest)
++  expect(a?.requested.model).toBe("alpha")
++  expect(a?.resolved.resolved_model_route).toBe("selected-alpha")
++  expect(a?.resolved.resolved_model_policy).toBe("worker-model-policy")
++  expect(a?.observed.model).toBe("observed-model")
++  expect(a?.observed.fallback_path).toEqual(["first-route", "selected-alpha"])
++})
++
++test("health exception remains a rejection and the archive exposes no WorkResult", async () => {
++  const ledger = tempLedger()
++  const worker = service(ledger, "health-error")
++  await expect(worker.run({ objective: "fixture" })).rejects.toThrow("fixture health exception")
++  const row = ledger.read().records[0]
++  expect(row?.result_status).toBeNull()
++  expect(row?.failure_code).toBe("EXECUTOR_HEALTH_FAILED")
++  expect(row?.observed.worker_executor).toBeNull()
++  expect(row?.trace.events.at(-1)?.type).toBe("JOB_FAILED")
++  expect(worker.listJobs()[0]?.result).toBeUndefined()
++})
+diff --git a/src/schema/request.ts b/src/schema/request.ts
+index 465492d..39b8a81 100644
+--- a/src/schema/request.ts
++++ b/src/schema/request.ts
+@@ -5,6 +5,8 @@ export type WorkRequest = {
+   schema?: typeof WORK_REQUEST_SCHEMA
+   app?: string
+   profile?: string
++  task_id?: string
++  episode_id?: string
+   objective?: string
+   prompt?: string
+   workspace?: { root?: string; project_id?: string }
+@@ -27,6 +29,14 @@ export class RequestError extends Error {
+   constructor(readonly code: string, message: string) { super(`${code}: ${message}`) }
+ }
+ 
++// Values written as identifiers, never arbitrary text, paths, URLs, or diagnostics.
++export function safeExecutionIdentifier(value: unknown): string | null {
++  return typeof value === "string" &&
++    /^[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}$/.test(value) &&
++    !/(\.\.|\/\/|:\/|(?:^|\/)(?:sk[-_]|ghp_|github_pat_|xox[baps]-|key[-_]|tok[-_]))/i.test(value)
++    ? value : null
++}
++
+ function object(value: unknown, name: string): Record<string, unknown> | undefined {
+   if (value === undefined) return undefined
+   if (!value || typeof value !== "object" || Array.isArray(value)) throw new RequestError("INVALID_REQUEST", `${name} must be an object`)
+@@ -46,6 +56,10 @@ export function normalizeRequest(value: unknown): NormalizedWorkRequest {
+     const chosen = execution?.[key]
+     if (chosen !== undefined && (typeof chosen !== "string" || !/^[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}$/.test(chosen) || /(\.\.|\/\/|:\/)/.test(chosen))) throw new RequestError("INVALID_REQUEST", `execution.${key} must be a plain route or policy id`)
+   }
++  const taskID = safeExecutionIdentifier(raw.task_id)
++  const episodeID = safeExecutionIdentifier(raw.episode_id)
++  if (raw.task_id !== undefined && taskID === null) throw new RequestError("INVALID_REQUEST", "task_id must be an opaque non-secret identifier")
++  if (raw.episode_id !== undefined && episodeID === null) throw new RequestError("INVALID_REQUEST", "episode_id must be an opaque non-secret identifier")
+   const options = object(raw.options, "options")
+   if (options?.acceptance !== undefined && options.acceptance !== "automatic" && options.acceptance !== "human") throw new RequestError("INVALID_REQUEST", "options.acceptance invalid")
+   if (options?.dry_run !== undefined && typeof options.dry_run !== "boolean") throw new RequestError("INVALID_REQUEST", "options.dry_run must be a boolean")
+@@ -55,6 +69,8 @@ export function normalizeRequest(value: unknown): NormalizedWorkRequest {
+     schema: WORK_REQUEST_SCHEMA,
+     request_id: `wrq_${createHash("sha256").update(identity).digest("hex").slice(0, 32)}`,
+     objective,
++    ...(taskID ? { task_id: taskID } : {}),
++    ...(episodeID ? { episode_id: episodeID } : {}),
+     ...(typeof raw.app === "string" ? { app: raw.app } : {}),
+     ...(typeof raw.profile === "string" ? { profile: raw.profile } : {}),
+     ...(workspace ? { workspace: workspace as WorkRequest["workspace"] } : {}),
+diff --git a/src/core/worker.ts b/src/core/worker.ts
+index 6909380..4922958 100644
+--- a/src/core/worker.ts
++++ b/src/core/worker.ts
+@@ -10,6 +10,8 @@ import type { UsageLedger } from "../models/usage-ledger.js"
+ import type { UsageCallsLedger } from "../models/usage-calls.js"
+ import type { ExternalOpenCodeSource } from "../models/external-opencode.js"
+ import { resolveWindow } from "../models/cost-time.js"
++import type { ExecutionLedger } from "./execution-ledger.js"
++import { executionDigest, executionSummary, requestedExecution } from "./execution-summary.js"
+ 
+ export type JobEvent = { job_id: string; operation_id: string; stage_id: string; timestamp: string; type: string; [key: string]: unknown }
+ export type JobState = { job_id: string; operation_id: string; stage_id: string; app?: string; profile?: string; status: string; started_at: string; completed_at?: string; events: JobEvent[]; result?: WorkResult; request?: { prompt?: string; workspace?: { root?: string } } }
+@@ -20,15 +22,28 @@ export class WorkerService {
+   private usageLedgerError?: string
+   private usageCallsLedgerError?: string
+   private evidenceLedgerError?: string
+-  constructor(readonly executors: ExecutorRegistry, readonly defaultExecutor = "opencode", readonly profiles: ProfileMap = {}, readonly models?: ModelRuntime, readonly usageLedger?: UsageLedger, readonly usageCallsLedger?: UsageCallsLedger, readonly externalOpenCode?: ExternalOpenCodeSource, readonly evidenceLedger?: EvidenceLedger, readonly evidenceKey?: string) {}
++  executionLedgerWriteFailures = 0
++  constructor(readonly executors: ExecutorRegistry, readonly defaultExecutor = "opencode", readonly profiles: ProfileMap = {}, readonly models?: ModelRuntime, readonly usageLedger?: UsageLedger, readonly usageCallsLedger?: UsageCallsLedger, readonly externalOpenCode?: ExternalOpenCodeSource, readonly evidenceLedger?: EvidenceLedger, readonly evidenceKey?: string, readonly executionLedger?: ExecutionLedger) {}
+ 
+   async run(input: WorkRequest | unknown, signal?: AbortSignal): Promise<WorkResult> {
+     let request: NormalizedWorkRequest
+     try { request = normalizeRequest(applyProfile(input, this.profiles)) }
+     catch (error) { if (error instanceof RequestError) throw error; throw new RequestError("INVALID_REQUEST", String(error)) }
+     const backend = request.execution?.backend ?? this.defaultExecutor
++    const requested = this.executionLedger ? requestedExecution(input) : undefined
++    const publicFixtureDigests = this.executionLedger?.publicFixtureDigests === true
++    const { request_id: _, episode_id: __, metadata: ___, ...digestInputs } = request
++    const inputDigest = publicFixtureDigests ? executionDigest(digestInputs) : null
++    const workerEvents: Array<Pick<JobEvent, "type" | "timestamp">> = []
++    let invokedBackend: string | null = null
++    let probedVersion: string | null = null
+     const job: JobState = { job_id: request.request_id, operation_id: String(request.metadata?.operation_id ?? request.request_id), stage_id: String(request.metadata?.stage_id ?? 'EXECUTE'), app: request.app, profile: request.profile, status: 'RUNNING', started_at: new Date().toISOString(), events: [] }
+-    const event = (type: string) => job.events.push({ type, job_id: job.job_id, operation_id: job.operation_id, stage_id: job.stage_id, timestamp: new Date().toISOString() })
++    const event = (type: string) => {
++      const timestamp = new Date().toISOString()
++      const entry = { type, job_id: job.job_id, operation_id: job.operation_id, stage_id: job.stage_id, timestamp }
++      job.events.push(entry)
++      if (requested) workerEvents.push(entry)
++    }
+     event('JOB_ACCEPTED')
+     if (request.options?.dry_run) event('DRY_RUN_REQUESTED')
+     else { event('JOB_STARTED'); event('STAGE_STARTED') }
+@@ -43,6 +58,16 @@ export class WorkerService {
+       if(!job.events.some(e => JSON.stringify(e) === JSON.stringify(normalized)))job.events.push(normalized)
+     }
+     if (this.jobs.size > 100) { const finished = [...this.jobs.values()].find(item => item.completed_at); if (finished) { this.jobs.delete(finished.job_id); this.results.delete(finished.job_id) } }
++    const capture = (snapshot: JobState, result?: WorkResult, events = workerEvents, failureCode?: string) => {
++      if (!this.executionLedger || !requested) return
++      try {
++        const summary = executionSummary(request, requested, backend, invokedBackend, probedVersion, snapshot, result,
++          signal?.aborted === true, events, result ? usageRecordOf(snapshot) : null, inputDigest, publicFixtureDigests, failureCode)
++        if (!this.executionLedger.append(summary)) this.executionLedgerWriteFailures++
++      } catch {
++        this.executionLedgerWriteFailures++
++      }
++    }
+     const finish = (result: WorkResult) => {
+       job.status = result.status; job.completed_at = new Date().toISOString(); job.result = result
+       this.recordUsage(job)
+@@ -50,6 +75,7 @@ export class WorkerService {
+       for (const item of receipt?.events ?? [])runtimeEvent(item)
+       event(result.status === 'FAILED' || result.status === 'BLOCKED' ? 'STAGE_FAILED' : 'STAGE_COMPLETED')
+       event(result.status === 'FAILED' || result.status === 'BLOCKED' ? 'JOB_FAILED' : 'JOB_COMPLETED')
++      capture(job, result)
+       this.results.set(request.request_id, result); return result
+     }
+     let executor
+@@ -76,7 +102,20 @@ export class WorkerService {
+       event('DRY_RUN_NO_EXECUTOR_INVOKED')
+       return finish(result)
+     }
+-    const health = await executor.health()
++    const health = await executor.health().catch(error => {
++      if (this.executionLedger) {
++        // Keep the thrown exception and the existing job/result behavior. Only
++        // the archive records a terminal pre-dispatch failure with no WorkResult.
++        const timestamp = new Date().toISOString()
++        const terminal = ["STAGE_FAILED", "JOB_FAILED"].map(type => ({
++          type, job_id: job.job_id, operation_id: job.operation_id, stage_id: job.stage_id, timestamp,
++        }))
++        const snapshot = { ...job, completed_at: timestamp, events: [...job.events, ...terminal] }
++        capture(snapshot, undefined, [...workerEvents, ...terminal], "EXECUTOR_HEALTH_FAILED")
++      }
++      throw error
++    })
++    if (typeof health.details?.version === "string") probedVersion = health.details.version
+     if (!health.available) {
+       const result = blocked(request.request_id, backend, "EXECUTOR_UNAVAILABLE", health.reason ?? `${backend} unavailable`, request.execution?.model)
+       return finish(result)
+@@ -85,6 +124,7 @@ export class WorkerService {
+     const cancel = () => { void executor.cancel?.(request.request_id).catch(() => {}) }
+     signal?.addEventListener('abort',cancel,{once:true})
+     try {
++      invokedBackend = executor.id
+       const result = await executor.execute(request, runtimeEvent)
+       if (result.request_id !== request.request_id || result.execution.backend !== executor.id) throw new Error("executor returned mismatched identity")
+       return finish(result)
+diff --git a/src/factory.ts b/src/factory.ts
+index 844feb2..457f79c 100644
+--- a/src/factory.ts
++++ b/src/factory.ts
+@@ -1,4 +1,5 @@
+ import { WorkerService } from "./core/worker.js"
++import { ExecutionLedger } from "./core/execution-ledger.js"
+ import { DirectModelExecutor } from "./executors/direct.js"
+ import { ModelExecutor } from "./executors/model.js"
+ import { PiExecutor } from "./executors/pi.js"
+@@ -73,5 +74,7 @@ export function createService(config: WorkerConfig): WorkerService {
+     }
+     throw new Error(`CONFIG_INVALID: unsupported executor type ${spec.type}`)
+   }
+-  return new WorkerService(registry, config.executor.default, config.profiles, modelRuntime, usageLedgerFromEnvironment(), usageCallsLedgerFromEnvironment(), externalOpenCodeFromEnvironment(), evidenceLedgerFromEnvironment(), evidenceKeyFromEnvironment())
++  const executionPath = process.env.WORKER_EXECUTION_LEDGER?.trim()
++  const executionLedger = executionPath && executionPath !== "off" ? new ExecutionLedger(executionPath) : undefined
++  return new WorkerService(registry, config.executor.default, config.profiles, modelRuntime, usageLedgerFromEnvironment(), usageCallsLedgerFromEnvironment(), externalOpenCodeFromEnvironment(), evidenceLedgerFromEnvironment(), evidenceKeyFromEnvironment(), executionLedger)
+ }
+diff --git a/src/server/server.ts b/src/server/server.ts
+index c40efca..7fe3a1a 100644
+--- a/src/server/server.ts
++++ b/src/server/server.ts
+@@ -8,6 +8,7 @@ import { AvailabilityError } from "../models/availability.js"
+ import { resolveWindow } from "../models/cost-time.js"
+ import type { ExternalOpenCodeSource } from "../models/external-opencode.js"
+ import { EVIDENCE_MAX_BYTES } from "../models/evidence.js"
++import { REQUEST_ID_PATTERN } from "../core/execution-summary.js"
+ import { timingSafeEqual } from "node:crypto"
+ 
+ function resolveCostWindow(params: URLSearchParams): { ok: true; label: string; timeZone: string; startMs: number; endMs: number } | { ok: false; error: string } {
+@@ -45,6 +46,22 @@ export function createWorkerServer(service: WorkerService, options: { host?: str
+       })
+     }
+     if (request.method === 'GET' && url.pathname === '/v1/jobs') return json({ jobs: service.listJobs() })
++    if (request.method === "GET" && (url.pathname === "/v1/executions" || url.pathname.startsWith("/v1/executions/"))) {
++      // Enable read access only when the operator configured a local ledger.
++      if (!service.executionLedger || !["127.0.0.1", "localhost", "::1"].includes(server.hostname ?? "") ||
++          !["127.0.0.1", "localhost", "[::1]"].includes(url.hostname)) {
++        return json({ error: { code: "NOT_FOUND" } }, 404)
++      }
++      const { records, unavailable, ...diagnostics } = service.executionLedger.read()
++      const write_failures = service.executionLedgerWriteFailures
++      if (unavailable) return json({ error: { code: "EXECUTION_LEDGER_UNAVAILABLE" }, ...diagnostics, write_failures }, 503)
++      if (url.pathname === "/v1/executions") {
++        return json({ executions: records.slice(-100), ...diagnostics, more_in_read_window: records.length > 100, write_failures })
++      }
++      const id = url.pathname.slice("/v1/executions/".length)
++      const record = REQUEST_ID_PATTERN.test(id) ? records.find(row => row.request_id === id) : undefined
++      return record ? json(record) : json({ error: { code: "NOT_FOUND" }, ...diagnostics, write_failures }, 404)
++    }
+     if (["/v1/models/cli", "/v1/models/availability", "/v1/models/probe"].includes(url.pathname)) {
+       const availability = service.models?.availability
+       if (!availability) return json({ error: { code: "MODEL_RUNTIME_UNAVAILABLE" } }, 503)

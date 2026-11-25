@@ -1,0 +1,92 @@
+diff --git a/src/core/execution-summary.ts b/src/core/execution-summary.ts
+index 7a49f07..36647f0 100644
+--- a/src/core/execution-summary.ts
++++ b/src/core/execution-summary.ts
+@@ -83,6 +83,20 @@ export function executionSummary(
+   const selection = object(modelExecution?.selection)
+   const runtimeRequest = object(modelExecution?.requested)
+   const effectivePolicy = executionIdentifier(selection?.policy ?? runtimeRequest?.policy)
++  const observedModel = executionIdentifier(observed?.model)
++  const noModelInvocation = invokedBackend === null ||
++    modelExecution?.execution_state === "NOT_STARTED_POLICY_BLOCKED" ||
++    modelExecution?.execution_state === "NOT_STARTED_PROVIDER_BLOCKED"
++  const modelIdentityStatus = observedModel ? "OBSERVED" as const :
++    noModelInvocation ? "NOT_INVOKED" as const : "UNKNOWN" as const
++  const postProfileTokenLimit = nonnegative(request.parameters?.max_output_tokens)
++  const outputBudget = {
++    requested_max_output_tokens: requested.max_output_tokens,
++    post_profile_max_output_tokens: postProfileTokenLimit,
++    // Current results expose usage, not a provider-enforced cap.
++    effective_max_output_tokens: null,
++    enforcement: noModelInvocation ? "NOT_INVOKED" as const : "UNKNOWN" as const,
++  }
+   const configuration = {
+     // This version names the current Worker rule: explicit request > profile > default backend.
+     worker_routing_policy: "worker.executor-selection.v1",
+@@ -90,6 +104,7 @@ export function executionSummary(
+     resolved_model_route: executionIdentifier(runtimeRequest?.route),
+     resolved_model_policy: effectivePolicy,
+     dry_run: request.options?.dry_run === true,
++    output_budget: outputBudget,
+   }
+   const fallbackPath = modelExecution?.fallback_path
+   const workerEventSet = new Set(workerEvents)
+@@ -119,7 +134,8 @@ export function executionSummary(
+       engine: executionIdentifier(receipt ? observed?.runtime : undefined),
+       engine_version: executionIdentifier(receipt ? observed?.runtime_version : undefined),
+       probed_executor_version: executionIdentifier(probedVersion),
+-      model: executionIdentifier(observed?.model),
++      model: observedModel,
++      model_identity_status: modelIdentityStatus,
+       provider: executionIdentifier(observed?.provider),
+       model_execution_id: executionIdentifier(modelExecution?.execution_id),
+       fallback_path: Array.isArray(fallbackPath) ? fallbackPath.map(executionIdentifier) : null,
+diff --git a/tests/execution-ledger.test.ts b/tests/execution-ledger.test.ts
+index ec99b3e..8178db9 100644
+--- a/tests/execution-ledger.test.ts
++++ b/tests/execution-ledger.test.ts
+@@ -84,6 +84,7 @@ test("public fixture digests and request identity survive a fresh ledger reader"
+   expect(a?.resolved.resolved_model_route).toBeNull()
+   expect(a?.resolved.resolved_model_policy).toBeNull()
+   expect(a?.observed.model).toBeNull()
++  expect(a?.observed.model_identity_status).toBe("UNKNOWN")
+   expect(a?.observed.worker_executor).toBe("harness-fixture-v1")
+   expect(a?.resource_usage.cost.billed_usd).toBeNull()
+   expect(a?.trace.events.map(event => event.type)).toEqual(["JOB_ACCEPTED", "JOB_STARTED", "STAGE_STARTED", "PI_EXECUTION_COMPLETED", "STAGE_COMPLETED", "JOB_COMPLETED"])
+@@ -107,6 +108,7 @@ test("private capture withholds content digests and retains dry, cancelled and f
+   expect(rows.map(row => row.observed.worker_executor)).toEqual([null, null, "harness-fixture-v1"])
+   expect(rows.map(row => row.result_status)).toEqual(["AWAITING_ACCEPTANCE", "BLOCKED", "FAILED"])
+   expect(rows.map(row => row.failure_code)).toEqual([null, "CANCELLED", "EXECUTOR_FAILED"])
++  expect(rows.map(row => row.observed.model_identity_status)).toEqual(["NOT_INVOKED", "NOT_INVOKED", "UNKNOWN"])
+   expect(rows.every(row => row.input_digest === null && row.output_digest === null)).toBe(true)
+   expect(rows.every(row => row.task_id === null && row.episode_id === null)).toBe(true)
+   expect(readFileSync(ledger.path, "utf8")).not.toContain("private diagnostic")
+@@ -134,9 +136,28 @@ test("configuration fingerprint changes when the confirmed model route changes",
+   expect(a?.resolved.resolved_model_route).toBe("selected-alpha")
+   expect(a?.resolved.resolved_model_policy).toBe("worker-model-policy")
+   expect(a?.observed.model).toBe("observed-model")
++  expect(a?.observed.model_identity_status).toBe("OBSERVED")
+   expect(a?.observed.fallback_path).toEqual(["first-route", "selected-alpha"])
+ })
+ 
++test("requested token caps affect the digest without implying provider enforcement", async () => {
++  const ledger = tempLedger()
++  const worker = service(ledger)
++  for (const cap of [120, 240]) {
++    await worker.run({ objective: "fixture", parameters: { max_output_tokens: cap } })
++  }
++  const [a, b] = ledger.read().records
++  expect(a?.resolved.configuration_digest).not.toBe(b?.resolved.configuration_digest)
++  expect(a?.resolved.output_budget).toEqual({
++    requested_max_output_tokens: 120,
++    post_profile_max_output_tokens: 120,
++    effective_max_output_tokens: null,
++    enforcement: "UNKNOWN",
++  })
++  expect(a?.input_digest).toBeNull()
++  expect(a?.output_digest).toBeNull()
++})
++
+ test("health exception remains a rejection and the archive exposes no WorkResult", async () => {
+   const ledger = tempLedger()
+   const worker = service(ledger, "health-error")

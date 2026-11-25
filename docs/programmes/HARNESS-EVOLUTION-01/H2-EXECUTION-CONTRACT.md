@@ -1,0 +1,9 @@
+# H2 Execution Contract (proposed H3 minimum)
+
+No standalone episode object and no general strategy language. Continue to use `worker.work-request.v1` and `worker.work-result.v1`; add only validated optional task/episode references if current generic metadata cannot express the relationship safely. A separate versioned summary may be used for durable reconstruction while the result contract stays unchanged. Execution-ledger capture is opt-in, and input/output digests are enabled only for the synthetic-fixture demonstration lane; do not persist low-entropy hashes of arbitrary private prompts in general production history.
+
+Minimum summary fields: schema version; `request_id`/attempt identity; optional `episode_id`, task and parent-attempt references; request input digest; requested and effective backend/model/policy; observed engine/model and explicit unknowns; effective configuration digest plus canonicalization version; safe context/tool/resource descriptors; started/terminal observations; result status; output/artifact references and digest; evidence/evaluation references; usage and billed/estimated/unknown cost; error/timeout/cancel/fallback; source/executable identity if known.
+
+Never serialize credentials, prompt bodies, workspace secrets, or hidden evaluator data into the summary. Hashing sensitive low-entropy values is not sufficient redaction; use allowlisted fields and safe references. The input/output digests prove byte relationships only. Canonicalization is versioned and deterministic. `requested`, `resolved`, and `observed` values remain distinct. Unsupported values are `unknown` with a reason, not guessed from defaults.
+
+Existing `usage.jsonl` remains usage accounting; it is not repurposed into a task/output archive. Mission episode identity remains Mission-owned. Worker exposes evidence references and observed execution facts; it does not award domain correctness or acceptance.

@@ -1,0 +1,7 @@
+# H5 attribution and decision contract
+
+`adaptive.v1` is explicitly selected and requires `normalization_policy: "json-fence.v1"`. It permits at most two model invocations, at most one structural correction, bounded output/time budgets, and a bounded decision record. It normalizes only one complete surrounding Markdown JSON fence whose inner body parses as exactly one JSON document. The original first invocation bytes remain in the invocation record; normalized text is a separate artifact with input/output digests and transformation identity. H3 summary records provenance without copying normalized payload text.
+
+Structural schema mismatch may justify one correction. Valid JSON/schema output completes without further action even when semantic truth is unknown. Prose, ambiguous representations, unknown causes, exhausted budgets, cancellation, timeout, or unauthorized route terminate/abstain rather than infer a repair. Attribution uses observable categories and direct evidence references; `suspected_cause` remains null. Decision records identify observed state, eligible/selected actions, rationale, expected effect, outcome, authority, and remaining resources. H3 ledger validation rejects inconsistent decision/validation/correction/termination combinations.
+
+The contract does not claim semantic error detection, causal diagnosis, broad recovery effectiveness, or provider-side enforcement beyond observed Worker controls.

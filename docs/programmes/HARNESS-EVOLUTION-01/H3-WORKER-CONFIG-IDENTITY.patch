@@ -1,0 +1,71 @@
+diff --git a/src/core/execution-summary.ts b/src/core/execution-summary.ts
+index 36647f0..0c87f22 100644
+--- a/src/core/execution-summary.ts
++++ b/src/core/execution-summary.ts
+@@ -8,6 +8,7 @@ type RecordedEvent = Pick<JobState["events"][number], "type" | "timestamp">
+ 
+ export const EXECUTION_SUMMARY_SCHEMA = "worker.execution-summary.v1"
+ export const DIGEST_VERSION = "sha256/worker-sorted-json-v1"
++const CONFIGURATION_DIGEST_SCHEMA = "worker.execution-configuration.v1"
+ export const REQUEST_ID_PATTERN = /^wrq_[a-f0-9]{32}$/
+ 
+ function object(value: unknown): Record<string, unknown> | undefined {
+@@ -128,7 +129,15 @@ export function executionSummary(
+     episode_id: request.episode_id ?? null,
+     episode_link: request.episode_id ? "caller_supplied_unverified" as const : "absent" as const,
+     requested,
+-    resolved: { ...configuration, configuration_digest: executionDigest(configuration) },
++    resolved: {
++      ...configuration,
++      configuration_digest_schema: CONFIGURATION_DIGEST_SCHEMA,
++      configuration_digest: executionDigest({
++        schema_version: CONFIGURATION_DIGEST_SCHEMA,
++        requested,
++        resolved: configuration,
++      }),
++    },
+     observed: {
+       worker_executor: executionIdentifier(invokedBackend),
+       engine: executionIdentifier(receipt ? observed?.runtime : undefined),
+diff --git a/tests/execution-ledger.test.ts b/tests/execution-ledger.test.ts
+index 8178db9..3757118 100644
+--- a/tests/execution-ledger.test.ts
++++ b/tests/execution-ledger.test.ts
+@@ -72,6 +72,7 @@ test("public fixture digests and request identity survive a fresh ledger reader"
+   const [a, b] = archive.records
+   expect(a?.request_id).toBe(first.request_id)
+   expect(b?.input_digest).toBe(a?.input_digest)
++  expect(b?.resolved.configuration_digest).toBe(a?.resolved.configuration_digest)
+   expect(a?.input_digest).toMatch(/^[a-f0-9]{64}$/)
+   const artifact = JSON.parse(readFileSync(output, "utf8"))
+   expect(artifact.request_id).toBe(a?.request_id)
+@@ -140,6 +141,29 @@ test("configuration fingerprint changes when the confirmed model route changes",
+   expect(a?.observed.fallback_path).toEqual(["first-route", "selected-alpha"])
+ })
+ 
++test("configuration identity includes requested engine, model, and policy", async () => {
++  const ledger = tempLedger()
++  const worker = service(ledger)
++  const initial = { backend: "harness-fixture-v1", model: "model-alpha", policy: "policy-alpha" }
++  for (const execution of [
++    initial,
++    { ...initial, backend: "missing-executor" },
++    { ...initial, model: "model-beta" },
++    { ...initial, policy: "policy-beta" },
++  ]) {
++    await worker.run({ objective: "fixture", execution })
++  }
++  const rows = ledger.read().records
++  expect(new Set(rows.map(row => row.resolved.configuration_digest)).size).toBe(4)
++  expect(rows[2]?.resolved.resolved_model_route).toBeNull()
++  expect(rows[3]?.resolved.resolved_model_policy).toBeNull()
++  const { configuration_digest_schema, configuration_digest, ...resolved } = rows[0]!.resolved
++  expect(configuration_digest_schema).toBe("worker.execution-configuration.v1")
++  expect(configuration_digest).toBe(executionDigest({
++    schema_version: configuration_digest_schema, requested: rows[0]!.requested, resolved,
++  }))
++})
++
+ test("requested token caps affect the digest without implying provider enforcement", async () => {
+   const ledger = tempLedger()
+   const worker = service(ledger)

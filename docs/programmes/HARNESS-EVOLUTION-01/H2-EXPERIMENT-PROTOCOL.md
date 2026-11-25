@@ -1,0 +1,7 @@
+# H2 Experiment Protocol
+
+Initial stage is an infrastructure smoke, not a comparative efficacy study. The exact fixture and tuple evaluator are frozen in `H2-FIRST-TASK-FAMILY.md`. Cases: exact golden, partial/missing tuple, wrong value, duplicate tuple, extra unsupported tuple, malformed output, and invalid fixture digest. This is a smoke evaluator suite, not a statistically sufficient holdout. Expected answers are visible to the deterministic test adapter; label results deterministic smoke, never independent generalization evidence.
+
+Freeze fixture ID `HE-PKG-001`, SHA-256 of canonical UTF-8 fixture bytes, task requirements, evaluator source/version/digest, WorkerService test executor identity `harness-fixture-v1`, engine/model as `NOT_INVOKED`, policy `deterministic-fixture-baseline-v1`, tool access `none`, timeout 2 seconds, token/cost budgets `not applicable; zero model calls`, and termination on digest/schema mismatch. Use deterministic expected-fact comparison; evaluator ignores model self-reported success. Report PASS, FAIL, PARTIAL, INCONCLUSIVE, NOT_EVALUATED distinctly.
+
+The deterministic baseline performs zero live calls, so cost is zero new provider spend; this does not imply general runtime execution is free. If later separately authorized for a live smoke, cap at 2 calls, 60 seconds, 1,500 output tokens each, USD 1 estimated total, and stop on unknown/non-bounded cost. Current routes do not enforce all those limits, so H3 does not issue a live request. No engine comparison is claimed. H0/H1 ran no experiment.

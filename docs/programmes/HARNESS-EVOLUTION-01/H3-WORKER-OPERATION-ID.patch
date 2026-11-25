@@ -1,0 +1,37 @@
+diff --git a/src/core/execution-summary.ts b/src/core/execution-summary.ts
+--- a/src/core/execution-summary.ts
++++ b/src/core/execution-summary.ts
+@@ -125,6 +125,7 @@
+     schema_version: EXECUTION_SUMMARY_SCHEMA,
+     digest_version: DIGEST_VERSION,
+     request_id: request.request_id,
++    operation_id: executionIdentifier(request.metadata?.operation_id),
+     task_id: request.task_id ?? null,
+     episode_id: request.episode_id ?? null,
+     episode_link: request.episode_id ? "caller_supplied_unverified" as const : "absent" as const,
+diff --git a/tests/execution-ledger.test.ts b/tests/execution-ledger.test.ts
+--- a/tests/execution-ledger.test.ts
++++ b/tests/execution-ledger.test.ts
+@@ -62,6 +62,6 @@
+ test("public fixture digests and request identity survive a fresh ledger reader", async () => {
+   const ledger = tempLedger(true)
+   const worker = service(ledger)
+-  const request = { objective: "fixture-private-text", task_id: "HE-PKG-001", episode_id: "ep:task:fixture", execution: { model: "requested-only" } }
++  const request = { objective: "fixture-private-text", task_id: "HE-PKG-001", episode_id: "ep:task:fixture", metadata: { operation_id: "operation:HE-PKG-001" }, execution: { model: "requested-only" } }
+   const first = await worker.run({ ...request, inputs: { b: 2, a: 1, fixture } })
+   const second = await worker.run({ ...request, inputs: { a: 1, b: 2, fixture } })
+@@ -79,6 +79,7 @@
+   expect(a?.output_digest).toBe(executionDigest(artifact.result))
+   expect(a?.episode_link).toBe("caller_supplied_unverified")
+   expect(a?.episode_id).toBe("ep:task:fixture")
++  expect([a?.operation_id, b?.operation_id]).toEqual(["operation:HE-PKG-001", "operation:HE-PKG-001"])
+   expect(a?.task_id).toBe("HE-PKG-001")
+   expect(a?.requested.model).toBe("requested-only")
+   expect(a?.resolved.selected_executor).toBe("harness-fixture-v1")
+@@ -112,5 +113,5 @@
+   expect(rows.map(row => row.observed.model_identity_status)).toEqual(["NOT_INVOKED", "NOT_INVOKED", "UNKNOWN"])
+   expect(rows.every(row => row.input_digest === null && row.output_digest === null)).toBe(true)
+-  expect(rows.every(row => row.task_id === null && row.episode_id === null)).toBe(true)
++  expect(rows.every(row => row.task_id === null && row.episode_id === null && row.operation_id === null)).toBe(true)
+   expect(readFileSync(ledger.path, "utf8")).not.toContain("private diagnostic")
+ })
