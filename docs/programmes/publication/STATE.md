@@ -831,7 +831,7 @@ recorded, not as true). Spend to date $0.0227 / $1.00; Worker
 stopped after use. Fail-closed order: freeze → controls on O/H
 ($0) → 7/7 gate → A₁ → C₁ (verification of A₁ + ≤2 bounded repairs)
 → B₁ (B-hull + merge code + gates) → evaluation → replicate 2.
-($0, 5 new files, 0 tracked modified): D-PUB-84 attribution builder
+Build batch 1 LANDED 2026-11-25 ($0, 5 new files, 0 tracked modified): D-PUB-84 attribution builder
 (all 9 dispositions pinned) + 7 fixtures + O/H controls gate 7/7 +
 aggregate spend wrapper (cap $1.00) — 34 focused + 123 neighbours
 green, ruff clean. Vocab note: design §3.5 names mapped to the 9
