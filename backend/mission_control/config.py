@@ -21,13 +21,27 @@ class DatabaseConfigurationError(RuntimeError):
 
 
 def _redact_url(url: str) -> str:
-    """Redact credentials from a database URL for safe logging."""
+    """Redact credentials from a database URL for safe logging.
+
+    Covers both the userinfo password and password-like query-string
+    parameters (W9 review: `?password=…` survived the old helper), and
+    returns a fixed marker rather than echoing anything unparseable.
+    """
     try:
         from sqlalchemy.engine.url import make_url
 
         parsed = make_url(url)
         if parsed.password:
-            return str(parsed.set(password="***"))
+            parsed = parsed.set(password="***")
+        query = dict(parsed.query or {})
+        if query:
+            redacted = {
+                k: ("***" if any(t in k.lower() for t in
+                                 ("password", "passwd", "pwd", "secret",
+                                  "token", "key")) else v)
+                for k, v in query.items()
+            }
+            parsed = parsed.set(query=redacted)
         return str(parsed)
     except Exception:
         return "<unparseable-database-url>"
@@ -199,6 +213,11 @@ class RuntimeSettings:
         default_factory=lambda: os.environ.get(
             "MISSION_CONTROL_WORKBENCH_URL", "http://127.0.0.1:7420"
         )
+    )
+    # Worker execution/control plane. Harness adapter fails closed to loopback
+    # even if an operator accidentally configures a remote URL.
+    worker_base_url: str | None = field(
+        default_factory=lambda: os.environ.get("MISSION_CONTROL_WORKER_URL") or None
     )
     # Python executable whose environment provides the `ai` package for
     # manuscript quality evaluation subprocesses. Unset means evaluation

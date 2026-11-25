@@ -287,7 +287,9 @@ def ensure_pg_schema_via_orm(dsn: str) -> list[int]:
         del os.environ["MISSION_CONTROL_DATABASE_URL"]
     try:
         settings = RuntimeSettings()
-        database = Database(settings)
+        # W9A: PostgreSQL targets must declare intent. This script is an
+        # explicit operator migration, so it declares `migration`.
+        database = Database(settings, target="migration")
         assert database.is_postgres, "expected postgres backend"
         from mission_control.persistence.migrations import apply_migrations
 

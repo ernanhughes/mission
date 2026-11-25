@@ -28,6 +28,7 @@ from mission_control.api import (
     discovery,
     git_activity,
     health,
+    harness as harness_api,
     integrations as integrations_api,
     inspect as inspect_api,
     inspect_proposals as inspect_proposals_api,
@@ -48,6 +49,12 @@ from mission_control.api import (
     testing_runs as testing_runs_api,
     website_posts as website_posts_api,
     websites as websites_api,
+    work_corrective as work_corrective_api,
+    work_envelopes as work_envelopes_api,
+    work_policies as work_policies_api,
+    work_episodes as work_episodes_api,
+    work_evaluation as work_evaluation_api,    work_intent as work_intent_api,
+    work_observation as work_observation_api,
     worker_runtime as worker_runtime_api,
     workflows as workflows_api,
     writer as writer_api,
@@ -134,7 +141,7 @@ def create_app(runtime: RuntimeSettings | None = None) -> FastAPI:
 
     @asynccontextmanager
     async def lifespan(app: FastAPI):
-        database = Database(settings)
+        database = Database(settings, target="server")
         try:
             database.health_check()
         except Exception as exc:
@@ -247,6 +254,44 @@ def create_app(runtime: RuntimeSettings | None = None) -> FastAPI:
         app.state.research_chat = research_chat
         app.state.git_activity = git_activity_service
         app.state.software_quality = software_quality_service
+        from mission_control.work_observation.service import (
+            WorkObservationService as _WorkObservationService,
+        )
+
+        app.state.work_observation = _WorkObservationService(
+            database, settings.opencode_db_path
+        )
+        from mission_control.work_observation.episodes import (
+            EpisodeService as _EpisodeService,
+        )
+
+        app.state.episode_service = _EpisodeService(database, settings.opencode_db_path)
+        from mission_control.work_observation.extract import (
+            ExtractionService as _ExtractionService,
+        )
+
+        app.state.intent_service = _ExtractionService(database, settings.opencode_db_path)
+        from mission_control.work_observation.evaluate import (
+            EvaluationService as _EvaluationService,
+        )
+
+        app.state.evaluation_service = _EvaluationService(database)
+        from mission_control.work_observation.proposals import (
+            ProposalService as _ProposalService,
+        )
+
+        app.state.proposal_service = _ProposalService(database)
+        from mission_control.work_observation.envelopes import (
+            EnvelopeService as _EnvelopeService,
+        )
+
+        app.state.envelope_service = _EnvelopeService(
+            database, settings.opencode_db_path)
+        from mission_control.work_observation.policies import (
+            PolicyService as _PolicyService,
+        )
+
+        app.state.policy_service = _PolicyService(database)
         app.state.opencode_cost = opencode_cost
         from mission_control.websites.service import WebsitesState as _WebsitesState
 
@@ -396,6 +441,7 @@ def create_app(runtime: RuntimeSettings | None = None) -> FastAPI:
     app.include_router(inspect_ops_api.router)
     app.include_router(praxis_proposals_api.router)
     app.include_router(worker_runtime_api.router)
+    app.include_router(harness_api.router)
     app.include_router(research_api.router)
     app.include_router(workflows_api.router)
     app.include_router(writer_api.router)
@@ -413,6 +459,13 @@ def create_app(runtime: RuntimeSettings | None = None) -> FastAPI:
     app.include_router(websites_api.router)
     app.include_router(website_posts_api.router)
     app.include_router(software_quality_api.router)
+    app.include_router(work_observation_api.router)
+    app.include_router(work_episodes_api.router)
+    app.include_router(work_intent_api.router)
+    app.include_router(work_evaluation_api.router)
+    app.include_router(work_corrective_api.router)
+    app.include_router(work_envelopes_api.router)
+    app.include_router(work_policies_api.router)
 
     dist = settings.frontend_dist
     if dist.exists() and (dist / "index.html").exists():

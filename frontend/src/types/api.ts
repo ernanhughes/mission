@@ -3251,3 +3251,222 @@ export type CostAttribution = {
   unknown_requests: number;
   provenance: string;
 };
+
+export type WorkEpisode = {
+  id: string;
+  project_key: string;
+  title: string;
+  kind: string;
+  status: string;
+  parent_id: string | null;
+  first_seen_ms: number;
+  last_seen_ms: number;
+  source_digest: string;
+  version: number;
+};
+
+export type WorkEpisodeAssociation = {
+  id: string;
+  episode_id: string;
+  assoc_type: string;
+  target_ref: string;
+  method: string;
+  confidence: string;
+  reason: string;
+  signals: string[];
+  recon_version: number;
+  valid: number;
+};
+
+export type WorkRequirement = {
+  id: string;
+  episode_id: string;
+  objective_id: string | null;
+  text: string;
+  authority: string;
+  mandatory: boolean;
+  kind: string;
+  state: string;
+  version: number;
+  extractor: string;
+};
+
+export type WorkClaim = {
+  id: string;
+  episode_id: string;
+  claimant: string;
+  text: string;
+  scope: string;
+  source_ref: string;
+  qualified: boolean;
+  evidence_available: boolean;
+};
+
+export type WorkEvidenceLink = {
+  id: string;
+  requirement_id: string | null;
+  claim_id: string | null;
+  evidence_kind: string;
+  evidence_ref: string;
+  method: string;
+  confidence: string;
+};
+
+export type WorkFinding = {
+  id: string;
+  episode_id: string;
+  requirement_id: string | null;
+  kind: string;
+  severity: string;
+  status: string;
+  title: string;
+  rationale: string;
+  evidence_refs: string[];
+  next_action: string;
+};
+
+export type WorkAssessment = {
+  verdict: string;
+  rationale: string;
+};
+
+export type WorkEpisodeEvaluation = {
+  id: string;
+  episode_id: string;
+  execution: WorkAssessment;
+  outcome: WorkAssessment;
+  completion: WorkAssessment;
+  evaluator: string;
+  rubric_version: string;
+};
+
+export type WorkRequirementAssessment = {
+  id: string;
+  requirement_id: string;
+  verdict: string;
+  rationale: string;
+  evidence_refs: string[];
+  method: string;
+  evaluator: string;
+  confidence: string;
+  missing_evidence: string;
+};
+
+export type WorkClaimVerification = {
+  id: string;
+  claim_id: string;
+  verdict: string;
+  rationale: string;
+  evidence_refs: string[];
+  method: string;
+};
+
+export type WorkEpisodeDetail = WorkEpisode & {
+  associations: WorkEpisodeAssociation[];
+  children: string[];
+};
+
+export type WorkEpisodeRow = WorkEpisode & {
+  completion: string | null;
+  execution: string | null;
+  outcome: string | null;
+  evaluated: boolean;
+  stale: boolean;
+  stale_reason?: string;
+  queue_status?: string;
+  open_findings: number;
+  mandatory_open: number;
+};
+
+export type WorkFindingGroup = {
+  id: string;
+  project_key: string;
+  subject: string;
+  gap_class: string;
+  title: string;
+  sample_title?: string;
+  sample_episodes?: string[];
+  severity: string;
+  status: string;
+  member_count: number;
+  member_ids: string[];
+  episode_ids: string[];
+  members?: { id: string; episode_id: string }[];
+};
+
+export type WorkEvalState = {
+  episode_id: string;
+  stale: number;
+  stale_reason: string;
+  queue_status: string;
+  last_assessment_id: string;
+};
+
+export type WorkConfirmation = {
+  id: string;
+  requirement_id: string;
+  episode_id: string;
+  decision: string;
+  reviewer: string;
+  rationale: string;
+  amended_text: string;
+};
+
+export type WorkProposal = {
+  id: string;
+  episode_id: string;
+  group_id: string | null;
+  action_category: string;
+  objective: string;
+  scope: string;
+  exclusions: string;
+  acceptance_criteria: string;
+  required_verification: string;
+  suggested_route: string;
+  cost_constraints: string;
+  risk: string;
+  status: string;
+  version: number;
+  scope_hash: string;
+  closure_status: string;
+  finding_ids: string[];
+};
+
+export type WorkProposalDetail = WorkProposal & {
+  events: { from: string; to: string; actor: string; reason: string; at: string }[];
+  executions: { id: string; route: string; external_ref: string; model: string; status: string; cost_usd: number }[];
+};
+
+export type WorkEnvelope = {
+  id: string;
+  episode_id: string;
+  schema_version: string;
+  programme_id: string;
+  stage_id: string;
+  objective_ref: string;
+  requirement_refs: ({ id: string; v: number } | string)[];
+  repositories: string[];
+  commission_digest: string;
+  authorization_ref: string;
+  acceptance_policy_ref: string;
+  parent_work_id: string | null;
+  originating_findings: string[];
+  version: number;
+  status: string;
+  supersedes: string | null;
+};
+
+export type WorkOverview = {
+  episodes: WorkEpisodeRow[];
+  total: number;
+  project_key: string | null;
+};
+
+export type WorkTriageItem = {
+  session_id: string;
+  classification: string;
+  method: string;
+  reason: string;
+  queued_for_model: boolean;
+  run_id: string | null;
+};

@@ -47,7 +47,7 @@ def _pg_database(dsn: str, monkeypatch: pytest.MonkeyPatch):
     monkeypatch.setenv("MC_DSN", dsn)
     monkeypatch.delenv("MISSION_CONTROL_DATABASE_URL", raising=False)
     settings = RuntimeSettings()
-    database = Database(settings)
+    database = Database(settings, target="test:isolated-pg")
     assert database.is_postgres
     assert normalize_database_url(database.database_url) == normalize_database_url(dsn), (
         "test Database resolved to an unexpected URL"
@@ -471,7 +471,7 @@ def test_pg_unavailable_points_at_postgres_not_sqlite(monkeypatch):
 
     monkeypatch.setenv("MC_DSN", "postgresql://mc:mc@127.0.0.1:5499/mc_test")
     monkeypatch.setenv("MC_TEST_DSN", "postgresql://mc:mc@127.0.0.1:5499/mc_test")
-    database = Database(RuntimeSettings())
+    database = Database(RuntimeSettings(), target="test:unavailable-point")
     assert database.backend == "postgresql"
     assert "sqlite" not in database.database_url
     with pytest.raises(Exception):

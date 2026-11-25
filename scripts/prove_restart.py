@@ -18,7 +18,7 @@ rt = RuntimeSettings(
     start_monitor=False,
     seed_defaults=False,
 )
-db = Database(rt)
+db = Database(rt, target="script:prove-restart")
 with db.session() as session:
     review = session.get(GitReview, "rev-21a936c00f1f4383")
     assert review is not None, "completed review missing after restart"

@@ -66,7 +66,7 @@ def test_explicit_test_dsn_passes_guard_without_connecting(
 
     monkeypatch.setenv("MC_DSN", "postgresql://mc:mc@localhost:5432/mc_test")
     monkeypatch.setenv("MC_TEST_DSN", "postgresql://mc:mc@localhost:5432/mc_test")
-    database = Database(RuntimeSettings())
+    database = Database(RuntimeSettings(), target="test:mc_test")
     assert database.is_postgres
 
 

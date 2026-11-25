@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { Activity, Copy, Eye, Filter, Plus, RefreshCw, Settings2, Sparkles } from "lucide-react";
 import { api, apiPath, errorMessage } from "../api/client";
 import { useApi } from "../api/useApi";
+import { WorkEvaluationTab } from "../features/work-evaluation/WorkEvaluationTab";
 import { useToast } from "../components/Toast";
 import { Modal } from "../components/Modal";
 import {
@@ -100,7 +101,7 @@ function dayKey(ts: number): string {
 
 export function ActivityPage() {
   const toast = useToast();
-  const [tab, setTab] = useState<"commits" | "events">("commits");
+  const [tab, setTab] = useState<"commits" | "events" | "evaluation">("commits");
 
   // ---- timeline filters
   const [preset, setPreset] = useState<Preset>("today");
@@ -221,6 +222,14 @@ export function ActivityPage() {
         >
           Notes &amp; events
         </button>
+        <button
+          role="tab"
+          aria-selected={tab === "evaluation"}
+          className={`button button-small ${tab === "evaluation" ? "button-primary" : "button-ghost"}`}
+          onClick={() => setTab("evaluation")}
+        >
+          Work Evaluation
+        </button>
       </div>
 
       {tab === "commits" ? (
@@ -297,6 +306,8 @@ export function ActivityPage() {
             summary.reload();
           }}
         />
+      ) : tab === "evaluation" ? (
+        <WorkEvaluationTab />
       ) : (
         <EventsView />
       )}

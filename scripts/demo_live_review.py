@@ -53,7 +53,7 @@ rt = RuntimeSettings(
     start_monitor=False,
     seed_defaults=False,
 )
-db = Database(rt)
+db = Database(rt, target="script:demo-live-review")
 apply_migrations(db)
 with db.session() as session:
     session.add(DiscoveryRoot(path=str(root), enabled=True, added_at=now_iso(),
@@ -101,7 +101,7 @@ async def main() -> None:
     # Prove durability across a full process-style restart: dispose the engine
     # and re-open the same data directory with brand-new objects.
     db.dispose()
-    fresh_db = Database(rt)
+    fresh_db = Database(rt, target="script:demo-live-review")
     with fresh_db.session() as session:
         from mission_control.models import GitReview as FreshReview
         reopened = session.get(FreshReview, review_id)

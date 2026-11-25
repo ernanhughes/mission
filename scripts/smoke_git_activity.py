@@ -19,7 +19,7 @@ rt = RuntimeSettings(
     frontend_dist=tmp / "dist",
     book_root=Path(r"C:\books"),
 )
-db = Database(rt)
+db = Database(rt, target="script:smoke-git-activity")
 apply_migrations(db)
 with db.session() as session:
     for path, category in [(r"C:\Projects", "software"), (r"C:\books", "books")]:

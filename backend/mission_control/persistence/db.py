@@ -32,6 +32,19 @@ def utcnow() -> datetime:
     return datetime.now(timezone.utc)
 
 
+def _safe_describe_url(url: str) -> str:
+    """Host/db only, never credentials — safe for error messages/logs."""
+    try:
+        from urllib.parse import urlsplit
+
+        parts = urlsplit(url)
+        host = parts.hostname or "unknown-host"
+        db = (parts.path or "").lstrip("/") or "unknown-db"
+        return f"{parts.scheme}://{host}/{db}"
+    except Exception:
+        return "<unparseable-url>"
+
+
 def now_iso() -> str:
     return utcnow().isoformat()
 
@@ -41,9 +54,17 @@ class Database:
 
     Keeping the engine on an instance (rather than a module global) lets the
     test suite create isolated databases in temporary directories.
+
+    W9A safety: PostgreSQL targets require an explicit ``target=`` label
+    naming the intended database (e.g. ``target="server"``,
+    ``target="scratch:w6e"``). A missing label is a fail-closed error, so
+    a script that merely inherits the machine-wide ``MC_DSN`` can never
+    silently open the operational database. SQLite targets (tests,
+    one-shot utilities) need no label.
     """
 
-    def __init__(self, settings: RuntimeSettings, *, busy_timeout_ms: int = 30_000) -> None:
+    def __init__(self, settings: RuntimeSettings, *, busy_timeout_ms: int = 30_000,
+                 target: str | None = None) -> None:
         self.settings = settings
         self.busy_timeout_ms = max(0, int(busy_timeout_ms))
         url = normalize_database_url(settings.database_url)
@@ -56,9 +77,19 @@ class Database:
             # if it constructs production-like settings. Production startup
             # (no PYTEST_CURRENT_TEST) is completely unaffected.
             _enforce_test_database(url)
-        settings.ensure_directories()
+        self.target = (target or "").strip()
         self.database_url = url
         self.backend = "postgresql" if is_postgres_url(url) else "sqlite"
+        if self.backend == "postgresql" and not self.target:
+            raise DatabaseConfigurationError(
+                "PostgreSQL target requires an explicit target= label "
+                f"(got {_safe_describe_url(url)} with no declaration). "
+                "Pass target='server' from application startup, "
+                "target='scratch:<name>' for isolated work, or "
+                "target='operational:confirmed' only with explicit "
+                "authorization. Refusing to silently use an inherited DSN."
+            )
+        settings.ensure_directories()
         if self.backend == "postgresql":
             # Modest pool for a local application: health monitor, API
             # workers and background jobs share a handful of connections.

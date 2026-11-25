@@ -12,7 +12,9 @@ from mission_control.persistence.seed import seed_defaults
 
 def test_migrations_are_repeatable_and_create_expected_tables(runtime: RuntimeSettings) -> None:
     database = Database(runtime)
-    assert apply_migrations(database) == list(range(1, 40)) + [46, 49, 52, 53, 54]
+    # MC-INSPECT-04: 053 adds inspect_runs; 054 adds AITEST quality evidence.
+    # In-flight workstreams contribute 041-052 (work outcome + AITEST tables).
+    assert apply_migrations(database) == list(range(1, 40)) + list(range(41, 55))
     assert apply_migrations(database) == []
     assert schema_version(database) == 54
     with database.engine.connect() as connection:
@@ -23,8 +25,6 @@ def test_migrations_are_repeatable_and_create_expected_tables(runtime: RuntimeSe
             )
         }
     for expected in {
-        "aitest_quality",
-        "aitest_runs",
         "applications",
         "launch_definitions",
         "projects",
@@ -104,6 +104,35 @@ def test_migrations_are_repeatable_and_create_expected_tables(runtime: RuntimeSe
         "software_findings",
         "software_finding_reviews",
         "software_prompts",
+        "wo_observation_sources",
+        "wo_observation_runs",
+        "wo_checkpoints",
+        "wo_signals",
+        "wo_episodes",
+        "wo_episode_associations",
+        "wo_recon_runs",
+        "wo_objectives",
+        "wo_requirements",
+        "wo_claims",
+        "wo_evidence_links",
+        "wo_triage_results",
+        "wo_extraction_runs",
+        "wo_requirement_assessments",
+        "wo_claim_verifications",
+        "wo_episode_assessments",
+        "wo_findings",
+        "wo_eval_runs",
+        "aitest_quality",
+        "wo_requirement_sources",
+        "wo_finding_groups",
+        "wo_finding_group_members",
+        "wo_eval_state",
+        "wo_proposals",
+        "wo_proposal_findings",
+        "wo_proposal_events",
+        "wo_requirement_confirmations",
+        "wo_execution_links",
+        "wo_work_envelopes",
         "aitest_projects",
         "aitest_tests",
         "aitest_receipts",

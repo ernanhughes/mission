@@ -15,9 +15,80 @@ from typing import Any
 
 from sqlalchemy import BigInteger, Boolean, Float, ForeignKey, Integer, String, Text, UniqueConstraint
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from sqlalchemy.types import JSON
+from sqlalchemy.types import JSON, TEXT, TypeDecorator
 
 from mission_control.persistence.db import now_iso
+
+
+class _SafeJSONBase(TypeDecorator):
+    """JSON that survives TEXT-column DDL on PostgreSQL (W9A audit).
+
+    Work Outcome migrations create TEXT columns; on PostgreSQL the
+    generic JSON result processor does not run for them, so ORM reads
+    returned raw strings while SQLite deserialized. This boundary
+    serializes on write and parses on read on both backends, falling
+    back to an empty container (never None, never a string) for missing
+    or malformed values.
+
+    W9 review F6: coercion of malformed content is logged once per
+    class so corruption is observable instead of silently looking like
+    an empty list. Reads still fail soft (a bad row must not break a
+    listing), but the operator gets a warning naming the column type.
+    """
+
+    impl = TEXT
+    cache_ok = True
+    _factory = list
+    _warned = False
+
+    def process_bind_param(self, value: Any, dialect: Any) -> Any:
+        import json as _json
+
+        if value is None:
+            return _json.dumps(self._factory())
+        return _json.dumps(value)
+
+    def process_result_value(self, value: Any, dialect: Any) -> Any:
+        import json as _json
+
+        want_type = dict if isinstance(self._factory(), dict) else list
+        if value is None:
+            return self._factory()
+        if isinstance(value, want_type):
+            return value
+        try:
+            parsed = _json.loads(value)
+        except (ValueError, TypeError):
+            self._warn(value)
+            return self._factory()
+        if isinstance(parsed, want_type):
+            return parsed
+        self._warn(value)
+        return self._factory()
+
+    def _warn(self, value: Any) -> None:
+        if not _SafeJSONBase._warned:
+            _SafeJSONBase._warned = True
+            import logging
+
+            logging.getLogger(__name__).warning(
+                "SafeJSON coerced malformed stored value to empty "
+                "container (further occurrences suppressed). This "
+                "indicates corrupted or wrong-shaped JSON in a TEXT "
+                "column; inspect the affected rows.",
+            )
+
+
+class SafeJSONList(_SafeJSONBase):
+    """JSON list column with identical behavior on SQLite and PG."""
+
+    _factory = list
+
+
+class SafeJSONDict(_SafeJSONBase):
+    """JSON dict column with identical behavior on SQLite and PG."""
+
+    _factory = dict
 
 
 class Base(DeclarativeBase):
@@ -2132,6 +2203,553 @@ class SoftwarePrompt(Base):
     prompt: Mapped[str] = mapped_column(Text, default="", nullable=False)
     provenance: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict, nullable=False)
     created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class WoObservationSource(Base):
+    """WORK-OUTCOME-01 W1: identity of an observed source system.
+
+    ``kind`` is ``opencode`` or ``git``; ``identity`` is the source path
+    (OpenCode DB path or repository worktree). No conversation bodies here.
+    """
+
+    __tablename__ = "wo_observation_sources"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    kind: Mapped[str] = mapped_column(String, nullable=False)
+    identity: Mapped[str] = mapped_column(String, nullable=False)
+    fingerprint: Mapped[str] = mapped_column(String, default="", nullable=False)
+    last_seen_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+    updated_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class WoObservationRun(Base):
+    """WORK-OUTCOME-01 W1: one bounded observation pass with stats.
+
+    Append-only. ``status`` is ``completed`` | ``locked`` |
+    ``source_unavailable`` | ``failed``. Checkpoints advance only on
+    ``completed`` runs (see service).
+    """
+
+    __tablename__ = "wo_observation_runs"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    source_kind: Mapped[str] = mapped_column(String, default="opencode", nullable=False)
+    status: Mapped[str] = mapped_column(String, default="running", nullable=False)
+    window_from_ms: Mapped[int] = mapped_column(BigInteger, default=0, nullable=False)
+    window_to_ms: Mapped[int] = mapped_column(BigInteger, default=0, nullable=False)
+    sessions_seen: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    messages_seen: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    parts_seen: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    signals_produced: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    error: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    started_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+    finished_at: Mapped[str] = mapped_column(String, default="", nullable=False)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class WoCheckpoint(Base):
+    """WORK-OUTCOME-01 W1: durable high-water mark per (source, cursor).
+
+    Cursors: ``session_updated`` (time_updated,id) and ``message_created``
+    (time_created,id). Persisted only after a successful run.
+    """
+
+    __tablename__ = "wo_checkpoints"
+
+    source_kind: Mapped[str] = mapped_column(String, primary_key=True)
+    cursor_key: Mapped[str] = mapped_column(String, primary_key=True)
+    cursor_value_ms: Mapped[int] = mapped_column(BigInteger, default=0, nullable=False)
+    tiebreak_id: Mapped[str] = mapped_column(String, default="", nullable=False)
+    observed_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class WoSignal(Base):
+    """WORK-OUTCOME-01 W1: deterministic candidate signal with provenance.
+
+    W1 extracts only; nothing here is a verified relationship. Stable id is
+    ``sha1(source_ref|signal_type|value_digest)`` so replays are idempotent.
+    """
+
+    __tablename__ = "wo_signals"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    run_id: Mapped[str | None] = mapped_column(Text)
+    source_kind: Mapped[str] = mapped_column(String, default="opencode", nullable=False)
+    source_ref: Mapped[str] = mapped_column(String, nullable=False)
+    signal_type: Mapped[str] = mapped_column(String, nullable=False)
+    value: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    value_digest: Mapped[str] = mapped_column(String, default="", nullable=False)
+    evidence_class: Mapped[str] = mapped_column(String, default="inferred", nullable=False)
+    provenance: Mapped[dict[str, Any]] = mapped_column(SafeJSONDict, nullable=False)
+    observed_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class WoEpisode(Base):
+    """WORK-OUTCOME-01 W2: coherent unit of purposeful work.
+
+    ``status`` is reconstruction status (candidate/established) — never
+    outcome completion (W4 owns that). ``parent_id`` is a plain text
+    reference with cycle rejection in the service (no FK ordering hazard).
+    """
+
+    __tablename__ = "wo_episodes"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    project_key: Mapped[str] = mapped_column(String, default="", nullable=False)
+    title: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    kind: Mapped[str] = mapped_column(String, default="cluster", nullable=False)
+    status: Mapped[str] = mapped_column(String, default="candidate", nullable=False)
+    parent_id: Mapped[str | None] = mapped_column(Text)
+    first_seen_ms: Mapped[int] = mapped_column(BigInteger, default=0, nullable=False)
+    last_seen_ms: Mapped[int] = mapped_column(BigInteger, default=0, nullable=False)
+    source_digest: Mapped[str] = mapped_column(String, default="", nullable=False)
+    version: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+    updated_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class WoEpisodeAssociation(Base):
+    """WORK-OUTCOME-01 W2: one explainable episode link.
+
+    ``method`` is explicit|derived|candidate|rejected; ``confidence`` is
+    explicit|strong|moderate|weak (heuristic labels, never probabilities).
+    ``valid=0`` retires superseded links without deleting history.
+    """
+
+    __tablename__ = "wo_episode_associations"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    episode_id: Mapped[str] = mapped_column(String, nullable=False)
+    assoc_type: Mapped[str] = mapped_column(String, nullable=False)
+    target_ref: Mapped[str] = mapped_column(String, nullable=False)
+    method: Mapped[str] = mapped_column(String, default="candidate", nullable=False)
+    confidence: Mapped[str] = mapped_column(String, default="weak", nullable=False)
+    reason: Mapped[str] = mapped_column(String, default="", nullable=False)
+    signals: Mapped[list[str]] = mapped_column(SafeJSONList, nullable=False)
+    recon_version: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
+    valid: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class WoReconRun(Base):
+    """WORK-OUTCOME-01 W2: one bounded deterministic reconstruction pass."""
+
+    __tablename__ = "wo_recon_runs"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    status: Mapped[str] = mapped_column(String, default="running", nullable=False)
+    scope: Mapped[dict[str, Any]] = mapped_column(SafeJSONDict, nullable=False)
+    episodes_found: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    associations_made: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    unresolved_observations: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    error: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    started_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+    finished_at: Mapped[str] = mapped_column(String, default="", nullable=False)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class WoObjective(Base):
+    """WORK-OUTCOME-01 W3: extracted work objective (intent, not verdict)."""
+
+    __tablename__ = "wo_objectives"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    episode_id: Mapped[str] = mapped_column(String, nullable=False)
+    text: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    authority: Mapped[str] = mapped_column(String, default="inferred", nullable=False)
+    status: Mapped[str] = mapped_column(String, default="current", nullable=False)
+    version: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
+    supersedes: Mapped[str | None] = mapped_column(Text)
+    source_digest: Mapped[str] = mapped_column(String, default="", nullable=False)
+    extractor: Mapped[str] = mapped_column(String, default="", nullable=False)
+    observed_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class WoRequirement(Base):
+    """WORK-OUTCOME-01 W3: atomic requirement with authority and provenance."""
+
+    __tablename__ = "wo_requirements"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    episode_id: Mapped[str] = mapped_column(String, nullable=False)
+    objective_id: Mapped[str | None] = mapped_column(Text)
+    text: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    authority: Mapped[str] = mapped_column(String, default="ambiguous", nullable=False)
+    mandatory: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
+    kind: Mapped[str] = mapped_column(String, default="functional", nullable=False)
+    state: Mapped[str] = mapped_column(String, default="proposed", nullable=False)
+    version: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
+    supersedes: Mapped[str | None] = mapped_column(Text)
+    source_digest: Mapped[str] = mapped_column(String, default="", nullable=False)
+    extractor: Mapped[str] = mapped_column(String, default="", nullable=False)
+    observed_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class WoClaim(Base):
+    """WORK-OUTCOME-01 W3: material participant claim (never a verdict)."""
+
+    __tablename__ = "wo_claims"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    episode_id: Mapped[str] = mapped_column(String, nullable=False)
+    claimant: Mapped[str] = mapped_column(String, default="", nullable=False)
+    text: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    scope: Mapped[str] = mapped_column(String, default="", nullable=False)
+    source_ref: Mapped[str] = mapped_column(String, default="", nullable=False)
+    qualified: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    evidence_available: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    observed_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class WoEvidenceLink(Base):
+    """WORK-OUTCOME-01 W3: candidate evidence binding (W3 proposes, W4 judges)."""
+
+    __tablename__ = "wo_evidence_links"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    requirement_id: Mapped[str | None] = mapped_column(Text)
+    claim_id: Mapped[str | None] = mapped_column(Text)
+    evidence_kind: Mapped[str] = mapped_column(String, default="", nullable=False)
+    evidence_ref: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    source_digest: Mapped[str] = mapped_column(String, default="", nullable=False)
+    method: Mapped[str] = mapped_column(String, default="candidate", nullable=False)
+    confidence: Mapped[str] = mapped_column(String, default="weak", nullable=False)
+    observed_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class WoTriageResult(Base):
+    """WORK-OUTCOME-01 W3: deterministic or model triage verdict per session."""
+
+    __tablename__ = "wo_triage_results"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    session_id: Mapped[str] = mapped_column(String, nullable=False)
+    classification: Mapped[str] = mapped_column(String, default="AMBIGUOUS", nullable=False)
+    method: Mapped[str] = mapped_column(String, default="deterministic", nullable=False)
+    reason: Mapped[str] = mapped_column(String, default="", nullable=False)
+    queued_for_model: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    run_id: Mapped[str | None] = mapped_column(Text)
+    observed_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class WoExtractionRun(Base):
+    """WORK-OUTCOME-01 W3: extraction ledger + cache key + cost record."""
+
+    __tablename__ = "wo_extraction_runs"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    episode_id: Mapped[str | None] = mapped_column(Text)
+    schema_version: Mapped[str] = mapped_column(String, default="", nullable=False)
+    prompt_version: Mapped[str] = mapped_column(String, default="", nullable=False)
+    extractor: Mapped[str] = mapped_column(String, default="", nullable=False)
+    input_digest: Mapped[str] = mapped_column(String, default="", nullable=False)
+    status: Mapped[str] = mapped_column(String, default="accepted", nullable=False)
+    error: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    cost_usd: Mapped[float] = mapped_column(Float, default=0, nullable=False)
+    tokens_input: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    tokens_output: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    latency_ms: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    observed_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class WoRequirementAssessment(Base):
+    """WORK-OUTCOME-01 W4: one requirement verdict with provenance."""
+
+    __tablename__ = "wo_requirement_assessments"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    requirement_id: Mapped[str] = mapped_column(String, nullable=False)
+    episode_id: Mapped[str] = mapped_column(String, nullable=False)
+    verdict: Mapped[str] = mapped_column(String, default="insufficient_evidence",
+                                         nullable=False)
+    rationale: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    evidence_refs: Mapped[list[str]] = mapped_column(SafeJSONList, nullable=False)
+    method: Mapped[str] = mapped_column(String, default="deterministic", nullable=False)
+    evaluator: Mapped[str] = mapped_column(String, default="", nullable=False)
+    rubric_version: Mapped[str] = mapped_column(String, default="w4-v1", nullable=False)
+    confidence: Mapped[str] = mapped_column(String, default="weak", nullable=False)
+    limitations: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    missing_evidence: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    source_digest: Mapped[str] = mapped_column(String, default="", nullable=False)
+    observed_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class WoClaimVerification(Base):
+    """WORK-OUTCOME-01 W4: one claim verification (never upgrades a claim
+    by itself; verification is the evidence row)."""
+
+    __tablename__ = "wo_claim_verifications"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    claim_id: Mapped[str] = mapped_column(String, nullable=False)
+    episode_id: Mapped[str] = mapped_column(String, nullable=False)
+    verdict: Mapped[str] = mapped_column(String, default="reported_only", nullable=False)
+    rationale: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    evidence_refs: Mapped[list[str]] = mapped_column(SafeJSONList, nullable=False)
+    source_digest: Mapped[str] = mapped_column(String, default="", nullable=False)
+    method: Mapped[str] = mapped_column(String, default="deterministic", nullable=False)
+    evaluator: Mapped[str] = mapped_column(String, default="", nullable=False)
+    observed_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class WoEpisodeAssessment(Base):
+    """WORK-OUTCOME-01 W4: three independent perspectives per episode."""
+
+    __tablename__ = "wo_episode_assessments"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    episode_id: Mapped[str] = mapped_column(String, nullable=False)
+    execution_verdict: Mapped[str] = mapped_column(String, default="unknown",
+                                                   nullable=False)
+    execution_rationale: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    outcome_verdict: Mapped[str] = mapped_column(String, default="unknown",
+                                                nullable=False)
+    outcome_rationale: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    completion_verdict: Mapped[str] = mapped_column(String, default="unknown",
+                                                   nullable=False)
+    completion_rationale: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    evaluator: Mapped[str] = mapped_column(String, default="", nullable=False)
+    rubric_version: Mapped[str] = mapped_column(String, default="w4-v1", nullable=False)
+    observed_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class WoFinding(Base):
+    """WORK-OUTCOME-01 W4: actionable finding or obligation, deduplicated by
+    (episode, requirement, kind) — never by wording alone."""
+
+    __tablename__ = "wo_findings"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    episode_id: Mapped[str] = mapped_column(String, nullable=False)
+    requirement_id: Mapped[str | None] = mapped_column(Text)
+    kind: Mapped[str] = mapped_column(String, default="verification_gap",
+                                      nullable=False)
+    severity: Mapped[str] = mapped_column(String, default="minor", nullable=False)
+    status: Mapped[str] = mapped_column(String, default="suspected", nullable=False)
+    title: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    rationale: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    evidence_refs: Mapped[list[str]] = mapped_column(SafeJSONList, nullable=False)
+    next_action: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    closure_evidence: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    observed_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class WoEvalRun(Base):
+    """WORK-OUTCOME-01 W4: one bounded evaluation pass."""
+
+    __tablename__ = "wo_eval_runs"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    scope: Mapped[dict[str, Any]] = mapped_column(SafeJSONDict, nullable=False)
+    status: Mapped[str] = mapped_column(String, default="running", nullable=False)
+    episodes_evaluated: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    requirements_assessed: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    claims_verified: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    findings_raised: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    error: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    started_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+    finished_at: Mapped[str] = mapped_column(String, default="", nullable=False)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class WoRequirementSource(Base):
+    """WORK-OUTCOME-01 W6A: provenance for one recovered requirement or
+    objective — repo doc, git commit, session message, or human attestation.
+    Authority is never inferred from existence alone; authority_basis records
+    why (e.g. pre-change review, explicit commissioning message)."""
+
+    __tablename__ = "wo_requirement_sources"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    requirement_id: Mapped[str | None] = mapped_column(Text)
+    episode_id: Mapped[str] = mapped_column(String, nullable=False)
+    source_kind: Mapped[str] = mapped_column(String, default="repo_doc", nullable=False)
+    path: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    revision: Mapped[str] = mapped_column(String, default="", nullable=False)
+    digest: Mapped[str] = mapped_column(String, default="", nullable=False)
+    authority_basis: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    observed_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class WoFindingGroup(Base):
+    """WORK-OUTCOME-01 W6B: presentation/reconciliation layer over findings.
+    Members are preserved; closing a group requires closing evidence per
+    member finding. Severity = max member severity (never inflated)."""
+
+    __tablename__ = "wo_finding_groups"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    project_key: Mapped[str] = mapped_column(String, default="", nullable=False)
+    subject: Mapped[str] = mapped_column(String, default="", nullable=False)
+    gap_class: Mapped[str] = mapped_column(String, default="", nullable=False)
+    title: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    severity: Mapped[str] = mapped_column(String, default="minor", nullable=False)
+    status: Mapped[str] = mapped_column(String, default="open", nullable=False)
+    member_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    observed_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class WoFindingGroupMember(Base):
+    """WORK-OUTCOME-01 W6B: group membership (finding never deleted)."""
+
+    __tablename__ = "wo_finding_group_members"
+
+    group_id: Mapped[str] = mapped_column(String, primary_key=True)
+    finding_id: Mapped[str] = mapped_column(String, primary_key=True)
+
+
+class WoEvalState(Base):
+    """WORK-OUTCOME-01 W6C: freshness + queue state per episode.
+    queue_status is current|stale|queued|running|blocked|failed."""
+
+    __tablename__ = "wo_eval_state"
+
+    episode_id: Mapped[str] = mapped_column(String, primary_key=True)
+    last_assessment_id: Mapped[str] = mapped_column(String, default="", nullable=False)
+    stale: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    stale_reason: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    queue_status: Mapped[str] = mapped_column(String, default="current", nullable=False)
+    last_observed_at: Mapped[str] = mapped_column(String, default="", nullable=False)
+    updated_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class WoProposal(Base):
+    """WORK-OUTCOME-01 W7: evidence-bound corrective work proposal.
+
+    Drafts live here; authorization is an explicit event (never self).
+    Approval binds (version, scope_hash); scope edits after
+    ready_for_review bump version and void prior approval."""
+
+    __tablename__ = "wo_proposals"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    episode_id: Mapped[str] = mapped_column(String, nullable=False)
+    group_id: Mapped[str | None] = mapped_column(Text)
+    project_key: Mapped[str] = mapped_column(String, default="", nullable=False)
+    action_category: Mapped[str] = mapped_column(String, default="", nullable=False)
+    objective: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    scope: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    exclusions: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    acceptance_criteria: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    required_verification: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    suggested_route: Mapped[str] = mapped_column(String, default="", nullable=False)
+    cost_constraints: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    risk: Mapped[str] = mapped_column(String, default="unknown", nullable=False)
+    status: Mapped[str] = mapped_column(String, default="draft", nullable=False)
+    version: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
+    scope_hash: Mapped[str] = mapped_column(String, default="", nullable=False)
+    closure_status: Mapped[str] = mapped_column(String, default="open", nullable=False)
+    observed_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class WoProposalFinding(Base):
+    """WORK-OUTCOME-01 W7: proposal↔finding linkage (findings never moved)."""
+
+    __tablename__ = "wo_proposal_findings"
+
+    proposal_id: Mapped[str] = mapped_column(String, primary_key=True)
+    finding_id: Mapped[str] = mapped_column(String, primary_key=True)
+
+
+class WoProposalEvent(Base):
+    """WORK-OUTCOME-01 W7: append-only proposal lifecycle history."""
+
+    __tablename__ = "wo_proposal_events"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    proposal_id: Mapped[str] = mapped_column(String, nullable=False)
+    from_status: Mapped[str] = mapped_column(String, default="", nullable=False)
+    to_status: Mapped[str] = mapped_column(String, default="", nullable=False)
+    actor: Mapped[str] = mapped_column(String, default="", nullable=False)
+    reason: Mapped[str] = mapped_column(String, default="", nullable=False)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class WoRequirementConfirmation(Base):
+    """WORK-OUTCOME-01 W7: human requirement decision with provenance.
+    Amendments create new WoRequirement versions via the service; this row
+    records the decision itself."""
+
+    __tablename__ = "wo_requirement_confirmations"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    requirement_id: Mapped[str] = mapped_column(String, nullable=False)
+    episode_id: Mapped[str] = mapped_column(String, default="", nullable=False)
+    decision: Mapped[str] = mapped_column(String, default="", nullable=False)
+    reviewer: Mapped[str] = mapped_column(String, default="", nullable=False)
+    rationale: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    amended_text: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class WoExecutionLink(Base):
+    """WORK-OUTCOME-01 W7: proposal↔execution trace (manual handoff included)."""
+    __tablename__ = "wo_execution_links"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    proposal_id: Mapped[str] = mapped_column(String, nullable=False)
+    route: Mapped[str] = mapped_column(String, default="", nullable=False)
+    external_ref: Mapped[str] = mapped_column(String, default="", nullable=False)
+    model: Mapped[str] = mapped_column(String, default="", nullable=False)
+    status: Mapped[str] = mapped_column(String, default="", nullable=False)
+    started_at: Mapped[str] = mapped_column(String, default="", nullable=False)
+    finished_at: Mapped[str] = mapped_column(String, default="", nullable=False)
+    cost_usd: Mapped[float] = mapped_column(Float, default=0.0, nullable=False)
+    session_id: Mapped[str] = mapped_column(String, default="", nullable=False)
+    commit_sha: Mapped[str] = mapped_column(String, default="", nullable=False)
+    test_receipt_ref: Mapped[str] = mapped_column(String, default="",
+                                                  nullable=False)
+    review_ref: Mapped[str] = mapped_column(String, default="", nullable=False)
+    envelope_id: Mapped[str] = mapped_column(String, default="", nullable=False)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class WoWorkEnvelope(Base):
+    """WORK-OUTCOME-01 W8: prospective work envelope (metadata, not context)."""
+
+    __tablename__ = "wo_work_envelopes"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    episode_id: Mapped[str] = mapped_column(String, nullable=False)
+    schema_version: Mapped[str] = mapped_column(
+        String, default="work-envelope.v1", nullable=False)
+    programme_id: Mapped[str] = mapped_column(String, default="", nullable=False)
+    stage_id: Mapped[str] = mapped_column(String, default="", nullable=False)
+    objective_ref: Mapped[str] = mapped_column(String, default="", nullable=False)
+    requirement_refs: Mapped[list[str]] = mapped_column(SafeJSONList,
+                                                        nullable=False)
+    repositories: Mapped[list[str]] = mapped_column(SafeJSONList,
+                                                   nullable=False)
+    commission_digest: Mapped[str] = mapped_column(String, default="",
+                                                   nullable=False)
+    authorization_ref: Mapped[str] = mapped_column(Text, default="",
+                                                   nullable=False)
+    acceptance_policy_ref: Mapped[str] = mapped_column(
+        String, default="", nullable=False)
+    parent_work_id: Mapped[str | None] = mapped_column(Text)
+    originating_findings: Mapped[list[str]] = mapped_column(
+        SafeJSONList, default=list, nullable=False)
+    version: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
+    status: Mapped[str] = mapped_column(String, default="active", nullable=False)
+    supersedes: Mapped[str | None] = mapped_column(Text)
+    observed_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+    created_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
 class AitestProject(Base):
     """AITEST-02 R12: a pytest project registered for central testing visibility."""
 

@@ -50,7 +50,7 @@ rt = RuntimeSettings(
     start_monitor=False,
     seed_defaults=False,
 )
-db = Database(rt)
+db = Database(rt, target="script:gen-prompt-example")
 apply_migrations(db)
 with db.session() as session:
     session.add(DiscoveryRoot(path=str(root), enabled=True, added_at=now_iso(),
