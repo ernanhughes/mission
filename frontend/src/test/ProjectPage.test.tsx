@@ -51,7 +51,7 @@ function mockBase(detail: ReturnType<typeof makeProjectDetail>, extra?: (info: {
 }
 
 describe("ProjectPage tabs", () => {
-  it("defaults to Overview with compact header and eight tabs", async () => {
+  it("defaults to Overview with compact header and ten tabs", async () => {
     const detail = makeProjectDetail({ id: "math", name: "Math" });
     mockBase(detail);
     renderProject("/projects/math");
@@ -59,14 +59,58 @@ describe("ProjectPage tabs", () => {
     const tablist = await screen.findByRole("tablist", { name: "Project workspace sections" });
     const tabs = within(tablist).getAllByRole("tab");
     expect(tabs.map((t) => t.textContent?.replace(/\d+\+?/g, "").trim())).toEqual(
-      expect.arrayContaining(["Overview", "Book", "Quality", "Technical", "Calibration", "Publishing", "Work", "Activity"]),
+      expect.arrayContaining(["Overview", "Book", "Quality", "Technical", "Calibration", "Publishing", "Work", "Activity", "Tests", "Inspect"]),
     );
-    expect(tabs).toHaveLength(8);
+    expect(tabs).toHaveLength(10);
     expect(within(tablist).getByRole("tab", { name: /Overview/ })).toHaveAttribute("aria-selected", "true");
     // Overview content visible, quality table not mounted
     expect(await screen.findByRole("heading", { name: "Project summary" })).toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: "Book Quality Map" })).not.toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: "Calibration review queue" })).not.toBeInTheDocument();
+  });
+
+  it("opens the Inspect tab with project state and history", async () => {
+    const detail = makeProjectDetail({ id: "math", name: "Math" });
+    mockBase(detail, ({ path, method }) => {
+      if (path === "/api/inspect/ops/inventory" && method === "GET")
+        return json({
+          available: true,
+          stale_refresh: false,
+          total: 1,
+          counts: { total: 1, never_inspected: 0, stale: 1, running: 0, current: 0, needs_enrichment: 0, unmapped: 0 },
+          projects: [
+            {
+              inspect_id: "math",
+              name: "Math",
+              mission_application_id: "math",
+              mapped: true,
+              repository_path: "C:\\Projects\\math",
+              reachable: true,
+              execution: "complete",
+              freshness: "source-changed",
+              enrichment: "complete",
+              evidence: "tested-not-demonstrated",
+              capabilities: 12,
+              usages: 3,
+              last_run_id: "inspect-1",
+              last_run_status: "completed",
+              last_run_at: "2026-11-25T00:00:00Z",
+              inspected_head_sha: "abc123",
+              stale_reason: "source changed since inspection",
+              primary_action: "inspect",
+              available_actions: ["inspect", "full", "enrich", "stamp", "view"],
+            },
+          ],
+          unmapped: [],
+        });
+      if (path === "/api/inspect/ops/runs" && method === "GET") return json({ total: 0, runs: [] });
+      return null;
+    });
+    renderProject("/projects/math?tab=inspect");
+    expect(await screen.findByRole("heading", { name: "Inspection state" })).toBeInTheDocument();
+    expect(await screen.findByText("source changed since inspection")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Inspect" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "History" })).toBeInTheDocument();
   });
 
   it("selects every tab and shows only the active workspace", async () => {

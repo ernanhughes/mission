@@ -31,6 +31,7 @@ from mission_control.api import (
     integrations as integrations_api,
     inspect as inspect_api,
     inspect_proposals as inspect_proposals_api,
+    inspect_ops as inspect_ops_api,
     living_book as living_book_api,
     pipeline as pipeline_api,
     processes,
@@ -391,6 +392,7 @@ def create_app(runtime: RuntimeSettings | None = None) -> FastAPI:
     app.include_router(integrations_api.router)
     app.include_router(inspect_api.router)
     app.include_router(inspect_proposals_api.router)
+    app.include_router(inspect_ops_api.router)
     app.include_router(praxis_proposals_api.router)
     app.include_router(worker_runtime_api.router)
     app.include_router(research_api.router)

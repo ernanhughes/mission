@@ -2668,6 +2668,64 @@ export type InspectCompositionList = InspectSnapshotEnvelope & {
   compositions: InspectComposition[];
 };
 
+// ------------------------------------------- operational panel (MC-INSPECT-04)
+// Durable Inspect CLI jobs + all-project inventory (registry + snapshot +
+// job state). Repository ids are lookup keys; the UI never sends paths.
+
+export type InspectRun = {
+  run_id: string;
+  repository_id: string;
+  mission_application_id: string;
+  operation: string;
+  scope: string;
+  status: string;
+  pid: number | null;
+  requested_at: string;
+  started_at: string;
+  finished_at: string;
+  exit_code: number | null;
+  validation_status: string;
+  result_summary: Record<string, unknown>;
+  error: string;
+  cancellable: boolean;
+};
+
+export type InspectJobList = {
+  total: number;
+  runs: InspectRun[];
+};
+
+export type InspectInventoryProject = {
+  inspect_id: string;
+  name: string;
+  mission_application_id: string | null;
+  mapped: boolean;
+  repository_path: string | null;
+  reachable: boolean;
+  execution: string;
+  freshness: string;
+  enrichment: string;
+  evidence: string;
+  capabilities: number;
+  usages: number;
+  last_run_id: string | null;
+  last_run_status: string | null;
+  last_run_at: string | null;
+  inspected_head_sha: string | null;
+  stale_reason: string;
+  primary_action: string;
+  available_actions: string[];
+};
+
+export type InspectInventory = {
+  available: boolean;
+  stale_refresh: boolean;
+  total: number;
+  counts: Record<string, number>;
+  projects: InspectInventoryProject[];
+  unmapped: InspectInventoryProject[];
+};
+
 // ------------------------------------------- publishing workbench (MC-PUBLISH-03)
 // Read-only evidence aggregation. Mirrors backend EvidenceItem: result is one
 // of passed|failed|pending|unavailable|unknown, freshness is

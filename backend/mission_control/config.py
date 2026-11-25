@@ -162,6 +162,15 @@ class RuntimeSettings:
             Path(r"C:\Projects\inspect\output\consumers\mission"),
         )
     )
+    # Inspect CLI checkout (MC-INSPECT-04): operations jobs run
+    # `python inspect.py <op> ...` with this directory as cwd. Only fixed
+    # allowlisted argv is ever launched; no user-supplied paths or commands.
+    inspect_checkout_dir: Path = field(
+        default_factory=lambda: _env_path(
+            "MISSION_CONTROL_INSPECT_CHECKOUT",
+            Path(r"C:\Projects\inspect"),
+        )
+    )
     # OpenCode usage database (MC-COST-01): read-only local SQLite copy of
     # OpenCode's own records. Mission Control never writes, migrates,
     # checkpoints or vacuums this file; it opens `mode=ro` per query.

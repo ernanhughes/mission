@@ -3164,6 +3164,67 @@ class InspectCompositionListRead(InspectSnapshotState):
     compositions: list[dict[str, Any]] = Field(default_factory=list)
 
 
+# --------------------------------------------- inspect operations (MC-INSPECT-04)
+# Operational control panel over Inspect: durable job rows, all-project
+# inventory (registry + consumer snapshot + job state), and explicit actions.
+# Repository ids are lookup keys validated against known inventory; no
+# user-supplied filesystem paths ever reach an executor.
+
+
+class InspectRunRead(BaseModel):
+    run_id: str
+    repository_id: str = ""
+    mission_application_id: str = ""
+    operation: str
+    scope: str = "full"
+    status: str
+    pid: int | None = None
+    requested_at: str = ""
+    started_at: str = ""
+    finished_at: str = ""
+    exit_code: int | None = None
+    validation_status: str = ""
+    result_summary: dict[str, Any] = Field(default_factory=dict)
+    error: str = ""
+    cancellable: bool = False
+
+
+class InspectJobListRead(BaseModel):
+    total: int = 0
+    runs: list[InspectRunRead] = Field(default_factory=list)
+
+
+class InspectInventoryProject(BaseModel):
+    inspect_id: str
+    name: str
+    mission_application_id: str | None = None
+    mapped: bool = False
+    repository_path: str | None = None
+    reachable: bool = False
+    execution: str = "never-inspected"
+    freshness: str = "unknown"
+    enrichment: str = "unknown"
+    evidence: str = "unknown"
+    capabilities: int = 0
+    usages: int = 0
+    last_run_id: str | None = None
+    last_run_status: str | None = None
+    last_run_at: str | None = None
+    inspected_head_sha: str | None = None
+    stale_reason: str = ""
+    primary_action: str = "inspect"
+    available_actions: list[str] = Field(default_factory=list)
+
+
+class InspectInventoryRead(BaseModel):
+    available: bool
+    stale_refresh: bool = False
+    total: int = 0
+    counts: dict[str, int] = Field(default_factory=dict)
+    projects: list[InspectInventoryProject] = Field(default_factory=list)
+    unmapped: list[InspectInventoryProject] = Field(default_factory=list)
+
+
 # --------------------------------- software-project reconciliation (MC-PROJECTS-QUALITY-01 Phase 1)
 # Read-only report comparing the software inventory under a discovery root
 # against persisted Project/Repository/Git/Application state. No writes.

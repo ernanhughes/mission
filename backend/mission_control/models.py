@@ -2215,3 +2215,33 @@ class AitestEventSeen(Base):
 
     event_id: Mapped[str] = mapped_column(String, primary_key=True)
     received_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+
+
+class InspectRun(Base):
+    """MC-INSPECT-04: durable, cancellable Inspect CLI operations requested from the UI.
+
+    One row per requested operation (inspect, enrich, validate, export, stamp,
+    refresh). Reconciliation happens on read via pid liveness; a finished run
+    records the CLI's own reported result parsed from its log. Runs never
+    modify inspected source repos and never replace published Inspect outputs.
+    """
+
+    __tablename__ = "inspect_runs"
+
+    run_id: Mapped[str] = mapped_column(String, primary_key=True)
+    repository_id: Mapped[str] = mapped_column(String, default="", nullable=False)
+    mission_application_id: Mapped[str] = mapped_column(String, default="", nullable=False)
+    operation: Mapped[str] = mapped_column(String, default="inspect", nullable=False)
+    scope: Mapped[str] = mapped_column(String, default="full", nullable=False)
+    status: Mapped[str] = mapped_column(String, default="queued", nullable=False)
+    pid: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    command: Mapped[str] = mapped_column(String, default="", nullable=False)
+    log_path: Mapped[str] = mapped_column(String, default="", nullable=False)
+    head_sha: Mapped[str] = mapped_column(String, default="", nullable=False)
+    requested_at: Mapped[str] = mapped_column(String, default=now_iso, nullable=False)
+    started_at: Mapped[str] = mapped_column(String, default="", nullable=False)
+    finished_at: Mapped[str] = mapped_column(String, default="", nullable=False)
+    exit_code: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    validation_status: Mapped[str] = mapped_column(String, default="", nullable=False)
+    result_json: Mapped[str] = mapped_column(Text, default="{}", nullable=False)
+    error: Mapped[str] = mapped_column(Text, default="", nullable=False)

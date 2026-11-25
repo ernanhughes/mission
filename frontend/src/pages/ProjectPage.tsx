@@ -28,6 +28,7 @@ import { BookTab } from "../features/project/BookTab";
 import { WorkTab } from "../features/project/WorkTab";
 import { ActivityTab } from "../features/project/ActivityTab";
 import { TestsTab } from "../features/project/TestsTab";
+import { InspectTab } from "../features/project/InspectTab";
 import {
   ActionButton,
   EmptyState,
@@ -3129,6 +3130,12 @@ export function ProjectPage() {
         {tab === "tests" ? (
           <section role="tabpanel" id="panel-tests" aria-labelledby="tab-tests">
             <TestsTab mcProjectId={projectId} />
+          </section>
+        ) : null}
+
+        {tab === "inspect" ? (
+          <section role="tabpanel" id="panel-inspect" aria-labelledby="tab-inspect">
+            <InspectTab mcProjectId={projectId} />
           </section>
         ) : null}
       </div>

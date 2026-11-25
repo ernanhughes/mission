@@ -26,6 +26,7 @@ import {
   InspectStaleNote,
   OpportunityList,
 } from "../features/inspect/InspectPanels";
+import { OpsProjectsPanel } from "../features/inspect/OpsPanel";
 import { isSideEffectful, isUntested } from "../features/inspect/inspect";
 
 function attentionCount(opportunities: Array<Record<string, any>>): number {
@@ -96,6 +97,8 @@ export function InspectPage() {
       />
 
       {manifest.error ? <ErrorState message={manifest.error.message} onRetry={manifest.reload} /> : null}
+
+      <OpsProjectsPanel />
 
       <Section
         title="Overview"
