@@ -1,0 +1,74 @@
+{
+ "id": "pub07-ch02-p001",
+ "item_id": "02-chapter",
+ "pid": "lines:133-146",
+ "base": "de0358fcea439c89c76c3b28d8801c1c54ef5bfdff5330b4cd9e8b550aaf5989",
+ "replacement": "Almost every property has a crowd of ancestors.\n\nTyped questions and bounded answers (P2, P3) are covered four times over.\n\nP(True) gives distributions over labeled options and True/False reformulations (Kadavath et al., [arXiv:2207.05221](https://arxiv.org/abs/2207.05221)).\n\nConstrained generation bounds any schema by construction (Willard et al., [arXiv:2307.09702](https://arxiv.org/abs/2307.09702)).\n\nLMQL declares answer kinds up front ([arXiv:2212.06094](https://arxiv.org/abs/2212.06094)).\n\nLLM2Jev takes choice/noul/score as its three canonical formats ([arXiv:2610.02076](https://arxiv.org/abs/2610.02076)).\n\nProbabilities by default (P5) are older still.\n\nThe Cobbe verifier outputs the probability a solution is correct ([arXiv:2110.14168](https://arxiv.org/abs/2110.14168)).\n\nThe GenRM direct verifier uses the likelihood of a single 'Yes' token as its score ([arXiv:2408.15240](https://arxiv.org/abs/2408.15240)).\n\nThat last one deserves a pause: option scoring over a two-option slate, trained with the ordinary next-token loss, published in 2024.\n\nIf you squint, Jev's choice primitive is GenRM's direct verifier with better marketing and a parallel sampler.\n\nIn sum, P2 and P3 are covered four times over, and P5 is older still.",
+ "rationale": "PUB-07 machinery-produced candidate for passage:Nine older mechanisms, seven properties (span lines 133-146; paragraph-granularity Proposal validation does not apply -- span binding checked by check_proposal_fresh). Verification 15/15 pass.",
+ "errors": [],
+ "original": "Almost every property has a crowd of ancestors. Typed questions and bounded answers\n(P2, P3) are covered four times over: P(True) gives distributions over labeled\noptions and True/False reformulations (Kadavath et al., [arXiv:2207.05221](https://arxiv.org/abs/2207.05221));\nconstrained generation bounds any schema by construction (Willard et al.,\n[arXiv:2307.09702](https://arxiv.org/abs/2307.09702)); LMQL declares answer kinds up\nfront ([arXiv:2212.06094](https://arxiv.org/abs/2212.06094)); LLM2Jev takes\nchoice/noul/score as its three canonical formats ([arXiv:2610.02076](https://arxiv.org/abs/2610.02076)).\nProbabilities by default (P5) are older still \u2014 the Cobbe verifier outputs the\nprobability a solution is correct ([arXiv:2110.14168](https://arxiv.org/abs/2110.14168)),\nand the GenRM direct verifier uses the likelihood of a single 'Yes' token as its score\n([arXiv:2408.15240](https://arxiv.org/abs/2408.15240)). That last one deserves a pause:\noption scoring over a two-option slate, trained with the ordinary next-token loss,\npublished in 2024. If you squint, Jev's choice primitive is GenRM's direct verifier\nwith better marketing and a parallel sampler.",
+ "path": "",
+ "status": "pending",
+ "commit": null,
+ "checks": [],
+ "bound": {
+  "source": "b61a63c525e29e4339bea70b4239576c243220bcf1136f22d87a85cf69d5be3b",
+  "span": {
+   "start_line": 133,
+   "end_line": 146,
+   "sha": "de0358fcea439c89c76c3b28d8801c1c54ef5bfdff5330b4cd9e8b550aaf5989"
+  },
+  "replacement": "e81b99ab25d814f4be1541d78d3cd0821ca90d74089249f1b56ff05185b4b2a3",
+  "ledger_digest": "6934060ceb36c7f83efc216429a224e0bddf3e07261ab6adddca547cbde5b4ab"
+ },
+ "operation": null,
+ "undo_commit": null,
+ "scope_pids": null,
+ "scope_revision": null,
+ "scope_shas": null,
+ "origin": "publication-automation-v0.1 (Worker-dispatched candidate)",
+ "editorial": {
+  "plan_id": "plan:e314bdd88993b458",
+  "package_id": "passage:Nine older mechanisms, seven properties",
+  "finding_refs": [
+   "complexity:3e0283d44e668e4d7758",
+   "complexity:a73861baf24cb7ffe911",
+   "complexity:e917891ac749a6224034"
+  ],
+  "verification_verdict": "pass",
+  "verification_checks_passed": 15,
+  "verification_checks_failed": 0,
+  "dispatch_count": 2,
+  "dispatch_models": [
+   "opencode-go/claude-haiku-5-5",
+   "opencode-go/deepseek-v4.1-flash"
+  ],
+  "dispatch_providers": [
+   "pi"
+  ],
+  "dispatch_total_cost_usd": 0.0039864,
+  "dispatch_replacement_sha256": "e81b99ab25d814f4be1541d78d3cd0821ca90d74089249f1b56ff05185b4b2a3",
+  "dispatch_ledger_digest": "6934060ceb36c7f83efc216429a224e0bddf3e07261ab6adddca547cbde5b4ab",
+  "record_chain": {
+   "plan_id": "plan:e314bdd88993b458",
+   "candidate_fingerprint": "9f36c9ba2c0fb7c6abb57ba448877aad65b4e0d490f660c9f59986e395a02b82",
+   "ledger_digest": "6934060ceb36c7f83efc216429a224e0bddf3e07261ab6adddca547cbde5b4ab",
+   "note": "join keys for the transformation record chain (chain.plan_digest binds the plan content; chain.candidate_fingerprint + chain.ledger_digest bind these values)"
+  },
+  "evidence_note": "candidate prose: MODEL_JUDGEMENT (generator) / INDEPENDENT_REVIEW (reviewer, separate family); deterministic checks are MEASURED_TEXT and necessary-but-insufficient evidence of meaning (D-PUB-70/74)"
+ },
+ "applied": {},
+ "diff": "--- current\n+++ proposed\n@@ -1,14 +1,23 @@\n-Almost every property has a crowd of ancestors. Typed questions and bounded answers\n-(P2, P3) are covered four times over: P(True) gives distributions over labeled\n-options and True/False reformulations (Kadavath et al., [arXiv:2207.05221](https://arxiv.org/abs/2207.05221));\n-constrained generation bounds any schema by construction (Willard et al.,\n-[arXiv:2307.09702](https://arxiv.org/abs/2307.09702)); LMQL declares answer kinds up\n-front ([arXiv:2212.06094](https://arxiv.org/abs/2212.06094)); LLM2Jev takes\n-choice/noul/score as its three canonical formats ([arXiv:2610.02076](https://arxiv.org/abs/2610.02076)).\n-Probabilities by default (P5) are older still \u2014 the Cobbe verifier outputs the\n-probability a solution is correct ([arXiv:2110.14168](https://arxiv.org/abs/2110.14168)),\n-and the GenRM direct verifier uses the likelihood of a single 'Yes' token as its score\n-([arXiv:2408.15240](https://arxiv.org/abs/2408.15240)). That last one deserves a pause:\n-option scoring over a two-option slate, trained with the ordinary next-token loss,\n-published in 2024. If you squint, Jev's choice primitive is GenRM's direct verifier\n-with better marketing and a parallel sampler.+Almost every property has a crowd of ancestors.\n+\n+Typed questions and bounded answers (P2, P3) are covered four times over.\n+\n+P(True) gives distributions over labeled options and True/False reformulations (Kadavath et al., [arXiv:2207.05221](https://arxiv.org/abs/2207.05221)).\n+\n+Constrained generation bounds any schema by construction (Willard et al., [arXiv:2307.09702](https://arxiv.org/abs/2307.09702)).\n+\n+LMQL declares answer kinds up front ([arXiv:2212.06094](https://arxiv.org/abs/2212.06094)).\n+\n+LLM2Jev takes choice/noul/score as its three canonical formats ([arXiv:2610.02076](https://arxiv.org/abs/2610.02076)).\n+\n+Probabilities by default (P5) are older still.\n+\n+The Cobbe verifier outputs the probability a solution is correct ([arXiv:2110.14168](https://arxiv.org/abs/2110.14168)).\n+\n+The GenRM direct verifier uses the likelihood of a single 'Yes' token as its score ([arXiv:2408.15240](https://arxiv.org/abs/2408.15240)).\n+\n+That last one deserves a pause: option scoring over a two-option slate, trained with the ordinary next-token loss, published in 2024.\n+\n+If you squint, Jev's choice primitive is GenRM's direct verifier with better marketing and a parallel sampler.\n+\n+In sum, P2 and P3 are covered four times over, and P5 is older still.\n",
+ "bridge": {
+  "schema": "workbench.publication-proposal.v1",
+  "mutated": false,
+  "accepted": false,
+  "note": "Proposal data only. Production mutation is chapter_apply via /proposals/{pid}/accept, NOT invoked here; approval stays author-gated."
+ },
+ "freshness_check": {
+  "proposal_id": "pub07-ch02-p001",
+  "fresh": true,
+  "reasons": [],
+  "live_fingerprint": "b61a63c525e29e4339bea70b4239576c243220bcf1136f22d87a85cf69d5be3b"
+ }
+}

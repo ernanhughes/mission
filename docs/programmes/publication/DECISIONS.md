@@ -843,23 +843,53 @@ re-confirm + DeepSeek delta re-verify)
   different `chain.plan_digest`. Recorded after DeepSeek's batch-2
   verification flagged the overclaim in D-PUB-67's "cannot ride"
   sentence.
-- **D-PUB-75 — Chain digests canonicalize volatile run metadata.**
-  `generated_at`/`verified_at`/`recorded_at` are stripped before
-  hashing (`_canonical_plan`), so identical content always yields the
-  identical digest while any content mutation changes it. Without
-  this, every regeneration looks like tampering (false drift) and no
-  record is reproducible. Pin: same content + different timestamp
-  → identical digest. Added during coordinator close-out after the
-  record rebuild exposed the timestamp-sensitivity.
-- **R1 doc-record correction (DeepSeek batch-2 re-verify).** Recorded
-  live numbers are superseded by the final tree: book scan 38→39
+- **D-PUB-75 — Chain digests canonicalize volatile run metadata
+  (schema-scoped, not whole-tree).** Only top-level
+  `generated_at`/`verified_at`/`recorded_at` are stripped; a nested
+  content field with such a name still affects the digest (Codex
+  delta: whole-tree stripping would let content hide behind volatile
+  names). Declared intent paths are slash-normalised as a closed
+  schema-defined list. Pins: stability across reruns; nested-field
+  sensitivity; equivalent path spellings digest identically.
+  Added during coordinator close-out after the record rebuild exposed
+  timestamp-sensitivity.
+- **D-PUB-76 — Spend guards fail closed on non-finite input.**
+  `check_spend_guard` rejects NaN/inf/unparseable cap, spent total, or
+  projection instead of comparing (`nan > x` is False, which would
+  otherwise silently approve unbounded spend). The CLI refuses
+  non-finite `--spend-cap` up front on both live and dry-run paths.
+  Pins: NaN cap/spent/projection halt; CLI rejects nan/inf/-inf.
+  (Codex delta confirm item 1.)
+- **R1 doc-record correction (DeepSeek batch-2 re-verify; PUB-06 Ch1
+  scope — the 606-line / `f6c1cb…` / 39 figures below are the PUB-06
+  Ch1 candidate, not PUB-07 Ch2).** Recorded live numbers are
+  superseded by the final tree: book scan 38→39
   (CX02 8→9, CX05 2→4, CX13 1→2, CX11 5→4; CX10 1→1 -- the "new HIGH"
   was a cross-table false positive removed by the PUB-04
   structural-break fix, verified gone); neighbours 260 passed +
   1 xfailed (was "258+1"; +2 are the cross-table/blank-gap pins);
   transformation suite 74→76 with the chain-content + chain-stability
   pins. Handover prompts refreshed to 606 lines / `f6c1cb…` / 76+2
-  CLI tests / 39.
+  CLI tests / 39 (PUB-06 Ch1 record — see the PUB-07 addendum below
+  for the separate PUB-07 Ch2 numbers).
+- **R1 PUB-07 addendum (DeepSeek delta re-verify on the settled tree +
+  rerun, 2026-11-25; PUB-07 Ch2 scope).** Per-file collected:
+  transformation 83 + CLI 9 + automation 40 (= 132 combined passed);
+  full delta gate 593 collected (592 passed + 1 strict xfailed
+  held-cx15) / 0 failed — supersedes the 583/584 fix-batch-time
+  counts. Neighbours (cruft + cruft_cal + complexity + complexity_cal
+  + pedagogy + legibility) 260 passed + 1 xfailed, unchanged.
+  Rerun (`pub07/ch02-rerun/`): verify 15/15 pass (the automation
+  `verify_candidate` scale — not the PUB-06 transform 21/21 scale);
+  candidate `9f36c9ba…` 355 lines / 20,239 bytes LF;
+  2 dispatches $0.0039864 (editorial deepseek-v4.1-flash 8246 tok +
+  review claude-haiku-5-5 5678 tok at $0); outcome review_accepted;
+  excerpt range 133–155; chain after==candidate asserted
+  (plan `c2189722…`, ledger `6934060c…` independently recomputed
+  MATCH). The 5262-token haiku figure in the run-1 record is the
+  run-1 value; 5678 is the rerun value. `pub07/ch02/` on disk still
+  holds the run-1 bytes `50e1ef2e…` (338 lines) pending the author's
+  promotion decision.
 - **R4 handoff refresh.** Review-pack prompts now carry current
   fingerprints, counts, and a note that `before-after.md` WAS
   rewritten (00:03 rebuild) -- correcting the prior "untouched" claim;
@@ -885,8 +915,9 @@ recorded by coordinator, pending Codex delta verdict)
   (1) lexical -- implemented; (2) structural -- partial; (3)
   quantitative -- bounded; (4) semantic -- PUB-08; (5) epistemic --
   initial implementation; (6) pedagogical recovery -- PUB-08.
-  21/21 preservation = checks passed, never proof of complete meaning
-  preservation. D-PUB decisions and ACCEPTANCE.md must keep this
+  21/21 preservation (PUB-06 transform scale; the PUB-07 automation
+  verify is 15/15 — same limitation) = checks passed, never proof of
+  complete meaning preservation. D-PUB decisions and ACCEPTANCE.md must keep this
   distinction.
 - **D-PUB-71 — PUB-07 safety boundary: candidate autonomy now,
   publication autonomy later.** PUB-07 may implement: production
@@ -1032,7 +1063,12 @@ recorded by coordinator, pending Codex delta verdict)
 - Amendment to **D-PUB-68** (recorded here, original above untouched):
   the chain now also binds `ledger_digest` (D-PUB-81 Fix D) -- the
   "cannot ride an old chain" guarantee extends to the dispatched
-  provenance, not just the plan content.
+  provenance, not just the plan content. The join is verified at every
+  consumption: the Workbench builder refuses ledgers that do not bind
+  the presented replacement (non-empty entries alone prove nothing),
+  `check_proposal_fresh` covers the replacement hash, and the proposal
+  carries the `record_chain` reference (plan + candidate fingerprint +
+  ledger digest, D-PUB-81 Fix D).
 - Amendment to **D-PUB-79** (recorded here, original above untouched):
   spend policy is enforced pre-dispatch with projection (D-PUB-81 Fix
   C); the $10 figure stays the default cap, and any raise is an
@@ -1041,6 +1077,60 @@ recorded by coordinator, pending Codex delta verdict)
   this fix batch follows the same narrow-correction rule -- scoped
   code + pins + ONE bounded package re-run + specified delta reviews;
   no broad re-review cycle, no PUB-08 start until the deltas close.
+
+## PUB-07 final gate — author decisions 2026-11-25 (recorded by coordinator)
+
+- **D-PUB-82 — Run-1 synthesis deleted by author direction; rerun checked
+  independently, no same-defect correction.** The author agrees with
+  Claude's preferred alternative: run-1 candidate line 138 ("So the
+  crowding is real, not rhetorical: … a resemblance, not a demonstrated
+  equivalence.") is deleted — unnecessary certainty assertion
+  ("not rhetorical"), repetition of already-communicated content, and
+  defensive explanation of a hedge the reader already understands.
+  This decision applies to run-1 ONLY and the historical run-1 artifact
+  is NOT modified. Coordinator's independent check of the rerun bytes
+  (`pub07/ch02-rerun/candidate.md` 133–155): the run-1 defect does not
+  recur. Rerun line 155 reads "In sum, P2 and P3 are covered four times
+  over, and P5 is older still." — a plain restatement with no "real /
+  not rhetorical" gloss and no resemblance/equivalence characterisation
+  (both strings verified absent from the rerun bytes). Residual
+  redundancy (155 restates 135/145) is noted, not corrected: no
+  certainty is asserted and no hedge is reinterpreted. No correction
+  proposed against the rerun on this point; Claude's delta re-read
+  judges the rerun synthesis on its own bytes.
+- **D-PUB-83 — Run-1 and rerun records stay distinct; promotion deferred.**
+  `pub07/ch02/` (run-1, `50e1ef2e…`, 338 lines) is preserved as
+  historical evidence with its objections and corrections; the rerun
+  (`pub07/ch02-rerun/`, `9f36c9ba…`, 355 lines, review_accepted) is
+  NOT promoted until its delta reviews close. Promotion, when accepted,
+  uses the existing candidate-selection/supersession mechanism — never
+  an overwrite, never a duplicate candidate lifecycle.
+- **D-PUB-84 — PUB-08 must attribute defects to source vs transformation
+  (author mandate).** A reviewer must establish its quoted evidence
+  exists in the relevant source or candidate, and for every candidate
+  defect determine whether the transformation introduced it or the
+  source already contained it. Dispositions: unsupported claim already
+  present in the original → source-level publication finding;
+  unsupported claim introduced by the revision → transformation defect;
+  existing claim strengthened/weakened by the revision →
+  transformation defect; existing unsupported claim preserved unchanged
+  → inherited unresolved finding; existing incorrect claim corrected
+  with verified evidence → authorized improvement; reviewer cites text
+  outside the transformation region → scope/attribution investigation;
+  reviewer quotes text absent from both versions → invalid review
+  evidence. An inherited defect may block release without invalidating
+  an unrelated editorial improvement. Negative controls (mandatory):
+  (1) byte-identical inherited unsupported claim; (2) newly introduced
+  unsupported claim; (3) strengthened existing claim; (4) reviewer
+  citing out-of-scope text; (5) reviewer quoting text in neither
+  version; (6) valid evidence-backed correction; (7) redundant /
+  defensive synthesis that passes lexical preservation (the run-1 line
+  138 class). Reuse Manuscript IR, compiler, argument, knowledge-state,
+  evidence, QC, mediated read, evaluation fabric, Praxis semantic-loss
+  before inventing new mechanisms. The LLM2Jev ledger-2.13 PARTIAL-read
+  issue stays a source-level research obligation in the author-side
+  queue — never rewritten to satisfy a misattributed review objection;
+  all preceding PUB-06 author-side obligations are preserved.
 
 ## Explicitly rejected (appended PUB-03: parallel evidence architecture)
 

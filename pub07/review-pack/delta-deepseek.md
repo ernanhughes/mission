@@ -1,8 +1,8 @@
 # PUB-07 fix-batch delta re-verify — DeepSeek (incl. F1-F5)
 
 Routine re-verification on the fix-batch tree + the re-run artifacts.
-New numbers to fill post-re-run are marked [FILL]; everything else must
-reproduce exactly.
+All post-re-run numbers are filled below (verified 2026-11-25 against
+`pub07/ch02-rerun/`); everything else must reproduce exactly.
 
 ## 1. Fast gate (CWD `C:\Projects\writer`, venv python)
 
@@ -10,9 +10,11 @@ reproduce exactly.
 venv\Scripts\python -m pytest tests/core/test_publication_transformation.py tests/core/test_publication_automation.py tests/core/test_publication_cruft.py tests/core/test_publication_cruft_calibration.py tests/core/test_publication_complexity.py tests/core/test_publication_complexity_calibration.py tests/core/test_publication_pedagogy.py tests/core/test_publication_pedagogy_calibration.py tests/core/test_reader_legibility.py tests/core/test_evidence_reconciliation.py tests/core/test_evidence_reconciliation_calibration.py tests/runtime/editing tests/runtime/quality tests/cli/test_transform_cli.py -q -p no:cacheprovider
 ```
 
-Expected: [FILL: 576+N] passed + 1 strict xfailed (held-cx15) / 0 failed.
-(Fix-batch tree: 576 + 1; new pins: 12 automation + 5 transformation + 1
-CLI. Also: `ruff check` clean on the 4 changed writer files + 3 test files.)
+Expected: 592 passed + 1 strict xfailed (held-cx15) / 0 failed
+(593 collected; verified 2026-11-25 on the settled tree — supersedes
+the 583 expectation from the pre-close-out tree: +9 from the
+coordinator close-out pins). Also: `ruff check` clean on the
+4 changed writer files + 3 test files.
 
 ## 2. Workbench neighbours (CWD `C:\Projects\workbench`, `.venv` python, `PYTHONPATH=src`)
 
@@ -54,8 +56,8 @@ Re-run and compare against `pub07/ch02/inputs/`:
   (labeled author-side) and NEW `approval-decision.json` carries a
   `supersedes` section quoting the run-1 narrative; originals visible
   in the archive, never edited. Numbers refreshed to the re-run set:
-  candidate fp [FILL], [FILL] lines, [FILL] dispatches, $[FILL],
-  verification [FILL]/15, proposal pending + fresh. Ledger-2.13 citation
+  candidate fp `9f36c9ba…` (355 lines, 20,239 bytes), 2 dispatches,
+  $0.0039864, verification 15/15, proposal pending + fresh. Ledger-2.13 citation
   reads abstract + §1 + §3.3 PARTIAL, §4 NOT read. The 2 isolating
   violations are named as such (not "0 violations"); `before-after`
   claims name the rewritten record (no "untouched" for rewritten files).
@@ -66,7 +68,7 @@ Re-run and compare against `pub07/ch02/inputs/`:
   both sides (cross-compat vector `6ef13476…`).
 - F3 (spend): ledger `spend_cap_usd` + `spend_cap_override_explicit`
   present; `program.spend_policy.pre_dispatch_enforced` true; total
-  spend [FILL] within cap; pre-re-run BLOCKED $0 attempts disclosed in
+  spend $0.0039864 within cap; pre-re-run BLOCKED $0 attempts disclosed in
   the approval record (no unrecorded dispatch).
 
 ## 5. Source safety

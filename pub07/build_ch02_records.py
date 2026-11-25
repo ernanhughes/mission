@@ -169,6 +169,29 @@ def main(out_dir: str, chapter_md: str) -> int:
             "failed_checks": typed.get("failed_checks", []),
         })
     total_cost = ledger.get("total_cost_usd", 0.0) or 0.0
+    # Provider usage anomaly disclosure (Claude item, recorded as an
+    # author-side note, never smoothed): any ledger row whose
+    # provider-reported input + output != total is flagged verbatim.
+    # Cost math uses cost_usd only, so the anomaly never moves spend.
+    usage_notes = []
+    for e in ledger_entries:
+        if not isinstance(e, dict):
+            continue
+        it, ot, tt = (e.get("input_tokens"), e.get("output_tokens"),
+                      e.get("total_tokens"))
+        if (isinstance(it, int) and isinstance(ot, int)
+                and isinstance(tt, int) and it + ot != tt):
+            usage_notes.append({
+                "writer_execution_id": e.get("writer_execution_id"),
+                "model": e.get("model"), "route": e.get("route"),
+                "input_tokens": it, "output_tokens": ot,
+                "total_tokens": tt,
+                "note": ("provider-reported usage internally inconsistent "
+                         "(input + output != total); recorded verbatim, "
+                         "never smoothed; cost unaffected (cost_usd kept "
+                         "as reported); flagged for Worker owner "
+                         "awareness, no programme action (D-PUB-79)."),
+            })
     decision = {
         "decision_id": "pub07-ch02-decision-02",
         "decision": "pending_author_decision",
@@ -238,6 +261,7 @@ def main(out_dir: str, chapter_md: str) -> int:
                                 "INDEPENDENT_REVIEW (disclosed identity, "
                                 "separate family); deterministic checks "
                                 "MEASURED_TEXT"),
+            "provider_usage_notes": usage_notes,
         },
         "correction_loop": {
             "attempts_used": (
@@ -362,6 +386,9 @@ def main(out_dir: str, chapter_md: str) -> int:
         got = _lf_bytes(work.read_bytes())
         assert got == _lf_bytes(candidate_raw), \
             "fixture apply bytes != candidate bytes"
+        # The applier persists CRLF on Windows; re-normalise the
+        # fixture to LF so the reverse Current Text still matches.
+        work.write_bytes(got)
         print(f"fixture proof: applied bytes == candidate bytes "
               f"({len(got)} bytes, fp {candidate_fp[:12]}...)")
         reverse = tmp / "edits-reverse.md"

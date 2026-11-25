@@ -2,8 +2,11 @@
 
 Scope: the fix batch (D-PUB-81) only. No new broad review. Confirm each
 BLOCKED item below is closed on the CURRENT tree + the re-run artifacts
-in `C:\Projects\mission\pub07\ch02\` (post-fix run; run-1 preserved in
-`pub07/ch02-superseded-run1/` with the stale-window analysis).
+in `C:\Projects\mission\pub07\ch02-rerun\` (post-fix rerun 09:18 UTC:
+outcome review_accepted, 2 dispatches $0.0039864, verify 15/15;
+run-1 preserved in `pub07/ch02-superseded-run1/`, and `pub07/ch02/`
+on disk still holds the run-1 bytes `50e1ef2e…` pending the author's
+promotion decision).
 
 ## 1. Review-window scoping (was: excerpt sliced by original span end)
 
@@ -12,8 +15,9 @@ in `C:\Projects\mission\pub07\ch02\` (post-fix run; run-1 preserved in
   the original span end. Each `review_rounds[i]` records
   `review_excerpt_range` + `review_excerpt_sha256`.
 - Check the re-run `program.json`: every round's `review_excerpt_range`
-  must equal the dispatch region (6-ish lines for the new paragraph
-  form, NOT 133-146), and the round-2-style leakage (8 trailing source
+  must equal the dispatch region (lines 133–155 for the new paragraph
+  form — 23 lines incl. blank separators — NOT the original span
+  133-146), and the round-2-style leakage (8 trailing source
   lines incl. the LLM2Jev paragraph) must be gone. The review prompt in
   `dispatch.raw_response` / ledger `prompt_sha256` is over the excerpt.
 - Pins: `test_review_excerpt_scopes_to_replacement_not_span`,

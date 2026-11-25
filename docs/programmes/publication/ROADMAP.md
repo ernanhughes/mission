@@ -137,6 +137,17 @@ ownership resolved-or-explicitly-open (U1–U5), acceptance criteria, docs in
   (model-reader vs human-reader distinguished; negative controls that
   pass lexical checks while failing semantic/epistemic integrity
   included).
+- **Mandatory defect attribution (D-PUB-84, author requirement):**
+  every candidate defect is attributed to source vs transformation
+  (inherited / introduced / strengthened-or-weakened / preserved
+  unresolved / authorized evidence-backed correction / resolved), and
+  every reviewer quotation is checked for existence in the cited
+  version (out-of-scope citation → attribution investigation; text in
+  neither version → invalid review evidence). Seven negative controls
+  are mandatory, including the redundant/defensive-synthesis class
+  (run-1 line 138) that passes lexical preservation. An inherited
+  defect may block release without invalidating an unrelated
+  improvement.
 - **Depends on:** PUB-02, PUB-04 findings to validate. **Gates:** no thresholds
   promoted without held-out evidence; no reader claims without human data.
 

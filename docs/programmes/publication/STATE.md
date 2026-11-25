@@ -1,6 +1,6 @@
 # PUBLICATION State
 
-**Updated:** 2026-11-25 (PUB-07 scope-done, pending review gate. 7/12 accepted; PUB-07 in review.)
+**Updated:** 2026-11-25 (PUB-07 fix batch + coordinator close-out verified in-session; rerun executed. 7/12 accepted; PUB-07 in review — Codex delta confirm outstanding.)
 
 ## 1. Current position
 
@@ -73,26 +73,33 @@ verification kept in the ledger. Full detail: CAPABILITIES.md PUB-07
 subsection. Previous PUB-06 record below retained; do not reopen
 without evidence of a consequential defect.
 
-PUB-07 fix batch in progress 2026-11-25 (Muse implementation, D-PUB-81;
+PUB-07 fix batch complete 2026-11-25 (Muse implementation, D-PUB-81;
 single combined batch for the Codex BLOCKED-4 + DeepSeek F1-F5 + Claude
 CONDITIONAL residuals; no commits). Code + pins done, fast gate green
-(576 passed + 1 strict xfailed held-cx15 / 0 failed; workbench
-neighbours 35/0; ruff clean): review-excerpt scoping to the
+(583 passed + 1 strict xfailed held-cx15 / 0 failed at fix-batch time,
+superseded by 592 passed + 1 strict xfailed / 593 collected on the
+settled tree after the coordinator close-out's +9 pins — see §6;
+workbench neighbours 35/0; ruff clean): review-excerpt scoping to the
 replacement lineage range (Fix A), rebind-before-final-review with
-excerpt-exact validation (Fix B), pre-dispatch spend guard with
+excerpt-exact validation + per-round binding revalidation failing
+closed on mismatch (Fix B), pre-dispatch spend guard with
 explicit override bookkeeping (Fix C), ledger
 replacement-sha + record `chain.ledger_digest` + bridge refusal of
 unbound ledgers + replacement-hash freshness + record-chain reference
 (Fix D), paragraph-break assembly + no-gloss/no-section-citation
 prompt rules (Fix E), LF/slash canonical digest forms (Fix G).
 Run-1 artifacts preserved verbatim in `pub07/ch02-superseded-run1/`
-(+README: stale-window + spurious-quote-failure analysis). ONE bounded
-re-run of the affected package attempted 08:48 UTC into a temp dir:
-Worker BLOCKED (authentication_failed, no API key for opencode-go,
-non-retryable; $0 spent, 0 tokens) -- infra outage, not a code defect;
-run-1 bytes in `pub07/ch02/` untouched (restored from archive and
-re-verified). Re-run + Fix F annotations + doc-number refresh + delta
-review prompts resume when the Worker path recovers; see §6.
+(+README: stale-window + spurious-quote-failure analysis). The 08:48
+UTC re-run attempt into a temp dir was Worker-BLOCKED
+(authentication_failed, no API key for opencode-go, non-retryable;
+$0 spent, 0 tokens) -- infra outage, not a code defect. The bounded
+re-run was then EXECUTED by the coordinator in a credential-bearing
+shell (see §6): outcome review_accepted, 2 dispatches $0.0039864,
+verify 15/15, candidate `9f36c9ba…` 355 lines in `pub07/ch02-rerun/`;
+`pub07/ch02/` on disk still holds the run-1 bytes pending the
+author's promotion decision. Fix F annotations + doc-number refresh
+(done, see §6) landed on the re-run's records, not by editing
+history.
 
 PUB-05 ACCEPTED 2026-11-24 by author (§11). PUB-06 fix batch 2026-11-24
 (Muse implementation, addresses Codex BLOCKED a–f + 2 editorial and
@@ -787,158 +794,15 @@ characterization or modified in PUB-01.
 book id in the Writer registry). Review format `Current Text / Recommended
 Change` verified in `C:\books\jev\scripts\apply_edits.py`.
 
-## 6. Exact next action
+## 6. Exact next action — PUB-07 final gate: author instructions received; three rerun-bound deltas to execute
 
-**PUB-07 scope-done 2026-11-25 (Muse implementation), pending review
-gate. 7/12 accepted.** Independent review required before any PUB-08
-start: (1) Codex architecture/integration review of the automation seam
-(dispatch injection, fail-closed compile, record extension, bridge
-granularity, no new gateway/mutator); (2) DeepSeek regression
-verification (reproduce the fast gate + live chain on the final tree);
-(3) Claude editorial read of the produced candidate
-(pub07/ch02/candidate.md vs Ch2 source) + the review objections
-(LLM2Jev substance). The demo outcome is `review_invalid` with a
-verify-pass candidate and a twice-raised substantive objection --
-reviewers should judge whether the machinery's termination +
-presentation (pending_author_decision, options A/B/C) is the correct
-governed behaviour, not whether the prose is publishable (it is
-explicitly NOT approved). No PUB-08 work, no Mission UI, no
-commit/push until the gate closes. Worker runs only the demo
-dispatches (4 done, $0.00706); no further paid calls without author
-direction.
+**PUB-07 fix batch 2026-11-25 (D-PUB-81) + coordinator close-out (D-PUB-64 fail-closed spend incl. non-finite rejection, D-PUB-65/66/67 trust roots, D-PUB-68 chain digest + canonicalisation scoping, R1 numbers, R4 handoff, R5 blind spots). VERIFIED in-session on the final tree: transformation 83 + CLI 9 + automation 40 collected = 132 passed (combined run); full delta gate 592 passed + 1 strict xfailed (held-cx15) / 0 failed, independently reproduced by coordinator AND DeepSeek; ruff clean; catalog 167; Jev clean ($0 new spend on verification); worker probe server stopped after use.**
 
-**PUB-07 fix batch 2026-11-25 (D-PUB-81; this task authorises the
-bounded spend).** Code + pins + docs done (fast gate 576+1/0,
-workbench 35/0, ruff clean; run-1 archived with analysis). ONE bounded
-re-run of the affected package is authorised (expect small $) but
-currently BLOCKED by Worker auth (authentication_failed for
-opencode-go, non-retryable, $0 spent; run-1 bytes intact). When the
-Worker path recovers: (1) re-run `transform automate` for the single
-package into `pub07/ch02/`; (2) rebuild proposal + approval record
-with Fix F supersede annotations; (3) refresh review-pack numbers;
-(4) re-verify (fast gate + live chain + catalog + Jev clean + spend
-ledger) and issue the Codex/DeepSeek/Claude delta prompts. No PUB-08
-until the deltas close.
+Bounded re-run EXECUTED by coordinator in a credential-bearing shell (fix batch is code-only, zero live dispatches by design): `transform automate jev 02-chapter` (same package/inputs): outcome **review_accepted** (no correction loop needed -- reviewer accepted), **2 dispatches, $0.0039864** (1 editorial deepseek-v4.1-flash 8246 tok + 1 review haiku $0/5678 tok), spend cap enforced pre-dispatch, verify **15/15 pass**, candidate fp **`9f36c9ba…`** (355 lines, LF-normalised bytes), chain after==candidate asserted and independently recomputed MATCH. The re-run exposed + resolved one real defect: the interim "new CX10 HIGH" was a cross-table false-positive join (prose on both sides of the Willard table glued into one "run"), removed by the PUB-04 structural-break fix (verified gone; final book-wide book scan unchanged at the pre-existing baseline). Temp evidence cleaned; probe Worker stopped after the gate closed.
 
-**PUB-06 ACCEPTED by author 2026-11-24 (in-session verification record accepted as sufficient; Codex delta outstanding at close and triaged as PUB-07 hardening unless it evidences a consequential defect -- no PUB-06 reopen). 7/12 accepted.**
-Close-out evidence accepted as satisfactory; no additional review
-cycle or implementation work required unless Codex identifies a
-substantive defect. Baseline: 545 passed + 1 strict xfail / 0
-unexpected failures; 21/21 preservation; Claude 10/10 regions PASS;
-canonical plan hash independently matched; candidate `f6c1cbf4…`;
-catalog 167; Jev unmodified; 0 dispatches; Codex delta outstanding.
-**Standing authorization executed: PUB-06 recorded ACCEPTED (7/12) above on the in-session verification record per author direction; late Codex delta triaged as PUB-07 hardening unless substantive. Tracker + PUB-07/PUB-08 scope per D-PUB-69…74 stand as the author specified.** PUB-07 must demonstrate real production execution
-(findings → plan → Worker dispatch → candidate → independent review
-→ bounded corrections → Workbench staging → approval) built by
-Muse but performed by the machinery itself. Outstanding obligations
-carried forward unchanged: author-side research questions, semantic
-verification limits, derived-artifact revalidation, detector-version
-binding, full-chapter human assessment. Basis remains the supplied
-verification reports, not direct author inspection.
+**Returned verdicts on the final tree / bytes: DeepSeek CONDITIONAL (all deterministic checks pass; R1 numbers corrected here: 38→39, CX10 1→1 HIGH gone, neighbours 260+1xf within the 592+1xf gate; R3 chain binding independently recomputed MATCH + canonicalisation narrowed with pins; R4 handoff supersede-noted incl. all [FILL]s filled; R5 blind spots recorded); Claude editorial delta CONFIRMED on the new bytes (BLOCKED cleared → ACCEPT as governed output, pending author release; paragraph split real, gloss gone, rest matches run 1, LLM2Jev paragraph unchanged source). Author final-gate instructions 2026-11-25: run-1 line-138 synthesis DELETED by author direction (D-PUB-82, run-1 artifact unmodified; rerun independently checked — defect absent, no correction proposed); run-1/rerun records stay distinct with promotion deferred (D-PUB-83); PUB-08 attribution mandate recorded (D-PUB-84). Outstanding: DeepSeek delta re-verify (fallback `deepseek-v4.1-flash` after the free variant proved unavailable). RECEIVED since: Codex delta ACCEPT 2026-11-25 (all 4 BLOCKED items CLOSED on the rerun bytes, digests independently recomputed MATCH, focused suites 40+83+9+14 green, $0) and Claude delta re-read (ACCEPT with one style edit: delete rerun line 155; gloss/LLM2Jev-confinement clean). On ACCEPT/CONDITIONAL-minor: record PUB-07 conditionally complete / proceed to author verdict + PUB-08 prep. On substantive BLOCKED: single surgical fix batch, then close. No PUB-08 until the gate closes. Worker auth infra note stands (D-PUB-78 follow-up filed as owning-team work).**
 
-Fix-batch-2 tree delta (verified this session): writer
-`publication_transformation.py` (always-revalidate compile with
-fail-closed conjunction + `binding_digest` + `supplied_boundary_
-mismatch`; claim-presence + dict-parity + fail-closed
-`_restrict_unresolved`; live preservation rehydration from re-run
-detectors + live states with materiality scope),
-`cli/commands/transform.py` (live inputs + book/chapter threaded
-through `check` and through both revalidate and `compile` in
-`package`; non-zero exit on non-executable boundary kept),
-`tests/core/test_publication_transformation.py` (65→76: 4 fixtures
-re-pinned honest + 9 new behavioural pins + close-out gates),
-`tests/cli/test_transform_cli.py` (new, 2 CLI exit-code pins);
-mission `pub06/` (candidate `f6c1cbf4…` 606 lines + regenerated
-boundary/packages gate files with binding digests + verification
-21/21 + hash-chained record + before-after (updated to final bytes,
-R5 revert + stub-row deferral noted) + 207-line pre-polish diff;
-`adjudications-ch1.json`, live states/digest untouched inputs).
-Full gate (final tree): transformation 76 + CLI 2 + neighbours = 545
-passed + 1 strict xfail (held-cx15) / 0 failed, ruff clean; live Ch1 46 / Ch2 (not
-re-run, unchanged code path) / Ch9 (not re-run) -- Ch1 chain exact:
-cruft 1/11/9 fp `43597470…`, complex 38→39 (no HIGH; CX02 8→9, CX05
-2→4, CX13 1→2, CX11 5→4, CX14 8→6), pedag 46 (11/17/6/9/3)
-validates, boundary executable 44/1/1, packages 7/17/12
-authenticated, verify pass 21/21 on final bytes; catalog 167; Jev `c7aaad7` clean
-(pre-existing `scripts/` only); zero engine dispatches; $0; no
-commits/pushes; Temp cleaned.
-Coordinator close-out items carried (verified, not redone): D-PUB-64
-gates + 6 pins re-run green (either-provenance, no-fallback,
-non-executable isolation, unbound adjudication, missing record fps,
-chain-digest stability); candidate R1/R2/R5 prose verified present (roadmap qualifier, policy-
-shaped hedge, Tam sense, per-lane 25-char distinction, naive-index
-qualifier, four-lane desc, Fig 1.2 after 1.1); R5 lane-3 alt +
-R4 wording aligned. Writer-tree attribution caveat: PUB-06 touches
-only its own files — new `publication_transformation.py`,
-`commands/transform.py`, `test_publication_transformation.py` (+2 new
-CLI tests); `main.py` registration + `docs/cli/INDEX.md` rows are
-shared with concurrent owning-team/stage work (see handover for the
-exact `git status`).
-
-**Post-record candidate drift (found and resolved this session, prose untouched by
-this batch).** The 23:02 record described `bb95457e…` (604 lines);
-the candidate on disk was `f6c1cbf4…` (606 lines, written 23:17, after
-the record and after `before-after.md`). Per the stage brief the
-chain was rebuilt on current bytes via the builder (after ==
-candidate asserted; gate files + diff regenerated). The rebuilt
-after-state initially read complexity 38→40 with a new CX10-high on
-the Willard fragment -- coordinator investigation proved it a
-cross-table false-positive join (prose on both sides of the table
-glued into one "run"), removed by the PUB-04 structural-break fix
-(iterate all blocks, break on structural blocks; 2 pins). Final
-after-state: cruft 1→1 (11→12 preserved, unchanged), complexity
-38→39 (CX02 8→9, CX05 2→4, CX13 1→2, CX11 5→4, CX10 1→1 -- HIGH gone;
-CX14 8→6). `before-after.md` updated to the final bytes (fingerprint,
-38→39 table, polish-note list). No prose edits by this batch; the
-fingerprint delta vs the record is formatting/whitespace-level only
-(verified: 21/21 pass on final bytes, record rebuilt to match).
-
-Prior close-out record (2026-11-24, coordinator-executed, retained
-for provenance; do not reopen without evidence of a consequential
-defect):
-
-PUB-06 fix-batch tree delta (verified this session): writer
-`publication_transformation.py` (D-PUB-56…61 hardening + D-PUB-64
-fail-closed: either-provenance-missing, no candidate-fp fallback,
-non-executable boundary isolation with CLI non-zero, unbound
-adjudication rejection, required record fingerprints),
-`cli/commands/transform.py` (live states/digest/adjudications wiring
-+ package non-zero exit on non-executable boundary),
-`tests/core/test_publication_transformation.py` (60→65: unbound
-adjudication, either-provenance, no-fallback, boundary isolation,
-missing record fps) + fix batch 2 (65→74 + 2 CLI pins, D-PUB-65/66/67;
-see §6 head entry); Jev
-`c7aaad7` clean (pre-existing `scripts/` only); mission `pub06/`
-(ch01 candidate `f6c1cbf4…` 606 lines -- post-record drift from recorded
-`bb95457e…`, chain rebuilt fix batch 2 -- + assets + verification 21/21
-(cruft 1→1; complexity 38→40, see §6) + record with hash-chain +
-before-after (assessment record, untouched) + plan-ch1.json +
-adjudications-ch1.json (bound) + live states/digest + boundary/packages
-gate files, passages, refreshed review-pack incl. `claude-report.md`)
-untracked KEEP artifacts. Coordinator full gate: 532 passed + 1 xfailed
-/ 0 failed, ruff clean, live Ch1 46 / Ch2 46 / Ch7 49 (UPDATE present,
-evidence_blocked per pre-existing status logic) / Ch9 62 all validate,
-book scan 36 chapters / 1398 ops / 0 invalid (mix identical to
-baseline), catalog 167, $0, no commits/pushes. Zero engine dispatches; editorial generation
-spend separately recorded (muse-spark-1.3/opencode-session/$0); no
-commits/pushes. `mission/.writer/writer.db` git-ignored side effect
-recorded (D-PUB-63), Temp cleaned.
-
-**PUB-07 review gate -- Claude editorial read (received 2026-11-25): CONDITIONAL (BLOCKED cleared).** Scored 765 original / 760 candidate (provisional; defects override). Findings: (1) paragraph-split unrealised -- candidate 133-138 renders as one paragraph, assembly must realise line breaks (code defect, queued for fix batch); (2) unreviewed new gloss + "real/not rhetorical" certainty shift; (3) stale LLM2Jev objection vs on-disk attempt-2 bytes; (4) ledger/rationale read-depth conflict. Specified edits recorded for the fix batch + Claude delta re-review on new bytes. Residual: full-chapter re-read remains author-side. Disposition: fix assembly in code and re-run the pipeline (no hand-editing the candidate -- that would break dispatch provenance).
-
-**PUB-07 review gate -- Codex architecture review (received 2026-11-25): BLOCKED.** Four substantive defects, all in review/dispatch plumbing (candidate prose itself accepted as-is editorially): (1) stale candidate_text in the review-driven correction loop -- excerpt sliced with source line numbers, corrected lines not re-bound, so the recorded invalid-verdict cause is a code defect, not a reviewer failure; (2) final per-line lineage describes the earlier candidate, replacement discards relines/relin -- candidate-to-lineage mismatch (133-138 six lines vs 0-11 indexes); (3) spend hard cap is post-run reporting, not a pre-dispatch guard, and --spend-cap is caller-adjustable; (4) dispatch provenance not cryptographically joined to candidate/proposal -- ledger stored separately, builder requires only non-empty entries + passing verdict, check_proposal_fresh ignores the replacement hash, no record-chain reference. Confirmed sound: existing transport path only (no new gateway/client), fail-closed boundary + recompilation (except spend), safe halt with no approval/apply, semantic limits honestly documented (D-PUB-70/74). Pending: DeepSeek regression verdict; then ONE combined fix batch for Codex + Claude items.
-
-**PUB-07 review gate -- all three verdicts received 2026-11-25:**
-- Codex: BLOCKED (4 substantive: stale candidate_text in review loop; discarded relin lineage; post-run spend cap + caller-adjustable; dispatch provenance not hash-joined to candidate/proposal).
-- DeepSeek: CONDITIONAL (F1 review window must scope to replacement region; F2 rebind candidate_text + final_lineage before final review; F3 pins incl. shorter/longer corrections and corrected-only quotes; F4 annotate program.json/approval-decision + docs rather than silently rewriting evidence; F5 optional normalisation of after-fp form + intent path spelling).
-- Claude: CONDITIONAL (BLOCKED cleared; candidate prose faithful with fixable defects; paragraph-split unrealised in bytes; two small certainty shifts; stale LLM2Jev objection vs attempt-2 bytes; ledger/rationale read-depth conflict; specified edits + delta re-read required).
-Corroboration note: Codex F1/F2 and DeepSeek F1/F2 are the SAME two defects found independently (stale review bytes, dropped lineage) -- treat as confirmed. Fix batch (single, combined) authorised below; delta re-review to follow (Codex confirm, DeepSeek re-verify, Claude delta on new bytes).
-
-## PUB-07 infrastructure note (coordinator-verified 2026-11-25, blocks the re-run, not a code defect)
-
-Muse fix batch 2 reported Worker authentication_failed (opencode-go, non-retryable, 5 attempts with request IDs). Coordinator diagnosis in-session: a stale Worker (PID 20652, started 08:02) was still listening on :7317 although the batch reported its instance stopped; its provider-state lattice held the 08:48 AUTHENTICATION_FAILED with retry_at null and retry_source NONE. A FRESH server started in a credential-bearing shell reports routes admissible, not blocked. One live probe dispatch through the exact production path (Writer run_typed_task to Worker POST /v1/work to opencode-go/deepseek-v4.1-flash) SUCCEEDED (73 in / 3 out tokens; the only failure was the probes own DTO expecting JSON for a bare-text reply -- i.e. schema validation working as designed). Conclusion: the upstream path is healthy; the batch failure was environmental (Worker process without usable upstream credentials in the subagent shell) compounded by a real robustness gap: a recorded AUTHENTICATION_FAILED latches to BLOCKED with no retry ever scheduled, so one bad hour poisons the Worker until restart. The batch re-run must (a) verify routes admissible via /health BEFORE dispatching (fail fast with a clear message otherwise), and (b) inherit a credential-bearing env. Worker-side follow-up (owning team): schedule a retry/backoff instead of latching BLOCKED forever. Probe server left running for the re-run; stop it after the gate closes.
-
-## 11. PUB-05 review verdict (closed 2026-11-24, author direction)
+## 11. PUB-05 (closed 2026-11-24, author direction)
 
 PUB-05 **ACCEPTED**. Basis: reported implementation (deterministic
 pedagogical planner + plan/validator/freshness contracts + 12-code

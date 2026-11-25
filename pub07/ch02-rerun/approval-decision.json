@@ -1,0 +1,108 @@
+{
+ "decision_id": "pub07-ch02-decision-02",
+ "decision": "pending_author_decision",
+ "action": "none",
+ "approval": {
+  "status": "pending_author_decision",
+  "approved_by": null,
+  "note": "Candidate-generation autonomy exercised; publication-acceptance autonomy NOT exercised. No auto-approval, no auto-apply (D-PUB-71)."
+ },
+ "supersedes": {
+  "prior_decision": "pub07/ch02-superseded-run1/approval-decision.json (decision pub07-ch02-decision-01)",
+  "prior_program": "pub07/ch02-superseded-run1/program.json",
+  "why": "Run-1 review excerpts were sliced by the ORIGINAL span end (Fix A): round 1 leaked 2 trailing source lines, round 2 leaked 8 lines including the source's own LLM2Jev paragraph. The run-1 LLM2Jev objection was therefore raised against LEAKED SOURCE BYTES, not the revision; and the final-round quote_not_in_either_passage failure on 'a resemblance, not a demonstrated equivalence' was spurious (the sentence exists only in the corrected text; validation consumed stale whole-chapter bytes, Fix B). Both narratives are superseded by this re-run's fixed-window review; originals stay visible in the archive, never edited.",
+  "ledger_213_correction": "Run-1 rationales miscited the read status ('section 4 read', 'section 3.4'). Ledger 2.13 is: abstract + section 1 + section 3.3 PARTIAL read; section 4 NOT read (verified against evidence/ledger.md 2026-11-25). The plan's frozen obligation text keeps its own spelling; this record corrects it without editing the frozen plan.",
+  "spend_note": "4 pre-re-run BLOCKED $0 attempts (authentication_failed for opencode-go, non-retryable, pre-inference) are NOT publication spend; 2 are recorded in C:/Temp probe ledgers (cleaned per boundary) and all are disclosed in the fix-batch report, so no dispatch is unrecorded."
+ },
+ "candidate_provenance": {
+  "assembly": "in-memory splice of validated dispatch output into byte-copied chapter lines; per-line origin lineage in program.json; paragraph breaks realised in the bytes (Fix E)",
+  "deterministic_checks": "verify_candidate 15/15 pass (byte-true, no-change, honesty, cruft/complexity deltas informative)",
+  "dispatches": [
+   {
+    "cost_usd": 0.0039864,
+    "model": "opencode-go/deepseek-v4.1-flash",
+    "provider": "pi",
+    "role": "editorial",
+    "route": "default_deepseek_go",
+    "writer_execution_id": "model-exec-6bb706fa15b2"
+   },
+   {
+    "cost_usd": 0,
+    "model": "opencode-go/claude-haiku-5-5",
+    "provider": "pi",
+    "role": "verification",
+    "route": "default_haiku_go",
+    "writer_execution_id": "model-exec-0c839aecd667"
+   }
+  ],
+  "editorial_model": "opencode-go/deepseek-v4.1-flash (default_deepseek_go, subscription)",
+  "review_model": "opencode-go/claude-haiku-5-5 (default_haiku_go, independent family)",
+  "total_cost_usd": 0.0039864,
+  "total_tokens": 13924,
+  "evidence_labels": "candidate MODEL_JUDGEMENT; review INDEPENDENT_REVIEW (disclosed identity, separate family); deterministic checks MEASURED_TEXT",
+  "provider_usage_notes": [
+   {
+    "writer_execution_id": "model-exec-0c839aecd667",
+    "model": "opencode-go/claude-haiku-5-5",
+    "route": "default_haiku_go",
+    "input_tokens": 4,
+    "output_tokens": 3194,
+    "total_tokens": 5678,
+    "note": "provider-reported usage internally inconsistent (input + output != total); recorded verbatim, never smoothed; cost unaffected (cost_usd kept as reported); flagged for Worker owner awareness, no programme action (D-PUB-79)."
+   }
+  ]
+ },
+ "correction_loop": {
+  "attempts_used": "editorial 1 + review 1 = 2 total",
+  "outcome": "review_accepted",
+  "spend_policy": {
+   "cap_usd": 10.0,
+   "override_explicit": false,
+   "projected_cost_usd": 0.0039864,
+   "pre_dispatch_enforced": true
+  }
+ },
+ "review_outcome": {
+  "final": "review_accepted",
+  "rounds": [
+   {
+    "validation": [],
+    "verdict": "accept",
+    "excerpt": {
+     "start_line": 133,
+     "end_line": 155
+    }
+   }
+  ]
+ },
+ "open_objections": [],
+ "options_for_author": [
+  "A) Accept the candidate region pending full-chapter author read.",
+  "B) Adjudicate any remaining review point first, then decide.",
+  "C) Decline the package; keep source bytes (KEEP) and record the rationale."
+ ],
+ "recommendation": "Do NOT treat deterministic checks as meaning preservation (D-PUB-70/74). Decide on the re-run's fixed-window review, not the superseded run-1 narrative.",
+ "artifacts": {
+  "candidate": {
+   "path": "pub07/ch02/candidate.md",
+   "bytes": 20239,
+   "fingerprint": "9f36c9ba2c0fb7c6abb57ba448877aad65b4e0d490f660c9f59986e395a02b82"
+  },
+  "program": "pub07/ch02/program.json (outcome review_accepted)",
+  "proposal": {
+   "id": "pub07-ch02-p001",
+   "path": "pub07/ch02/proposal.json",
+   "status": "pending",
+   "fresh": true
+  },
+  "staged": "pub07/ch02/staged.json (design_only, fixture_only)",
+  "transformation_record": "pub07/ch02/transformation-record.json (writer.transform.record.v1 + dispatch_ledger + chain.ledger_digest)",
+  "verification": "pub07/ch02/verification.json (15/15 pass)"
+ },
+ "safety": [
+  "No unsupervised authoritative mutation: Jev tree read-only in this script (chapter bytes hashed, never written).",
+  "No automatic publication approval: status stays pending_author_decision.",
+  "Workbench accept/undo never invoked; proposal pub07-ch02-p001 stays pending."
+ ],
+ "recorded_at": "2026-11-25T00:00:00Z"
+}

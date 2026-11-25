@@ -11,9 +11,13 @@ earlier specified edits are the acceptance bar for the new bytes.
 
 - Source: `C:\books\jev\content\books\jev\02-chapter.md`, lines 133-146
   (section "Nine older mechanisms, seven properties") — unchanged.
-- NEW candidate: `C:\Projects\mission\pub07\ch02\candidate.md`
-  (dispatch region [FILL lines]; the chapter reconverges after it).
-- NEW objections: `pub07/ch02/approval-decision.json`
+- NEW candidate: `C:\Projects\mission\pub07\ch02-rerun\candidate.md`
+  (dispatch region lines 133–155; the chapter reconverges after it).
+  (`pub07/ch02/candidate.md` on disk still holds the run-1 bytes
+  `50e1ef2e…`, 338 lines — identical to the archive — pending the
+  author's promotion decision; the rerun record names `pub07/ch02/`
+  as the promotion target. Judge the ch02-rerun bytes here.)
+- NEW objections: `pub07/ch02-rerun/approval-decision.json`
   (`open_objections`, `review_outcome`, `supersedes` — read the
   supersede note FIRST; the run-1 LLM2Jev objection was raised against
   leaked source bytes and is preserved only in

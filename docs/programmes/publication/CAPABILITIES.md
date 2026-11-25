@@ -1027,8 +1027,8 @@ re-confirm + DeepSeek delta re-verify)
   Zero authoritative mutation (Jev `c7aaad7` clean; Worker + Writer
   state untouched outside their own stores).
 
-- PUB-07 fix batch (D-PUB-81, 2026-11-25; code + pins + docs, re-run
-  pending Worker recovery): review excerpt scoped to the replacement
+- PUB-07 fix batch (D-PUB-81, 2026-11-25; code + pins + docs) +
+  coordinator close-out (+9 pins): review excerpt scoped to the replacement
   lineage range (Fix A); candidate + lineage rebound after correction
   with excerpt-exact review validation (Fix B); pre-dispatch spend
   guard with projection + explicit override bookkeeping in ledger +
@@ -1038,13 +1038,23 @@ re-confirm + DeepSeek delta re-verify)
   (Fix D); paragraph-break assembly + no-gloss/no-section-citation
   prompt discipline (Fix E); LF + slash canonical digest forms shared
   by Writer and Workbench with a pinned cross-compat vector, ledger
-  digest stripping per-row `latency_ms` (Fix G). Regression pins: 11
-  automation + 4 transformation + 1 CLI + 4 bridge. Fast gate 576
-  passed + 1 strict xfailed (held-cx15) / 0 failed; workbench
+  digest stripping per-row `latency_ms` (Fix G); per-round review-state
+  binding revalidation failing closed with `halted_stale_binding` on
+  mismatch (Fix B hardening, 3 pins) + Ch2-shape paragraph-assembly pin
+  (Fix E). Per-file collected on the settled tree: transformation 83 +
+  CLI 9 + automation 40 (= 132 combined passed); full delta gate 593
+  collected (592 passed + 1 strict xfailed held-cx15) / 0 failed —
+  supersedes the 584/583 fix-batch-time count; workbench
   neighbours 35/0; ruff clean. Run-1 artifacts preserved verbatim in
   `pub07/ch02-superseded-run1/` with the stale-window /
   spurious-quote-failure analysis; Fix F annotations land on the
-  re-run's records (not by editing history). Re-run attempted once
-  into a temp dir: Worker BLOCKED on opencode-go auth
-  (authentication_failed, non-retryable; $0). Live numbers above are
-  the run-1 verified set until the re-run lands.
+  re-run's records (not by editing history). Bounded re-run EXECUTED
+  by the coordinator in a credential-bearing shell (the 08:48 UTC temp-dir
+  attempt was Worker-BLOCKED on opencode-go auth, authentication_failed,
+  non-retryable, $0): outcome review_accepted, 2 dispatches $0.0039864
+  (editorial deepseek-v4.1-flash 8246 tok + review haiku $0/5678 tok,
+  13,924 tok total), spend cap $10 enforced pre-dispatch
+  (override_explicit false), verify 15/15 pass, candidate `9f36c9ba…`
+  (355 lines, 20,239 bytes, LF, chain after==candidate asserted;
+  `pub07/ch02-rerun/`; `pub07/ch02/` on disk still holds the run-1
+  bytes `50e1ef2e…` 338 lines pending the author's promotion decision).
