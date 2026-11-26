@@ -1306,6 +1306,8 @@ layer); (c) 60 s Worker timeout / 2,000-token default are insufficient for a
 full chapter, so an adequate budget and model must be chosen before any
 production run; (d) the demonstrated local Mistral output is not publishable.
 
+**Commit:** 289e17a8baf79f2f8d1b9280826360cbaac1a20b - 9 files, PUB-09 + PUB-09B implementation, tests and canonical docs only. Unrelated concurrent work (improvement workspace, STEPHANIE/HARNESS docs, pub08 artifacts) deliberately excluded and left uncommitted. Not pushed (no push authorization).
+
 **Commit scope (PUB-09 + PUB-09B), no staging performed.** Add
 `backend/mission_control/publication/improvements.py`,
 `backend/tests/test_mc_publishing_improvement.py`; modify
