@@ -1,6 +1,6 @@
 # PUBLICATION State
 
-**Updated:** 2026-11-25 (PUB-07 ACCEPTED 8/12; PUB-08 authorized and active — reuse research + experimental design. No PUB-08 paid inference authorized yet.)
+**Updated:** 2026-11-26 (PUB-09 ACCEPTED 10/12; PUB-08 ACCEPTED 9/12 within demonstrated machine-evaluation scope, D-PUB-87; human blinded assessment DEFERRED to PUB-10 as author-side obligation, not passed/failed/unnecessary; PUB-09 ACCEPTED 10/12 with two independent-review rounds (round 1 BLOCKED, round 2 ACCEPTED); 4 blockers fixed with tests. PUB-10 next. No PUB-08 paid inference beyond the $1.00 cap actuals; no replicate 2.)
 
 ## 1. Current position
 
@@ -934,6 +934,393 @@ B1 partial coverage; C6 is property-scoped; pairwise exploratory;
 reader recovery unassessed. Architectural hypothesis recorded, not
 decided: whole-chapter reconstruction + targeted correction as
 sequential modes.
+
+**PUB-08 CLOSED 2026-11-25 (author direction): ACCEPTED within its
+demonstrated machine-evaluation scope (D-PUB-87; TRADE-OFF sustained,
+pipeline value-add is VERIFICATION not generation, replicate-2 AGAINST).
+Human blinded assessment (W/X/Y/Z package + withheld mapping, verified
+intact above) is DEFERRED to PUB-10 as an author-side obligation —
+recorded as deferred, not completed, passed, failed, or unnecessary.
+No replicate 2. No additional PUB-08 experiments. No PUB-08 paid
+inference beyond recorded $0.0703 / $1.00 actuals. Programme 9/12.
+PUB-09 authorized (primary implementation agent Muse); PUB-10 pending.**
+
+## 7. PUB-09 implementation (in progress 2026-11-25, uncommitted, backend predates slice)
+
+Reuse/integration matrix: `docs/programmes/publication/PUB09-REUSE-MATRIX.md`
+(mandatory Writer catalog reference: 167 manifests, 15 pilot runtimes with
+real adapters; Mission surfaces reused, 6 genuine gaps, explicit non-build
+list). v1 slice implemented, all read-only except pre-existing write
+endpoints:
+
+- Backend: `GET /api/publication/publishing/chapters` (per-chapter state
+  unknown/stale/assessed/unassessed from Writer registry + latest
+  assessment fingerprint + issue/followup chapter references; zero
+  findings never reported as success) and `GET
+  /api/publication/publishing/candidates` + `/candidates/{id}/body`
+  (allow-listed retained pub06/pub07/pub08 experimental records with
+  recorded verification summaries; bodies bounded, read-only).
+- Frontend: tabbed `BookPublishingPage` (Overview/Chapters/Evidence/
+  Editorial/Candidates/Review/Publish) reusing existing gates/evidence/
+  blockers/followups/assessment sections; new Chapters (filterable,
+  provenance-linked), Editorial (issues grouped by chapter + deep links
+  to quality/technical tabs), Candidates (retained records +
+  BookMarkdown reading + original-vs-candidate views), Review
+  (approval form with fingerprint-bound snapshot semantics + per-issue
+  ACCEPT/REJECT/DEFER/ACCEPT LIMITATION/REQUEST RECHECK wired to
+  existing endpoints; non-waivable issues cannot be accepted), Publish
+  (readiness derived from gates/blockers/approvals; no release action —
+  PUB-10 work).
+- Tests: backend publishing suite 27/27 (7 new: unknown-project 404,
+  unknown/unassessed/stale/assessed states, candidate allow-list +
+  body); frontend Publishing 5/5 incl. new tabs test; `tsc` clean;
+  `ruff` clean. Full frontend suite not re-run (focused + neighbours
+  per policy; runs at handover with build).
+- Semantic extraction NOT wired (backend governed route disabled;
+  local Ollama exists but ungated use would bypass budget/validation —
+  not attempted). Human-reviewed path used; deepseek-v4.1-flash-free
+  probe 2026-11-25 → 429 again, no further retries.
+- Pending: operator backend restart (running backend predates this
+  slice), production build, live Jev demonstration (§23), focused
+  Codex (`gpt-6-luna` architecture) + DeepSeek review prompts (below),
+  final full-suite + build + browser pass, authorized commit.
+- Review prompts (focused, single round, no paid inference without
+  authorization): Codex — verify §3 reuse claims against cited
+  implementation (no duplicate registry/gateway/mutation path; chapter
+  state semantics; candidate allow-list safety; approval gating
+  parity with `service.approve` rules). DeepSeek free — reproduce the
+  new backend tests + API contracts (chapters states, 404s,
+  candidate bounds) and the frontend tab/error/empty-state matrix.
+
+## 8. PUB-09 operational acceptance (in progress 2026-11-26)
+
+- Controlled restart (operator, 2026-11-25 ~22:48 UTC): pre-restart
+  health ok, no active jobs (all runs synchronous, scheduler off),
+  tree changes preserved. Backend serves w4-v2 + harness fix +
+  PUB-09 chapters/candidates endpoints (verified live pre-restart:
+  Jev harness 200+ledger-flag; chapters endpoint lists all 36 Jev
+  chapters).
+- 2026-11-26 ~09:50 UTC: machine restart took PostgreSQL offline; PG
+  in crash recovery ("the database system is starting up") for 25+ min
+  and counting. No PG data touched (operator-owned infrastructure).
+  Live acceptance (browser demo, endpoint verification of PUB-09
+  fixes) is blocked until the database recovers; all code, tests,
+  build, and docs are complete and green.
+- 2026-11-26: database recovered intact (126 tables, schema v54);
+  backend relaunched (controlled restart, existing mechanism,
+  detached with log file); health ok. LIVE VERIFICATION PASSED:
+  chapters endpoint returns all 36 Jev chapters with real TOML titles
+  ("Stop Generating", "The First Token", …), assessment fingerprint
+  MATCH (scope fix verified — assessment pubass:e0619… vs current
+  sources), candidates endpoint serves all 5 retained records with
+  byte counts; 08C re-evaluated live → `complete`/sound/good, 0 model
+  calls. Browser: all 7 tabs render with zero console errors;
+  Chapters/Candidates/reading views asserted by text (9/10 checks,
+  1 benign text-match artifact disproven by element check);
+  screenshots pub09-tabs/chapters/candidate-read. Spend remains
+  $0.00, 0 model calls. Remaining: paid-budget independent reviews,
+  authorized commit, PUB-10 release/workflow execution.
+- Live defects found and fixed pre-handover: chapter titles showed
+  filenames (Jev uses TOML frontmatter `title = ...`, not `# `
+  headings — parser fixed); per-chapter staleness compared the wrong
+  scope (assessment covers numbered-chapter files only, book
+  fingerprint covers all `*.md` incl. `_index.md` — false `stale` on
+  every chapter; now compares the assessment's own scope and reports
+  both). Both covered by regression tests.
+- Workflow audit (action matrix, verified against implementation):
+  1 assess chapter: prepared, not connected; 2 reassess stale:
+  OPERATIONAL (assessment refresh + followup recheck, UI-wired);
+  3 assess book: OPERATIONAL (POST + UI; live assessment
+  pubass:e0619… created 2026-11-25); 4 reconcile research: Writer CLI
+  only, no MC endpoint (unsupported in MC); 5 request improvement:
+  UNSUPPORTED in MC (smallest integration: typed-task dispatch via
+  Worker + envelope, harness pattern); 6 whole-chapter reconstruction:
+  UNSUPPORTED (no engine; provisional strategy only);
+  7 targeted transformation: via Workbench chapter_apply (separate
+  app), not MC; 8 generate candidate: UNSUPPORTED in MC;
+  9 semantic verification: prepared, not connected (record endpoints
+  exist, no execution); 10 further refinement: UNSUPPORTED (depends
+  on 8); 11 review candidate: PARTIAL (v1 reading views + recorded
+  verification; no formal candidate-verdict record);
+  12 stage candidate: via Workbench (separate app);
+  13 governed application: Workbench chapter_apply sole path (MC never
+  mutates — verified, no such endpoint exists). Net: inspection +
+  review + readiness are operational; generation and execution
+  dispatch are the explicit gap for PUB-10 scoping.
+- Whole-chapter strategy: investigate via existing GENERATE adapters +
+  verification loop; NOT demonstrated end-to-end; presented as
+  provisional in UI copy and docs, never as established superiority.
+- Review safety: human identity required (buttons disabled without
+  reviewer; backend refuses system/model); approvals bind one snapshot
+  (stale/BLOCKED refused with explicit errors); acceptance ≠
+  technical verification ≠ application ≠ publication; no artificial
+  approvals recorded (all live rows are operator- or test-created).
+- Independent reviews: DeepSeek free 429 (no retry); Codex gpt-6-luna
+  requires paid authorization (not requested, not invoked). Prompts in
+  §7 stand.
+- Test evidence: backend publishing 22/22 incl. 7 new (states, 404s,
+  candidate allow-list/body, scope-correct staleness); frontend
+  Publishing 6/6 incl. tabs + reviewer-gating; tsc clean; ruff clean
+  on touched files (7 pre-existing ruff hits in untouched
+  calibration.py/service.py left with owner).
+- Commit preparation (inventory only, no staging performed): PUB-09
+  scope = backend/mission_control/publication/publishing.py,
+  backend/mission_control/api/publication.py,
+  backend/tests/test_mc_publishing_workbench.py,
+  frontend/src/pages/BookPublishingPage.tsx,
+  frontend/src/test/Publishing.test.tsx,
+  docs/programmes/publication/PUB09-REUSE-MATRIX.md + STATE.md
+  entries. Concurrent unrelated (do NOT include without owner say-so):
+  improvement/* backend+frontend+tests, envelopes.py, proposals.py,
+  ImprovementPage, STEPHANIE docs, HARNESS STAGE-LEDGER, publication
+  DECISIONS/STATE other hunks, pub08 artifacts, node_modules/.
+
+## 8b. PUB-09B improvement dispatch — LIVE (2026-11-26, uncommitted)
+
+Closes the §8 action-5 gap with the smallest integration, reusing every
+existing contract (no new gateway, ledger, registry, queue or mutation
+path).
+
+**Ownership (verified in code).** Mission Control owns request
+validation, envelope registration, Worker dispatch, progress inspection
+and candidate presentation. Writer owns determinism (`cruft review`,
+`complex review` invoked read-only through the installed CLI). Worker
+owns model routing, execution and usage telemetry. Workbench remains the
+sole manuscript-mutation path (untouched; no MC endpoint exists).
+Mission stores NO publication intelligence and never writes a
+manuscript.
+
+**Entry points.** `POST /api/publication/improvements` (validate →
+optional dry inspection → episode+objective → Work Envelope → free
+local-only route → Worker `/v1/work` → deterministic checks → record),
+`GET /api/publication/improvements`, `GET
+/api/publication/improvements/{id}` (adds live Worker status +
+`source_current` staleness), `GET .../{id}/body`. UI: `Improve chapter`
+on every chapter row (36 controls) opening strategy / mode / budget /
+actor / note; results open in Candidates under “Requested via Mission”.
+
+**Execution contract.** Modes `inspect` (validates + runs Writer scans;
+creates no episode, envelope or Worker request), `generate`,
+`generate+verify` (same dispatch plus deterministic validation).
+Strategies `targeted` and `whole-chapter` — both compose a bounded
+objective; whole-chapter is labelled PROVISIONAL in prompt and UI, never
+claimed superior. Every dispatch requires a human actor (system/model
+refused) plus an authorization note, is digest-bound in a Work Envelope,
+and is idempotent per submission id (duplicate → 409).
+
+**Budget and model policy.** Only free, `local_only` routes with a
+1–2-attempt local-only policy may be dispatched; paid inference is
+refused by construction (no budget knob can enable it). Route choice
+prefers the most capable local model (mistral:7b-instruct → mistral-small
+→ qwen 0.5B) rather than catalogue luck. Worker hard-caps
+`timeout_ms` at 60 000; the interface caps at 58 000 and 2 000 output
+tokens by default. Actual spend for the whole slice: **$0.00**, zero paid
+calls.
+
+**Live demonstration (real, not fixture).** Jev `25-chapter`
+(`d845b8c2…`, 11 282 bytes): inspect → Writer cruft + complexity scans
+both `available: true`; dispatch → Worker request
+`wrq_e1980e936b4af284fc6ddd3cfcb33147`, envelope
+`we:f9da6945f5d3427e`, episode `ep:task:PUB09B-25-chapter-1c665f81`,
+objective `obj:pub09b-16ecfbc0087f`, model `mistral:7b-instruct`,
+provider `h4_local`, policy `h5.local`, cost $0.00, 48.7 s,
+status `reported_complete`, deterministic checks pass, semantic
+`pending`. Candidate body 7 067 chars, retrievable via the API and the
+Candidates reading view. Source file fingerprint re-read after dispatch
+is unchanged (`d845b8c2…`). Honest history retained: an earlier
+`failed-…` record (Worker rejected `timeout_ms>60000`) and an earlier
+success without provenance are visible, not hidden.
+
+**Failure semantics (tested).** Worker non-200, invalid JSON, empty
+output, budget overrun and worker timeout all produce a recorded
+`failed` improvement with the Worker's own message; no candidate body is
+stored and the body endpoint reports unavailable. Worker outage remains
+503. Unknown project/chapter, bad strategy/mode, missing human identity,
+short note and out-of-range budget are 422; unknown improvement is 404.
+
+**Verification coverage (honest).** Fresh reconstructions have no
+plan-scoped Writer verification (`transform verify` requires a PUB-05
+plan binding the changed passages), and PUB-08 eval fabric is benchmark
+infrastructure rather than a per-candidate service. Every record
+therefore states `verification.status = pending` with that reason;
+deterministic checks (non-empty, no host paths, differs from original)
+are necessary, never sufficient. No semantic correctness is claimed.
+
+**Remaining gaps for PUB-10.** (a) plan-scoped verification of
+reconstructions (or a per-candidate semantic service) — owning domain
+Writer/PUB-08; (b) bounded correction loop — existing `transform
+automate`, currently CLI-only, not dispatched from MC; (c) Workbench
+staging/application request — separate owner-gated service; (d) reader
+study / human assessment — deferred by author decision.
+
+**Test evidence.** Backend `test_mc_publishing_improvement.py` 7/7
+(inspect-without-dispatch, validation matrix, paid-route refusal,
+Worker-unavailable, success+provenance+link+source-unchanged,
+failure-recorded, staleness) plus publishing 22/22 and harness 15/15
+(44 total green). Frontend 194/194 across 33 files incl. new
+Improve-chapter authorization test; `tsc` clean; production build clean;
+`ruff` clean on touched files. Live browser: 36 Improve controls, form
+fields present, Candidates shows model identity and pending semantic,
+zero console errors.
+
+**Independent reviews.** DeepSeek `opencode/deepseek-v4.1-flash-free`
+attempted once 2026-11-26 against a bounded PUB-09B packet (ownership,
+authorization, provenance, budget enforcement, failure honesty, semantic
+pending) → **429 FreeUsageLimitError**, verbatim as in §7; no retry loop
+per policy, no fallback invoked without authorization. Codex
+`gpt-6-luna` remains **uninvoked**: the $1.00 allocation is proposed but
+requires the author's explicit confirmation before any paid dispatch, and
+no confirmation was given. Independent review is therefore OUTSTANDING,
+not waived.
+
+## 8c. Chapter 25 completeness investigation (2026-11-26, deterministic, $0)
+
+The live demonstration candidate for `25-chapter` was measured against the
+original. Units are stated explicitly; no inference was performed.
+
+| Measure | Original | Candidate | Note |
+| --- | --- | --- | --- |
+| Bytes (UTF-8) | 11,114 | 7,069 | 64% of original |
+| Characters | 11,103 | 7,067 | |
+| Words | 1,699 | 1,121 | 66% of original |
+| Lines | 169 | 86 | |
+| Headings | 11 | 9 | 5 original headings absent |
+| Code fences | 8 | 2 | 2 build steps missing |
+| Verbatim substantive lines | — | 25/59 | 42% survival |
+| Numbers present | 50 | — | 18 absent (36%) |
+
+Findings (all deterministic):
+
+1. **Truncation/compression is likely.** The 2,000-token ceiling was
+   reached; the candidate is 66% of original length and stops at the cap.
+   A whole-chapter reconstruction cannot be produced under a 2,000-token
+   output budget at this chapter size.
+2. **Material sections are missing** — "The question", "The hypothesis
+   and prior work", "The build", and its two numbered build steps.
+3. **Core measurements are lost** — including `31.87%`, `50.91%`,
+   `185,445` claims; 18 of 50 numeric values absent.
+4. **Repetition artefact** — one paragraph repeats verbatim.
+5. **TOML front matter dropped** (title/weight/draft), so the candidate is
+   not directly applicable as a chapter file.
+6. **Structural artefact** — the candidate is wrapped in a stray code
+   fence and begins with one.
+
+Conclusion: **dispatch is proven; editorial transformation is not.**
+Deterministic validation passing must never be read as preservation. This
+configuration is not a production editing default.
+
+## 8d. Preservation warnings (narrow correction, 2026-11-26)
+
+Because the deterministic layer previously reported only non-empty, no
+host paths and "differs", a lossy rewrite read as clean. Added to
+`deterministic_validation` (five new checks, warnings not verdicts):
+
+- `quantitative_preserved` — numeric values present in the original but
+  absent from the candidate (warns at ≥3 lost and ≥25%).
+- `sections_preserved` — original headings absent from the candidate.
+- `no_repetition` — substantive paragraph repeated verbatim (fence-aware).
+- `front_matter_preserved` — TOML front matter dropped.
+- `fences_balanced` — odd code-fence count (truncation signal).
+
+`POST /api/publication/improvements/{id}/revalidate` re-runs these checks
+against the stored body and current source (read-only, no inference, no
+manuscript access beyond reading). The live Chapter 25 record was
+revalidated and now carries **4 warnings** (18/50 numbers, 5/11 headings,
+1 repeated paragraph, front matter). The Candidates UI shows the count
+and the full list. Warnings never change a record's `status`; they make
+loss visible without pretending to be semantic judgement.
+
+## 8e. PUB-10 mandatory prerequisites (before any authoritative application)
+
+1. Plan-scoped semantic verification for whole-chapter reconstruction
+   (owning domain: Writer) — currently `transform verify` needs a PUB-05
+   plan, so fresh reconstructions cannot be verified.
+2. Per-candidate forward preservation and backward grounding, with
+   defect attribution and explicit assessment coverage (PUB-08 machinery,
+   not yet a per-candidate service).
+3. Governed Workbench staging and application (sole mutation path;
+   untouched by Mission).
+4. Editorial model selection and output budgets appropriate to full
+   chapters — the demonstrated local `mistral:7b-instruct` at 2,000 tokens
+   is insufficient and must not become the production default.
+5. Resolution of the material author-side research obligations
+   (Jev self-test counts, predicate rerun, full-text sourcing, stub rows,
+   figure placement, Ch7 pointer, LLM2Jev ledger reconciliation).
+6. Human editorial approval (the deferred PUB-08 blinded read and the
+   chapter-level author decision).
+7. Generate Globally, Verify Locally preserved as the architecture; no
+   whole-chapter application without (1)–(3).
+
+## 8f. PUB-09 ACCEPTED (2026-11-26) — 10/12
+
+Independent review completed under the author's confirmed $1.00 allocation,
+Codex `gpt-6-luna` via the Go allowance route (locally recorded cost $0.00;
+allowance consumption is not retained locally). Streamlined single round +
+one delta round, as the review policy allows.
+
+**Round 1 — BLOCKED** (5 findings, 2 blockers):
+- B major — authorization/idempotency: a replay could create side effects
+  before the duplicate was detected.
+- E major — candidate discovery/integrity: a directory scan could surface an
+  unrelated or edited file as a candidate.
+- C major — budget wording implied a stronger guarantee than "free routes
+  only" can make.
+- D major — staleness visible only on the detail view.
+- I major — a ceiling-truncated chapter could read as a completed
+  transformation.
+- G minor — pending verification must not be diluted by deterministic checks.
+
+**Fixes (all tested):**
+- B: episode/objective identity derived from `sha256(submission_id)`; replay
+  returns 409 before any second side effect (test: one Worker POST, one
+  episode, one objective).
+- E: integrity gate — file name must equal record id, `kind` must be
+  `requested-execution`, project+chapter must resolve in the Writer registry,
+  ids must be file-name safe, and a recorded body fingerprint must match the
+  body. Rejections are counted and reported, not displayed. Legacy records
+  are adopted once (checks 1–4) then fingerprinted.
+- C: field renamed "Reported-cost ceiling (USD)" with inline explanation that
+  only free local-only routes are dispatchable and the ceiling guards
+  misreported cost, not a provider spend cap.
+- D: `source_current` computed on every listing row; UI labels stale sources.
+- I: truncation derived from Worker `resources.requested/observed_output_tokens`;
+  ≥95% marks `status="incomplete"`, `eligible=false`, body retained for
+  reading only. Revalidation re-derives it.
+- G: warnings shown separately; "verified" language never used.
+
+**Round 2 (delta) — ACCEPTED**, blockers B and E resolved, no remaining
+findings; self-asserted actor identity explicitly accepted for a local,
+loopback-only, single-user application with human-gated dispatch (the same
+architecture-wide limitation recorded since W9A; authentication is a separate
+programme).
+
+**Live outcome after correction:** both live candidates are now recorded
+`incomplete` / `eligible: false` with ceiling evidence (1,973 of 2,000 output
+tokens) and preservation warnings (Chapter 25: 18/50 numbers, 5/11 headings,
+one repeated paragraph, front matter dropped). The authoritative manuscript
+is untouched. Spend for the entire PUB-09B slice remains **$0.00 metered**.
+
+**Residual limitations carried to PUB-10:** (a) no plan-scoped semantic
+verification for reconstructions; (b) self-asserted actor identity (no auth
+layer); (c) 60 s Worker timeout / 2,000-token default are insufficient for a
+full chapter, so an adequate budget and model must be chosen before any
+production run; (d) the demonstrated local Mistral output is not publishable.
+
+**Commit scope (PUB-09 + PUB-09B), no staging performed.** Add
+`backend/mission_control/publication/improvements.py`,
+`backend/tests/test_mc_publishing_improvement.py`; modify
+`backend/mission_control/publication/publishing.py`,
+`backend/mission_control/api/publication.py`,
+`backend/tests/test_mc_publishing_workbench.py`,
+`frontend/src/pages/BookPublishingPage.tsx`,
+`frontend/src/test/Publishing.test.tsx`,
+`docs/programmes/publication/PUB09-REUSE-MATRIX.md`,
+`docs/programmes/publication/STATE.md` (this section). Shared files
+needing hunk-level review: `STATE.md` (other workstream hunks present).
+Excluded concurrent work: `api/improvement.py`, `improvement/*`,
+`envelopes.py`, `proposals.py`, `ImprovementPage.tsx`,
+`ImprovementPage.test.tsx`, `test_improvement_integration.py`,
+STEPHANIE/HARNESS docs, `pub08/`, `node_modules/`.
 Arm C₁ CLOSED 2026-11-25 with ZERO paid repairs ($0): composed
 verification over A₁ bytes found 0 introduced / 0 strengthened /
 0 altered numbers / 0 misattributions / 25-25 ledger parity /

@@ -473,3 +473,121 @@ def test_contradictory_evidence_stays_visible(tmp_path: Path, monkeypatch) -> No
         assert "writer_finalization" in summary["blockers"]["stale"]
         gates = {gate["gate_id"]: gate for gate in summary["gates"]}
         assert gates["prose_review"]["stale"] is True
+
+
+def _seed_assessment(client, project_id: str, fingerprint: str, issue_chapter: str | None = None) -> str:
+    """Insert one assessment (+ optional chapter-naming issue) straight into the test DB."""
+    from mission_control.models import PublicationAssessment, PublicationIssue
+    from mission_control.persistence.db import Database
+
+    settings = client.app.state.settings
+    database = Database(settings)
+    try:
+        with database.session() as session:
+            session.add(PublicationAssessment(
+                id="asmt-1", project_id=project_id, book_id=f"book-{project_id}",
+                manuscript_fingerprint=fingerprint, assessment_status="ASSESSED"))
+            session.flush()
+            if issue_chapter is not None:
+                session.add(PublicationIssue(
+                    id="iss-1", assessment_id="asmt-1", gate_id="prose_review",
+                    issue_type="prose_gap", severity="advisory",
+                    source_refs=[f"chapter {issue_chapter} needs attention"],
+                    evidence_refs=[], rationale=f"gap in {issue_chapter}"))
+            session.commit()
+    finally:
+        database.dispose()
+    return "asmt-1"
+
+
+def test_chapters_unknown_project_is_404(tmp_path: Path, monkeypatch) -> None:
+    repo = tmp_path / "book"
+    manuscript = _chapters(repo, 2)
+    with open_client(_runtime(tmp_path)) as client:
+        _make_book(client, project_id="probe", manuscript=str(manuscript))
+        _install_fakes(monkeypatch, manuscript)
+        response = client.get("/api/publication/publishing/chapters?project_id=nope")
+        assert response.status_code == 404
+        assert "Unknown project" in response.text
+
+
+def test_chapters_without_assessment_are_unknown_not_zero(tmp_path: Path, monkeypatch) -> None:
+    repo = tmp_path / "book"
+    manuscript = _chapters(repo, 2)
+    with open_client(_runtime(tmp_path)) as client:
+        _make_book(client, project_id="probe", manuscript=str(manuscript))
+        _install_fakes(monkeypatch, manuscript)
+        payload = client.get("/api/publication/publishing/chapters?project_id=probe").json()
+        assert payload["count"] == 2
+        assert payload["assessment"] is None
+        by_id = {row["chapter_id"]: row for row in payload["chapters"]}
+        assert by_id["01-chapter"]["title"] == "Chapter 1"
+        assert by_id["01-chapter"]["fingerprint"]
+        assert all(row["state"] == "unknown" for row in payload["chapters"])
+        assert all(row["issues"] == [] for row in payload["chapters"])
+
+
+def test_chapters_assessed_vs_unassessed(tmp_path: Path, monkeypatch) -> None:
+    import hashlib
+
+    from mission_control.publication.fingerprint import _sha_text
+
+    repo = tmp_path / "book"
+    manuscript = _chapters(repo, 2)
+    with open_client(_runtime(tmp_path)) as client:
+        _make_book(client, project_id="probe", manuscript=str(manuscript))
+        _install_fakes(monkeypatch, manuscript)
+        # Assessment scope (service.build_snapshot): "file:sha" per *-chapter.md.
+        rows = []
+        for path in sorted(manuscript.glob("??-chapter.md")):
+            rows.append(f"{path.name}:{_sha_text(path.read_text(encoding='utf-8'))}")
+        fingerprint = hashlib.sha256("\n".join(rows).encode()).hexdigest()
+        _seed_assessment(client, "probe", fingerprint, issue_chapter="01-chapter")
+        payload = client.get("/api/publication/publishing/chapters?project_id=probe").json()
+        assert payload["assessment"]["fingerprint_match"] is True
+        by_id = {row["chapter_id"]: row for row in payload["chapters"]}
+        assert by_id["01-chapter"]["state"] == "assessed"
+        assert len(by_id["01-chapter"]["issues"]) == 1
+        assert by_id["02-chapter"]["state"] == "unassessed"
+        assert by_id["02-chapter"]["issues"] == []
+
+
+def test_chapters_stale_when_manuscript_moves(tmp_path: Path, monkeypatch) -> None:
+    repo = tmp_path / "book"
+    manuscript = _chapters(repo, 2)
+    with open_client(_runtime(tmp_path)) as client:
+        _make_book(client, project_id="probe", manuscript=str(manuscript))
+        _install_fakes(monkeypatch, manuscript)
+        _seed_assessment(client, "probe", "0" * 64)
+        payload = client.get("/api/publication/publishing/chapters?project_id=probe").json()
+        assert payload["assessment"]["fingerprint_match"] is False
+        assert all(row["state"] == "stale" for row in payload["chapters"])
+
+
+def test_candidates_lists_retained_records_with_verification(tmp_path: Path, monkeypatch) -> None:
+    repo = tmp_path / "book"
+    manuscript = _chapters(repo, 2)
+    with open_client(_runtime(tmp_path)) as client:
+        _make_book(client, project_id="probe", manuscript=str(manuscript))
+        _install_fakes(monkeypatch, manuscript)
+        payload = client.get("/api/publication/publishing/candidates?project_id=probe").json()
+        assert payload["count"] == len(payload["candidates"]) > 0
+        by_id = {row["id"]: row for row in payload["candidates"]}
+        assert by_id["pub7-ch2-rerun"]["available"] is True
+        assert by_id["pub7-ch2-rerun"]["kind"] == "historical-experimental"
+        assert by_id["pub7-ch2-rerun"]["fingerprint"]
+        assert by_id["pub7-ch2-rerun"]["verification"]["present"] is True
+
+
+def test_candidate_body_serves_bounded_markdown(tmp_path: Path, monkeypatch) -> None:
+    repo = tmp_path / "book"
+    manuscript = _chapters(repo, 2)
+    with open_client(_runtime(tmp_path)) as client:
+        _make_book(client, project_id="probe", manuscript=str(manuscript))
+        _install_fakes(monkeypatch, manuscript)
+        body = client.get("/api/publication/publishing/candidates/pub7-ch2-rerun/body").json()
+        assert body["available"] is True
+        assert len(body["markdown"]) > 1000
+        assert body["fingerprint"]
+        missing = client.get("/api/publication/publishing/candidates/nope/body")
+        assert missing.status_code == 404

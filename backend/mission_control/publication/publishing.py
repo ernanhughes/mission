@@ -8,7 +8,6 @@ approves or mutates manuscripts.
 
 from __future__ import annotations
 
-import fnmatch
 import json
 import os
 from pathlib import Path
@@ -1427,3 +1426,332 @@ def _norm(value: str | None) -> str:
         return _os.path.normcase(_os.path.normpath(value))
     except OSError:
         return _os.path.normcase(str(value))
+
+
+def _chapter_key(filename: str) -> str:
+    """Canonical chapter key from a manuscript filename (``01-chapter.md`` → ``01-chapter``)."""
+    stem = filename.rsplit(".", 1)[0]
+    return stem.strip().lower()
+
+
+def _chapter_title(path: Path, fallback: str) -> str:
+    try:
+        text = path.read_text(encoding="utf-8", errors="replace")[:8192]
+    except OSError:
+        return fallback
+    # Hugo-style TOML frontmatter (+++ delimited): title = "...".
+    if text.startswith("+++"):
+        end = text.find("\n+++", 3)
+        head = text[3:end if end != -1 else min(len(text), 2000)]
+        for line in head.splitlines():
+            stripped = line.strip()
+            if stripped.startswith("title"):
+                _, _, value = stripped.partition("=")
+                title = value.strip().strip("\"'")[:200]
+                if title:
+                    return title
+    for line in text.splitlines()[:20]:
+        stripped = line.strip()
+        if stripped.startswith("# "):
+            return stripped[2:].strip()[:200] or fallback
+    return fallback
+
+
+def _mentions_chapter(blob: str, key: str) -> bool:
+    return key in blob.lower()
+
+
+class UnknownProjectError(Exception):
+    def __init__(self, project_id: str):
+        super().__init__(project_id)
+        self.project_id = project_id
+
+
+# Retained experimental candidates (PUB-06/07/08 historical records).
+# Fixed allow-list of repo-relative paths: the backend reads these
+# read-only and reports digests + recorded verification summaries. These
+# are historical experimental records, not production candidates — the UI
+# must label them as such and never present them as current.
+RETAINED_CANDIDATES: tuple[dict[str, str], ...] = (
+    {"id": "pub6-ch1", "chapter": "01-chapter", "label": "PUB-06 Ch1 surgical candidate (retained record)",
+     "candidate": "pub06/ch01/01-chapter-candidate.md",
+     "verification": "pub06/ch01/verification-report.json"},
+    {"id": "pub7-ch2-run1", "chapter": "02-chapter", "label": "PUB-07 Ch2 run-1 candidate (superseded, preserved verbatim)",
+     "candidate": "pub07/ch02-superseded-run1/candidate.md",
+     "verification": "pub07/ch02-superseded-run1/verification.json"},
+    {"id": "pub7-ch2-rerun", "chapter": "02-chapter", "label": "PUB-07 Ch2 rerun candidate (demonstration candidate)",
+     "candidate": "pub07/ch02-rerun/candidate.md",
+     "verification": "pub07/ch02-rerun/verification.json"},
+    {"id": "pub8-a1", "chapter": "01-chapter", "label": "PUB-08 arm A1 direct-editing candidate (experimental sample)",
+     "candidate": "pub08/experiment/arm_a_r1/candidate.md",
+     "verification": "pub08/experiment/arm_a_r1/dispatch-record.json"},
+    {"id": "pub8-b1", "chapter": "01-chapter", "label": "PUB-08 arm B1 engineered candidate (experimental sample)",
+     "candidate": "pub08/experiment/arm_b1/candidate.md",
+     "verification": "pub08/experiment/arm_b1/merge-record.json"},
+)
+
+_CANDIDATE_BODY_LIMIT = 1_000_000
+
+
+def _read_text_bounded(path: Path, limit: int = _CANDIDATE_BODY_LIMIT) -> str | None:
+    try:
+        if not path.is_file() or path.stat().st_size > limit:
+            return None
+        return path.read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        return None
+
+
+def _summarize_verification(text: str | None) -> dict[str, Any]:
+    """Best-effort extraction of headline verdicts from a retained record.
+
+    Only keys the record itself asserts (status/verdict/pass/fail counts);
+    anything absent stays absent — never inferred.
+    """
+    summary: dict[str, Any] = {"present": text is not None}
+    if not text:
+        return summary
+    try:
+        data = json.loads(text)
+    except (ValueError, TypeError):
+        summary["format"] = "non-json"
+        summary["excerpt"] = text[:500]
+        return summary
+    if isinstance(data, dict):
+        for key in ("status", "verdict", "outcome", "decision", "assessment",
+                    "verify", "verification", "result", "pass", "passed",
+                    "fail", "failed"):
+            if key in data and not isinstance(data[key], (dict, list)):
+                summary[key] = data[key]
+    summary["truncatedKeys"] = len(data) if isinstance(data, dict) else 0
+    return summary
+
+
+def get_publishing_candidates(project_id: str) -> dict[str, Any]:
+    """Retained experimental candidates by reference. Read-only.
+
+    Only meaningful for the Jev book (the records are Jev-scoped); other
+    projects get an empty collection, not an error. Bodies are served
+    separately via ``get_publishing_candidate_body``.
+    """
+    import hashlib as _hashlib
+
+    from mission_control.persistence.db import now_iso as _now_iso_candidates
+
+    repo_root = Path(__file__).resolve().parents[3]
+    records = []
+    for entry in RETAINED_CANDIDATES:
+        cand_path = repo_root / entry["candidate"]
+        ver_text = _read_text_bounded(repo_root / entry["verification"], 200_000)
+        digest = ""
+        size = 0
+        if cand_path.is_file():
+            try:
+                raw = cand_path.read_bytes()[:_CANDIDATE_BODY_LIMIT]
+                size = len(raw)
+                digest = _hashlib.sha256(raw.replace(b"\r\n", b"\n")).hexdigest()
+            except OSError:
+                pass
+        records.append({
+            "id": entry["id"], "chapter": entry["chapter"], "label": entry["label"],
+            "kind": "historical-experimental",
+            "candidate_path": entry["candidate"],
+            "available": cand_path.is_file(),
+            "bytes": size, "fingerprint": digest,
+            "verification": _summarize_verification(ver_text),
+            "note": "Historical experimental record with recorded verification only; "
+                    "not a production candidate and not evidence of publication readiness.",
+        })
+    return {"project_id": project_id, "candidates": records, "count": len(records),
+            "observed_at": _now_iso_candidates()}
+
+
+def get_publishing_candidate_body(record_id: str) -> dict[str, Any]:
+    """Full markdown body of one retained candidate. Read-only, bounded."""
+    repo_root = Path(__file__).resolve().parents[3]
+    entry = next((e for e in RETAINED_CANDIDATES if e["id"] == record_id), None)
+    if entry is None:
+        raise KeyError(record_id)
+    text = _read_text_bounded(repo_root / entry["candidate"])
+    if text is None:
+        return {"id": record_id, "available": False,
+                "reason": "Candidate file is missing or exceeds the bounded read size."}
+    import hashlib as _hashlib
+    return {"id": record_id, "available": True, "markdown": text,
+            "bytes": len(text.encode("utf-8")),
+            "fingerprint": _hashlib.sha256(
+                text.replace("\r\n", "\n").encode("utf-8")).hexdigest()}
+
+
+def get_publishing_chapters(
+    session: Session, settings: Any | None, project_id: str
+) -> dict[str, Any]:
+    """Per-chapter publication state. Read-only aggregation, no new tables.
+
+    Chapters come from the Writer registry manuscript directory. State per
+    chapter: ``unknown`` (no assessment ever recorded), ``stale`` (latest
+    assessment fingerprint differs from current sources), ``assessed``
+    (named in the latest assessment's gates/issues or a project follow-up),
+    else ``unassessed``. Zero findings are never reported as success: an
+    unassessed chapter carries no verdict at all.
+    """
+    import hashlib as _hashlib
+    import json as _json
+
+    from mission_control.models import Project as _Project
+    from mission_control.models import PublicationApproval as _Approval
+    from mission_control.models import PublicationAssessment as _Assessment
+    from mission_control.models import PublicationFollowup as _Followup
+    from mission_control.models import PublicationGateResult as _Gate
+    from mission_control.models import PublicationIssue as _Issue
+    from mission_control.persistence.db import now_iso as _now_iso
+    from mission_control.publication.fingerprint import _sha_text
+    from mission_control.writer_registry import (
+        load_writer_registry,
+        resolve_registry_path,
+    )
+
+    project = session.get(_Project, project_id)
+    if project is None:
+        raise UnknownProjectError(project_id)
+    try:
+        snapshot = load_writer_registry(
+            resolve_registry_path(settings) if settings is not None else None
+        )
+    except Exception:
+        snapshot = None
+    definition = snapshot.books.get(project_id) if snapshot else None
+    if definition is None or not getattr(definition, "available", False):
+        return {"project_id": project_id, "chapters": [], "count": 0,
+                "assessment": None, "approvals": [],
+                "error": "Manuscript directory is not available from the Writer registry."}
+    try:
+        chapter_dir = Path(definition.chapter_dir)
+    except (OSError, TypeError):
+        return {"project_id": project_id, "chapters": [], "count": 0,
+                "assessment": None, "approvals": [],
+                "error": "Configured chapter directory is not a usable path."}
+    try:
+        files = sorted(
+            (p for p in chapter_dir.iterdir()
+             if p.is_file() and len(p.name) >= 12 and p.name[0:2].isdigit()
+             and p.name.lower().endswith("-chapter.md")),
+            key=lambda p: p.name,
+        )[:500]
+    except OSError as exc:
+        return {"project_id": project_id, "chapters": [], "count": 0,
+                "assessment": None, "approvals": [],
+                "error": f"Cannot list chapter directory: {exc}."}
+
+    current_fp = fingerprint_manuscript(chapter_dir, "*.md")
+    current_fp_value = current_fp.get("fingerprint") if current_fp.get("ok") else None
+    # Assessment-scope fingerprint: assessments bind ONLY numbered-chapter
+    # files (service.build_snapshot: "file:sha" per *-chapter.md). Comparing
+    # against the book-scope (*.md, incl. _index.md) fingerprint would mark
+    # everything stale on scope difference alone — a false positive. So
+    # staleness is decided on the assessment's own scope; the book-scope
+    # fingerprint is still reported for transparency.
+    assessment_scope_rows = []
+    for path in files:
+        try:
+            assessment_scope_rows.append(
+                f"{path.name}:{_sha_text(path.read_text(encoding='utf-8', errors='replace'))}")
+        except OSError:
+            pass
+    import hashlib as _hashlib_scope
+    assessment_scope_fp = _hashlib_scope.sha256(
+        "\n".join(assessment_scope_rows).encode("utf-8")).hexdigest() if assessment_scope_rows else None
+    latest = session.scalars(
+        select(_Assessment).where(_Assessment.project_id == project_id)
+        .order_by(desc(_Assessment.created_at)).limit(1)
+    ).first()
+    assessment = None
+    fingerprint_match: bool | None = None
+    if latest is not None:
+        fingerprint_match = bool(
+            assessment_scope_fp and latest.manuscript_fingerprint
+            and latest.manuscript_fingerprint == assessment_scope_fp)
+        assessment = {
+            "id": latest.id,
+            "status": latest.assessment_status,
+            "freshness": latest.freshness,
+            "fingerprint_match": fingerprint_match,
+            "created_at": latest.created_at,
+        }
+    gate_rows = session.scalars(
+        select(_Gate).where(_Gate.assessment_id == latest.id)
+    ).all() if latest is not None else []
+    issue_rows = session.scalars(
+        select(_Issue).where(_Issue.assessment_id == latest.id)
+    ).all() if latest is not None else []
+    followup_rows = session.scalars(
+        select(_Followup).where(_Followup.project_id == project_id)
+    ).all()
+    approvals = [
+        {"id": r.id, "decision": r.decision, "rationale": r.rationale,
+         "manuscript_fingerprint": r.manuscript_fingerprint,
+         "freshness": r.freshness, "created_at": r.created_at}
+        for r in session.scalars(
+            select(_Approval).where(_Approval.project_id == project_id)
+            .order_by(desc(_Approval.created_at)).limit(10)
+        ).all()
+    ]
+
+    def _blob(*parts: Any) -> str:
+        try:
+            return _json.dumps(parts, default=str)[:4096]
+        except (TypeError, ValueError):
+            return ""
+
+    gate_blob = _blob([(g.gate_id, g.evidence_refs, g.detail) for g in gate_rows])
+    named_in_assessment: set[str] = set()
+    chapters = []
+    for path in files:
+        key = _chapter_key(path.name)
+        try:
+            raw = path.read_bytes()[:2_000_000]
+        except OSError:
+            raw = b""
+        digest = _hashlib.sha256(raw.replace(b"\r\n", b"\n")).hexdigest() if raw else ""
+        title = _chapter_title(path, key)
+        issue_refs = [
+            {"id": r.id, "gate_id": r.gate_id, "issue_type": r.issue_type,
+             "severity": r.severity, "status": r.status,
+             "author_review_status": r.author_review_status}
+            for r in issue_rows
+            if _mentions_chapter(_blob(r.source_refs, r.evidence_refs, r.rationale), key)
+        ]
+        followup_refs = [
+            {"id": r.id, "title": r.title, "status": r.status,
+             "evidence_type": r.evidence_type}
+            for r in followup_rows
+            if _mentions_chapter(_blob(r.source_reference, r.title, r.rationale), key)
+        ]
+        named = bool(issue_refs or followup_refs or _mentions_chapter(gate_blob, key))
+        if named:
+            named_in_assessment.add(key)
+        if latest is None:
+            state = "unknown"
+        elif fingerprint_match is False:
+            state = "stale"
+        elif named:
+            state = "assessed"
+        else:
+            state = "unassessed"
+        chapters.append({
+            "chapter_id": key,
+            "title": title,
+            "filename": path.name,
+            "bytes": len(raw),
+            "fingerprint": digest,
+            "state": state,
+            "issues": issue_refs,
+            "followups": followup_refs,
+        })
+    return {"project_id": project_id, "chapters": chapters, "count": len(chapters),
+            "chapter_named_in_assessment": sorted(named_in_assessment),
+            "assessment": assessment, "approvals": approvals,
+            "manuscript_fingerprint": current_fp_value,
+            "assessment_scope_fingerprint": assessment_scope_fp,
+            "assessment_scope_note": "Staleness compares the assessment fingerprint against numbered-chapter files only (the assessment's own scope); the book fingerprint covers all *.md files.",
+            "observed_at": _now_iso()}

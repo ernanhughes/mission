@@ -104,6 +104,10 @@ function mockPublishing(extra?: (call: { path: string; method: string; body: unk
     if (call.path === "/api/publication/publishing/overview") return json(overview);
     if (call.path === "/api/publication/publishing" && call.method === "GET") return json(summary);
     if (call.path === "/api/publication/publishing/refresh" && call.method === "POST") return json(summary);
+    if (call.path === "/api/publication/publishing/chapters" && call.method === "GET")
+      return json({ project_id: "math", chapters: [], count: 0, assessment: null, approvals: [], manuscript_fingerprint: null, observed_at: "" });
+    if (call.path === "/api/publication/publishing/candidates" && call.method === "GET")
+      return json({ project_id: "math", candidates: [], count: 0, observed_at: "" });
     if (call.path === "/api/publication/assessments" && call.method === "GET") return json([]);
     if (call.path === "/api/publication/followups") {
       if (call.method === "GET") return json([]);
@@ -166,6 +170,7 @@ describe("BookPublishingPage", () => {
     const calls = mockPublishing();
     const user = userEvent.setup();
     renderBookPage();
+    await user.click(screen.getByRole("tab", { name: "Evidence" }));
     expect(await screen.findByText("The release candidate binds to an exact manuscript snapshot.")).toBeInTheDocument();
     const gate = (await screen.findByText("manuscript_identity", { exact: false })).closest(".panel") as HTMLElement;
     expect(within(gate).getByText("passed")).toBeInTheDocument();
@@ -178,6 +183,7 @@ describe("BookPublishingPage", () => {
     const calls = mockPublishing();
     const user = userEvent.setup();
     renderBookPage();
+    await user.click(screen.getByRole("tab", { name: "Publish" }));
     const [track] = await screen.findAllByRole("button", { name: "Track" });
     await user.click(track);
     await user.click(screen.getByRole("button", { name: "Open" }));
@@ -185,5 +191,64 @@ describe("BookPublishingPage", () => {
     const posted = calls.find((call) => call.method === "POST" && call.path === "/api/publication/followups");
     expect(posted).toBeTruthy();
     expect((posted!.body as Record<string, unknown>).evidence_type).toBe("builder_artifacts");
+  });
+
+  it("organizes publishing into tabs with chapters and candidates", async () => {
+    mockPublishing();
+    const user = userEvent.setup();
+    renderBookPage();
+    for (const tab of ["Overview", "Chapters", "Evidence", "Editorial", "Candidates", "Review", "Publish"]) {
+      expect(screen.getByRole("tab", { name: tab })).toBeInTheDocument();
+    }
+    await user.click(screen.getByRole("tab", { name: "Chapters" }));
+    expect(await screen.findByText(/unassessed-or-unknown/)).toBeInTheDocument();
+    await user.click(screen.getByRole("tab", { name: "Candidates" }));
+    expect(await screen.findByText("No retained candidates")).toBeInTheDocument();
+  });
+
+  it("requires a human reviewer before recording approval", async () => {
+    mockPublishing((call) => {
+      if (call.path === "/api/publication/assessments" && call.method === "GET") {
+        return json([{ id: "asmt-1", assessment_status: "NOT_YET_ASSESSED", freshness: "CURRENT", manuscript_fingerprint: "a".repeat(64) }]);
+      }
+      return undefined;
+    });
+    const user = userEvent.setup();
+    renderBookPage();
+    await user.click(screen.getByRole("tab", { name: "Review" }));
+    expect(await screen.findByText(/Approval is a mandatory gate/)).toBeInTheDocument();
+    const record = screen.getByRole("button", { name: "Record approval" });
+    expect(record).toBeDisabled();
+    await user.type(screen.getByLabelText("Approval reviewer"), "Author");
+    expect(record).toBeEnabled();
+  });
+
+  it("requests chapter improvement only after explicit human authorization", async () => {
+    const calls = mockPublishing((call) => {
+      if (call.path === "/api/publication/publishing/chapters" && call.method === "GET") {
+        return json({ project_id: "math", chapters: [{ chapter_id: "01-chapter", title: "Chapter 1", filename: "01-chapter.md", bytes: 100, fingerprint: "a".repeat(64), state: "unassessed", issues: [], followups: [] }], count: 1, chapter_named_in_assessment: [], assessment: null, approvals: [], manuscript_fingerprint: "b".repeat(64), observed_at: "" });
+      }
+      if (call.path === "/api/publication/improvements" && call.method === "POST") {
+        return json({ status: "prepared", packet: { chapter: { chapter_id: "01-chapter" } }, dispatched: false, note: "Prepared (no dispatch)." }, 201);
+      }
+      return undefined;
+    });
+    const user = userEvent.setup();
+    renderBookPage();
+    await user.click(screen.getByRole("tab", { name: "Chapters" }));
+    expect(await screen.findByText(/01-chapter/)).toBeInTheDocument();
+    expect(calls.some((call) => call.method === "POST")).toBe(false);
+    await user.click(screen.getByRole("button", { name: "Improve chapter" }));
+    expect(screen.getByLabelText("Editorial strategy")).toBeInTheDocument();
+    const submit = screen.getByRole("button", { name: "Prepare request" });
+    expect(submit).toBeDisabled();
+    await user.type(screen.getByLabelText("Improvement actor"), "Author");
+    await user.type(screen.getByLabelText("Improvement authorization note"), "Authorized probe");
+    expect(submit).toBeEnabled();
+    await user.click(submit);
+    await screen.findByText(/Prepared \(no dispatch\)/);
+    const posted = calls.filter((call) => call.method === "POST" && call.path === "/api/publication/improvements");
+    expect(posted).toHaveLength(1);
+    expect((posted[0].body as Record<string, unknown>).mode).toBe("inspect");
   });
 });
