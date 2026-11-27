@@ -7929,3 +7929,11 @@ button.pipe-cell:focus-visible { outline: 2px solid var(--warn); outline-offset:
 .harness-decision { margin: 10px 0; }
 .harness-decision h3 { display: flex; gap: 8px; align-items: center; }
 @media (max-width: 700px) { .harness-connectivity { align-items: flex-start; flex-direction: column; } .harness-detail-overlay { padding: 8px; } .harness-detail { padding: 12px; max-height: 94vh; } .harness-detail-grid { grid-template-columns: 1fr; } }
+
+.stephanie-panel-backdrop { position: fixed; inset: 0; z-index: 1090; border: 0; background: rgb(8 12 15 / .48); cursor: default; }
+.stephanie-panel { position: fixed; z-index: 1091; inset: 0 0 0 auto; display: flex; flex-direction: column; width: min(760px, 58vw); min-width: 480px; background: var(--panel); color: var(--text); border-left: 1px solid var(--line); box-shadow: -18px 0 50px rgb(0 0 0 / .2); }
+.stephanie-panel-header { display: flex; flex: 0 0 54px; align-items: center; justify-content: space-between; gap: 1rem; padding: 0 1rem; border-bottom: 1px solid var(--line); }
+.stephanie-panel-header > div { display: flex; align-items: center; gap: .6rem; }
+.stephanie-panel-header > div > span { color: var(--muted); font-size: .8rem; }
+.stephanie-panel iframe { width: 100%; flex: 1; min-height: 0; border: 0; background: white; }
+@media (max-width: 680px) { .stephanie-panel { width: 100%; min-width: 0; } }

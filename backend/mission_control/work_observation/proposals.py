@@ -239,9 +239,13 @@ class ProposalService:
                    confirm: bool = False) -> dict[str, Any]:
         to_status = (to_status or "")[:32]
         with self._database.session() as session:
-            p = session.get(orm.WoProposal, proposal_id)
+            p = session.query(orm.WoProposal).filter_by(id=proposal_id).with_for_update().first()
             if p is None:
                 return {"status": "unknown_proposal"}
+            active_sc4 = session.query(orm.WoExecutionLink).filter_by(
+                proposal_id=p.id, route="stephanie-sc3", status="running").first()
+            if active_sc4 is not None:
+                return {"status": "rejected", "error": "an SC4 execution claim is running; reconcile it before changing proposal state"}
             allowed = TRANSITIONS.get(p.status, set())
             if to_status not in allowed:
                 return {"status": "rejected",
@@ -275,6 +279,49 @@ class ProposalService:
         return {"status": "completed", "proposal_id": proposal_id,
                 "from": frm, "to": to_status}
 
+    def record_sc4_outcome_decision(self, proposal_id: str, *, actor: str,
+                                    decision: str, evidence: dict[str, Any],
+                                    rationale: str = "") -> dict[str, Any]:
+        """Append a distinct human candidate decision without changing proposal lifecycle state."""
+        actor = (actor or "").strip()
+        decision = (decision or "").strip().lower()
+        if not actor or actor.lower() in {"system", "model"}:
+            return {"status": "rejected", "error": "a human actor is required"}
+        if decision not in {"accepted", "rejected"}:
+            return {"status": "rejected", "error": "decision must be accepted or rejected"}
+        if not isinstance(evidence, dict) or evidence.get("schema_version") != "mission.sc4-outcome-decision.v1":
+            return {"status": "rejected", "error": "invalid SC4 decision evidence"}
+        if not evidence.get("investigation_id") or not evidence.get("experiment_id") or not evidence.get("result_digest"):
+            return {"status": "rejected", "error": "SC4 decision evidence is incomplete"}
+        import json
+        marker = "MISSION_SC4_OUTCOME_DECISION_V1:"
+        with self._database.session() as session:
+            p = session.query(orm.WoProposal).filter_by(id=proposal_id).with_for_update().first()
+            if p is None:
+                return {"status": "unknown_proposal"}
+            events = session.query(orm.WoProposalEvent).filter_by(proposal_id=proposal_id).all()
+            for event in events:
+                if event.reason.startswith(marker):
+                    try:
+                        prior = json.loads(event.reason[len(marker):])
+                    except json.JSONDecodeError:
+                        continue
+                    if prior.get("evidence", {}).get("experiment_id") == evidence["experiment_id"]:
+                        return ({"status": "duplicate", "decision": prior,
+                                 "proposal_id": proposal_id} if prior.get("decision") == decision
+                                else {"status": "conflict", "error": "a different human decision is already recorded for this experiment"})
+            payload = {"schema_version": "mission.sc4-outcome-decision.v1",
+                       "decision": decision, "actor": actor[:80],
+                       "rationale": (rationale or "").strip()[:500],
+                       "evidence": evidence}
+            session.add(orm.WoProposalEvent(
+                id=uuid.uuid4().hex[:16], proposal_id=p.id,
+                from_status=p.status, to_status=p.status, actor=actor[:80],
+                reason=marker + json.dumps(payload, sort_keys=True, separators=(",", ":")),
+                created_at=now_iso()))
+        return {"status": "completed", "proposal_id": proposal_id,
+                "decision": payload}
+
     def edit_scope(self, proposal_id: str, *,
                    scope: str | None = None,
                    exclusions: str | None = None,
@@ -283,12 +330,16 @@ class ProposalService:
         """Scope edits bump version + recompute hash and return the
         proposal to draft (voiding any prior approval)."""
         with self._database.session() as session:
-            p = session.get(orm.WoProposal, proposal_id)
+            p = session.query(orm.WoProposal).filter_by(id=proposal_id).with_for_update().first()
             if p is None:
                 return {"status": "unknown_proposal"}
             if p.status in ("verified_resolved", "cancelled"):
                 return {"status": "rejected",
                         "error": "closed proposals are immutable"}
+            active_sc4 = session.query(orm.WoExecutionLink).filter_by(
+                proposal_id=p.id, route="stephanie-sc3", status="running").first()
+            if active_sc4 is not None:
+                return {"status": "rejected", "error": "an SC4 execution claim is running; scope edits are blocked until reconciliation"}
             changed = False
             for field, val in (("scope", scope), ("exclusions", exclusions),
                                ("acceptance_criteria", acceptance_criteria),

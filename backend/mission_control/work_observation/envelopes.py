@@ -131,7 +131,9 @@ class EnvelopeService:
                 if p is None:
                     return {"status": "rejected",
                             "error": "unknown authorization proposal"}
-                if p.status != "approved":
+                # The manual handoff transition preserves the approval and moves
+                # the proposal to queued. SC4 can bind that approval after handoff.
+                if p.status not in {"approved", "queued"}:
                     return {"status": "rejected",
                             "error": "authorization proposal is not approved"}
                 auth_ref = (f"proposal:{p.id}@v{p.version}:"
@@ -157,7 +159,13 @@ class EnvelopeService:
             prev = session.query(orm.WoWorkEnvelope).filter(
                 orm.WoWorkEnvelope.episode_id == episode_id,
                 orm.WoWorkEnvelope.status == "active").order_by(
-                orm.WoWorkEnvelope.version.desc()).first()
+                orm.WoWorkEnvelope.version.desc()).with_for_update().first()
+            if prev is not None:
+                active_sc4 = session.query(orm.WoExecutionLink).filter_by(
+                    envelope_id=prev.id, route="stephanie-sc3", status="running").with_for_update().first()
+                if active_sc4 is not None:
+                    return {"status": "rejected",
+                            "error": "an SC4 execution claim is running; this Work Envelope cannot be superseded"}
             if prev is not None and prev.commission_digest == digest:
                 return {"status": "duplicate", "envelope_id": prev.id,
                         "version": prev.version}
@@ -249,6 +257,128 @@ class EnvelopeService:
                 created_at=now))
         return {"status": "completed", "execution_id": lid,
                 "envelope_id": envelope_id}
+
+    def link_verified_stephanie_execution(self, *, envelope_id: str,
+                                          proposal_id: str,
+                                          external_ref: str,
+                                          status: str = "reported_complete") -> dict[str, Any]:
+        """Link a result already digest-verified by Mission's SC4 adapter.
+
+        This records Work Outcome provenance only; it does not dispatch. The
+        caller must pass the opaque content-addressed SC4 reference after
+        verifying the returned Stephanie result and artifact digest.
+        """
+        if status not in {"reported_complete", "failed"} or not external_ref.startswith("stephanie-sc3://"):
+            return {"status": "rejected", "error": "invalid verified Stephanie execution reference"}
+        with self._database.session() as session:
+            env = session.query(orm.WoWorkEnvelope).filter_by(id=envelope_id).with_for_update().first()
+            proposal = session.query(orm.WoProposal).filter_by(id=proposal_id).with_for_update().first()
+            if env is None or proposal is None:
+                return {"status": "rejected", "error": "envelope or proposal is missing"}
+            expected_auth = f"proposal:{proposal.id}@v{proposal.version}:{proposal.scope_hash}"
+            if (env.status != "active" or proposal.status not in {"running", "reported_complete"}
+                    or env.episode_id != proposal.episode_id
+                    or env.authorization_ref != expected_auth):
+                return {"status": "rejected", "error": "Work Envelope no longer matches approved authority"}
+            base_ref = external_ref.rsplit("/", 1)[0]
+            existing = session.query(orm.WoExecutionLink).filter(
+                orm.WoExecutionLink.envelope_id == envelope_id,
+                orm.WoExecutionLink.route == "stephanie-sc3",
+                orm.WoExecutionLink.external_ref.in_((base_ref, external_ref)) |
+                orm.WoExecutionLink.external_ref.like(base_ref + "/%")).with_for_update().first()
+            if existing is not None:
+                if existing.status in {"running", "reported_complete"}:
+                    existing.status = status
+                    existing.external_ref = external_ref[:300]
+                    existing.finished_at = now_iso()
+                    if proposal.status == "running":
+                        proposal.status = "reported_complete" if status == "reported_complete" else "failed"
+                        session.add(orm.WoProposalEvent(
+                            id=uuid.uuid4().hex[:16], proposal_id=proposal.id,
+                            from_status="running", to_status=proposal.status,
+                            actor="mission-integration", reason="verified Stephanie result linked to Work Outcome",
+                            created_at=now_iso()))
+                return {"status": "duplicate", "execution_id": existing.id,
+                        "envelope_id": envelope_id}
+        return {"status": "rejected", "error": "dispatch reservation is missing; no result can be linked"}
+
+    def reserve_stephanie_dispatch(self, *, envelope_id: str, proposal_id: str,
+                                   expected_scope: str, external_ref: str) -> dict[str, Any]:
+        """Atomically consume approved scope and create the Work Outcome run claim."""
+        if not external_ref.startswith("stephanie-sc3://"):
+            return {"status": "rejected", "error": "invalid experiment identity"}
+        with self._database.session() as session:
+            proposal = session.query(orm.WoProposal).filter_by(id=proposal_id).with_for_update().first()
+            envelope = session.query(orm.WoWorkEnvelope).filter_by(id=envelope_id).with_for_update().first()
+            if proposal is None or envelope is None:
+                return {"status": "rejected", "error": "proposal or envelope is missing"}
+            if proposal.action_category != "REQUEST_USER_DECISION" or proposal.scope != expected_scope:
+                return {"status": "rejected", "error": "proposal scope does not match the frozen experiment"}
+            from mission_control.work_observation.proposals import scope_hash_of
+            if proposal.scope_hash != scope_hash_of(proposal.action_category, proposal.scope,
+                    proposal.exclusions, proposal.acceptance_criteria, proposal.version):
+                return {"status": "rejected", "error": "proposal approval scope is stale"}
+            authority_ref = f"proposal:{proposal.id}@v{proposal.version}:{proposal.scope_hash}"
+            scope_doc = json.loads(proposal.scope)
+            if (scope_doc.get("authorized_requirement_refs") != []
+                    or scope_doc.get("authorized_repositories") != []
+                    or scope_doc.get("acceptance_policy_ref") != "w6b-v1"
+                    or _jl(envelope.requirement_refs) != []
+                    or _jl(envelope.repositories) != []
+                    or envelope.acceptance_policy_ref != "w6b-v1"):
+                return {"status": "rejected", "error": "SC4 fixture authority requires empty requirement/repository scope and w6b-v1 acceptance policy"}
+            if (proposal.status not in {"approved", "queued", "running", "reported_complete"}
+                    or envelope.status != "active" or envelope.episode_id != proposal.episode_id
+                    or envelope.authorization_ref != authority_ref
+                    or envelope.objective_ref != scope_doc.get("objective_id")
+                    or _jl(envelope.originating_findings) != [scope_doc.get("finding_id")]):
+                return {"status": "rejected", "error": "proposal or Work Envelope authority is no longer compatible"}
+            objective = session.get(orm.WoObjective, envelope.objective_ref)
+            if objective is None or objective.episode_id != proposal.episode_id or objective.status != "current":
+                return {"status": "rejected", "error": "authorized Work Objective is no longer current"}
+            objective_digest = hashlib.sha256(json.dumps(
+                {"id": objective.id, "text": objective.text, "version": objective.version},
+                sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode()).hexdigest()
+            if (scope_doc.get("objective_version") != objective.version
+                    or scope_doc.get("objective_digest") != objective_digest):
+                return {"status": "rejected", "error": "authorized Work Objective changed"}
+            expected_envelope_digest = commission_digest_of(
+                objective.text or "", _jl(envelope.requirement_refs), proposal.scope,
+                proposal.acceptance_criteria, authority_ref, _jl(envelope.repositories),
+                envelope.acceptance_policy_ref)
+            if envelope.commission_digest != expected_envelope_digest:
+                return {"status": "rejected", "error": "Work Envelope commission does not match approved scope"}
+            finding_ids = [row.finding_id for row in session.query(orm.WoProposalFinding).filter_by(proposal_id=proposal.id).all()]
+            if scope_doc.get("finding_id") not in finding_ids:
+                return {"status": "rejected", "error": "authorized finding is not attached to this proposal"}
+            existing = session.query(orm.WoExecutionLink).filter_by(
+                envelope_id=envelope_id, route="stephanie-sc3").filter(
+                    orm.WoExecutionLink.external_ref.like(external_ref + "%")).with_for_update().first()
+            if proposal.status in {"running", "reported_complete"}:
+                if existing is None or (proposal.status == "running" and existing.status != "running"):
+                    return {"status": "rejected", "error": "existing exact dispatch reservation is missing or inconsistent"}
+                return {"status": "duplicate", "execution_id": existing.id,
+                        "execution_status": existing.status, "envelope_id": envelope_id}
+            if existing is not None:
+                return {"status": "rejected", "error": "dispatch reservation exists without matching approved proposal state"}
+            if proposal.status == "approved":
+                proposal.status = "queued"
+                session.add(orm.WoProposalEvent(id=uuid.uuid4().hex[:16], proposal_id=proposal.id,
+                    from_status="approved", to_status="queued", actor="mission-integration",
+                    reason="exact SC4 experiment authority reserved", created_at=now_iso()))
+            if proposal.status == "queued":
+                proposal.status = "running"
+                session.add(orm.WoProposalEvent(id=uuid.uuid4().hex[:16], proposal_id=proposal.id,
+                    from_status="queued", to_status="running", actor="mission-integration",
+                    reason="bounded Stephanie dispatch claim created", created_at=now_iso()))
+            execution_id = "wx:" + uuid.uuid4().hex[:16]
+            now = now_iso()
+            session.add(orm.WoExecutionLink(id=execution_id, proposal_id=proposal_id,
+                route="stephanie-sc3", external_ref=external_ref[:300],
+                model="deterministic-fixture", status="running", started_at=now,
+                finished_at="", cost_usd=0.0, envelope_id=envelope_id, created_at=now))
+        return {"status": "reserved", "execution_id": execution_id,
+                "envelope_id": envelope_id, "route": "stephanie-sc3"}
 
     def _session_exists(self, session_id: str) -> bool:
         if not self._opencode_db_path:

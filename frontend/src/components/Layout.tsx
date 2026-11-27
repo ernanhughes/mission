@@ -12,6 +12,7 @@ import {
   Globe,
   Inbox,
   Activity as ActivityIcon,
+  Bot,
   LayoutDashboard,
   Menu,
   Moon,
@@ -36,7 +37,8 @@ import { WorkbenchSidebarAction } from "../features/applications/WorkbenchSideba
 import { useTheme } from "./Theme";
 import { CommandPalette } from "./CommandPalette";
 import { useToast } from "./Toast";
-import type { Health } from "../types/api";
+import type { Health, ProjectDetail, ProjectGitLink } from "../types/api";
+import { StephaniePanelProvider, contextForMissionProject, useStephaniePanel } from "../features/stephanie/StephaniePanel";
 
 // MC-WEBSITES-CULTIVATION-01: the floating Cultivation HUD is disabled by
 // default because it obstructs other content. The Cultivation page and its
@@ -86,7 +88,15 @@ const navigation = [
 ];
 
 export function Layout() {
+  return <StephaniePanelProvider><LayoutContent /></StephaniePanelProvider>;
+}
+
+function LayoutContent() {
   const location = useLocation();
+  const { openStephanie, closeStephanie, updateStephanieContext } = useStephaniePanel();
+  const projectId = location.pathname.match(/^\/projects\/([^/]+)/)?.[1] ?? null;
+  const project = useApi<ProjectDetail>(projectId ? `/api/projects/${encodeURIComponent(projectId)}` : null);
+  const gitLinks = useApi<ProjectGitLink[]>(projectId ? `/api/projects/${encodeURIComponent(projectId)}/git-links` : null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
   const { theme, toggle } = useTheme();
@@ -151,6 +161,28 @@ export function Layout() {
   }, [location.pathname]);
 
   useEffect(() => {
+    // Closing on route changes prevents a previously attached repository from
+    // remaining visible while a different project is loading.
+    closeStephanie();
+  }, [location.pathname, closeStephanie]);
+
+  useEffect(() => {
+    if (!projectId || !project.data || project.data.id !== projectId) {
+      updateStephanieContext(null);
+      return;
+    }
+    updateStephanieContext(contextForMissionProject(project.data, gitLinks.data ?? []));
+  }, [projectId, project.data, gitLinks.data, updateStephanieContext]);
+
+  function openCurrentStephanie() {
+    if (projectId && project.data?.id === projectId) {
+      openStephanie(contextForMissionProject(project.data, gitLinks.data ?? []));
+    } else {
+      openStephanie(null);
+    }
+  }
+
+  useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
       if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
         event.preventDefault();
@@ -177,6 +209,9 @@ export function Layout() {
             <strong>Mission Control</strong>
             <span>Applied AI workspace</span>
           </div>
+          <button className="icon-button" onClick={openCurrentStephanie} aria-label="Open Stephanie contextual assistant" title="Open Stephanie">
+            <Bot size={17} />
+          </button>
           <button
             className="icon-button mobile-only"
             aria-label="Close navigation"
@@ -242,6 +277,7 @@ export function Layout() {
           <Menu size={19} />
         </button>
         <span className="mobile-brand">Mission Control</span>
+        <button className="icon-button" onClick={openCurrentStephanie} aria-label="Open Stephanie contextual assistant"><Bot size={18} /></button>
         <button className="icon-button" onClick={() => setPaletteOpen(true)} aria-label="Search or command">
           <Search size={18} />
         </button>

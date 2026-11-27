@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState, type FormEvent } from "react";
-import { Activity, Copy, Eye, Filter, Plus, RefreshCw, Settings2, Sparkles } from "lucide-react";
+import { Activity, Bot, Copy, Eye, Filter, Plus, RefreshCw, Settings2, Sparkles } from "lucide-react";
 import { api, apiPath, errorMessage } from "../api/client";
 import { useApi } from "../api/useApi";
 import { WorkEvaluationTab } from "../features/work-evaluation/WorkEvaluationTab";
+import { makeStephanieContext, useStephaniePanel } from "../features/stephanie/StephaniePanel";
 import { useToast } from "../components/Toast";
 import { Modal } from "../components/Modal";
 import {
@@ -1065,6 +1066,7 @@ function CommitDetailModal(props: {
   onPrompt: (repoId: string, sha: string) => void;
   onReview: (repoId: string, sha: string) => void;
 }) {
+  const { openStephanie } = useStephaniePanel();
   const detail = useApi<{
     repo: GitRepo;
     commit: {
@@ -1135,6 +1137,10 @@ function CommitDetailModal(props: {
           </dl>
           {detail.data.commit.body ? <pre className="pre-wrap">{detail.data.commit.body}</pre> : null}
           <div className="toolbar">
+            <button className="button button-secondary button-small" onClick={() => openStephanie(makeStephanieContext(
+              detail.data!.repo.name, detail.data!.commit.sha, "commit-details"))}>
+              <Bot size={13} /> Open in Stephanie
+            </button>
             <button className="button button-secondary button-small" onClick={() => props.onPrompt(props.repoId, props.sha)}>
               <Copy size={13} /> Copy review prompt
             </button>

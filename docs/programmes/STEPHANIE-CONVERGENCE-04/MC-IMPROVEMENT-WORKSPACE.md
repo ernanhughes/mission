@@ -1,5 +1,10 @@
 # SC4 Mission improvement workspace
 
+> Historical source-state description from before SC4A execution integration.
+> Current bounded execution path and qualification limits are in the linked
+> SC4A/SC4B records in the Stephanie programme directory. Operational service
+> activation remains off.
+
 ## Scope delivered
 
 Mission adds `/improvement`, backed by a read-only `GET /api/improvement/records` projection over the accepted SC3 artifact directory. The page groups work episodes, findings, corrective proposals, envelopes, harness catalogue entries, and Praxis proposals into Overview, Opportunities, Experiments, Experience, and Configuration views. The SC3 evidence view is historical and explicitly isolated/non-operational.
